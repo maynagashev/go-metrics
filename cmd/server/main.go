@@ -13,7 +13,7 @@ func main() {
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
-		fmt.Println(fmt.Errorf("error starting server: %w", err))
+		fmt.Printf("error starting server: %s\n", err)
 	}
 
 }
