@@ -2,14 +2,16 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/maynagashev/go-metrics/internal/storage"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-func Update(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Request: %s %s\n", r.Method, r.URL)
+func Update(w http.ResponseWriter, r *http.Request, memStorage *storage.MemStorage) {
+	//fmt.Printf("Request: %s %s\n", r.Method, r.URL)
 
+	// Тип контента вначале должен быть text/plain
 	w.Header().Set("Content-Type", "text/plain")
 
 	if r.Method != http.MethodPost {
@@ -19,7 +21,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	// Получаем части пути из URL /update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>
 	parts := strings.Split(r.URL.Path, "/")
-	fmt.Printf("path: %s, len: %d, parts: %#v\n", r.URL.Path, len(parts), parts)
+	//fmt.Printf("path: %s, len: %d, parts: %#v\n", r.URL.Path, len(parts), parts)
 
 	// При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
 	if len(parts) != 5 {
@@ -31,24 +33,37 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	metricName := parts[3]
 	metricValue := parts[4]
 
-	// При попытке передать запрос с некорректным типом метрики или значением возвращать http.StatusBadRequest.
-	if metricType != "counter" && metricType != "gauge" {
+	switch metricType {
+	case "counter":
+		intValue, err := strconv.ParseInt(metricValue, 10, 64)
+		if err != nil {
+			http.Error(w, "Invalid metric value, must be convertable to int64", http.StatusBadRequest)
+			return
+		}
+		memStorage.UpdateCounter(metricName, intValue)
+	case "gauge":
+		floatValue, err := strconv.ParseFloat(metricValue, 64)
+		if err != nil {
+			http.Error(w, "Invalid metric value, must be convertable to float64", http.StatusBadRequest)
+			return
+		}
+		memStorage.UpdateGauge(metricName, floatValue)
+	default:
 		http.Error(w, "Invalid metric type, must be: counter or gauge", http.StatusBadRequest)
-		return
 	}
 
-	// Проверяем, что значение метрики является числом float64
-	if _, err := strconv.ParseFloat(metricValue, 64); err != nil {
-		http.Error(w, "Invalid metric value, must be convertable to float64", http.StatusBadRequest)
-		return
-	}
-
-	// Здесь вы можете обновить вашу метрику с полученными значениями
-	// Например, можно сохранить эти значения в базе данных или просто вывести их
-	fmt.Printf("Received metric update: Type=%s, Name=%s, Value=%s\n", metricType, metricName, metricValue)
+	resMessage := fmt.Sprintf("Metric %s/%s updated with value %s, result: %s", metricType, metricName, metricValue, memStorage.GetString(metricType, metricName))
 
 	// Отправляем успешный ответ
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Metric %s/%s updated with value %s", metricType, metricName, metricValue)
+
+	// Выводим в тело ответа сообщение о результате
+	_, err := fmt.Fprint(w, resMessage)
+	if err != nil {
+		fmt.Printf("error writing response: %s\n", err)
+		return
+	}
+	// Выводим в консоль
+	fmt.Println(resMessage)
 
 }
