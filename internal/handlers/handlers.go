@@ -20,13 +20,15 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	// Получаем части пути из URL /update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>
 	parts := strings.Split(r.URL.Path, "/")
 	fmt.Printf("path: %s, len: %d, parts: %#v\n", r.URL.Path, len(parts), parts)
+
+	// При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
 	if len(parts) != 5 {
-		http.Error(w, "Invalid URL format", http.StatusBadRequest)
+		http.Error(w, "Page not found", http.StatusNotFound)
 		return
 	}
 
 	metricType := parts[2]
-	metricName := strings.TrimSpace(parts[3])
+	metricName := parts[3]
 	metricValue := parts[4]
 
 	// При попытке передать запрос с некорректным типом метрики или значением возвращать http.StatusBadRequest.
@@ -38,12 +40,6 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	// Проверяем, что значение метрики является числом float64
 	if _, err := strconv.ParseFloat(metricValue, 64); err != nil {
 		http.Error(w, "Invalid metric value, must be convertable to float64", http.StatusBadRequest)
-		return
-	}
-
-	// При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
-	if metricName == "" {
-		http.Error(w, "Empty metric name", http.StatusNotFound)
 		return
 	}
 
