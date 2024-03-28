@@ -21,7 +21,7 @@ func Update(w http.ResponseWriter, r *http.Request, memStorage *storage.MemStora
 
 	// Получаем части пути из URL /update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>
 	parts := strings.Split(r.URL.Path, "/")
-	fmt.Printf("path: %s, len: %d, parts: %#v\n", r.URL.Path, len(parts), parts)
+	fmt.Printf("Request: %s %s, len: %d, parts: %#v\n", r.Method, r.URL.Path, len(parts), parts)
 
 	// При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
 	if len(parts) != 5 {
@@ -53,7 +53,7 @@ func Update(w http.ResponseWriter, r *http.Request, memStorage *storage.MemStora
 		return
 	}
 
-	resMessage := fmt.Sprintf("Metric %s/%s updated with value %s, result: %s",
+	resMessage := fmt.Sprintf(" - Metric %s/%s updated with value %s, result: %s",
 		metricType, metricName, metricValue, memStorage.GetString(metricType, metricName))
 
 	// Отправляем успешный ответ
