@@ -1,34 +1,14 @@
 package storage
 
-import "strconv"
+import "github.com/maynagashev/go-metrics/internal/storage/memory"
 
-type MemStorage struct {
-	gauges   map[string]float64
-	counters map[string]int64
+// Repository provides an interface for working with metrics storage.
+type Repository interface {
+	UpdateGauge(metricName string, metricValue float64)
+	UpdateCounter(metricName string, metricValue int64)
+	GetValue(metricType string, name string) string
 }
 
-func NewMemStorage() *MemStorage {
-	return &MemStorage{
-		gauges:   make(map[string]float64),
-		counters: make(map[string]int64),
-	}
-}
-
-func (ms *MemStorage) UpdateGauge(metricName string, metricValue float64) {
-	ms.gauges[metricName] = metricValue
-}
-
-func (ms *MemStorage) UpdateCounter(metricName string, metricValue int64) {
-	ms.counters[metricName] += metricValue
-}
-
-func (ms *MemStorage) GetString(metricType string, name string) string {
-	switch metricType {
-	case "counter":
-		return strconv.FormatInt(ms.counters[name], 10)
-	case "gauge":
-		return strconv.FormatFloat(ms.gauges[name], 'f', -1, 64)
-	default:
-		return ""
-	}
+func MemoryStorage() Repository {
+	return memory.New()
 }

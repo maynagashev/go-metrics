@@ -2,18 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/maynagashev/go-metrics/internal/handlers"
-	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/handlers/update"
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
 	"net/http"
 )
 
 func main() {
-	memStorage := storage.NewMemStorage()
+	memStorage := memory.New()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/update/", func(w http.ResponseWriter, r *http.Request) {
-		handlers.Update(w, r, memStorage)
-	})
+	mux.HandleFunc("/update/", update.New(memStorage))
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
