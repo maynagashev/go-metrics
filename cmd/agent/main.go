@@ -2,11 +2,11 @@
 package main
 
 import (
-	"github.com/maynagashev/go-metrics/internal/client"
+	"github.com/maynagashev/go-metrics/internal/agent"
 	"time"
 )
 
 func main() {
-	agent := client.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second)
-	agent.Run()
+	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second)
+	a.Run()
 }

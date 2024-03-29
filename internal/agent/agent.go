@@ -1,4 +1,4 @@
-package client
+package agent
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP
 type Agent struct {
 	PollInterval   time.Duration
 	ReportInterval time.Duration
@@ -19,9 +20,7 @@ type Agent struct {
 	wg             sync.WaitGroup
 }
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
+// New создает новый экземпляр агента
 func New(url string, pollInterval time.Duration, reportInterval time.Duration) *Agent {
 	return &Agent{
 		ServerURL:      url,
@@ -32,11 +31,12 @@ func New(url string, pollInterval time.Duration, reportInterval time.Duration) *
 	}
 }
 
+// Run запускает агента и его воркеры
 func (a *Agent) Run() {
 	a.wg.Add(2)
 	go a.runPolls()
 	go a.runReports()
-	fmt.Printf("client is running\n")
+	fmt.Printf("agent is running\n")
 	a.wg.Wait()
 }
 
@@ -139,9 +139,15 @@ func (a *Agent) sendMetric(metricType string, name string, value interface{}, po
 	url := fmt.Sprintf("%s/update/%s/%s/%v", a.ServerURL, metricType, name, value)
 	fmt.Printf("%d. sending metric: %s\n", pollCount, url)
 
-	_, err := http.Post(url, "text/plain", nil)
+	res, err := http.Post(url, "text/plain", nil)
 	if err != nil {
 		return err
 	}
+
+	err = res.Body.Close()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
