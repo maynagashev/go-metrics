@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"reflect"
 	"testing"
 )
@@ -11,7 +12,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 		counters map[string]int64
 	}
 	type args struct {
-		metricType string
+		metricType metrics.MetricType
 		name       string
 	}
 	tests := []struct {
@@ -32,7 +33,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 			},
 			args: args{
 				name:       "test_counter",
-				metricType: "counter",
+				metricType: metrics.TypeCounter,
 			},
 			want: "1",
 		},

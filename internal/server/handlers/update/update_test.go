@@ -42,7 +42,7 @@ func TestUpdateHandler(t *testing.T) {
 			},
 		},
 		{
-			name:    "invalid metric type",
+			name:    "invalid metrics type",
 			target:  "/update/invalid/test_counter/1",
 			storage: memory.New(),
 			want: want{

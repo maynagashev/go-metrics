@@ -2,6 +2,7 @@ package update
 
 import (
 	"fmt"
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/storage"
 	"net/http"
 	"strconv"
@@ -20,7 +21,6 @@ func New(storage storage.Repository) http.HandlerFunc {
 
 		// Получаем части пути из URL /update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>
 		parts := strings.Split(r.URL.Path, "/")
-		fmt.Printf("Request: %s %s, len: %d, parts: %#v\n", r.Method, r.URL.Path, len(parts), parts)
 
 		// При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
 		if len(parts) != 5 {
@@ -28,7 +28,7 @@ func New(storage storage.Repository) http.HandlerFunc {
 			return
 		}
 
-		metricType := parts[2]
+		metricType := metrics.MetricType(parts[2])
 		metricName := parts[3]
 		metricValue := parts[4]
 
@@ -36,19 +36,19 @@ func New(storage storage.Repository) http.HandlerFunc {
 		case "counter":
 			intValue, err := strconv.ParseInt(metricValue, 10, 64)
 			if err != nil {
-				http.Error(w, "Invalid metric value, must be convertable to int64", http.StatusBadRequest)
+				http.Error(w, "Invalid metrics value, must be convertable to int64", http.StatusBadRequest)
 				return
 			}
 			storage.UpdateCounter(metricName, intValue)
 		case "gauge":
 			floatValue, err := strconv.ParseFloat(metricValue, 64)
 			if err != nil {
-				http.Error(w, "Invalid metric value, must be convertable to float64", http.StatusBadRequest)
+				http.Error(w, "Invalid metrics value, must be convertable to float64", http.StatusBadRequest)
 				return
 			}
 			storage.UpdateGauge(metricName, floatValue)
 		default:
-			http.Error(w, "Invalid metric type, must be: counter or gauge", http.StatusBadRequest)
+			http.Error(w, "Invalid metrics type, must be: counter or gauge", http.StatusBadRequest)
 			return
 		}
 
@@ -64,7 +64,7 @@ func New(storage storage.Repository) http.HandlerFunc {
 			fmt.Printf("error writing response: %s\n", err)
 			return
 		}
-		// Выводим в консоль
+		// Выводим в консоль результат операции
 		fmt.Println(resMessage)
 	}
 }

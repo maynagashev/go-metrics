@@ -1,7 +1,10 @@
 // Package memory provides an in-memory storage for metrics.
 package memory
 
-import "strconv"
+import (
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"strconv"
+)
 
 type MemStorage struct {
 	gauges   map[string]float64
@@ -23,7 +26,7 @@ func (ms *MemStorage) UpdateCounter(metricName string, metricValue int64) {
 	ms.counters[metricName] += metricValue
 }
 
-func (ms *MemStorage) GetValue(metricType string, name string) string {
+func (ms *MemStorage) GetValue(metricType metrics.MetricType, name string) string {
 	switch metricType {
 	case "counter":
 		return strconv.FormatInt(ms.counters[name], 10)

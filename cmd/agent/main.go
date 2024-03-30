@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second)
+	a := agent.New("http://localhost:8080", 2*time.Second, 10*time.Second)
 	a.Run()
 }

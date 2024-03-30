@@ -2,8 +2,9 @@ package agent
 
 import (
 	"fmt"
+	"github.com/go-resty/resty/v2"
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"math/rand"
-	"net/http"
 	"runtime"
 	"sync"
 	"time"
@@ -18,6 +19,7 @@ type Agent struct {
 	counters       map[string]int64
 	mu             sync.Mutex
 	wg             sync.WaitGroup
+	client         *resty.Client
 }
 
 // New создает новый экземпляр агента
@@ -28,6 +30,7 @@ func New(url string, pollInterval time.Duration, reportInterval time.Duration) *
 		ReportInterval: reportInterval,
 		gauges:         make(map[string]interface{}),
 		counters:       make(map[string]int64),
+		client:         resty.New().SetHeader("Content-Type", "text/plain"),
 	}
 }
 
@@ -119,7 +122,7 @@ func (a *Agent) sendAllMetrics() {
 
 	//Отправляем gauges
 	for name, value := range gauges {
-		err := a.sendMetric("gauges", name, value, pollCount)
+		err := a.sendMetric(metrics.TypeGauge, name, value, pollCount)
 		if err != nil {
 			fmt.Printf("failed to send gauge %s: %v\n", name, err)
 			return
@@ -127,7 +130,7 @@ func (a *Agent) sendAllMetrics() {
 	}
 	// Отправляем counters
 	for name, value := range counters {
-		err := a.sendMetric("counters", name, value, pollCount)
+		err := a.sendMetric(metrics.TypeCounter, name, value, pollCount)
 		if err != nil {
 			fmt.Printf("failed to send counter %s: %v\n", name, err)
 			return
@@ -135,19 +138,18 @@ func (a *Agent) sendAllMetrics() {
 	}
 }
 
-func (a *Agent) sendMetric(metricType string, name string, value interface{}, pollCount int64) error {
+func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value interface{}, pollCount int64) error {
 	url := fmt.Sprintf("%s/update/%s/%s/%v", a.ServerURL, metricType, name, value)
-	fmt.Printf("%d. sending metric: %s\n", pollCount, url)
+	fmt.Printf("%d. sending metrics: %s\n", pollCount, url)
 
-	res, err := http.Post(url, "text/plain", nil)
+	res, err := a.client.R().Post(url)
 	if err != nil {
 		return err
 	}
 
-	err = res.Body.Close()
-	if err != nil {
-		return err
+	// Обрабатываем ответ сервера
+	if res.StatusCode() != 200 {
+		return fmt.Errorf("unexpected status code: %d", res.StatusCode())
 	}
-
 	return nil
 }
