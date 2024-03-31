@@ -7,6 +7,12 @@ import (
 )
 
 func main() {
-	a := agent.New("http://localhost:8080", 2*time.Second, 10*time.Second)
+	parseFlags()
+
+	serverUrl := "http://" + flagServerAddr
+	pollInterval := time.Duration(flagPollInterval) * time.Second
+	reportInterval := time.Duration(flagReportInterval) * time.Second
+
+	a := agent.New(serverUrl, pollInterval, reportInterval)
 	a.Run()
 }

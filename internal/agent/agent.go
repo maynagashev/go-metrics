@@ -39,7 +39,7 @@ func (a *Agent) Run() {
 	a.wg.Add(2)
 	go a.runPolls()
 	go a.runReports()
-	fmt.Printf("agent is running\n")
+	fmt.Printf("Starting agent...\nServer URL: %s\nPoll interval: %s\nReport interval: %s\n", a.ServerURL, a.PollInterval, a.ReportInterval)
 	a.wg.Wait()
 }
 
