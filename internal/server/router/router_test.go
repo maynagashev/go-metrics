@@ -40,6 +40,8 @@ func TestNew(t *testing.T) {
 		want   string
 		status int
 	}{
+		{"/", "", http.StatusOK},
+
 		{"/value/counter/test", "5", http.StatusOK},
 		{"/value/gauge/test", "0.123", http.StatusOK},
 
@@ -52,7 +54,9 @@ func TestNew(t *testing.T) {
 		require.NoError(t, err, "request failed")
 
 		assert.Equal(t, tt.status, resp.StatusCode)
-		assert.Equal(t, tt.want, get)
+		if tt.want != "" {
+			assert.Equal(t, tt.want, get)
+		}
 
 		err = resp.Body.Close()
 		require.NoError(t, err, "failed to close response body")

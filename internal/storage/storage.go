@@ -10,12 +10,10 @@ type Repository interface {
 	UpdateGauge(metricName string, metricValue float64)
 	UpdateCounter(metricName string, metricValue int64)
 	GetValue(metricType metrics.MetricType, name string) (string, error)
-}
-
-func MemoryStorage() Repository {
-	return memory.New()
+	GetMetrics() map[string]map[string]string
 }
 
 func New() Repository {
+	// На данном этапе используется in-memory хранилище.
 	return memory.New()
 }

@@ -47,3 +47,18 @@ func (ms *MemStorage) GetValue(metricType metrics.MetricType, name string) (stri
 		return "", fmt.Errorf("invalid metric type: %s", metricType)
 	}
 }
+
+func (ms *MemStorage) GetMetrics() map[string]map[string]string {
+	items := make(map[string]map[string]string)
+	items["gauge"] = make(map[string]string)
+	items["counter"] = make(map[string]string)
+
+	for name, value := range ms.counters {
+		items["counter"][name] = strconv.FormatInt(value, 10)
+	}
+	for name, value := range ms.gauges {
+		items["gauge"][name] = strconv.FormatFloat(value, 'f', -1, 64)
+	}
+
+	return items
+}
