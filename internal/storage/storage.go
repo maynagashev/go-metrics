@@ -9,9 +9,13 @@ import (
 type Repository interface {
 	UpdateGauge(metricName string, metricValue float64)
 	UpdateCounter(metricName string, metricValue int64)
-	GetValue(metricType metrics.MetricType, name string) string
+	GetValue(metricType metrics.MetricType, name string) (string, error)
 }
 
 func MemoryStorage() Repository {
+	return memory.New()
+}
+
+func New() Repository {
 	return memory.New()
 }

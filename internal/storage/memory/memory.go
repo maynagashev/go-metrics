@@ -2,6 +2,7 @@
 package memory
 
 import (
+	"fmt"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"strconv"
 )
@@ -26,13 +27,23 @@ func (ms *MemStorage) UpdateCounter(metricName string, metricValue int64) {
 	ms.counters[metricName] += metricValue
 }
 
-func (ms *MemStorage) GetValue(metricType metrics.MetricType, name string) string {
+func (ms *MemStorage) GetValue(metricType metrics.MetricType, name string) (string, error) {
 	switch metricType {
 	case "counter":
-		return strconv.FormatInt(ms.counters[name], 10)
+		if counterValue, ok := ms.counters[name]; ok {
+			return strconv.FormatInt(counterValue, 10), nil
+		} else {
+			return "", fmt.Errorf("counter %s not found", name)
+		}
+
 	case "gauge":
-		return strconv.FormatFloat(ms.gauges[name], 'f', -1, 64)
+		if gaugeValue, ok := ms.gauges[name]; ok {
+			return strconv.FormatFloat(gaugeValue, 'f', -1, 64), nil
+		} else {
+			return "", fmt.Errorf("gauge %s not found", name)
+		}
+
 	default:
-		return ""
+		return "", fmt.Errorf("invalid metric type: %s", metricType)
 	}
 }

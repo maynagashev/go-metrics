@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
 	"reflect"
 	"testing"
 )
@@ -12,12 +13,12 @@ func TestMemoryStorage(t *testing.T) {
 	}{
 		{
 			name: "memory storage",
-			want: MemoryStorage(),
+			want: memory.New(),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MemoryStorage(); !reflect.DeepEqual(got, tt.want) {
+			if got := memory.New(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MemoryStorage() = %v, want %v", got, tt.want)
 			}
 		})

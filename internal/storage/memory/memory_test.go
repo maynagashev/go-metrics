@@ -44,7 +44,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 				gauges:   tt.fields.gauges,
 				counters: tt.fields.counters,
 			}
-			if got := ms.GetValue(tt.args.metricType, tt.args.name); got != tt.want {
+			if got, _ := ms.GetValue(tt.args.metricType, tt.args.name); got != tt.want {
 				t.Errorf("GetValue() = %v, want %v", got, tt.want)
 			}
 		})

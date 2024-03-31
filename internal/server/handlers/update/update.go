@@ -52,8 +52,12 @@ func New(storage storage.Repository) http.HandlerFunc {
 			return
 		}
 
+		v, getError := storage.GetValue(metricType, metricName)
+		if getError != nil {
+			v = getError.Error()
+		}
 		resMessage := fmt.Sprintf("Metric %s/%s updated with value %s, result: %s",
-			metricType, metricName, metricValue, storage.GetValue(metricType, metricName))
+			metricType, metricName, metricValue, v)
 
 		// Отправляем успешный ответ
 		w.WriteHeader(http.StatusOK)
