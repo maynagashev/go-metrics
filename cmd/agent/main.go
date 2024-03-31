@@ -9,10 +9,10 @@ import (
 func main() {
 	parseFlags()
 
-	serverUrl := "http://" + flagServerAddr
+	serverURL := "http://" + flagServerAddr
 	pollInterval := time.Duration(flagPollInterval) * time.Second
 	reportInterval := time.Duration(flagReportInterval) * time.Second
 
-	a := agent.New(serverUrl, pollInterval, reportInterval)
+	a := agent.New(serverURL, pollInterval, reportInterval)
 	a.Run()
 }
