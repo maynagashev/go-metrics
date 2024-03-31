@@ -10,18 +10,21 @@ import (
 	"testing"
 )
 
-func testRequest(t *testing.T, ts *httptest.Server, method, path string) (*http.Response, string) {
+func testRequest(t *testing.T, ts *httptest.Server, method, path string) (*http.Response, string, error) {
 	req, err := http.NewRequest(method, ts.URL+path, nil)
 	require.NoError(t, err)
 
 	resp, err := ts.Client().Do(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
+	if err != nil {
+		return nil, "", err
+	}
 
 	respBody, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
+	if err != nil {
+		return nil, "", err
+	}
 
-	return resp, string(respBody)
+	return resp, string(respBody), resp.Body.Close()
 }
 
 func TestNew(t *testing.T) {
@@ -45,8 +48,13 @@ func TestNew(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		resp, get := testRequest(t, ts, http.MethodGet, tt.url)
+		resp, get, err := testRequest(t, ts, http.MethodGet, tt.url)
+		require.NoError(t, err, "request failed")
+
 		assert.Equal(t, tt.status, resp.StatusCode)
 		assert.Equal(t, tt.want, get)
+
+		err = resp.Body.Close()
+		require.NoError(t, err, "failed to close response body")
 	}
 }
