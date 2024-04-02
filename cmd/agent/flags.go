@@ -32,13 +32,13 @@ func parseFlags() error {
 	if envReportInterval := os.Getenv("REPORT_INTERVAL"); envReportInterval != "" {
 		flagReportInterval, err = strconv.Atoi(envReportInterval)
 		if err != nil {
-			return fmt.Errorf("error parsing env REPORT_INTERVAL %s", err)
+			return fmt.Errorf("error parsing env REPORT_INTERVAL %w", err)
 		}
 	}
 	if envPollInterval := os.Getenv("POLL_INTERVAL"); envPollInterval != "" {
 		flagPollInterval, err = strconv.Atoi(envPollInterval)
 		if err != nil {
-			return fmt.Errorf("error parsing env POLL_INTERVAL %s", err)
+			return fmt.Errorf("error parsing env POLL_INTERVAL %w", err)
 		}
 	}
 

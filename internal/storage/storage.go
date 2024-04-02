@@ -2,18 +2,21 @@ package storage
 
 import (
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/maynagashev/go-metrics/internal/storage/memory"
 )
+
+type Gauge float64
+type Counter int64
+type Gauges map[string]Gauge
+type Counters map[string]Counter
 
 // Repository provides an interface for working with metrics storage.
 type Repository interface {
-	UpdateGauge(metricName string, metricValue float64)
-	UpdateCounter(metricName string, metricValue int64)
+	UpdateGauge(metricName string, metricValue Gauge)
+	UpdateCounter(metricName string, metricValue Counter)
 	GetValue(metricType metrics.MetricType, name string) (string, error)
 	GetMetrics() map[string]map[string]string
-}
-
-func New() Repository {
-	// На данном этапе используется in-memory хранилище.
-	return memory.New()
+	GetCounters() Counters
+	GetGauges() Gauges
+	GetCounter(name string) (Counter, bool)
+	GetGauge(name string) (Gauge, bool)
 }

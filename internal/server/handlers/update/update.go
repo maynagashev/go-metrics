@@ -11,7 +11,7 @@ import (
 )
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
-func New(storage storage.Repository) http.HandlerFunc {
+func New(st storage.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 
@@ -22,9 +22,10 @@ func New(storage storage.Repository) http.HandlerFunc {
 
 		// Получаем части пути из URL /update/<ТИП_МЕТРИКИ>/<ИМЯ_МЕТРИКИ>/<ЗНАЧЕНИЕ_МЕТРИКИ>
 		parts := strings.Split(r.URL.Path, "/")
+		expectedPartsLen := 5
 
 		// При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
-		if len(parts) != 5 {
+		if len(parts) != expectedPartsLen {
 			http.Error(w, "Page not found", http.StatusNotFound)
 			return
 		}
@@ -34,26 +35,26 @@ func New(storage storage.Repository) http.HandlerFunc {
 		metricValue := parts[4]
 
 		switch metricType {
-		case "counter":
+		case metrics.TypeCounter:
 			intValue, err := strconv.ParseInt(metricValue, 10, 64)
 			if err != nil {
 				http.Error(w, "Invalid metrics value, must be convertable to int64", http.StatusBadRequest)
 				return
 			}
-			storage.UpdateCounter(metricName, intValue)
-		case "gauge":
+			st.UpdateCounter(metricName, storage.Counter(intValue))
+		case metrics.TypeGauge:
 			floatValue, err := strconv.ParseFloat(metricValue, 64)
 			if err != nil {
 				http.Error(w, "Invalid metrics value, must be convertable to float64", http.StatusBadRequest)
 				return
 			}
-			storage.UpdateGauge(metricName, floatValue)
+			st.UpdateGauge(metricName, storage.Gauge(floatValue))
 		default:
 			http.Error(w, "Invalid metrics type, must be: counter or gauge", http.StatusBadRequest)
 			return
 		}
 
-		v, getError := storage.GetValue(metricType, metricName)
+		v, getError := st.GetValue(metricType, metricName)
 		if getError != nil {
 			v = getError.Error()
 		}

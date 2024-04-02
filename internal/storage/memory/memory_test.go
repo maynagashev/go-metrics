@@ -1,8 +1,11 @@
-package memory
+package memory_test
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
+
+	"github.com/maynagashev/go-metrics/internal/storage"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
@@ -41,10 +44,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(_ *testing.T) {
-			ms := &MemStorage{
-				gauges:   tt.fields.gauges,
-				counters: tt.fields.counters,
-			}
+			ms := memory.New(tt.fields.gauges, tt.fields.counters)
 			if got, _ := ms.GetValue(tt.args.metricType, tt.args.name); got != tt.want {
 				t.Errorf("GetValue() = %v, want %v", got, tt.want)
 			}
@@ -53,27 +53,20 @@ func TestMemStorage_GetValue(t *testing.T) {
 }
 
 func TestMemStorage_UpdateCounter(t *testing.T) {
-	type fields struct {
-		gauges   map[string]float64
-		counters map[string]int64
-	}
 	type args struct {
 		metricName  string
-		metricValue int64
+		metricValue storage.Counter
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   int64
-		times  int
+		name    string
+		storage storage.Repository
+		args    args
+		want    storage.Counter
+		times   int
 	}{
 		{
-			name: "update counter",
-			fields: fields{
-				counters: map[string]int64{},
-				gauges:   map[string]float64{},
-			},
+			name:    "update counter",
+			storage: memory.New(),
 			args: args{
 				metricName:  "test_counter",
 				metricValue: 3,
@@ -84,58 +77,11 @@ func TestMemStorage_UpdateCounter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ms := &MemStorage{
-				gauges:   tt.fields.gauges,
-				counters: tt.fields.counters,
+			for range tt.times {
+				tt.storage.UpdateCounter(tt.args.metricName, tt.args.metricValue)
 			}
-			for i := 0; i < tt.times; i++ {
-				ms.UpdateCounter(tt.args.metricName, tt.args.metricValue)
-			}
-			if got := ms.counters[tt.args.metricName]; got != tt.want {
+			if got, _ := tt.storage.GetCounter(tt.args.metricName); got != tt.want {
 				t.Errorf("UpdateCounter() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestMemStorage_UpdateGauge(t *testing.T) {
-	type fields struct {
-		gauges   map[string]float64
-		counters map[string]int64
-	}
-	type args struct {
-		metricName  string
-		metricValue float64
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ms := &MemStorage{
-				gauges:   tt.fields.gauges,
-				counters: tt.fields.counters,
-			}
-			ms.UpdateGauge(tt.args.metricName, tt.args.metricValue)
-		})
-	}
-}
-
-func TestNew(t *testing.T) {
-	tests := []struct {
-		name string
-		want *MemStorage
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := New(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
 	}

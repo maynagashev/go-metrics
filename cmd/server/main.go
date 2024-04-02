@@ -2,17 +2,36 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"time"
+
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
 
 	"github.com/maynagashev/go-metrics/internal/server/router"
-	"github.com/maynagashev/go-metrics/internal/storage"
+)
+
+const (
+	DefaultReadTimeout  = 5 * time.Second
+	DefaultWriteTimeout = 10 * time.Second
+	DefaultIdleTimeout  = 120 * time.Second
 )
 
 func main() {
 	parseFlags()
 	fmt.Printf("Starting server on %s\n", flagRunAddr)
-	err := http.ListenAndServe(flagRunAddr, router.New(storage.New()))
+
+	server := &http.Server{
+		Addr:    flagRunAddr,
+		Handler: router.New(memory.New()),
+		// Настройка таймаутов для сервера по рекомендациям линтера gosec
+		ReadTimeout:  DefaultReadTimeout,
+		WriteTimeout: DefaultWriteTimeout,
+		IdleTimeout:  DefaultIdleTimeout,
+	}
+
+	err := server.ListenAndServe()
 	if err != nil {
-		fmt.Printf("error starting server: %s\n", err)
+		log.Fatalf("Server failed to start: %v", err)
 	}
 }

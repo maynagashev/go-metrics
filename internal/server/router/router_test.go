@@ -1,4 +1,4 @@
-package router
+package router_test
 
 import (
 	"io"
@@ -6,7 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
+
+	"github.com/maynagashev/go-metrics/internal/server/router"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,11 +32,11 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string) (*http.
 }
 
 func TestNew(t *testing.T) {
-	st := storage.New()
+	st := memory.New()
 	st.UpdateGauge("test", 0.123)
 	st.UpdateCounter("test", 5)
 
-	ts := httptest.NewServer(New(st))
+	ts := httptest.NewServer(router.New(st))
 	defer ts.Close()
 
 	var tests = []struct {

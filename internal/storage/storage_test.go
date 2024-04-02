@@ -1,8 +1,10 @@
-package storage
+package storage_test
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/storage"
 
 	"github.com/maynagashev/go-metrics/internal/storage/memory"
 )
@@ -10,7 +12,7 @@ import (
 func TestMemoryStorage(t *testing.T) {
 	tests := []struct {
 		name string
-		want Repository
+		want storage.Repository
 	}{
 		{
 			name: "memory storage",

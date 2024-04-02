@@ -1,10 +1,14 @@
-package update
+package update_test
 
 import (
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/server/handlers/update"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/maynagashev/go-metrics/internal/storage"
 	"github.com/maynagashev/go-metrics/internal/storage/memory"
@@ -13,11 +17,9 @@ import (
 
 // [New]. Тест проверяет корректность обработки запроса на обновление метрики.
 func TestUpdateHandler(t *testing.T) {
-
 	type want struct {
 		code        int
 		contentType string
-		response    string
 	}
 	tests := []struct {
 		name    string
@@ -66,7 +68,7 @@ func TestUpdateHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, tt.target, nil)
 			w := httptest.NewRecorder()
-			New(tt.storage)(w, request)
+			update.New(tt.storage)(w, request)
 
 			res := w.Result()
 			assert.Equal(t, tt.want.code, res.StatusCode)
@@ -77,11 +79,9 @@ func TestUpdateHandler(t *testing.T) {
 					t.Error(err)
 				}
 			}(res.Body)
-			//resBody, err := io.ReadAll(res.Body)
-
-			//require.NoError(t, err)
-			//assert.JSONEq(t, tt.want.response, string(resBody))
-			//assert.Equal(t, tt.want.response, string(resBody))
+			resBody, err := io.ReadAll(res.Body)
+			require.NoError(t, err)
+			assert.NotEmpty(t, string(resBody))
 			assert.Equal(t, tt.want.contentType, res.Header.Get("Content-Type"))
 		})
 	}
