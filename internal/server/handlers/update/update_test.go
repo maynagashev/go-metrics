@@ -1,15 +1,17 @@
 package update
 
 import (
-	"github.com/maynagashev/go-metrics/internal/storage"
-	"github.com/maynagashev/go-metrics/internal/storage/memory"
-	"github.com/stretchr/testify/assert"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
+	"github.com/stretchr/testify/assert"
 )
 
-// [New]
+// [New]. Тест проверяет корректность обработки запроса на обновление метрики.
 func TestUpdateHandler(t *testing.T) {
 
 	type want struct {
@@ -69,7 +71,12 @@ func TestUpdateHandler(t *testing.T) {
 			res := w.Result()
 			assert.Equal(t, tt.want.code, res.StatusCode)
 
-			defer res.Body.Close()
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+					t.Error(err)
+				}
+			}(res.Body)
 			//resBody, err := io.ReadAll(res.Body)
 
 			//require.NoError(t, err)

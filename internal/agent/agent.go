@@ -2,12 +2,13 @@ package agent
 
 import (
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"math/rand"
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 // Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP

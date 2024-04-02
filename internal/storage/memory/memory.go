@@ -3,8 +3,9 @@ package memory
 
 import (
 	"fmt"
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"strconv"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 type MemStorage struct {

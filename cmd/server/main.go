@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/storage"
-	"net/http"
 )
 
 func main() {

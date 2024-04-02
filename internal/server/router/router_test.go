@@ -1,13 +1,14 @@
 package router
 
 import (
-	"github.com/maynagashev/go-metrics/internal/storage"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func testRequest(t *testing.T, ts *httptest.Server, method, path string) (*http.Response, string, error) {

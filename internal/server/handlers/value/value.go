@@ -2,10 +2,11 @@
 package value
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/storage"
-	"net/http"
 )
 
 func New(storage storage.Repository) http.HandlerFunc {

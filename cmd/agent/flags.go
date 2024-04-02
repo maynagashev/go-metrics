@@ -7,14 +7,14 @@ import (
 	"strconv"
 )
 
-// неэкспортированная переменная flagServerAddr содержит адрес и порт для запуска сервера
+// Неэкспортированная переменная flagServerAddr содержит адрес и порт для запуска сервера.
 var flagServerAddr string
 
 var flagReportInterval int
 var flagPollInterval int
 
 // parseFlags обрабатывает аргументы командной строки
-// и сохраняет их значения в соответствующих переменных
+// и сохраняет их значения в соответствующих переменных.
 func parseFlags() error {
 	var err error
 

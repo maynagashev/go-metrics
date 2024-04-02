@@ -1,9 +1,10 @@
 package memory
 
 import (
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"reflect"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 func TestMemStorage_GetValue(t *testing.T) {
@@ -39,7 +40,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(_ *testing.T) {
 			ms := &MemStorage{
 				gauges:   tt.fields.gauges,
 				counters: tt.fields.counters,

@@ -3,8 +3,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/maynagashev/go-metrics/internal/agent"
 	"time"
+
+	"github.com/maynagashev/go-metrics/internal/agent"
 )
 
 func main() {

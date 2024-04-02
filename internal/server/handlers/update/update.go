@@ -2,11 +2,12 @@ package update
 
 import (
 	"fmt"
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/maynagashev/go-metrics/internal/storage"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/storage"
 )
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.

@@ -1,2 +1,1 @@
-package value
-
+package value_test

@@ -11,7 +11,6 @@ import (
 
 // New инстанцирует новый роутер.
 func New(st storage.Repository) chi.Router {
-
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)

@@ -2,14 +2,15 @@ package index
 
 import (
 	"fmt"
-	"github.com/maynagashev/go-metrics/internal/storage"
 	"net/http"
 	"sort"
+
+	"github.com/maynagashev/go-metrics/internal/storage"
 )
 
-// New возвращает http.HandlerFunc, который отдает список метрик на сервере от
+// New возвращает http.HandlerFunc, который отдает список метрик на сервере.
 func New(st storage.Repository) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 
 		metrics := st.GetMetrics()
@@ -37,6 +38,5 @@ func New(st storage.Repository) http.HandlerFunc {
 				}
 			}
 		}
-
 	}
 }

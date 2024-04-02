@@ -1,9 +1,10 @@
 package storage
 
 import (
-	"github.com/maynagashev/go-metrics/internal/storage/memory"
 	"reflect"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/storage/memory"
 )
 
 func TestMemoryStorage(t *testing.T) {
