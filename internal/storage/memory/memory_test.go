@@ -12,8 +12,8 @@ import (
 
 func TestMemStorage_GetValue(t *testing.T) {
 	type fields struct {
-		gauges   map[string]float64
-		counters map[string]int64
+		gauges   storage.Gauges
+		counters storage.Counters
 	}
 	type args struct {
 		metricType metrics.MetricType
@@ -28,10 +28,10 @@ func TestMemStorage_GetValue(t *testing.T) {
 		{
 			name: "get counter",
 			fields: fields{
-				counters: map[string]int64{
+				counters: storage.Counters{
 					"test_counter": 1,
 				},
-				gauges: map[string]float64{
+				gauges: storage.Gauges{
 					"test_gauge": 1.1,
 				},
 			},

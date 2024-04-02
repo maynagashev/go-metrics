@@ -33,3 +33,20 @@ git fetch template && git checkout template/main .github
 
 Подробнее про локальный и автоматический запуск читайте
 в [README автотестов](https://github.com/Yandex-Practicum/go-autotests).
+
+## Локальный запуск тестов 
+
+```bash
+# бинарник для MacOS (intel)
+wget https://github.com/Yandex-Practicum/go-autotests/releases/download/v0.10.6/metricstest-darwin-amd64
+chmod +x metricstest-darwin-amd64
+
+# запуск тестов
+./metricstest-darwin-amd64 -test.v  -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . > test.log
+```
+
+## Запуск линтеров
+
+```bash
+clear && golangci-lint run
+```

@@ -73,12 +73,8 @@ func TestUpdateHandler(t *testing.T) {
 			res := w.Result()
 			assert.Equal(t, tt.want.code, res.StatusCode)
 
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					t.Error(err)
-				}
-			}(res.Body)
+			defer res.Body.Close()
+
 			resBody, err := io.ReadAll(res.Body)
 			require.NoError(t, err)
 			assert.NotEmpty(t, string(resBody))
