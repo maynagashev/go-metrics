@@ -328,3 +328,8 @@ issues:
         - gosec
         - noctx
         - wrapcheck
+
+
+
+output:
+  show-stats: true
