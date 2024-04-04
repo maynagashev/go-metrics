@@ -28,7 +28,7 @@ func mustParseFlags() Flags {
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()
 
-	// если переданы переменные окружения, то они перезаписывают значения флагов
+	// если переданы переменные окружения, то они перезаписывают значения флагов: envServerAddr, envReportInterval, envPollInterval
 	if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" {
 		flags.Server.Addr = envServerAddr
 	}

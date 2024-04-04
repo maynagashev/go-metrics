@@ -59,9 +59,10 @@ func (a *Agent) runPolls() {
 		a.mu.Lock()
 		// Перезаписываем метрики свежими показаниями runtime.MemStats.
 		a.gauges = a.CollectRuntimeMetrics()
+		// Увеличиваем счетчик PollCount на 1.
+		a.counters["PollCount"]++
 		// Добавляем обновляемое рандомное значение по условию.
 		a.gauges["RandomValue"] = generateRandomFloat64()
-		a.counters["PollCount"]++
 
 		// Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
 		slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
@@ -128,12 +129,17 @@ func (a *Agent) sendAllMetrics() {
 	for name, value := range a.counters {
 		counters[name] = value
 	}
-	pollCount := a.counters["PollCount"]
+	// Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
+	// Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
+	// Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
+	a.counters["PollCount"] = 0
+	slog.Info("reset poll count", "poll_count", 0)
+
 	a.mu.Unlock()
 
 	// Отправляем gauges.
 	for name, value := range gauges {
-		err := a.sendMetric(metrics.TypeGauge, name, value, pollCount)
+		err := a.sendMetric(metrics.TypeGauge, name, value)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send gauge %s: %v", name, err))
 			return
@@ -141,7 +147,7 @@ func (a *Agent) sendAllMetrics() {
 	}
 	// Отправляем counters.
 	for name, value := range counters {
-		err := a.sendMetric(metrics.TypeCounter, name, value, pollCount)
+		err := a.sendMetric(metrics.TypeCounter, name, value)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send counter %s: %v", name, err))
 			return
@@ -149,9 +155,9 @@ func (a *Agent) sendAllMetrics() {
 	}
 }
 
-func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value interface{}, pollCount int64) error {
+func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value interface{}) error {
 	url := fmt.Sprintf("%s/update/%s/%s/%v", a.ServerURL, metricType, name, value)
-	slog.Info("sending metrics", "url", url, "poll_count", pollCount)
+	slog.Info("sending metrics", "url", url)
 
 	res, err := a.client.R().Post(url)
 	if err != nil {
@@ -162,7 +168,14 @@ func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value int
 	if res.StatusCode() != http.StatusOK {
 		return fmt.Errorf("unexpected status code: %d", res.StatusCode())
 	}
+
 	return nil
+}
+
+func (a *Agent) DecrementCounter(name string, count int64) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.counters[name] -= count
 }
 
 func generateRandomFloat64() float64 {
