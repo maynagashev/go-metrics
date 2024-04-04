@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )

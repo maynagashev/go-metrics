@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
 // New возвращает http.HandlerFunc, который отдает список метрик на сервере.

@@ -7,8 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/maynagashev/go-metrics/internal/server/storage"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/maynagashev/go-metrics/internal/storage"
 )
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.

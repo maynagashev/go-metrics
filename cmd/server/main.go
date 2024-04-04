@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/maynagashev/go-metrics/internal/storage/memory"
+	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
 	"github.com/maynagashev/go-metrics/internal/server/router"
 )

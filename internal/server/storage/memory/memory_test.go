@@ -3,9 +3,8 @@ package memory_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/storage/memory"
-
-	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
+	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )

@@ -6,7 +6,7 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/handlers/index"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/update"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/value"
-	"github.com/maynagashev/go-metrics/internal/storage"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
 // New инстанцирует новый роутер.
