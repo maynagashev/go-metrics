@@ -20,11 +20,14 @@ type Agent struct {
 	PollInterval   time.Duration
 	ReportInterval time.Duration
 	ServerURL      string
-	gauges         map[string]interface{}
-	counters       map[string]int64
-	mu             sync.Mutex
-	wg             sync.WaitGroup
-	client         *resty.Client
+
+	gauges       map[string]interface{}
+	counters     map[string]int64
+	mu           sync.Mutex
+	wg           sync.WaitGroup
+	client       *resty.Client
+	pollTicker   *time.Ticker
+	reportTicker *time.Ticker
 }
 
 // New создает новый экземпляр агента.
@@ -36,6 +39,8 @@ func New(url string, pollInterval time.Duration, reportInterval time.Duration) *
 		gauges:         make(map[string]interface{}),
 		counters:       make(map[string]int64),
 		client:         resty.New().SetHeader("Content-Type", "text/plain"),
+		pollTicker:     time.NewTicker(pollInterval),
+		reportTicker:   time.NewTicker(reportInterval),
 	}
 }
 
@@ -43,19 +48,22 @@ func New(url string, pollInterval time.Duration, reportInterval time.Duration) *
 func (a *Agent) Run() {
 	const goroutinesCount = 2
 	a.wg.Add(goroutinesCount)
-	go a.runPolls()
-	go a.runReports()
+
+	// Запускаем воркеры агента.
 	slog.Info("starting agent...",
 		"server_url", a.ServerURL,
 		"poll_interval", a.PollInterval,
 		"report_interval", a.ReportInterval,
 	)
+	go a.runPolls()
+	go a.runReports()
+
 	a.wg.Wait()
 }
 
 func (a *Agent) runPolls() {
 	defer a.wg.Done()
-	for {
+	for range a.pollTicker.C {
 		a.mu.Lock()
 		// Перезаписываем метрики свежими показаниями runtime.MemStats.
 		a.gauges = a.CollectRuntimeMetrics()
@@ -67,14 +75,12 @@ func (a *Agent) runPolls() {
 		// Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
 		slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
 		a.mu.Unlock()
-		time.Sleep(a.PollInterval)
 	}
 }
 
 func (a *Agent) runReports() {
 	defer a.wg.Done()
-	for {
-		time.Sleep(a.ReportInterval)
+	for range a.reportTicker.C {
 		a.sendAllMetrics()
 	}
 }
