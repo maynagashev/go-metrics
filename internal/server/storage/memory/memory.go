@@ -3,11 +3,11 @@ package memory
 
 import (
 	"fmt"
-	"strconv"
-
-	"github.com/maynagashev/go-metrics/internal/server/storage"
+	"slices"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
 type MemStorage struct {
@@ -41,19 +41,6 @@ func (ms *MemStorage) UpdateCounter(metricName string, metricValue storage.Count
 	ms.counters[metricName] += metricValue
 }
 
-// GetValue возвращает значение метрики по типу и имени.
-func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Stringer, bool) {
-	switch mType {
-	case metrics.TypeCounter:
-		v, ok := ms.GetCounter(name)
-		return v, ok
-	case metrics.TypeGauge:
-		v, ok := ms.GetGauge(name)
-		return v, ok
-	}
-	return nil, false
-}
-
 func (ms *MemStorage) GetGauges() storage.Gauges {
 	return ms.gauges
 }
@@ -72,17 +59,32 @@ func (ms *MemStorage) GetCounter(name string) (storage.Counter, bool) {
 	return value, ok
 }
 
-func (ms *MemStorage) GetMetrics() map[string]map[string]string {
-	items := make(map[string]map[string]string)
-	items["gauge"] = make(map[string]string)
-	items["counter"] = make(map[string]string)
+func (ms *MemStorage) Count() int {
+	return len(ms.gauges) + len(ms.counters)
+}
 
-	for name, value := range ms.counters {
-		items["counter"][name] = strconv.FormatInt(int64(value), 10)
+// GetValue возвращает значение метрики по типу и имени.
+func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Stringer, bool) {
+	switch mType {
+	case metrics.TypeCounter:
+		v, ok := ms.GetCounter(name)
+		return v, ok
+	case metrics.TypeGauge:
+		v, ok := ms.GetGauge(name)
+		return v, ok
 	}
-	for name, value := range ms.gauges {
-		items["gauge"][name] = strconv.FormatFloat(float64(value), 'f', -1, 64)
-	}
+	return nil, false
+}
 
+// GetMetrics возвращает отсортированный список метрик в формате "тип/имя: значение".
+func (ms *MemStorage) GetMetrics() []string {
+	items := make([]string, 0, ms.Count())
+	for name, value := range ms.GetGauges() {
+		items = append(items, fmt.Sprintf("counter/%s: %v", name, value))
+	}
+	for name, value := range ms.GetCounters() {
+		items = append(items, fmt.Sprintf("gauge/%s: %v", name, value))
+	}
+	slices.Sort(items)
 	return items
 }

@@ -21,12 +21,13 @@ func (v Counter) String() string {
 
 // Repository provides an interface for working with metrics storage.
 type Repository interface {
-	UpdateGauge(metricName string, metricValue Gauge)
-	UpdateCounter(metricName string, metricValue Counter)
+	GetMetrics() []string
+	GetValue(metricType metrics.MetricType, name string) (fmt.Stringer, bool)
 	GetCounter(name string) (Counter, bool)
 	GetGauge(name string) (Gauge, bool)
 	GetCounters() Counters
 	GetGauges() Gauges
-	GetValue(metricType metrics.MetricType, name string) (fmt.Stringer, bool)
-	GetMetrics() map[string]map[string]string
+	UpdateGauge(metricName string, metricValue Gauge)
+	UpdateCounter(metricName string, metricValue Counter)
+	Count() int
 }
