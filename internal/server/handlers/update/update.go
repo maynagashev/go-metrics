@@ -2,6 +2,7 @@ package update
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -67,10 +68,11 @@ func New(st storage.Repository) http.HandlerFunc {
 		// Выводим в тело ответа сообщение о результате
 		_, err := fmt.Fprint(w, resMessage)
 		if err != nil {
-			fmt.Printf("error writing response: %s\n", err)
+			slog.Error(fmt.Sprintf("error writing response: %s", err))
 			return
 		}
-		// Выводим в консоль результат операции
-		fmt.Println(resMessage)
+
+		// Дублируем в лог ответ для отладки
+		slog.Info(resMessage)
 	}
 }

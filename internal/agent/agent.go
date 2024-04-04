@@ -3,6 +3,7 @@ package agent
 import (
 	"crypto/rand"
 	"fmt"
+	"log/slog"
 	"math"
 	"math/big"
 	"net/http"
@@ -44,8 +45,11 @@ func (a *Agent) Run() {
 	a.wg.Add(goroutinesCount)
 	go a.runPolls()
 	go a.runReports()
-	fmt.Printf("Starting agent...\nServer URL: %s\nPoll interval: %s\nReport interval: %s\n",
-		a.ServerURL, a.PollInterval, a.ReportInterval)
+	slog.Info("starting agent...",
+		"server_url", a.ServerURL,
+		"poll_interval", a.PollInterval,
+		"report_interval", a.ReportInterval,
+	)
 	a.wg.Wait()
 }
 
@@ -53,12 +57,14 @@ func (a *Agent) runPolls() {
 	defer a.wg.Done()
 	for {
 		a.mu.Lock()
-		// Перезаписываем метрики свежими показаниями runtime.MemStats
+		// Перезаписываем метрики свежими показаниями runtime.MemStats.
 		a.gauges = a.CollectRuntimeMetrics()
-		// Добавляем обновляемое рандомное значение по условию
+		// Добавляем обновляемое рандомное значение по условию.
 		a.gauges["RandomValue"] = generateRandomFloat64()
 		a.counters["PollCount"]++
-		fmt.Printf("%d ", a.counters["PollCount"])
+
+		// Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
+		slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
 		a.mu.Unlock()
 		time.Sleep(a.PollInterval)
 	}
@@ -115,7 +121,7 @@ func (a *Agent) sendAllMetrics() {
 
 	// Делаем копию метрик, чтобы данные не изменились во время отправки.
 	a.mu.Lock()
-	fmt.Printf("\nSending metrics, current poll count: %d\n", a.counters["PollCount"])
+	slog.Info("sending metrics", "poll_count", a.counters["PollCount"])
 	for name, value := range a.gauges {
 		gauges[name] = value
 	}
@@ -129,7 +135,7 @@ func (a *Agent) sendAllMetrics() {
 	for name, value := range gauges {
 		err := a.sendMetric(metrics.TypeGauge, name, value, pollCount)
 		if err != nil {
-			fmt.Printf("failed to send gauge %s: %v\n", name, err)
+			slog.Error(fmt.Sprintf("failed to send gauge %s: %v", name, err))
 			return
 		}
 	}
@@ -137,7 +143,7 @@ func (a *Agent) sendAllMetrics() {
 	for name, value := range counters {
 		err := a.sendMetric(metrics.TypeCounter, name, value, pollCount)
 		if err != nil {
-			fmt.Printf("failed to send counter %s: %v\n", name, err)
+			slog.Error(fmt.Sprintf("failed to send counter %s: %v", name, err))
 			return
 		}
 	}
@@ -145,7 +151,7 @@ func (a *Agent) sendAllMetrics() {
 
 func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value interface{}, pollCount int64) error {
 	url := fmt.Sprintf("%s/update/%s/%s/%v", a.ServerURL, metricType, name, value)
-	fmt.Printf("%d. sending metrics: %s\n", pollCount, url)
+	slog.Info("sending metrics", "url", url, "poll_count", pollCount)
 
 	res, err := a.client.R().Post(url)
 	if err != nil {

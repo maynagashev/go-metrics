@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -18,11 +17,11 @@ const (
 )
 
 func main() {
-	parseFlags()
-	fmt.Printf("Starting server on %s\n", flagRunAddr)
+	flags := mustParseFlags()
+	slog.Info("starting server...", "addr", flags.Server.Addr)
 
 	server := &http.Server{
-		Addr:    flagRunAddr,
+		Addr:    flags.Server.Addr,
 		Handler: router.New(memory.New()),
 		// Настройка таймаутов для сервера по рекомендациям линтера gosec
 		ReadTimeout:  DefaultReadTimeout,
@@ -32,6 +31,6 @@ func main() {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+		slog.Error("server failed to start", "error", err)
 	}
 }

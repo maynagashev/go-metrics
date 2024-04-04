@@ -7,40 +7,45 @@ import (
 	"strconv"
 )
 
-// Неэкспортированная переменная flagServerAddr содержит адрес и порт для запуска сервера.
-var flagServerAddr string
+// Flags содержит флаги агента.
+type Flags struct {
+	Server struct {
+		Addr           string
+		ReportInterval int
+		PollInterval   int
+	}
+}
 
-var flagReportInterval int
-var flagPollInterval int
-
-// parseFlags обрабатывает аргументы командной строки
+// mustParseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных.
-func parseFlags() error {
-	var err error
+func mustParseFlags() Flags {
+	flags := Flags{}
 
-	flag.StringVar(&flagServerAddr, "a", "localhost:8080", "address and port of the server send metrics to")
-	flag.IntVar(&flagReportInterval, "r", 10, "report interval in seconds")
-	flag.IntVar(&flagPollInterval, "p", 2, "poll interval in seconds")
+	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "address and port of the server send metrics to")
+	flag.IntVar(&flags.Server.ReportInterval, "r", 10, "report interval in seconds")
+	flag.IntVar(&flags.Server.PollInterval, "p", 2, "poll interval in seconds")
 
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()
 
+	// если переданы переменные окружения, то они перезаписывают значения флагов
 	if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" {
-		flagServerAddr = envServerAddr
+		flags.Server.Addr = envServerAddr
 	}
-
 	if envReportInterval := os.Getenv("REPORT_INTERVAL"); envReportInterval != "" {
-		flagReportInterval, err = strconv.Atoi(envReportInterval)
+		i, err := strconv.Atoi(envReportInterval)
 		if err != nil {
-			return fmt.Errorf("error parsing env REPORT_INTERVAL %w", err)
+			panic(fmt.Sprintf("error parsing env REPORT_INTERVAL %s", err))
 		}
+		flags.Server.ReportInterval = i
 	}
 	if envPollInterval := os.Getenv("POLL_INTERVAL"); envPollInterval != "" {
-		flagPollInterval, err = strconv.Atoi(envPollInterval)
+		i, err := strconv.Atoi(envPollInterval)
 		if err != nil {
-			return fmt.Errorf("error parsing env POLL_INTERVAL %w", err)
+			panic(fmt.Sprintf("error parsing env POLL_INTERVAL %s", err))
 		}
+		flags.Server.PollInterval = i
 	}
 
-	return nil
+	return flags
 }

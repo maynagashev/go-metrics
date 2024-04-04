@@ -2,21 +2,17 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
 )
 
 func main() {
-	err := parseFlags()
-	if err != nil {
-		fmt.Printf("error parsing flags or env: %s\n", err)
-	}
+	flags := mustParseFlags()
 
-	serverURL := "http://" + flagServerAddr
-	pollInterval := time.Duration(flagPollInterval) * time.Second
-	reportInterval := time.Duration(flagReportInterval) * time.Second
+	serverURL := "http://" + flags.Server.Addr
+	pollInterval := time.Duration(flags.Server.PollInterval) * time.Second
+	reportInterval := time.Duration(flags.Server.ReportInterval) * time.Second
 
 	a := agent.New(serverURL, pollInterval, reportInterval)
 	a.Run()
