@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"net/http"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -21,7 +22,7 @@ type Agent struct {
 	ReportInterval time.Duration
 	ServerURL      string
 
-	gauges       map[string]interface{}
+	gauges       map[string]float64
 	counters     map[string]int64
 	mu           sync.Mutex
 	wg           sync.WaitGroup
@@ -36,7 +37,7 @@ func New(url string, pollInterval time.Duration, reportInterval time.Duration) *
 		ServerURL:      url,
 		PollInterval:   pollInterval,
 		ReportInterval: reportInterval,
-		gauges:         make(map[string]interface{}),
+		gauges:         make(map[string]float64),
 		counters:       make(map[string]int64),
 		client:         resty.New().SetHeader("Content-Type", "text/plain"),
 		pollTicker:     time.NewTicker(pollInterval),
@@ -85,45 +86,44 @@ func (a *Agent) runReports() {
 	}
 }
 
-func (a *Agent) CollectRuntimeMetrics() map[string]interface{} {
-	mm := make(map[string]interface{})
-
+func (a *Agent) CollectRuntimeMetrics() map[string]float64 {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
-	mm["Alloc"] = m.Alloc
-	mm["BuckHashSys"] = m.BuckHashSys
-	mm["Frees"] = m.Frees
+	mm := make(map[string]float64)
+	mm["Alloc"] = float64(m.Alloc)
+	mm["BuckHashSys"] = float64(m.BuckHashSys)
+	mm["Frees"] = float64(m.Frees)
 	mm["GCCPUFraction"] = m.GCCPUFraction
-	mm["GCSys"] = m.GCSys
-	mm["HeapAlloc"] = m.HeapAlloc
-	mm["HeapIdle"] = m.HeapIdle
-	mm["HeapInuse"] = m.HeapInuse
-	mm["HeapObjects"] = m.HeapObjects
-	mm["HeapReleased"] = m.HeapReleased
-	mm["HeapSys"] = m.HeapSys
-	mm["LastGC"] = m.LastGC
-	mm["Lookups"] = m.Lookups
-	mm["MCacheInuse"] = m.MCacheInuse
-	mm["MCacheSys"] = m.MCacheSys
-	mm["MSpanInuse"] = m.MSpanInuse
-	mm["MSpanSys"] = m.MSpanSys
-	mm["Mallocs"] = m.Mallocs
-	mm["NextGC"] = m.NextGC
-	mm["NumForcedGC"] = m.NumForcedGC
-	mm["NumGC"] = m.NumGC
-	mm["OtherSys"] = m.OtherSys
-	mm["PauseTotalNs"] = m.PauseTotalNs
-	mm["StackInuse"] = m.StackInuse
-	mm["StackSys"] = m.StackSys
-	mm["Sys"] = m.Sys
-	mm["TotalAlloc"] = m.TotalAlloc
+	mm["GCSys"] = float64(m.GCSys)
+	mm["HeapAlloc"] = float64(m.HeapAlloc)
+	mm["HeapIdle"] = float64(m.HeapIdle)
+	mm["HeapInuse"] = float64(m.HeapInuse)
+	mm["HeapObjects"] = float64(m.HeapObjects)
+	mm["HeapReleased"] = float64(m.HeapReleased)
+	mm["HeapSys"] = float64(m.HeapSys)
+	mm["LastGC"] = float64(m.LastGC)
+	mm["Lookups"] = float64(m.Lookups)
+	mm["MCacheInuse"] = float64(m.MCacheInuse)
+	mm["MCacheSys"] = float64(m.MCacheSys)
+	mm["MSpanInuse"] = float64(m.MSpanInuse)
+	mm["MSpanSys"] = float64(m.MSpanSys)
+	mm["Mallocs"] = float64(m.Mallocs)
+	mm["NextGC"] = float64(m.NextGC)
+	mm["NumForcedGC"] = float64(m.NumForcedGC)
+	mm["NumGC"] = float64(m.NumGC)
+	mm["OtherSys"] = float64(m.OtherSys)
+	mm["PauseTotalNs"] = float64(m.PauseTotalNs)
+	mm["StackInuse"] = float64(m.StackInuse)
+	mm["StackSys"] = float64(m.StackSys)
+	mm["Sys"] = float64(m.Sys)
+	mm["TotalAlloc"] = float64(m.TotalAlloc)
 
 	return mm
 }
 
 func (a *Agent) sendAllMetrics() {
-	gauges := make(map[string]interface{})
+	gauges := make(map[string]float64)
 	counters := make(map[string]int64)
 
 	// Делаем копию метрик, чтобы данные не изменились во время отправки.
@@ -145,7 +145,8 @@ func (a *Agent) sendAllMetrics() {
 
 	// Отправляем gauges.
 	for name, value := range gauges {
-		err := a.sendMetric(metrics.TypeGauge, name, value)
+		sv := strconv.FormatFloat(value, 'f', -1, 64)
+		err := a.sendMetric(metrics.TypeGauge, name, sv)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send gauge %s: %v", name, err))
 			return
@@ -153,7 +154,8 @@ func (a *Agent) sendAllMetrics() {
 	}
 	// Отправляем counters.
 	for name, value := range counters {
-		err := a.sendMetric(metrics.TypeCounter, name, value)
+		sv := strconv.FormatInt(value, 10)
+		err := a.sendMetric(metrics.TypeCounter, name, sv)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send counter %s: %v", name, err))
 			return
@@ -161,8 +163,8 @@ func (a *Agent) sendAllMetrics() {
 	}
 }
 
-func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value interface{}) error {
-	url := fmt.Sprintf("%s/update/%s/%s/%v", a.ServerURL, metricType, name, value)
+func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value string) error {
+	url := fmt.Sprintf("%s/update/%s/%s/%s", a.ServerURL, metricType, name, value)
 	slog.Info("sending metrics", "url", url)
 
 	res, err := a.client.R().Post(url)
