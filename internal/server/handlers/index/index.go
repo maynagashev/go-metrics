@@ -32,7 +32,9 @@ func New(st storage.Repository) http.HandlerFunc {
 			sort.Strings(metricNames)
 
 			for _, name := range metricNames {
-				_, err := w.Write([]byte(fmt.Sprintf("%s/%s: %v\n", metricType, name, metricsByType[name])))
+				_, err := w.Write(
+					[]byte(fmt.Sprintf("%s/%s: %v\n", metricType, name, metricsByType[name])),
+				)
 				if err != nil {
 					return
 				}

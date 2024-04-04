@@ -39,14 +39,22 @@ func New(st storage.Repository) http.HandlerFunc {
 		case metrics.TypeCounter:
 			intValue, err := strconv.ParseInt(metricValue, 10, 64)
 			if err != nil {
-				http.Error(w, "Invalid metrics value, must be convertable to int64", http.StatusBadRequest)
+				http.Error(
+					w,
+					"Invalid metrics value, must be convertable to int64",
+					http.StatusBadRequest,
+				)
 				return
 			}
 			st.UpdateCounter(metricName, storage.Counter(intValue))
 		case metrics.TypeGauge:
 			floatValue, err := strconv.ParseFloat(metricValue, 64)
 			if err != nil {
-				http.Error(w, "Invalid metrics value, must be convertable to float64", http.StatusBadRequest)
+				http.Error(
+					w,
+					"Invalid metrics value, must be convertable to float64",
+					http.StatusBadRequest,
+				)
 				return
 			}
 			st.UpdateGauge(metricName, storage.Gauge(floatValue))

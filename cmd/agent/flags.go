@@ -21,14 +21,20 @@ type Flags struct {
 func mustParseFlags() Flags {
 	flags := Flags{}
 
-	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "address and port of the server send metrics to")
+	flag.StringVar(
+		&flags.Server.Addr,
+		"a",
+		"localhost:8080",
+		"address and port of the server send metrics to",
+	)
 	flag.IntVar(&flags.Server.ReportInterval, "r", 10, "report interval in seconds")
 	flag.IntVar(&flags.Server.PollInterval, "p", 2, "poll interval in seconds")
 
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()
 
-	// если переданы переменные окружения, то они перезаписывают значения флагов: envServerAddr, envReportInterval, envPollInterval
+	// если переданы переменные окружения, то они перезаписывают
+	// значения флагов: envServerAddr, envReportInterval, envPollInterval
 	if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" {
 		flags.Server.Addr = envServerAddr
 	}
