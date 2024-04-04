@@ -41,25 +41,17 @@ func (ms *MemStorage) UpdateCounter(metricName string, metricValue storage.Count
 	ms.counters[metricName] += metricValue
 }
 
-func (ms *MemStorage) GetValue(metricType metrics.MetricType, name string) (string, error) {
-	switch metricType {
+// GetValue возвращает значение метрики по типу и имени.
+func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Stringer, bool) {
+	switch mType {
 	case metrics.TypeCounter:
-		if counterValue, ok := ms.counters[name]; ok {
-			return strconv.FormatInt(int64(counterValue), 10), nil
-		} else {
-			return "", fmt.Errorf("counter %s not found", name)
-		}
-
+		v, ok := ms.GetCounter(name)
+		return v, ok
 	case metrics.TypeGauge:
-		if gaugeValue, ok := ms.gauges[name]; ok {
-			return strconv.FormatFloat(float64(gaugeValue), 'f', -1, 64), nil
-		} else {
-			return "", fmt.Errorf("gauge %s not found", name)
-		}
-
-	default:
-		return "", fmt.Errorf("invalid metric type: %s", metricType)
+		v, ok := ms.GetGauge(name)
+		return v, ok
 	}
+	return nil, false
 }
 
 func (ms *MemStorage) GetGauges() storage.Gauges {

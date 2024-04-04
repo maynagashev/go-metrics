@@ -64,15 +64,21 @@ func New(st storage.Repository) http.HandlerFunc {
 			return
 		}
 
-		v, getError := st.GetValue(metricType, metricName)
-		if getError != nil {
-			v = getError.Error()
+		var resMessage string
+		// Получаем значение метрики из хранилища
+		v, ok := st.GetValue(metricType, metricName)
+		if ok {
+			resMessage = fmt.Sprintf("metric %s/%s updated with value %s, result: %s",
+				metricType, metricName, metricValue, v)
+		} else {
+			resMessage = fmt.Sprintf("metric %s/%s not found", metricType, metricName)
 		}
-		resMessage := fmt.Sprintf("Metric %s/%s updated with value %s, result: %s",
-			metricType, metricName, metricValue, v)
 
 		// Отправляем успешный ответ
 		w.WriteHeader(http.StatusOK)
+
+		// Логируем ответ для отладки
+		slog.Info(resMessage)
 
 		// Выводим в тело ответа сообщение о результате
 		_, err := fmt.Fprint(w, resMessage)
@@ -80,8 +86,5 @@ func New(st storage.Repository) http.HandlerFunc {
 			slog.Error(fmt.Sprintf("error writing response: %s", err))
 			return
 		}
-
-		// Дублируем в лог ответ для отладки
-		slog.Info(resMessage)
 	}
 }
