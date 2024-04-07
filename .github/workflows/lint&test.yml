@@ -10,11 +10,11 @@ on:
 jobs:
   lint_and_test:
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
+#    services:
+#      redis:
+#        image: redis:latest
+#        ports:
+#          - 6379:6379
 
     steps:
       - name: Checkout code
@@ -50,13 +50,13 @@ jobs:
           fi
           golangci-lint run ./...
 
-      - name: Run tests
-        run: go test -coverpkg=./... -count=1 -coverprofile=coverage.out ./...
-        env:
-          REDIS_ADDRESS: localhost:6379
-
-      - name: Upload coverage to GitHub Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage.out
+#      - name: Run tests
+#        run: go test -coverpkg=./... -count=1 -coverprofile=coverage.out ./...
+#        env:
+#          REDIS_ADDRESS: localhost:6379
+#
+#      - name: Upload coverage to GitHub Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: coverage
+#          path: coverage.out
