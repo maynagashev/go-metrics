@@ -23,3 +23,7 @@ vendor/
 # IDEs directories
 .idea
 .vscode
+
+# Tests
+metricstest-darwin-amd64
+test.log
