@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log/slog"
 	"net/http"
 	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
@@ -18,7 +19,15 @@ const (
 
 func main() {
 	flags := mustParseFlags()
-	slog.Info("starting server...", "addr", flags.Server.Addr)
+
+	// Инициализируем сторонний логгер
+	logger := initLogger()
+	defer func() {
+		_ = logger.Sync() // Discard the error (idiomatic for logging)
+	}()
+	sugar := *logger.Sugar()
+
+	sugar.Infow("Starting server", "addr", flags.Server.Addr)
 
 	server := &http.Server{
 		Addr:    flags.Server.Addr,
@@ -31,6 +40,16 @@ func main() {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		slog.Error("server failed to start", "error", err)
+		sugar.Infow("Server failed to start", "error", err)
 	}
+}
+
+func initLogger() *zap.Logger {
+	// создаём предустановленный регистратор zap
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		// вызываем панику, если ошибка
+		panic(err)
+	}
+	return logger
 }
