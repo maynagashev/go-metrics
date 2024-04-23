@@ -21,17 +21,16 @@ func main() {
 	flags := mustParseFlags()
 
 	// Инициализируем сторонний логгер
-	logger := initLogger()
+	log := initLogger()
 	defer func() {
-		_ = logger.Sync() // Discard the error (idiomatic for logging)
+		_ = log.Sync()
 	}()
-	sugar := *logger.Sugar()
 
-	sugar.Infow("Starting server", "addr", flags.Server.Addr)
+	log.Info("starting server", zap.String("addr", flags.Server.Addr))
 
 	server := &http.Server{
 		Addr:    flags.Server.Addr,
-		Handler: router.New(memory.New()),
+		Handler: router.New(memory.New(), log),
 		// Настройка таймаутов для сервера по рекомендациям линтера gosec
 		ReadTimeout:  DefaultReadTimeout,
 		WriteTimeout: DefaultWriteTimeout,
@@ -40,7 +39,7 @@ func main() {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		sugar.Infow("Server failed to start", "error", err)
+		log.Info("server failed to start", zap.Error(err))
 	}
 }
 

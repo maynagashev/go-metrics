@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
@@ -69,7 +71,7 @@ func TestUpdateHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, tt.target, nil)
 			w := httptest.NewRecorder()
-			update.New(tt.storage)(w, request)
+			update.New(tt.storage, zap.NewNop())(w, request)
 
 			res := w.Result()
 			assert.Equal(t, tt.want.code, res.StatusCode)
