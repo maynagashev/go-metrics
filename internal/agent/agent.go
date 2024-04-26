@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"net/http"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
@@ -62,6 +61,7 @@ func (a *Agent) Run() {
 	a.wg.Wait()
 }
 
+// runPolls собирает сведения из системы в отдельной горутине.
 func (a *Agent) runPolls() {
 	defer a.wg.Done()
 	for range a.pollTicker.C {
@@ -79,6 +79,7 @@ func (a *Agent) runPolls() {
 	}
 }
 
+// Отправляет отчеты на сервер в отдельной горутине.
 func (a *Agent) runReports() {
 	defer a.wg.Done()
 	for range a.reportTicker.C {
@@ -122,6 +123,7 @@ func (a *Agent) CollectRuntimeMetrics() map[string]float64 {
 	return mm
 }
 
+// Отправка всех накопленных метрик.
 func (a *Agent) sendAllMetrics() {
 	gauges := make(map[string]float64)
 	counters := make(map[string]int64)
@@ -145,8 +147,13 @@ func (a *Agent) sendAllMetrics() {
 
 	// Отправляем gauges.
 	for name, value := range gauges {
-		sv := strconv.FormatFloat(value, 'f', -1, 64)
-		err := a.sendMetric(metrics.TypeGauge, name, sv)
+		m := metrics.Metrics{
+			ID:    name,
+			MType: metrics.TypeGauge,
+			//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
+			Value: &value,
+		}
+		err := a.sendMetric(m)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send gauge %s: %v", name, err))
 			return
@@ -154,8 +161,13 @@ func (a *Agent) sendAllMetrics() {
 	}
 	// Отправляем counters.
 	for name, value := range counters {
-		sv := strconv.FormatInt(value, 10)
-		err := a.sendMetric(metrics.TypeCounter, name, sv)
+		m := metrics.Metrics{
+			ID:    name,
+			MType: metrics.TypeCounter,
+			//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
+			Delta: &value,
+		}
+		err := a.sendMetric(m)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send counter %s: %v", name, err))
 			return
@@ -163,11 +175,16 @@ func (a *Agent) sendAllMetrics() {
 	}
 }
 
-func (a *Agent) sendMetric(metricType metrics.MetricType, name string, value string) error {
-	url := fmt.Sprintf("%s/update/%s/%s/%s", a.ServerURL, metricType, name, value)
-	slog.Info("sending metrics", "url", url)
+// Отправка отдельной метрики на сервер.
+func (a *Agent) sendMetric(metric metrics.Metrics) error {
+	url := fmt.Sprintf("%s/update", a.ServerURL)
+	slog.Info("sending metric", "url", url, "metric", metric)
 
-	res, err := a.client.R().Post(url)
+	res, err := a.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(metric). // resty автоматом сериализует в json
+		Post(url)
+
 	if err != nil {
 		return err
 	}
