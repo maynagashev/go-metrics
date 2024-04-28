@@ -23,8 +23,14 @@ func (m *Metrics) String() string {
 	if m == nil {
 		return "<nil>"
 	}
+	if m.Delta != nil {
+		return fmt.Sprintf("Metrics{ID: %s, Type: %s, Delta: %d}", m.ID, m.MType, *m.Delta)
+	}
+	if m.Value != nil {
+		return fmt.Sprintf("Metrics{ID: %s, Type: %s, Value: %f}", m.ID, m.MType, *m.Value)
+	}
 
-	return fmt.Sprintf("Metrics{ID: %s, Type: %s, Value: %f, Delta: %d}", m.ID, m.MType, *m.Value, *m.Delta)
+	return fmt.Sprintf("Metrics{ID: %s, Type: %s}", m.ID, m.MType)
 }
 
 func (m *Metrics) ValueString() string {

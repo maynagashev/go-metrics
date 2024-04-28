@@ -45,6 +45,9 @@ chmod +x metricstest-darwin-amd64
 
 # запуск тестов
 ./metricstest-darwin-amd64 -test.v  -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . > test.log
+
+# запуск конкретной итерации
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration7$ -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
 ```
 
 ## Запуск линтеров

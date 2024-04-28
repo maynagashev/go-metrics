@@ -178,7 +178,7 @@ func (a *Agent) sendAllMetrics() {
 // Отправка отдельной метрики на сервер.
 func (a *Agent) sendMetric(metric metrics.Metrics) error {
 	url := fmt.Sprintf("%s/update", a.ServerURL)
-	slog.Info("sending metric", "url", url, "metric", metric)
+	slog.Info("sending metric", "url", url, "metric", metric.String())
 
 	res, err := a.client.R().
 		SetHeader("Content-Type", "application/json").

@@ -53,7 +53,7 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metrics) error {
 		if metric.Delta == nil {
 			return errors.New("counter delta is nil")
 		}
-		ms.counters[metric.ID] = storage.Counter(*metric.Delta)
+		ms.counters[metric.ID] += storage.Counter(*metric.Delta)
 	default:
 		return fmt.Errorf("unsupported metric type: %s", metric.MType)
 	}
