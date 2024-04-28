@@ -1,4 +1,4 @@
-package update2_test
+package update_test
 
 import (
 	"io"
@@ -11,7 +11,7 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
-	"github.com/maynagashev/go-metrics/internal/server/handlers/update"
+	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 
 	"github.com/stretchr/testify/require"
 

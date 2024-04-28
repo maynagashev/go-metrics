@@ -1,4 +1,4 @@
-package update2
+package update
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ import (
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
 func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "application/json")
 
 		// Отметаем все кроме POST
 		if r.Method != http.MethodPost {
