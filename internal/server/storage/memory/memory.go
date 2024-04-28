@@ -2,6 +2,7 @@
 package memory
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 
@@ -39,6 +40,24 @@ func (ms *MemStorage) UpdateGauge(metricName string, metricValue storage.Gauge) 
 
 func (ms *MemStorage) UpdateCounter(metricName string, metricValue storage.Counter) {
 	ms.counters[metricName] += metricValue
+}
+
+func (ms *MemStorage) UpdateMetric(metric metrics.Metrics) error {
+	switch metric.MType {
+	case metrics.TypeGauge:
+		if metric.Value == nil {
+			return errors.New("gauge value is nil")
+		}
+		ms.gauges[metric.ID] = storage.Gauge(*metric.Value)
+	case metrics.TypeCounter:
+		if metric.Delta == nil {
+			return errors.New("counter delta is nil")
+		}
+		ms.counters[metric.ID] = storage.Counter(*metric.Delta)
+	default:
+		return fmt.Errorf("unsupported metric type: %s", metric.MType)
+	}
+	return nil
 }
 
 func (ms *MemStorage) GetGauges() storage.Gauges {

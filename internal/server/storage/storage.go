@@ -29,5 +29,6 @@ type Repository interface {
 	GetGauges() Gauges
 	UpdateGauge(metricName string, metricValue Gauge)
 	UpdateCounter(metricName string, metricValue Counter)
+	UpdateMetric(metric metrics.Metrics) error // универсальный метод обновления метрики: gauge, counter
 	Count() int
 }

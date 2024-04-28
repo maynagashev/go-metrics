@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytes"
 	"net/http"
 	"time"
 
@@ -23,12 +24,17 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler {
 			)
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
+			// Сохраняем тело ответа для записи в лог
+			body := bytes.NewBuffer(nil)
+			ww.Tee(body)
+
 			t1 := time.Now()
 			defer func() {
 				entry.Info("request completed",
 					zap.Int("status", ww.Status()),
 					zap.Int("bytes", ww.BytesWritten()),
 					zap.String("duration", time.Since(t1).String()),
+					zap.String("response_body", body.String()), // Логирование тела ответа
 				)
 			}()
 
