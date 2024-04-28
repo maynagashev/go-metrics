@@ -19,6 +19,7 @@ func New(st storage.Repository, log *zap.Logger) chi.Router {
 	r.Use(middleware.RequestID)
 	r.Use(logger.New(log)) // используем единый логгер для запросов, вместо встроенного логгера chi
 	r.Use(middleware.Recoverer)
+	r.Use(middleware.StripSlashes)
 
 	r.Get("/", index.New(st))
 	r.Post("/update", jsonUpdate.New(st, log))
