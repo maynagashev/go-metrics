@@ -4,9 +4,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	jsonUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/json/update"
+	jasonValue "github.com/maynagashev/go-metrics/internal/server/handlers/json/value"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
 	plainUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
-	"github.com/maynagashev/go-metrics/internal/server/handlers/value"
+	plainValue "github.com/maynagashev/go-metrics/internal/server/handlers/plain/value"
 	logger "github.com/maynagashev/go-metrics/internal/server/middleware"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"go.uber.org/zap"
@@ -21,8 +22,10 @@ func New(st storage.Repository, log *zap.Logger) chi.Router {
 
 	r.Get("/", index.New(st))
 	r.Post("/update", jsonUpdate.New(st, log))
+	r.Post("/value", jasonValue.New(st))
+
 	r.Post("/update/*", plainUpdate.New(st, log))
-	r.Get("/value/{type}/{name}", value.New(st))
+	r.Get("/value/{type}/{name}", plainValue.New(st))
 
 	return r
 }

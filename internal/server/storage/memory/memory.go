@@ -82,6 +82,26 @@ func (ms *MemStorage) Count() int {
 	return len(ms.gauges) + len(ms.counters)
 }
 
+func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Metrics, bool) {
+	switch mType {
+	case metrics.TypeCounter:
+		v, ok := ms.GetCounter(id)
+		return metrics.Metrics{
+			ID:    id,
+			MType: mType,
+			Delta: (*int64)(&v),
+		}, ok
+	case metrics.TypeGauge:
+		v, ok := ms.GetGauge(id)
+		return metrics.Metrics{
+			ID:    id,
+			MType: mType,
+			Value: (*float64)(&v),
+		}, ok
+	}
+	return metrics.Metrics{}, false
+}
+
 // GetValue возвращает значение метрики по типу и имени.
 func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Stringer, bool) {
 	switch mType {

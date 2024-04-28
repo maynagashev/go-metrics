@@ -31,4 +31,5 @@ type Repository interface {
 	UpdateCounter(metricName string, metricValue Counter)
 	UpdateMetric(metric metrics.Metrics) error // универсальный метод обновления метрики: gauge, counter
 	Count() int
+	GetMetric(mType metrics.MetricType, id string) (metrics.Metrics, bool) // загрузка значения метрики в виде структуры
 }

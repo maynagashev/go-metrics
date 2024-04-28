@@ -13,6 +13,10 @@ import (
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
+type ResponseWithMessage struct {
+	Message string `json:"message"`
+}
+
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
 func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +51,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 			resMessage = fmt.Sprintf("metric %s/%s updated with value %f, result: %s",
 				metricType, metricName, *metricValue, v)
 		} else {
-			resMessage = fmt.Sprintf("metric %s/%s not found", metricType, metricName)
+			resMessage = fmt.Sprintf("metric %s not found", metric.String())
 		}
 
 		// Отправляем успешный ответ
@@ -57,9 +61,16 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 		log.Info(resMessage)
 
 		// Выводим в тело ответа сообщение о результате
-		_, err = fmt.Fprint(w, resMessage)
+		encoded, err := json.MarshalIndent(ResponseWithMessage{Message: resMessage}, "", " ")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, err = fmt.Fprint(w, string(encoded))
 		if err != nil {
 			log.Error(fmt.Sprintf("error writing response: %s", err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
