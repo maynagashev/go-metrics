@@ -7,8 +7,12 @@
 - **Iter7.** Пакет encoding. Сериализация и десериализация данных.
    - [x] Отправлять с агента метрики в формате json на новый маршрут `/update`
    - [x] Реализовать на сервере новый маршрут `/update` который будет принимать json с метрикой и парсить его в структуру.
-   - [ ] Получать значение метрик с помощью `POST /value`, в ответе такой же json только с заполненными значениями.
-   - [ ] Проверить тесты.
+   - [x] Получать значение метрик с помощью `POST /value`, в ответе такой же json только с заполненными значениями.
+   - [x] Проверить тесты.
+- **Iter8.** Пакет compress. Сжатие данных.
+   - [ ] Агент передавать данные в формате gzip (добавить Content-Encoding: gzip в заголовок запроса и сжать данные).
+   - [ ] Сервер опционально принимать запросы в сжатом формате (при наличии соответствующего HTTP-заголовка Content-Encoding).
+   - [x] Отдавать сжатый ответ клиенту, который поддерживает обработку сжатых ответов (с HTTP-заголовком Accept-Encoding).
 
 ## Обновление шаблона
 
@@ -48,6 +52,9 @@ chmod +x metricstest-darwin-amd64
 
 # запуск конкретной итерации
 ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration7$ -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
+
+# запуск конкретной итерации с  -server-port=8080 
+ ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration8$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
 ```
 
 ## Запуск линтеров

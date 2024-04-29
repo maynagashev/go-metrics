@@ -182,6 +182,7 @@ func (a *Agent) sendMetric(metric metrics.Metrics) error {
 
 	res, err := a.client.R().
 		SetHeader("Content-Type", "application/json").
+		// Go клиент автоматом добавляет заголовок "Accept-Encoding: gzip"
 		SetBody(metric). // resty автоматом сериализует в json
 		Post(url)
 
