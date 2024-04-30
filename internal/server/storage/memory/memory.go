@@ -115,8 +115,8 @@ func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Strin
 	return nil, false
 }
 
-// GetMetrics возвращает отсортированный список метрик в формате "тип/имя: значение".
-func (ms *MemStorage) GetMetrics() []string {
+// GetMetricsPlain возвращает отсортированный список метрик в формате "тип/имя: значение".
+func (ms *MemStorage) GetMetricsPlain() []string {
 	items := make([]string, 0, ms.Count())
 	for name, value := range ms.GetGauges() {
 		items = append(items, fmt.Sprintf("counter/%s: %v", name, value))
@@ -125,5 +125,20 @@ func (ms *MemStorage) GetMetrics() []string {
 		items = append(items, fmt.Sprintf("gauge/%s: %v", name, value))
 	}
 	slices.Sort(items)
+	return items
+}
+
+// GetMetrics возвращает отсортированный список метрик в формате слайса структур.
+func (ms *MemStorage) GetMetrics() []metrics.Metrics {
+	items := make([]metrics.Metrics, 0, ms.Count())
+	for id, value := range ms.GetGauges() {
+		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
+		items = append(items, metrics.Metrics{ID: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
+	}
+	for id, value := range ms.GetCounters() {
+		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
+		items = append(items, metrics.Metrics{ID: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
+	}
+	// slices.Sort(items)
 	return items
 }

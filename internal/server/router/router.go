@@ -5,7 +5,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	jsonUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/json/update"
 	jasonValue "github.com/maynagashev/go-metrics/internal/server/handlers/json/value"
-	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
+	plainIndex "github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
 	plainUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 	plainValue "github.com/maynagashev/go-metrics/internal/server/handlers/plain/value"
 	logger "github.com/maynagashev/go-metrics/internal/server/middleware"
@@ -23,9 +23,10 @@ func New(st storage.Repository, log *zap.Logger) chi.Router {
 	r.Use(middleware.StripSlashes)
 	// Добавляем middleware для сжатия ответов
 	r.Use(middleware.Compress(compressLevel, "application/json", "text/html"))
-	r.Use(logger.New(log)) // используем единый логгер для запросов, вместо встроенного логгера chi
+	// Используем единый логгер для запросов, вместо встроенного логгера chi
+	r.Use(logger.New(log))
 
-	r.Get("/", index.New(st))
+	r.Get("/", plainIndex.New(st))
 	r.Post("/update", jsonUpdate.New(st, log))
 	r.Post("/value", jasonValue.New(st))
 
