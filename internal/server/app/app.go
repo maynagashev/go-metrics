@@ -67,6 +67,10 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) {
 
 	err := httpServer.ListenAndServe()
 	if err != nil {
-		log.Info("server failed to start", zap.Error(err))
+		log.Fatal("server failed to start", zap.Error(err))
 	}
+}
+
+func (s *Server) GetStoreInterval() int {
+	return s.cfg.StoreInterval
 }

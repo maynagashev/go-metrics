@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"time"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"go.uber.org/zap"
@@ -24,7 +25,7 @@ type MemStorage struct {
 }
 
 // New создает новый экземпляр хранилища метрик в памяти, на вход
-// можно передать набор gauges или counters для инициализации.
+// можно передать набор gauges или counters для инициализации в тестах.
 func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorage {
 	memStorage := &MemStorage{
 		gauges:   make(storage.Gauges),
@@ -34,7 +35,7 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 	}
 	log.Debug("memory storage created", zap.Any("storage", memStorage))
 
-	// Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла
+	// Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла.
 	if server.IsRestoreEnabled() {
 		err := memStorage.RestoreMetricsFromFile()
 		if err != nil {
@@ -42,7 +43,7 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 		}
 	}
 
-	// Если переданы метрики для инициализации (для тестов хранилища) то обновляем их в хранилище
+	// Если переданы метрики для инициализации (для тестов хранилища) то обновляем их в хранилище.
 	for _, option := range options {
 		switch opt := option.(type) {
 		case storage.Gauges:
@@ -50,6 +51,21 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 		case storage.Counters:
 			memStorage.counters = opt
 		}
+	}
+
+	// Запускаем сохранение метрик в файл c указанным интервалом.
+	if server.IsStoreEnabled() && !server.IsSyncStore() {
+		interval := time.Duration(server.GetStoreInterval()) * time.Second
+		go func() {
+			for {
+				time.Sleep(interval)
+				log.Info(fmt.Sprintf("store %d metrics to file %s", memStorage.Count(), server.GetStorePath()))
+				err := memStorage.StoreMetricsToFile()
+				if err != nil {
+					log.Error("failed to store metrics to file", zap.Error(err))
+				}
+			}
+		}()
 	}
 
 	return memStorage
