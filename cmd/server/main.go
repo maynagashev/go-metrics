@@ -1,20 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"time"
-
-	"go.uber.org/zap"
-
-	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
-)
-
-const (
-	DefaultReadTimeout  = 5 * time.Second
-	DefaultWriteTimeout = 10 * time.Second
-	DefaultIdleTimeout  = 120 * time.Second
+	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -26,21 +16,18 @@ func main() {
 		_ = log.Sync()
 	}()
 
-	log.Info("starting server", zap.String("addr", flags.Server.Addr))
-
-	server := &http.Server{
-		Addr:    flags.Server.Addr,
-		Handler: router.New(memory.New(), log),
-		// Настройка таймаутов для сервера по рекомендациям линтера gosec
-		ReadTimeout:  DefaultReadTimeout,
-		WriteTimeout: DefaultWriteTimeout,
-		IdleTimeout:  DefaultIdleTimeout,
+	cfg := app.Config{
+		Addr:            flags.Server.Addr,
+		StoreInterval:   flags.Server.StoreInterval,
+		FileStoragePath: flags.Server.FileStoragePath,
+		Restore:         flags.Server.Restore,
 	}
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Info("server failed to start", zap.Error(err))
-	}
+	server := app.New(cfg)
+	storage := memory.New(server, log)
+
+	handlers := router.New(server, storage, log)
+	server.Start(log, handlers)
 }
 
 func initLogger() *zap.Logger {

@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
+
 	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/server/storage"
@@ -20,6 +22,7 @@ import (
 
 // [New]. Тест проверяет корректность обработки запроса на обновление метрики.
 func TestUpdateHandler(t *testing.T) {
+	server := app.New(app.Config{})
 	type want struct {
 		code        int
 		contentType string
@@ -33,7 +36,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "update gauge",
 			target:  "/update/gauge/test_gauge/1.1",
-			storage: memory.New(),
+			storage: memory.New(server, zap.NewNop()),
 			want: want{
 				code:        200,
 				contentType: "text/plain",
@@ -42,7 +45,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "update counter",
 			target:  "/update/counter/test_counter/1",
-			storage: memory.New(),
+			storage: memory.New(server, zap.NewNop()),
 			want: want{
 				code:        200,
 				contentType: "text/plain",
@@ -51,7 +54,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "invalid metrics type",
 			target:  "/update/invalid/test_counter/1",
-			storage: memory.New(),
+			storage: memory.New(server, zap.NewNop()),
 			want: want{
 				code:        400,
 				contentType: "text/plain; charset=utf-8",
@@ -60,7 +63,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "invalid url",
 			target:  "/update/gauge/1",
-			storage: memory.New(),
+			storage: memory.New(server, zap.NewNop()),
 			want: want{
 				code:        404,
 				contentType: "text/plain; charset=utf-8",

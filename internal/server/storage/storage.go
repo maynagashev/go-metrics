@@ -33,4 +33,9 @@ type Repository interface {
 	UpdateMetric(metric metrics.Metrics) error // универсальный метод обновления метрики: gauge, counter
 	Count() int
 	GetMetric(mType metrics.MetricType, id string) (metrics.Metrics, bool) // загрузка значения метрики в виде структуры
+
+	// StoreMetricsToFile сохраняет метрики в файл.
+	StoreMetricsToFile() error
+	// RestoreMetricsFromFile восстанавливает метрики из файла.
+	RestoreMetricsFromFile() error
 }

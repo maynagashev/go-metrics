@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	jsonUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/json/update"
 	jasonValue "github.com/maynagashev/go-metrics/internal/server/handlers/json/value"
 	plainIndex "github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
@@ -14,7 +15,7 @@ import (
 )
 
 // New инстанцирует новый роутер.
-func New(st storage.Repository, log *zap.Logger) chi.Router {
+func New(server *app.Server, storage storage.Repository, log *zap.Logger) chi.Router {
 	compressLevel := 5
 
 	r := chi.NewRouter()
@@ -26,12 +27,13 @@ func New(st storage.Repository, log *zap.Logger) chi.Router {
 	// Используем единый логгер для запросов, вместо встроенного логгера chi
 	r.Use(logger.New(log))
 
-	r.Get("/", plainIndex.New(st))
-	r.Post("/update", jsonUpdate.New(st, log))
-	r.Post("/value", jasonValue.New(st))
+	r.Get("/", plainIndex.New(storage))
+	r.Post("/update", jsonUpdate.New(server, storage, log))
+	r.Post("/value", jasonValue.New(storage))
 
-	r.Post("/update/*", plainUpdate.New(st, log))
-	r.Get("/value/{type}/{name}", plainValue.New(st))
+	// Первые версии обработчиков для работы тестов начальных итераций
+	r.Post("/update/*", plainUpdate.New(storage, log))
+	r.Get("/value/{type}/{name}", plainValue.New(storage))
 
 	return r
 }

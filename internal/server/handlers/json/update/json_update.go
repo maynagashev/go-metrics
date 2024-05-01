@@ -8,6 +8,7 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -18,7 +19,7 @@ type ResponseWithMessage struct {
 }
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
-func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
+func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -37,7 +38,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 		}
 		log.Debug("parsed metric", zap.Any("metric", metric))
 
-		err = st.UpdateMetric(metric)
+		err = strg.UpdateMetric(metric)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -46,7 +47,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 		var resMessage string
 
 		// Получаем значение метрики из хранилища
-		v, ok := st.GetValue(metric.MType, metric.ID)
+		v, ok := strg.GetValue(metric.MType, metric.ID)
 		if ok {
 			resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), v)
 		} else {
@@ -71,6 +72,14 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 			log.Error(fmt.Sprintf("error writing response: %s", err))
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		// Сохраняем метрики в файл сразу после изменения, если включено синхронное сохранение
+		if server.IsStoreEnabled() && server.IsSyncStore() {
+			err = strg.StoreMetricsToFile()
+			if err != nil {
+				log.Error(fmt.Sprintf("error storing metrics: %s", err))
+			}
 		}
 	}
 }

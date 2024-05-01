@@ -3,6 +3,9 @@ package memory_test
 import (
 	"testing"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
@@ -10,6 +13,8 @@ import (
 )
 
 func TestMemStorage_GetValue(t *testing.T) {
+	server := app.New(app.Config{})
+
 	type fields struct {
 		gauges   storage.Gauges
 		counters storage.Counters
@@ -43,7 +48,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(_ *testing.T) {
-			ms := memory.New(tt.fields.gauges, tt.fields.counters)
+			ms := memory.New(server, zap.NewNop(), tt.fields.gauges, tt.fields.counters)
 			if got, _ := ms.GetValue(tt.args.metricType, tt.args.name); got.String() != tt.want {
 				t.Errorf("GetValue() = %v, want %v", got, tt.want)
 			}
@@ -52,6 +57,8 @@ func TestMemStorage_GetValue(t *testing.T) {
 }
 
 func TestMemStorage_UpdateCounter(t *testing.T) {
+	server := app.New(app.Config{})
+
 	type args struct {
 		metricName  string
 		metricValue storage.Counter
@@ -65,7 +72,7 @@ func TestMemStorage_UpdateCounter(t *testing.T) {
 	}{
 		{
 			name:    "update counter",
-			storage: memory.New(),
+			storage: memory.New(server, zap.NewNop()),
 			args: args{
 				metricName:  "test_counter",
 				metricValue: 3,

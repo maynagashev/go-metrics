@@ -2,9 +2,14 @@
 package memory
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"slices"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 
@@ -14,14 +19,30 @@ import (
 type MemStorage struct {
 	gauges   storage.Gauges
 	counters storage.Counters
+	server   *app.Server
+	log      *zap.Logger
 }
 
-func New(options ...interface{}) *MemStorage {
+// New создает новый экземпляр хранилища метрик в памяти, на вход
+// можно передать набор gauges или counters для инициализации.
+func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorage {
 	memStorage := &MemStorage{
 		gauges:   make(storage.Gauges),
 		counters: make(storage.Counters),
+		server:   server,
+		log:      log,
+	}
+	log.Debug("memory storage created", zap.Any("storage", memStorage))
+
+	// Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла
+	if server.IsRestoreEnabled() {
+		err := memStorage.RestoreMetricsFromFile()
+		if err != nil {
+			log.Error("failed to read metrics from file", zap.Error(err))
+		}
 	}
 
+	// Если переданы метрики для инициализации (для тестов хранилища) то обновляем их в хранилище
 	for _, option := range options {
 		switch opt := option.(type) {
 		case storage.Gauges:
@@ -141,4 +162,71 @@ func (ms *MemStorage) GetMetrics() []metrics.Metrics {
 	}
 	// slices.Sort(items)
 	return items
+}
+
+// StoreMetricsToFile сохраняет метрики в файл.
+func (ms *MemStorage) StoreMetricsToFile() error {
+	path := ms.server.GetStorePath()
+	ms.log.Debug("store metrics to file",
+		zap.String("path", path),
+		zap.Any("gauges", ms.GetGauges()),
+		zap.Any("counters", ms.GetCounters()))
+
+	// открытие файла для записи
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err = f.Close()
+		if err != nil {
+			ms.log.Error(fmt.Sprintf("error closing file: %s", err))
+		}
+	}()
+
+	// сериализация метрик metrics.Metrics в json и запись сразу в файл
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "    ")
+	err = encoder.Encode(ms.GetMetrics())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RestoreMetricsFromFile загружает метрики из файла.
+func (ms *MemStorage) RestoreMetricsFromFile() error {
+	path := ms.server.GetStorePath()
+	ms.log.Debug("load metrics from file", zap.String("path", path))
+
+	// открытие файла для чтения и парсинг json метрик metrics.Metrics
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err = f.Close()
+		if err != nil {
+			ms.log.Error(fmt.Sprintf("error closing file: %s", err), zap.Any("file", f))
+		}
+	}()
+
+	// парсинг json метрик metrics.Metrics
+	var parsed []metrics.Metrics
+	decoder := json.NewDecoder(f)
+	err = decoder.Decode(&parsed)
+	if err != nil {
+		return err
+	}
+
+	// обновление метрик в хранилище в памяти
+	for m := range parsed {
+		err = ms.UpdateMetric(parsed[m])
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
