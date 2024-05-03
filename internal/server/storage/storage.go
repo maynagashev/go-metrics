@@ -21,7 +21,7 @@ func (v Counter) String() string {
 
 // Repository provides an interface for working with metrics storage.
 type Repository interface {
-	GetMetrics() []metrics.Metrics
+	GetMetrics() []metrics.Metric
 	GetMetricsPlain() []string // первоначальная версия метода GetMetrics для возврата списка метрик в виде массива строк
 	GetValue(metricType metrics.MetricType, name string) (fmt.Stringer, bool)
 	GetCounter(name string) (Counter, bool)
@@ -30,9 +30,9 @@ type Repository interface {
 	GetGauges() Gauges
 	UpdateGauge(metricName string, metricValue Gauge)
 	UpdateCounter(metricName string, metricValue Counter)
-	UpdateMetric(metric metrics.Metrics) error // универсальный метод обновления метрики: gauge, counter
+	UpdateMetric(metric metrics.Metric) error // универсальный метод обновления метрики: gauge, counter
 	Count() int
-	GetMetric(mType metrics.MetricType, id string) (metrics.Metrics, bool) // загрузка значения метрики в виде структуры
+	GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool) // загрузка значения метрики в виде структуры
 
 	// StoreMetricsToFile сохраняет метрики в файл.
 	StoreMetricsToFile() error

@@ -85,8 +85,8 @@ func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.Hand
 }
 
 // Читаем метрику из json запроса.
-func parseMetricFromRequest(r *http.Request) (metrics.Metrics, error) {
-	m := metrics.Metrics{}
+func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) {
+	m := metrics.Metric{}
 	buf := new(bytes.Buffer)
 	_, err := buf.ReadFrom(r.Body)
 

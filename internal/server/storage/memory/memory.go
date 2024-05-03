@@ -79,7 +79,7 @@ func (ms *MemStorage) UpdateCounter(metricName string, metricValue storage.Count
 	ms.counters[metricName] += metricValue
 }
 
-func (ms *MemStorage) UpdateMetric(metric metrics.Metrics) error {
+func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 	switch metric.MType {
 	case metrics.TypeGauge:
 		if metric.Value == nil {
@@ -119,24 +119,24 @@ func (ms *MemStorage) Count() int {
 	return len(ms.gauges) + len(ms.counters)
 }
 
-func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Metrics, bool) {
+func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool) {
 	switch mType {
 	case metrics.TypeCounter:
 		v, ok := ms.GetCounter(id)
-		return metrics.Metrics{
+		return metrics.Metric{
 			ID:    id,
 			MType: mType,
 			Delta: (*int64)(&v),
 		}, ok
 	case metrics.TypeGauge:
 		v, ok := ms.GetGauge(id)
-		return metrics.Metrics{
+		return metrics.Metric{
 			ID:    id,
 			MType: mType,
 			Value: (*float64)(&v),
 		}, ok
 	}
-	return metrics.Metrics{}, false
+	return metrics.Metric{}, false
 }
 
 // GetValue возвращает значение метрики по типу и имени.
@@ -166,15 +166,15 @@ func (ms *MemStorage) GetMetricsPlain() []string {
 }
 
 // GetMetrics возвращает отсортированный список метрик в формате слайса структур.
-func (ms *MemStorage) GetMetrics() []metrics.Metrics {
-	items := make([]metrics.Metrics, 0, ms.Count())
+func (ms *MemStorage) GetMetrics() []metrics.Metric {
+	items := make([]metrics.Metric, 0, ms.Count())
 	for id, value := range ms.GetGauges() {
 		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
-		items = append(items, metrics.Metrics{ID: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
+		items = append(items, metrics.Metric{ID: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
 	}
 	for id, value := range ms.GetCounters() {
 		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
-		items = append(items, metrics.Metrics{ID: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
+		items = append(items, metrics.Metric{ID: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
 	}
 	// slices.Sort(items)
 	return items
@@ -200,7 +200,7 @@ func (ms *MemStorage) StoreMetricsToFile() error {
 		}
 	}()
 
-	// сериализация метрик metrics.Metrics в json и запись сразу в файл
+	// сериализация метрик metrics.Metric в json и запись сразу в файл
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "    ")
 	err = encoder.Encode(ms.GetMetrics())
@@ -216,7 +216,7 @@ func (ms *MemStorage) RestoreMetricsFromFile() error {
 	path := ms.server.GetStorePath()
 	ms.log.Debug("load metrics from file", zap.String("path", path))
 
-	// открытие файла для чтения и парсинг json метрик metrics.Metrics
+	// открытие файла для чтения и парсинг json метрик metrics.Metric
 	f, err := os.Open(path)
 	if err != nil {
 		return err
@@ -228,8 +228,8 @@ func (ms *MemStorage) RestoreMetricsFromFile() error {
 		}
 	}()
 
-	// парсинг json метрик metrics.Metrics
-	var parsed []metrics.Metrics
+	// парсинг json метрик metrics.Metric
+	var parsed []metrics.Metric
 	decoder := json.NewDecoder(f)
 	err = decoder.Decode(&parsed)
 	if err != nil {
