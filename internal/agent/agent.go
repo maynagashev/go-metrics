@@ -151,12 +151,7 @@ func (a *Agent) sendAllMetrics() {
 
 	// Отправляем gauges.
 	for name, value := range gauges {
-		m := metrics.Metric{
-			ID:    name,
-			MType: metrics.TypeGauge,
-			//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
-			Value: &value,
-		}
+		m := metrics.NewGauge(name, value)
 		err := a.sendMetric(m)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send gauge %s: %v", name, err))
@@ -165,12 +160,7 @@ func (a *Agent) sendAllMetrics() {
 	}
 	// Отправляем counters.
 	for name, value := range counters {
-		m := metrics.Metric{
-			ID:    name,
-			MType: metrics.TypeCounter,
-			//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
-			Delta: &value,
-		}
+		m := metrics.NewCounter(name, value)
 		err := a.sendMetric(m)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to send counter %s: %v", name, err))
@@ -180,7 +170,7 @@ func (a *Agent) sendAllMetrics() {
 }
 
 // Отправка отдельной метрики на сервер.
-func (a *Agent) sendMetric(metric metrics.Metric) error {
+func (a *Agent) sendMetric(metric *metrics.Metric) error {
 	url := fmt.Sprintf("%s/update", a.ServerURL)
 	slog.Info("sending metric", "url", url, "metric", metric.String())
 

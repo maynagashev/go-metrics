@@ -20,6 +20,23 @@ type Metric struct {
 	Value *float64   `json:"value,omitempty"` // Значение метрики в случае передачи gauge
 }
 
+func NewMetric(id string, mType MetricType, delta *int64, value *float64) *Metric {
+	return &Metric{
+		ID:    id,
+		MType: mType,
+		Delta: delta,
+		Value: value,
+	}
+}
+
+func NewCounter(id string, delta int64) *Metric {
+	return NewMetric(id, TypeCounter, &delta, nil)
+}
+
+func NewGauge(id string, value float64) *Metric {
+	return NewMetric(id, TypeGauge, nil, &value)
+}
+
 func (m *Metric) String() string {
 	if m == nil {
 		return "<nil>"
@@ -30,7 +47,8 @@ func (m *Metric) String() string {
 	if m.Value != nil {
 		return fmt.Sprintf("Metric{ID: %s, Type: %s, Value: %f}", m.ID, m.MType, *m.Value)
 	}
-
+	// Значение метрики может быть не задано в структуре,
+	// т.к. эта же структура используется для парсинга json в запросе получения значения метрики.
 	return fmt.Sprintf("Metric{ID: %s, Type: %s}", m.ID, m.MType)
 }
 
