@@ -10,18 +10,18 @@ import (
 type Flags struct {
 	Server struct {
 		Addr string
-		// интервал сохранения метрик на сервере в секундах
+		// Интервал сохранения метрик на сервере в секундах
 		StoreInterval int
-		// полное имя файла, в который будут сохранены метрики
+		// Полное имя файла, в который будут сохранены метрики
 		FileStoragePath string
-		// загружать или нет ранее сохраненные метрики из файла
+		// Загружать или нет ранее сохраненные метрики из файла
 		Restore bool
 	}
 }
 
-// mustParseFlags обрабатывает аргументы командной строки
+// parseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных.
-func mustParseFlags() Flags {
+func parseFlags() (Flags, error) {
 	flags := Flags{}
 	var err error
 
@@ -46,7 +46,7 @@ func mustParseFlags() Flags {
 	if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" {
 		flags.Server.StoreInterval, err = strconv.Atoi(envStoreInterval)
 		if err != nil {
-			panic(err)
+			return flags, err
 		}
 	}
 	// Если переменная окружения FILE_STORAGE_PATH присутствует (даже
@@ -58,9 +58,9 @@ func mustParseFlags() Flags {
 	if envRestore, ok := os.LookupEnv("RESTORE"); ok {
 		flags.Server.Restore, err = strconv.ParseBool(envRestore)
 		if err != nil {
-			panic(err)
+			return flags, err
 		}
 	}
 
-	return flags
+	return flags, nil
 }

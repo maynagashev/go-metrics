@@ -8,13 +8,16 @@ import (
 )
 
 func main() {
-	flags := mustParseFlags()
-
-	// Инициализируем сторонний логгер
 	log := initLogger()
 	defer func() {
 		_ = log.Sync()
 	}()
+
+	flags, err := parseFlags()
+	if err != nil {
+		// Если не удалось распарсить флаги запуска, завершаем программу.
+		panic(err)
+	}
 
 	cfg := app.Config{
 		Addr:            flags.Server.Addr,
