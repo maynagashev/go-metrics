@@ -31,7 +31,7 @@ func New(storage storage.Repository) http.HandlerFunc {
 		}
 
 		// Отправляем json ответ с метрикой
-		encoded, err := json.MarshalIndent(metric, "", " ")
+		encoded, err := json.Marshal(metric)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

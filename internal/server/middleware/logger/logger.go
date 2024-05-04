@@ -38,6 +38,7 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler {
 				entry.Info("request completed",
 					zap.Int("status", ww.Status()),
 					zap.Int("response_bytes", ww.BytesWritten()),
+					zap.Any("response_headers", ww.Header()),   // Логирование заголовков ответа
 					zap.String("response_body", body.String()), // Логирование тела ответа
 					zap.String("duration", time.Since(t1).String()),
 				)

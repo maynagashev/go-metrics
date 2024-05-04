@@ -61,7 +61,7 @@ func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.Hand
 		log.Info(resMessage)
 
 		// Выводим в тело ответа сообщение о результате
-		encoded, err := json.MarshalIndent(ResponseWithMessage{Message: resMessage}, "", " ")
+		encoded, err := json.Marshal(ResponseWithMessage{Message: resMessage})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
