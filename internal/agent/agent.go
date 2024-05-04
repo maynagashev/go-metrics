@@ -1,6 +1,8 @@
 package agent
 
 import (
+	"bytes"
+	"compress/gzip"
 	"crypto/rand"
 	"fmt"
 	"log/slog"
@@ -17,9 +19,10 @@ import (
 
 // Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP.
 type Agent struct {
-	PollInterval   time.Duration
-	ReportInterval time.Duration
-	ServerURL      string
+	PollInterval       time.Duration
+	ReportInterval     time.Duration
+	ServerURL          string
+	SendCompressedData bool
 
 	gauges       map[string]float64
 	counters     map[string]int64
@@ -33,14 +36,15 @@ type Agent struct {
 // New создает новый экземпляр агента.
 func New(url string, pollInterval time.Duration, reportInterval time.Duration) *Agent {
 	return &Agent{
-		ServerURL:      url,
-		PollInterval:   pollInterval,
-		ReportInterval: reportInterval,
-		gauges:         make(map[string]float64),
-		counters:       make(map[string]int64),
-		client:         resty.New().SetHeader("Content-Type", "text/plain"),
-		pollTicker:     time.NewTicker(pollInterval),
-		reportTicker:   time.NewTicker(reportInterval),
+		ServerURL:          url,
+		PollInterval:       pollInterval,
+		ReportInterval:     reportInterval,
+		SendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
+		gauges:             make(map[string]float64),
+		counters:           make(map[string]int64),
+		client:             resty.New().SetHeader("Content-Type", "text/plain"),
+		pollTicker:         time.NewTicker(pollInterval),
+		reportTicker:       time.NewTicker(reportInterval),
 	}
 }
 
@@ -180,11 +184,27 @@ func (a *Agent) sendMetric(metric metrics.Metric) error {
 	url := fmt.Sprintf("%s/update", a.ServerURL)
 	slog.Info("sending metric", "url", url, "metric", metric.String())
 
-	res, err := a.client.R().
-		SetHeader("Content-Type", "application/json").
-		// Go клиент автоматом добавляет заголовок "Accept-Encoding: gzip"
-		SetBody(metric). // resty автоматом сериализует в json
-		Post(url)
+	req := a.client.R()
+	req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия.
+	req.SetHeader("Content-Type", "application/json")
+
+	bytesBody := metric.ToJSON()
+	var err error
+	// Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.
+	// Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
+	if a.SendCompressedData {
+		req.SetHeader("Content-Encoding", "gzip")
+		bytesBody, err = compress(bytesBody)
+		if err != nil {
+			return err
+		}
+	}
+
+	req.SetBody(bytesBody)
+
+	slog.Debug("sendMetric", "url", url, "req", req)
+
+	res, err := req.Post(url)
 
 	if err != nil {
 		return err
@@ -196,6 +216,33 @@ func (a *Agent) sendMetric(metric metrics.Metric) error {
 	}
 
 	return nil
+}
+
+// Сompress сжимает данные методом gzip (перед отправкой на сервер).
+func compress(data []byte) ([]byte, error) {
+	var b bytes.Buffer
+	// создаём переменную w — в неё будут записываться входящие данные,
+	// которые будут сжиматься и сохраняться в bytes.Buffer
+	w, err := gzip.NewWriterLevel(&b, gzip.BestCompression)
+	if err != nil {
+		return nil, fmt.Errorf("failed init compress writer: %w", err)
+	}
+
+	// запись данных
+	_, err = w.Write(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed write data to compress temporary buffer: %w", err)
+	}
+
+	// обязательно нужно вызвать метод Close() — в противном случае часть данных
+	// может не записаться в буфер b; если нужно выгрузить все упакованные данные
+	// в какой-то момент сжатия, используйте метод Flush()
+	err = w.Close()
+	if err != nil {
+		return nil, fmt.Errorf("failed compress data: %w", err)
+	}
+	// буфер b содержит сжатые данные
+	return b.Bytes(), nil
 }
 
 func (a *Agent) DecrementCounter(name string, count int64) {

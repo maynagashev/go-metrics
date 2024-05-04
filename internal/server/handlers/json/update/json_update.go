@@ -31,7 +31,7 @@ func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.Hand
 
 		// todo: При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
 
-		metric, err := parseMetricFromRequest(r)
+		metric, err := parseMetricFromRequest(r, log)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -85,7 +85,7 @@ func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.Hand
 }
 
 // Читаем метрику из json запроса.
-func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) {
+func parseMetricFromRequest(r *http.Request, log *zap.Logger) (metrics.Metric, error) {
 	m := metrics.Metric{}
 	buf := new(bytes.Buffer)
 	_, err := buf.ReadFrom(r.Body)
@@ -93,6 +93,8 @@ func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) {
 	if err != nil {
 		return m, err
 	}
+
+	log.Debug("request body", zap.String("body", buf.String()))
 
 	err = json.Unmarshal(buf.Bytes(), &m)
 	if err != nil {

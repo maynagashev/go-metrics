@@ -26,4 +26,4 @@ vendor/
 
 # Tests
 metricstest-darwin-amd64
-test.log
+*.log

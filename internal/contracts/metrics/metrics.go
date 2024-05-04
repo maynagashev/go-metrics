@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 )
@@ -44,4 +45,12 @@ func (m *Metric) ValueString() string {
 		return strconv.FormatFloat(*m.Value, 'f', -1, 64)
 	}
 	return ""
+}
+
+func (m *Metric) ToJSON() []byte {
+	encoded, err := json.Marshal(m)
+	if err != nil {
+		return nil
+	}
+	return encoded
 }

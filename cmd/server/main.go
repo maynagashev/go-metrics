@@ -34,8 +34,8 @@ func initLogger() *zap.Logger {
 	// Создаем конфигурацию для регистратора в режиме разработки
 	cfg := zap.NewDevelopmentConfig()
 
-	// Указываем путь к файлу для записи логов
-	cfg.OutputPaths = []string{"./run.log", "stderr"}
+	// Указываем путь к файлу для записи логов, для записи в файл добавить в список например: "../../run.log"
+	cfg.OutputPaths = []string{"stderr"}
 
 	// Создаем регистратор с заданной конфигурацией
 	logger, err := cfg.Build()
