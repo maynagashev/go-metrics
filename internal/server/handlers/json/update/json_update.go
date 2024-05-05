@@ -23,14 +23,6 @@ func New(_ *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		// Отметаем все кроме POST
-		if r.Method != http.MethodPost {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
-		}
-
-		// todo: При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
-
 		metric, err := parseMetricFromRequest(r, log)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
