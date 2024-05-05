@@ -71,11 +71,13 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 	return memStorage
 }
 
+// UpdateGauge перезаписывает значение gauge.
 func (ms *MemStorage) UpdateGauge(metricName string, metricValue storage.Gauge) {
 	ms.gauges[metricName] = metricValue
 }
 
-func (ms *MemStorage) UpdateCounter(metricName string, metricValue storage.Counter) {
+// IncrementCounter увеличивает значение счетчика на заданное значение.
+func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Counter) {
 	ms.counters[metricName] += metricValue
 }
 
@@ -85,12 +87,12 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 		if metric.Value == nil {
 			return errors.New("gauge value is nil")
 		}
-		ms.gauges[metric.ID] = storage.Gauge(*metric.Value)
+		ms.UpdateGauge(metric.ID, storage.Gauge(*metric.Value))
 	case metrics.TypeCounter:
 		if metric.Delta == nil {
 			return errors.New("counter delta is nil")
 		}
-		ms.counters[metric.ID] += storage.Counter(*metric.Delta)
+		ms.IncrementCounter(metric.ID, storage.Counter(*metric.Delta))
 	default:
 		return fmt.Errorf("unsupported metric type: %s", metric.MType)
 	}

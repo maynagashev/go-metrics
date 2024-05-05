@@ -43,7 +43,7 @@ func TestNew(t *testing.T) {
 	server := app.New(app.Config{})
 	st := memory.New(server, zap.NewNop())
 	st.UpdateGauge("test", 0.123)
-	st.UpdateCounter("test", 5)
+	st.IncrementCounter("test", 5)
 	ts := httptest.NewServer(router.New(server, st, zap.NewNop()))
 	defer ts.Close()
 

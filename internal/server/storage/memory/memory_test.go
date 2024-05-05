@@ -84,10 +84,10 @@ func TestMemStorage_UpdateCounter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for range tt.times {
-				tt.storage.UpdateCounter(tt.args.metricName, tt.args.metricValue)
+				tt.storage.IncrementCounter(tt.args.metricName, tt.args.metricValue)
 			}
 			if got, _ := tt.storage.GetCounter(tt.args.metricName); got != tt.want {
-				t.Errorf("UpdateCounter() = %v, want %v", got, tt.want)
+				t.Errorf("IncrementCounter() = %v, want %v", got, tt.want)
 			}
 		})
 	}

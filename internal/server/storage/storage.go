@@ -28,14 +28,25 @@ type Repository interface {
 	GetGauge(name string) (Gauge, bool)
 	GetCounters() Counters
 	GetGauges() Gauges
+
+	// UpdateGauge перезаписывает значение метрики.
 	UpdateGauge(metricName string, metricValue Gauge)
-	UpdateCounter(metricName string, metricValue Counter)
-	UpdateMetric(metric metrics.Metric) error // универсальный метод обновления метрики: gauge, counter
+
+	// IncrementCounter увеличивает значение счетчика на указанное значение.
+	IncrementCounter(metricName string, metricValue Counter)
+
+	// UpdateMetric универсальный метод обновления метрики: gauge, counter.
+	UpdateMetric(metric metrics.Metric) error
+
+	// Count возвращает общее количество метрик в хранилище.
 	Count() int
-	GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool) // загрузка значения метрики в виде структуры
+
+	// GetMetric получение значения метрики в виде структуры.
+	GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool) //
 
 	// StoreMetricsToFile сохраняет метрики в файл.
 	StoreMetricsToFile() error
+
 	// RestoreMetricsFromFile восстанавливает метрики из файла.
 	RestoreMetricsFromFile() error
 }

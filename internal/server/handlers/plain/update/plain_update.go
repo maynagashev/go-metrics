@@ -48,7 +48,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 				)
 				return
 			}
-			st.UpdateCounter(metricName, storage.Counter(intValue))
+			st.IncrementCounter(metricName, storage.Counter(intValue))
 		case metrics.TypeGauge:
 			floatValue, err := strconv.ParseFloat(metricValue, 64)
 			if err != nil {
