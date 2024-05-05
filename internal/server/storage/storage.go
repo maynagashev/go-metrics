@@ -22,7 +22,6 @@ func (v Counter) String() string {
 // Repository provides an interface for working with metrics storage.
 type Repository interface {
 	GetMetrics() []metrics.Metric
-	GetMetricsPlain() []string // первоначальная версия метода GetMetrics для возврата списка метрик в виде массива строк
 	GetValue(metricType metrics.MetricType, name string) (fmt.Stringer, bool)
 	GetCounter(name string) (Counter, bool)
 	GetGauge(name string) (Gauge, bool)

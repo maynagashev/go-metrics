@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"slices"
 	"time"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
@@ -152,19 +151,6 @@ func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Strin
 		return v, ok
 	}
 	return nil, false
-}
-
-// GetMetricsPlain возвращает отсортированный список метрик в формате "тип/имя: значение".
-func (ms *MemStorage) GetMetricsPlain() []string {
-	items := make([]string, 0, ms.Count())
-	for name, value := range ms.GetGauges() {
-		items = append(items, fmt.Sprintf("counter/%s: %v", name, value))
-	}
-	for name, value := range ms.GetCounters() {
-		items = append(items, fmt.Sprintf("gauge/%s: %v", name, value))
-	}
-	slices.Sort(items)
-	return items
 }
 
 // GetMetrics возвращает отсортированный список метрик в формате слайса структур.
