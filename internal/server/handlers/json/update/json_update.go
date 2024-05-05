@@ -19,7 +19,7 @@ type ResponseWithMessage struct {
 }
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
-func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
+func New(_ *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -72,14 +72,6 @@ func New(server *app.Server, strg storage.Repository, log *zap.Logger) http.Hand
 			log.Error(fmt.Sprintf("error writing response: %s", err))
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
-		}
-
-		// Сохраняем метрики в файл сразу после изменения, если включено синхронное сохранение
-		if server.IsStoreEnabled() && server.IsSyncStore() {
-			err = strg.StoreMetricsToFile()
-			if err != nil {
-				log.Error(fmt.Sprintf("error storing metrics: %s", err))
-			}
 		}
 	}
 }

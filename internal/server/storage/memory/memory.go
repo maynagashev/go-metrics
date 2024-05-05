@@ -59,7 +59,7 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 			for {
 				time.Sleep(interval)
 				log.Info(fmt.Sprintf("store %d metrics to file %s", memStorage.Count(), server.GetStorePath()))
-				err := memStorage.StoreMetricsToFile()
+				err := memStorage.storeMetricsToFile()
 				if err != nil {
 					log.Error("failed to store metrics to file", zap.Error(err))
 				}
@@ -80,6 +80,7 @@ func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Co
 	ms.counters[metricName] += metricValue
 }
 
+// UpdateMetric универсальный метод обновления метрики в хранилище: gauge, counter.
 func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 	switch metric.MType {
 	case metrics.TypeGauge:
@@ -94,6 +95,15 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 		ms.IncrementCounter(metric.ID, storage.Counter(*metric.Delta))
 	default:
 		return fmt.Errorf("unsupported metric type: %s", metric.MType)
+	}
+
+	// Сохраняем метрики в файл сразу после изменения, если включено синхронное сохранение.
+	if ms.server.IsStoreEnabled() && ms.server.IsSyncStore() {
+		err := ms.storeMetricsToFile()
+		if err != nil {
+			// Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
+			ms.log.Error(fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err))
+		}
 	}
 	return nil
 }
@@ -169,7 +179,7 @@ func (ms *MemStorage) GetMetrics() []metrics.Metric {
 }
 
 // StoreMetricsToFile сохраняет метрики в файл.
-func (ms *MemStorage) StoreMetricsToFile() error {
+func (ms *MemStorage) storeMetricsToFile() error {
 	path := ms.server.GetStorePath()
 	ms.log.Debug("store metrics to file",
 		zap.String("path", path),
