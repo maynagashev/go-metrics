@@ -18,18 +18,27 @@ type ResponseWithMessage struct {
 	Message string `json:"message"`
 }
 
+type Metric struct {
+	ID    string             `json:"id"`              // Имя метрики
+	MType metrics.MetricType `json:"type"`            // Параметр, принимающий значение gauge или counter
+	Delta *int64             `json:"delta,omitempty"` // Значение метрики в случае передачи counter
+	Value *float64           `json:"value,omitempty"` // Значение метрики в случае передачи gauge
+}
+
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
 func New(_ *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		metric, err := parseMetricFromRequest(r, log)
+		requestedMetric, err := parseMetricFromRequest(r, log)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		log.Debug("parsed metric", zap.Any("metric", metric))
+		log.Debug("parsed metric", zap.Any("metric", requestedMetric))
 
+		// Конвертируем локальную структуру в структуру из контракта
+		metric := metrics.Metric(requestedMetric)
 		err = strg.UpdateMetric(metric)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -69,8 +78,8 @@ func New(_ *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFu
 }
 
 // Читаем метрику из json запроса.
-func parseMetricFromRequest(r *http.Request, log *zap.Logger) (metrics.Metric, error) {
-	m := metrics.Metric{}
+func parseMetricFromRequest(r *http.Request, log *zap.Logger) (Metric, error) {
+	m := Metric{}
 	buf := new(bytes.Buffer)
 	_, err := buf.ReadFrom(r.Body)
 
