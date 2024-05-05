@@ -40,8 +40,8 @@ func testRequest(
 }
 
 func TestNew(t *testing.T) {
-	server := app.New(app.Config{})
-	st := memory.New(server, zap.NewNop())
+	server := app.New(&app.Config{})
+	st := memory.New(&app.Config{}, zap.NewNop())
 	st.UpdateGauge("test", 0.123)
 	st.IncrementCounter("test", 5)
 	ts := httptest.NewServer(router.New(server, st, zap.NewNop()))

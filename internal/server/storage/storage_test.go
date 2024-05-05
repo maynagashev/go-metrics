@@ -12,19 +12,18 @@ import (
 )
 
 func TestMemoryStorage(t *testing.T) {
-	server := app.New(app.Config{})
 	tests := []struct {
 		name string
 		want storage.Repository
 	}{
 		{
 			name: "memory storage",
-			want: memory.New(server, zap.NewNop()),
+			want: memory.New(&app.Config{}, zap.NewNop()),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := memory.New(server, zap.NewNop()); !reflect.DeepEqual(got, tt.want) {
+			if got := memory.New(&app.Config{}, zap.NewNop()); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MemoryStorage() = %v, want %v", got, tt.want)
 			}
 		})

@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"flag"
@@ -19,9 +19,9 @@ type Flags struct {
 	}
 }
 
-// parseFlags обрабатывает аргументы командной строки
+// ParseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных.
-func parseFlags() (Flags, error) {
+func ParseFlags() (*Flags, error) {
 	flags := Flags{}
 	var err error
 
@@ -46,7 +46,7 @@ func parseFlags() (Flags, error) {
 	if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" {
 		flags.Server.StoreInterval, err = strconv.Atoi(envStoreInterval)
 		if err != nil {
-			return flags, err
+			return nil, err
 		}
 	}
 	// Если переменная окружения FILE_STORAGE_PATH присутствует (даже
@@ -58,9 +58,9 @@ func parseFlags() (Flags, error) {
 	if envRestore, ok := os.LookupEnv("RESTORE"); ok {
 		flags.Server.Restore, err = strconv.ParseBool(envRestore)
 		if err != nil {
-			return flags, err
+			return nil, err
 		}
 	}
 
-	return flags, nil
+	return &flags, nil
 }

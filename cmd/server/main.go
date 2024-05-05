@@ -13,23 +13,17 @@ func main() {
 		_ = log.Sync()
 	}()
 
-	flags, err := parseFlags()
+	flags, err := app.ParseFlags()
 	if err != nil {
 		// Если не удалось распарсить флаги запуска, завершаем программу.
 		panic(err)
 	}
 
-	cfg := app.Config{
-		Addr:            flags.Server.Addr,
-		StoreInterval:   flags.Server.StoreInterval,
-		FileStoragePath: flags.Server.FileStoragePath,
-		Restore:         flags.Server.Restore,
-	}
-
+	cfg := app.NewConfig(flags)
 	server := app.New(cfg)
-	storage := memory.New(server, log)
-
+	storage := memory.New(cfg, log)
 	handlers := router.New(server, storage, log)
+
 	server.Start(log, handlers)
 }
 

@@ -15,42 +15,13 @@ const (
 
 // Server (HTTP-клиент) для сбора рантайм-метрик от агентов.
 type Server struct {
-	cfg Config
+	cfg *Config
 }
 
-type Config struct {
-	Addr string
-	// Интервал сохранения метрик на сервере в секундах.
-	StoreInterval int
-	// Полное имя файла, в который будут сохранены метрики.
-	FileStoragePath string
-	// Загружать или нет ранее сохраненные метрики из файла.
-	Restore bool
-}
-
-func New(cfg Config) *Server {
+func New(cfg *Config) *Server {
 	return &Server{
 		cfg: cfg,
 	}
-}
-
-// IsStoreEnabled возвращает true, если включено сохранение метрик на сервере.
-func (s *Server) IsStoreEnabled() bool {
-	return s.cfg.FileStoragePath != ""
-}
-
-// IsRestoreEnabled надо ли восстанавливать метрики из файла при старте.
-func (s *Server) IsRestoreEnabled() bool {
-	return s.cfg.Restore
-}
-
-func (s *Server) GetStorePath() string {
-	return s.cfg.FileStoragePath
-}
-
-// IsSyncStore сохранение метрик на сервере синхронно (сразу после изменения, если нулевой интервал).
-func (s *Server) IsSyncStore() bool {
-	return s.cfg.StoreInterval == 0
 }
 
 func (s *Server) Start(log *zap.Logger, handler http.Handler) {

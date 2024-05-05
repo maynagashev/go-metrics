@@ -19,23 +19,23 @@ import (
 type MemStorage struct {
 	gauges   storage.Gauges
 	counters storage.Counters
-	server   *app.Server
+	cfg      *app.Config
 	log      *zap.Logger
 }
 
 // New создает новый экземпляр хранилища метрик в памяти, на вход
 // можно передать набор gauges или counters для инициализации в тестах.
-func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorage {
+func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage {
 	memStorage := &MemStorage{
 		gauges:   make(storage.Gauges),
 		counters: make(storage.Counters),
-		server:   server,
+		cfg:      cfg,
 		log:      log,
 	}
 	log.Debug("memory storage created", zap.Any("storage", memStorage))
 
 	// Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла.
-	if server.IsRestoreEnabled() {
+	if cfg.IsRestoreEnabled() {
 		err := memStorage.restoreMetricsFromFile()
 		if err != nil {
 			log.Error("failed to read metrics from file", zap.Error(err))
@@ -53,12 +53,12 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 	}
 
 	// Запускаем сохранение метрик в файл с указанным интервалом.
-	if server.IsStoreEnabled() && !server.IsSyncStore() {
-		interval := time.Duration(server.GetStoreInterval()) * time.Second
+	if cfg.IsStoreEnabled() && !cfg.IsSyncStore() {
+		interval := time.Duration(cfg.GetStoreInterval()) * time.Second
 		go func() {
 			for {
 				time.Sleep(interval)
-				log.Info(fmt.Sprintf("store %d metrics to file %s", memStorage.Count(), server.GetStorePath()))
+				log.Info(fmt.Sprintf("store %d metrics to file %s", memStorage.Count(), cfg.GetStorePath()))
 				err := memStorage.storeMetricsToFile()
 				if err != nil {
 					log.Error("failed to store metrics to file", zap.Error(err))
@@ -98,7 +98,7 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 	}
 
 	// Сохраняем метрики в файл сразу после изменения, если включено синхронное сохранение.
-	if ms.server.IsStoreEnabled() && ms.server.IsSyncStore() {
+	if ms.cfg.IsStoreEnabled() && ms.cfg.IsSyncStore() {
 		err := ms.storeMetricsToFile()
 		if err != nil {
 			// Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
@@ -180,7 +180,7 @@ func (ms *MemStorage) GetMetrics() []metrics.Metric {
 
 // StoreMetricsToFile сохраняет метрики в файл.
 func (ms *MemStorage) storeMetricsToFile() error {
-	path := ms.server.GetStorePath()
+	path := ms.cfg.GetStorePath()
 	ms.log.Debug("store metrics to file",
 		zap.String("path", path),
 		zap.Any("gauges", ms.GetGauges()),
@@ -211,7 +211,7 @@ func (ms *MemStorage) storeMetricsToFile() error {
 
 // RestoreMetricsFromFile загружает метрики из файла.
 func (ms *MemStorage) restoreMetricsFromFile() error {
-	path := ms.server.GetStorePath()
+	path := ms.cfg.GetStorePath()
 	ms.log.Debug("load metrics from file", zap.String("path", path))
 
 	// открытие файла для чтения и парсинг json метрик metrics.Metric
