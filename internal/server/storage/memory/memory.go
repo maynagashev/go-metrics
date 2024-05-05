@@ -36,7 +36,7 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 
 	// Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла.
 	if server.IsRestoreEnabled() {
-		err := memStorage.RestoreMetricsFromFile()
+		err := memStorage.restoreMetricsFromFile()
 		if err != nil {
 			log.Error("failed to read metrics from file", zap.Error(err))
 		}
@@ -52,7 +52,7 @@ func New(server *app.Server, log *zap.Logger, options ...interface{}) *MemStorag
 		}
 	}
 
-	// Запускаем сохранение метрик в файл c указанным интервалом.
+	// Запускаем сохранение метрик в файл с указанным интервалом.
 	if server.IsStoreEnabled() && !server.IsSyncStore() {
 		interval := time.Duration(server.GetStoreInterval()) * time.Second
 		go func() {
@@ -200,7 +200,7 @@ func (ms *MemStorage) StoreMetricsToFile() error {
 }
 
 // RestoreMetricsFromFile загружает метрики из файла.
-func (ms *MemStorage) RestoreMetricsFromFile() error {
+func (ms *MemStorage) restoreMetricsFromFile() error {
 	path := ms.server.GetStorePath()
 	ms.log.Debug("load metrics from file", zap.String("path", path))
 

@@ -45,7 +45,4 @@ type Repository interface {
 
 	// StoreMetricsToFile сохраняет метрики в файл.
 	StoreMetricsToFile() error
-
-	// RestoreMetricsFromFile восстанавливает метрики из файла.
-	RestoreMetricsFromFile() error
 }
