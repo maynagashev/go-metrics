@@ -3,8 +3,12 @@ package memory_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"go.uber.org/zap"
+
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
@@ -43,7 +47,7 @@ func TestMemStorage_GetValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(_ *testing.T) {
-			ms := memory.New(tt.fields.gauges, tt.fields.counters)
+			ms := memory.New(&app.Config{}, zap.NewNop(), tt.fields.gauges, tt.fields.counters)
 			if got, _ := ms.GetValue(tt.args.metricType, tt.args.name); got.String() != tt.want {
 				t.Errorf("GetValue() = %v, want %v", got, tt.want)
 			}
@@ -65,7 +69,7 @@ func TestMemStorage_UpdateCounter(t *testing.T) {
 	}{
 		{
 			name:    "update counter",
-			storage: memory.New(),
+			storage: memory.New(&app.Config{}, zap.NewNop()),
 			args: args{
 				metricName:  "test_counter",
 				metricValue: 3,
@@ -77,10 +81,10 @@ func TestMemStorage_UpdateCounter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for range tt.times {
-				tt.storage.UpdateCounter(tt.args.metricName, tt.args.metricValue)
+				tt.storage.IncrementCounter(tt.args.metricName, tt.args.metricValue)
 			}
 			if got, _ := tt.storage.GetCounter(tt.args.metricName); got != tt.want {
-				t.Errorf("UpdateCounter() = %v, want %v", got, tt.want)
+				t.Errorf("IncrementCounter() = %v, want %v", got, tt.want)
 			}
 		})
 	}

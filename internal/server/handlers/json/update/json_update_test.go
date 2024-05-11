@@ -6,10 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
+
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
-	"github.com/maynagashev/go-metrics/internal/server/handlers/update"
+	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 
 	"github.com/stretchr/testify/require"
 
@@ -31,7 +35,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "update gauge",
 			target:  "/update/gauge/test_gauge/1.1",
-			storage: memory.New(),
+			storage: memory.New(&app.Config{}, zap.NewNop()),
 			want: want{
 				code:        200,
 				contentType: "text/plain",
@@ -40,7 +44,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "update counter",
 			target:  "/update/counter/test_counter/1",
-			storage: memory.New(),
+			storage: memory.New(&app.Config{}, zap.NewNop()),
 			want: want{
 				code:        200,
 				contentType: "text/plain",
@@ -49,7 +53,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "invalid metrics type",
 			target:  "/update/invalid/test_counter/1",
-			storage: memory.New(),
+			storage: memory.New(&app.Config{}, zap.NewNop()),
 			want: want{
 				code:        400,
 				contentType: "text/plain; charset=utf-8",
@@ -58,7 +62,7 @@ func TestUpdateHandler(t *testing.T) {
 		{
 			name:    "invalid url",
 			target:  "/update/gauge/1",
-			storage: memory.New(),
+			storage: memory.New(&app.Config{}, zap.NewNop()),
 			want: want{
 				code:        404,
 				contentType: "text/plain; charset=utf-8",
@@ -69,7 +73,7 @@ func TestUpdateHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, tt.target, nil)
 			w := httptest.NewRecorder()
-			update.New(tt.storage)(w, request)
+			update.New(tt.storage, zap.NewNop())(w, request)
 
 			res := w.Result()
 			assert.Equal(t, tt.want.code, res.StatusCode)

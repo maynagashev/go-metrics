@@ -1,36 +1,44 @@
 package main
 
 import (
-	"log/slog"
-	"net/http"
-	"time"
-
-	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
-)
-
-const (
-	DefaultReadTimeout  = 5 * time.Second
-	DefaultWriteTimeout = 10 * time.Second
-	DefaultIdleTimeout  = 120 * time.Second
+	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
+	"go.uber.org/zap"
 )
 
 func main() {
-	flags := mustParseFlags()
-	slog.Info("starting server...", "addr", flags.Server.Addr)
+	log := initLogger()
+	defer func() {
+		_ = log.Sync()
+	}()
 
-	server := &http.Server{
-		Addr:    flags.Server.Addr,
-		Handler: router.New(memory.New()),
-		// Настройка таймаутов для сервера по рекомендациям линтера gosec
-		ReadTimeout:  DefaultReadTimeout,
-		WriteTimeout: DefaultWriteTimeout,
-		IdleTimeout:  DefaultIdleTimeout,
-	}
-
-	err := server.ListenAndServe()
+	flags, err := app.ParseFlags()
 	if err != nil {
-		slog.Error("server failed to start", "error", err)
+		// Если не удалось распарсить флаги запуска, завершаем программу.
+		panic(err)
 	}
+
+	cfg := app.NewConfig(flags)
+	server := app.New(cfg)
+	storage := memory.New(cfg, log)
+	handlers := router.New(server, storage, log)
+
+	server.Start(log, handlers)
+}
+
+func initLogger() *zap.Logger {
+	// Создаем конфигурацию для регистратора в режиме разработки
+	cfg := zap.NewDevelopmentConfig()
+
+	// Указываем путь к файлу для записи логов, для записи в файл добавить в список например: "../../run.log"
+	cfg.OutputPaths = []string{"stderr"}
+
+	// Создаем регистратор с заданной конфигурацией
+	logger, err := cfg.Build()
+	if err != nil {
+		// вызываем панику, если ошибка
+		panic(err)
+	}
+	return logger
 }

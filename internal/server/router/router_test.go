@@ -6,6 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
+
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 
 	"github.com/maynagashev/go-metrics/internal/server/router"
@@ -36,11 +40,11 @@ func testRequest(
 }
 
 func TestNew(t *testing.T) {
-	st := memory.New()
+	server := app.New(&app.Config{})
+	st := memory.New(&app.Config{}, zap.NewNop())
 	st.UpdateGauge("test", 0.123)
-	st.UpdateCounter("test", 5)
-
-	ts := httptest.NewServer(router.New(st))
+	st.IncrementCounter("test", 5)
+	ts := httptest.NewServer(router.New(server, st, zap.NewNop()))
 	defer ts.Close()
 
 	var tests = []struct {
