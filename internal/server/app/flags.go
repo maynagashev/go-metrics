@@ -17,6 +17,11 @@ type Flags struct {
 		// Загружать или нет ранее сохраненные метрики из файла
 		Restore bool
 	}
+
+	Database struct {
+		// Параметры подключения к БД, например postgres://username:password@localhost:5432/database_name
+		DSN string
+	}
 }
 
 // ParseFlags обрабатывает аргументы командной строки
@@ -25,14 +30,18 @@ func ParseFlags() (*Flags, error) {
 	flags := Flags{}
 	var err error
 
-	// Регистрируем переменную flagRunAddr как аргумент -a со значением :8080 по умолчанию.
-	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "address and port to run server")
+	// Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
+	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "IP  адрес и порт на которых следует запустить сервер")
 	// Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
-	flag.IntVar(&flags.Server.StoreInterval, "i", 300, "store interval in seconds")
+	flag.IntVar(&flags.Server.StoreInterval, "i", 300, "Интервал сохранения метрик на диск, в секундах")
 	// Регистрируем переменную flagFileStoragePath как аргумент -f со значением metrics.json по умолчанию.
-	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "file storage path")
+	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "Путь к файлу для хранения метрик")
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
-	flag.BoolVar(&flags.Server.Restore, "r", true, "restore metrics from file on start")
+	flag.BoolVar(&flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
+
+	// Адрес подключения к БД PostgresSQL
+	flag.StringVar(&flags.Database.DSN, "d", "postgres://metrics:password@localhost:5432/metrics",
+		"Параметры подключения к базе данных Postgres")
 
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()
@@ -60,6 +69,11 @@ func ParseFlags() (*Flags, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	// Если переданы параметры БД в параметрах окружения, используем их
+	if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok {
+		flags.Database.DSN = envDatabaseDSN
 	}
 
 	return &flags, nil

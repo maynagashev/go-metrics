@@ -8,6 +8,12 @@ type Config struct {
 	FileStoragePath string
 	// Загружать или нет ранее сохраненные метрики из файла.
 	Restore bool
+	// Параметры базы данных
+	Database DatabaseConfig
+}
+
+type DatabaseConfig struct {
+	DSN string
 }
 
 func NewConfig(flags *Flags) *Config {
@@ -16,6 +22,7 @@ func NewConfig(flags *Flags) *Config {
 		StoreInterval:   flags.Server.StoreInterval,
 		FileStoragePath: flags.Server.FileStoragePath,
 		Restore:         flags.Server.Restore,
+		Database:        DatabaseConfig{DSN: flags.Database.DSN},
 	}
 }
 

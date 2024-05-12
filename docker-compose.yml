@@ -1,0 +1,48 @@
+name: metrics
+services:
+
+  pgsql:
+    env_file:
+      - .env
+    image: 'postgres:14'
+    container_name: metrics_pgsql
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    environment:
+      POSTGRES_DB: '${DB_DATABASE:-metrics}'
+      POSTGRES_USER: '${DB_USERNAME:-metrics}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+    volumes:
+      - 'pgsql_data:/var/lib/postgresql/data'
+    networks:
+      - metrics_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
+      retries: 3
+      timeout: 5s
+
+
+#  redis:
+#    container_name: metrics_redis
+#    image: redis:alpine
+#    restart: always
+#    ports:
+#      - "6382:6379"
+#    volumes:
+#      - redis_data:/data
+#    networks:
+#      - metrics_network
+
+volumes:
+#  redis_data:
+#    name: metrics_redis_data
+#    driver: local
+  pgsql_data:
+    name: metrics_pgsql_data
+    driver: local
+
+networks:
+  metrics_network:
+    name: metrics_network
+    driver: bridge
+    external: false
