@@ -26,7 +26,7 @@ type Metric struct {
 }
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
-func New(_ *app.Server, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
+func New(_ *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 

@@ -40,11 +40,11 @@ func testRequest(
 }
 
 func TestNew(t *testing.T) {
-	server := app.New(&app.Config{})
+	config := &app.Config{}
 	st := memory.New(&app.Config{}, zap.NewNop())
 	st.UpdateGauge("test", 0.123)
 	st.IncrementCounter("test", 5)
-	ts := httptest.NewServer(router.New(server, st, zap.NewNop()))
+	ts := httptest.NewServer(router.New(config, st, zap.NewNop()))
 	defer ts.Close()
 
 	var tests = []struct {

@@ -23,7 +23,7 @@ func main() {
 	server := app.New(cfg)
 	storage := memory.New(cfg, log)
 	// sql, err := pgsql.New(context.Background(), cfg, log)
-	handlers := router.New(server, storage, log)
+	handlers := router.New(cfg, storage, log)
 
 	server.Start(log, handlers)
 }
