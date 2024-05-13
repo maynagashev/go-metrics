@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
+
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgsql"
 	"go.uber.org/zap"
 )
 
@@ -21,11 +25,38 @@ func main() {
 
 	cfg := app.NewConfig(flags)
 	server := app.New(cfg)
-	storage := memory.New(cfg, log)
-	// sql, err := pgsql.New(context.Background(), cfg, log)
-	handlers := router.New(cfg, storage, log)
+
+	// Инициализируем хранилище
+	repo, err := initStorage(cfg, log)
+	if err != nil {
+		log.Error("failed to init storage", zap.Error(err))
+		panic(err)
+	}
+	defer func() {
+		err = repo.Close()
+		if err != nil {
+			log.Error("failed to close storage", zap.Error(err))
+		}
+	}()
+
+	handlers := router.New(cfg, repo, log)
 
 	server.Start(log, handlers)
+
+	log.Debug("server stopped")
+}
+
+func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) {
+	// Если указан DATABASE_DSN или флаг -d, то используем PostgreSQL.
+	if cfg.IsDatabaseEnabled() {
+		pg, err := pgsql.New(context.Background(), cfg, log)
+		if err != nil {
+			return nil, err
+		}
+		return pg, nil
+	}
+
+	return memory.New(cfg, log), nil
 }
 
 func initLogger() *zap.Logger {

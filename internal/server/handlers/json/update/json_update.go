@@ -19,7 +19,7 @@ type ResponseWithMessage struct {
 }
 
 type Metric struct {
-	ID    string             `json:"id"`              // Имя метрики
+	Name  string             `json:"id"`              // Имя метрики
 	MType metrics.MetricType `json:"type"`            // Параметр, принимающий значение gauge или counter
 	Delta *int64             `json:"delta,omitempty"` // Значение метрики в случае передачи counter
 	Value *float64           `json:"value,omitempty"` // Значение метрики в случае передачи gauge
@@ -48,9 +48,9 @@ func New(_ *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFu
 		var resMessage string
 
 		// Получаем значение метрики из хранилища
-		v, ok := strg.GetValue(metric.MType, metric.ID)
+		m, ok := strg.GetMetric(metric.MType, metric.Name)
 		if ok {
-			resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), v)
+			resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), m.String())
 		} else {
 			resMessage = fmt.Sprintf("metric %s not found", metric.String())
 		}

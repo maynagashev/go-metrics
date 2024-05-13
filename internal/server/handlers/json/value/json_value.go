@@ -24,7 +24,7 @@ func New(storage storage.Repository) http.HandlerFunc {
 		}
 
 		// Получаем значение метрики из хранилища
-		metric, ok := storage.GetMetric(requestMetric.MType, requestMetric.ID)
+		metric, ok := storage.GetMetric(requestMetric.MType, requestMetric.Name)
 		if !ok {
 			http.Error(w, fmt.Sprintf("%s not found", metric.String()), http.StatusNotFound)
 			return

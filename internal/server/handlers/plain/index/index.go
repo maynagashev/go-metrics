@@ -21,11 +21,11 @@ func New(st storage.Repository) http.HandlerFunc {
 			switch metric.MType {
 			case metrics.TypeGauge:
 				valF := strconv.FormatFloat(*metric.Value, 'f', -1, 64)
-				items = append(items, fmt.Sprintf("gauge/%s: %s", metric.ID, valF))
+				items = append(items, fmt.Sprintf("gauge/%s: %s", metric.Name, valF))
 			case metrics.TypeCounter:
-				items = append(items, fmt.Sprintf("counter/%s: %d", metric.ID, *metric.Delta))
+				items = append(items, fmt.Sprintf("counter/%s: %d", metric.Name, *metric.Delta))
 			default:
-				items = append(items, fmt.Sprintf("unknown/%s", metric.ID))
+				items = append(items, fmt.Sprintf("unknown/%s", metric.Name))
 			}
 		}
 

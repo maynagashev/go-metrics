@@ -50,3 +50,8 @@ func (cfg *Config) IsSyncStore() bool {
 func (cfg *Config) GetStoreInterval() int {
 	return cfg.StoreInterval
 }
+
+// IsDatabaseEnabled возвращает true, если переданы параметры подключения к БД.
+func (cfg *Config) IsDatabaseEnabled() bool {
+	return cfg.Database.DSN != ""
+}

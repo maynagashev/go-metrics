@@ -62,10 +62,10 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 
 		var resMessage string
 		// Получаем значение метрики из хранилища
-		v, ok := st.GetValue(metricType, metricName)
+		v, ok := st.GetMetric(metricType, metricName)
 		if ok {
 			resMessage = fmt.Sprintf("metric %s/%s updated with value %s, result: %s",
-				metricType, metricName, metricValue, v)
+				metricType, metricName, metricValue, v.String())
 		} else {
 			resMessage = fmt.Sprintf("metric %s/%s not found", metricType, metricName)
 		}

@@ -39,9 +39,9 @@ func ParseFlags() (*Flags, error) {
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
 	flag.BoolVar(&flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
 
-	// Адрес подключения к БД PostgresSQL
-	flag.StringVar(&flags.Database.DSN, "d", "postgres://metrics:password@localhost:5432/metrics",
-		"Параметры подключения к базе данных Postgres")
+	// Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
+	flag.StringVar(&flags.Database.DSN, "d", "",
+		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
 
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()
