@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/maynagashev/go-metrics/internal/lib/api/response"
+
 	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
@@ -28,8 +30,6 @@ type Metric struct {
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
 func New(_ *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
 		requestedMetric, err := parseMetricFromRequest(r, log)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,25 +55,11 @@ func New(_ *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFu
 			resMessage = fmt.Sprintf("metric %s not found", metric.String())
 		}
 
-		// Отправляем успешный ответ
-		w.WriteHeader(http.StatusOK)
-
 		// Логируем ответ для отладки
 		log.Info(resMessage)
 
-		// Выводим в тело ответа сообщение о результате
-		encoded, err := json.Marshal(ResponseWithMessage{Message: resMessage})
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		_, err = fmt.Fprint(w, string(encoded))
-		if err != nil {
-			log.Error(fmt.Sprintf("error writing response: %s", err))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// Отправляем успешный ответ
+		response.OK(w, resMessage)
 	}
 }
 
