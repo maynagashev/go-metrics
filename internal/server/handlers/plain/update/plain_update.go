@@ -32,6 +32,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 		metricName := parts[3]
 		metricValue := parts[4]
 
+		var m *metrics.Metric
 		switch metricType {
 		case metrics.TypeCounter:
 			intValue, err := strconv.ParseInt(metricValue, 10, 64)
@@ -43,7 +44,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 				)
 				return
 			}
-			st.IncrementCounter(metricName, storage.Counter(intValue))
+			m = metrics.NewCounter(metricName, intValue)
 		case metrics.TypeGauge:
 			floatValue, err := strconv.ParseFloat(metricValue, 64)
 			if err != nil {
@@ -54,15 +55,16 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 				)
 				return
 			}
-			m := metrics.NewGauge(metricName, floatValue)
-			err = st.UpdateMetric(*m)
-
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-			}
+			m = metrics.NewGauge(metricName, floatValue)
 		default:
 			http.Error(w, "Invalid metrics type, must be: counter or gauge", http.StatusBadRequest)
 			return
+		}
+
+		// Обновляем метрику в хранилище
+		err := st.UpdateMetric(*m)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
 		var resMessage string
@@ -82,7 +84,7 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 		log.Info(resMessage)
 
 		// Выводим в тело ответа сообщение о результате
-		_, err := fmt.Fprint(w, resMessage)
+		_, err = fmt.Fprint(w, resMessage)
 		if err != nil {
 			log.Error(fmt.Sprintf("error writing response: %s", err))
 			return

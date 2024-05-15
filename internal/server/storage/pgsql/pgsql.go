@@ -110,15 +110,6 @@ func (p *PostgresStorage) GetGauge(name string) (storage.Gauge, bool) {
 	return storage.Gauge(*m.Value), true
 }
 
-// IncrementCounter увеличивает значение счетчика на указанное значение, если записи нет то создает новую.
-func (p *PostgresStorage) IncrementCounter(name string, delta storage.Counter) {
-	m := metrics.NewCounter(name, int64(delta))
-	err := p.UpdateMetric(*m)
-	if err != nil {
-		p.log.Error(err.Error())
-	}
-}
-
 // UpdateMetric универсальный метод обновления метрики: gauge, counter.
 // Если метрика существует, то обновляем, иначе создаем новую.
 func (p *PostgresStorage) UpdateMetric(metric metrics.Metric) error {
@@ -127,9 +118,9 @@ func (p *PostgresStorage) UpdateMetric(metric metrics.Metric) error {
 	// Если метрика существует, то обновляем, иначе создаем новую.
 	_, ok := p.GetMetric(metric.MType, metric.Name)
 	if ok {
-		q = `UPDATE public.metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
+		q = `UPDATE metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
 	} else {
-		q = `INSERT INTO public.metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
+		q = `INSERT INTO metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
 	}
 
 	_, err := p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)

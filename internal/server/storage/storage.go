@@ -38,9 +38,6 @@ type Repository interface {
 	// GetGauge возвращает измерение по имени.
 	GetGauge(name string) (Gauge, bool)
 
-	// IncrementCounter увеличивает значение счетчика на указанное значение.
-	IncrementCounter(metricName string, metricValue Counter)
-
 	// UpdateMetric универсальный метод обновления метрики: gauge, counter.
 	// Если метрика существует, то обновляет, иначе создает новую.
 	UpdateMetric(metric metrics.Metric) error
