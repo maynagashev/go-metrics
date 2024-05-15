@@ -127,7 +127,7 @@ func (p *PostgresStorage) UpdateMetric(metric metrics.Metric) error {
 	// Если метрика существует, то обновляем, иначе создаем новую.
 	_, ok := p.GetMetric(metric.MType, metric.Name)
 	if ok {
-		q = `UPDATE public.metrics SET value = $3, delta = $4 WHERE name = $1 AND type = $2`
+		q = `UPDATE public.metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
 	} else {
 		q = `INSERT INTO public.metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
 	}

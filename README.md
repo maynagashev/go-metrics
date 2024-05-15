@@ -78,6 +78,12 @@ chmod +x metricstest-darwin-amd64
 
 # запуск конкретной итерации с  -server-port=8080 
  ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration8$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
+
+# проверка iter12
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration12$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee test.log
+
+# запуск сервера с postgres
+go run . -d postgres://metrics:password@localhost:5432/metrics
 ```
 
 ## Запуск линтеров
