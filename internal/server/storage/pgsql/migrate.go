@@ -4,8 +4,8 @@ package pgsql
 func (p *PostgresStorage) createTables() error {
 	_, err := p.conn.Exec(p.ctx, `CREATE TABLE IF NOT EXISTS metrics (
 		id SERIAL PRIMARY KEY,
-		name TEXT NOT NULL,
-		type TEXT NOT NULL,
+		name VARCHAR(250) NOT NULL,
+		type VARCHAR(50) NOT NULL,
 		delta BIGINT NULL ,
 		value DOUBLE PRECISION NULL
 	)`)

@@ -54,7 +54,12 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 				)
 				return
 			}
-			st.UpdateGauge(metricName, storage.Gauge(floatValue))
+			m := metrics.NewGauge(metricName, floatValue)
+			err = st.UpdateMetric(*m)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			}
 		default:
 			http.Error(w, "Invalid metrics type, must be: counter or gauge", http.StatusBadRequest)
 			return

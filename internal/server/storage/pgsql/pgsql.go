@@ -110,55 +110,6 @@ func (p *PostgresStorage) GetGauge(name string) (storage.Gauge, bool) {
 	return storage.Gauge(*m.Value), true
 }
 
-// GetCounters возвращает все счетчики в виде мапы Counters.
-func (p *PostgresStorage) GetCounters() storage.Counters {
-	q := `SELECT name, delta FROM public.metrics WHERE type = $1`
-	rows, err := p.conn.Query(p.ctx, q, metrics.TypeCounter)
-	if err != nil {
-		p.log.Error(err.Error())
-		return nil
-	}
-	defer rows.Close()
-
-	counters := make(storage.Counters)
-	for rows.Next() {
-		var name string
-		var delta int64
-		err = rows.Scan(&name, &delta)
-		if err != nil {
-			p.log.Error(err.Error())
-			return nil
-		}
-		counters[name] = storage.Counter(delta)
-	}
-
-	return counters
-}
-
-// GetGauges возвращает все измерения в виде мапы Gauges.
-func (p *PostgresStorage) GetGauges() storage.Gauges {
-	q := `SELECT name, value FROM public.metrics WHERE type = $1`
-	rows, err := p.conn.Query(p.ctx, q, metrics.TypeGauge)
-	if err != nil {
-		p.log.Error(err.Error())
-		return nil
-	}
-	defer rows.Close()
-
-	gauges := make(storage.Gauges)
-	for rows.Next() {
-		var name string
-		var value float64
-		err = rows.Scan(&name, &value)
-		if err != nil {
-			p.log.Error(err.Error())
-			return nil
-		}
-		gauges[name] = storage.Gauge(value)
-	}
-	return gauges
-}
-
 // IncrementCounter увеличивает значение счетчика на указанное значение, если записи нет то создает новую.
 func (p *PostgresStorage) IncrementCounter(name string, delta storage.Counter) {
 	m := metrics.NewCounter(name, int64(delta))
@@ -168,16 +119,8 @@ func (p *PostgresStorage) IncrementCounter(name string, delta storage.Counter) {
 	}
 }
 
-// UpdateGauge перезаписывает значения метрики.
-func (p *PostgresStorage) UpdateGauge(metricName string, metricValue storage.Gauge) {
-	m := metrics.NewGauge(metricName, float64(metricValue))
-	err := p.UpdateMetric(*m)
-	if err != nil {
-		p.log.Error(err.Error())
-	}
-}
-
 // UpdateMetric универсальный метод обновления метрики: gauge, counter.
+// Если метрика существует, то обновляем, иначе создаем новую.
 func (p *PostgresStorage) UpdateMetric(metric metrics.Metric) error {
 	var q string
 
