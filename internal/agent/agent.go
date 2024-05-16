@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"math"
@@ -129,17 +130,16 @@ func (a *Agent) CollectRuntimeMetrics() map[string]float64 {
 
 // Отправка всех накопленных метрик.
 func (a *Agent) sendAllMetrics() {
-	gauges := make(map[string]float64)
-	counters := make(map[string]int64)
+	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
 
 	// Делаем копию метрик, чтобы данные не изменились во время отправки.
 	a.mu.Lock()
 	slog.Info("sending metrics", "poll_count", a.counters["PollCount"])
 	for name, value := range a.gauges {
-		gauges[name] = value
+		items = append(items, metrics.NewGauge(name, value))
 	}
 	for name, value := range a.counters {
-		counters[name] = value
+		items = append(items, metrics.NewCounter(name, value))
 	}
 	// Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
 	// Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
@@ -149,37 +149,31 @@ func (a *Agent) sendAllMetrics() {
 
 	a.mu.Unlock()
 
-	// Отправляем gauges.
-	for name, value := range gauges {
-		m := metrics.NewGauge(name, value)
-		err := a.sendMetric(m)
-		if err != nil {
-			slog.Error(fmt.Sprintf("failed to send gauge %s: %v", name, err))
-			return
-		}
-	}
-	// Отправляем counters.
-	for name, value := range counters {
-		m := metrics.NewCounter(name, value)
-		err := a.sendMetric(m)
-		if err != nil {
-			slog.Error(fmt.Sprintf("failed to send counter %s: %v", name, err))
-			return
-		}
+	// Отправляем все метрики пачкой на новый маршрут /updates
+	err := a.sendMetricsBatch(items)
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to send metrics: %s", err), "metrics", items)
+		return
 	}
 }
 
-// Отправка отдельной метрики на сервер.
-func (a *Agent) sendMetric(metric *metrics.Metric) error {
-	url := fmt.Sprintf("%s/update", a.ServerURL)
-	slog.Info("sending metric", "url", url, "metric", metric.String())
+// Отправка пачки метрик на сервер.
+func (a *Agent) sendMetricsBatch(items []*metrics.Metric) error {
+	var err error
+	url := fmt.Sprintf("%s/updates", a.ServerURL)
+	slog.Info("sending metrics batch", "url", url, "metrics", items)
 
+	// Создаем новый запрос.
 	req := a.client.R()
 	req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия.
 	req.SetHeader("Content-Type", "application/json")
 
-	bytesBody := metric.ToJSON()
-	var err error
+	// Преобразуем метрики в JSON.
+	bytesBody, err := json.Marshal(items)
+	if err != nil {
+		return err
+	}
+
 	// Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.
 	// Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
 	if a.SendCompressedData {
@@ -192,10 +186,9 @@ func (a *Agent) sendMetric(metric *metrics.Metric) error {
 
 	req.SetBody(bytesBody)
 
-	slog.Debug("sendMetric", "url", url, "req", req)
+	slog.Debug("sendMetricsBatch", "url", url, "req", req)
 
 	res, err := req.Post(url)
-
 	if err != nil {
 		return err
 	}
