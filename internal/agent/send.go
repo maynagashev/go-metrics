@@ -2,9 +2,12 @@ package agent
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
+	"time"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/lib/utils"
@@ -32,20 +35,63 @@ func (a *Agent) sendAllMetrics() {
 	a.mu.Unlock()
 
 	// Отправляем все метрики пачкой на новый маршрут /updates
-	// TODO: добавить повторные попытки отправки при ошибках, если ошибка retriable.
-	err := a.makeUpdatesRequest(items)
-	if err != nil {
-		slog.Error(fmt.Sprintf("failed to send metrics: %s", err), "metrics", items)
-		return
+	// Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
+	for i := 0; i <= maxSendRetries; i++ {
+		// Пауза перед повторной отправкой.
+		if i > 0 {
+			//nolint:gomnd // количество секунд для паузы зависит от номера попытки
+			sleepSeconds := i*2 - 1 // 1, 3, 5, 7, 9, 11, ...
+			slog.Info(fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", i, sleepSeconds))
+			time.Sleep(time.Duration(sleepSeconds) * time.Second)
+		}
+
+		err := a.makeUpdatesRequest(items, i)
+		// Если нет ошибок выходим из цикла и функции.
+		if err == nil {
+			return
+		}
+
+		// Логируем ошибку
+		slog.Error(fmt.Sprintf("failed to s end metrics (try=%d): %s", i, err), "metrics", items)
+
+		// Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
+		if !isRetriableSendError(err) {
+			slog.Debug("non-retriable error, stopping retries", "err", err)
+			return
+		}
 	}
+}
+
+func isRetriableSendError(err error) bool {
+	slog.Debug(fmt.Sprintf("isRetriableSendError: %#v", err))
+
+	// Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом.
+	var netErr net.Error
+	if errors.As(err, &netErr) {
+		slog.Debug(fmt.Sprintf("isRetriableSendError => AS net.Error: %#v", netErr))
+		// Проверяем, является ли ошибка временной
+		if netErr.Timeout() {
+			return true
+		}
+	}
+
+	// Проверяем, является ли ошибка ошибкой сети.
+	var opErr *net.OpError
+	if errors.As(err, &opErr) {
+		slog.Debug("isRetriableSendError => AS net.OpError", "err", err)
+		return true
+	}
+
+	// Если ошибка не является временной, возвращаем false.
+	return false
 }
 
 // Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
 // При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
-func (a *Agent) makeUpdatesRequest(items []*metrics.Metric) error {
+func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int) error {
 	var err error
 	url := fmt.Sprintf("%s/updates", a.ServerURL)
-	slog.Info("sending metrics batch", "url", url, "metrics", items)
+	slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "url", url, "metrics", items)
 
 	// Создаем новый запрос.
 	req := a.client.R()

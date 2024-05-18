@@ -2,6 +2,8 @@
 package main
 
 import (
+	"log/slog"
+	"os"
 	"time"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
@@ -9,6 +11,7 @@ import (
 
 func main() {
 	flags := mustParseFlags()
+	initLogger()
 
 	serverURL := "http://" + flags.Server.Addr
 	pollInterval := time.Duration(flags.Server.PollInterval) * time.Second
@@ -16,4 +19,18 @@ func main() {
 
 	a := agent.New(serverURL, pollInterval, reportInterval)
 	a.Run()
+}
+
+func initLogger() {
+	// Создаем переменную для уровня логирования и устанавливаем ее в Debug
+	logLevel := new(slog.LevelVar)
+	logLevel.Set(slog.LevelDebug)
+
+	// Создаем новый обработчик с настроенным уровнем логирования
+	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: logLevel,
+	}))
+
+	// Устанавливаем созданный логгер как логгер по умолчанию
+	slog.SetDefault(logger)
 }

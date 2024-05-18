@@ -10,6 +10,9 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
+// Количество попыток отправки запроса на сервер при возникновении ошибок.
+const maxSendRetries = 3
+
 // Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP.
 type Agent struct {
 	PollInterval       time.Duration
