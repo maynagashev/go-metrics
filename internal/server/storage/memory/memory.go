@@ -16,6 +16,8 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
+const maxRetries = 3
+
 type MemStorage struct {
 	gauges   storage.Gauges
 	counters storage.Counters
@@ -180,11 +182,24 @@ func (ms *MemStorage) storeMetricsToFile() error {
 		zap.Any("gauges", ms.GetGauges()),
 		zap.Any("counters", ms.GetCounters()))
 
-	// открытие файла для записи
-	f, err := os.Create(path)
-	if err != nil {
-		return err
+	var f *os.File
+	var err error
+
+	for i := 0; i <= maxRetries; i++ {
+		// попытка открытия файла для записи
+		f, err = os.Create(path)
+		if err == nil {
+			break
+		}
+		ms.log.Error(fmt.Sprintf("Attempt %d: Error opening file: %v", i+1, err))
+		time.Sleep(time.Duration((i+1)*2-1) * time.Second)
 	}
+
+	if err != nil {
+		return fmt.Errorf("failed to open file after %d attempts: %w", maxRetries, err)
+	}
+
+	// отложенное закрытие файла
 	defer func() {
 		err = f.Close()
 		if err != nil {
