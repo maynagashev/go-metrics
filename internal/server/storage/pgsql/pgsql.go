@@ -2,7 +2,12 @@ package pgsql
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -10,6 +15,8 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"go.uber.org/zap"
 )
+
+const maxRetries = 3
 
 type PostgresStorage struct {
 	conn *pgx.Conn
@@ -123,11 +130,46 @@ func (p *PostgresStorage) UpdateMetric(metric metrics.Metric) error {
 		q = `INSERT INTO metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
 	}
 
-	_, err := p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
-	if err != nil {
-		p.log.Error(err.Error())
-		return err
+	// Попытка выполнения запроса с обработкой retriable-ошибок
+	var err error
+	for i := 0; i <= maxRetries; i++ {
+		_, err = p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
+
+		// Если нет ошибок выходим из цикла и функции.
+		if err == nil {
+			return nil
+		}
+
+		// Проверяем, является ли ошибка retriable
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if isRetriableError(pgErr) {
+				p.log.Error(fmt.Sprintf("Attempt %d: Retriable error updating metric: %v", i+1, err))
+				time.Sleep(time.Duration((i+1)*2-1) * time.Second)
+				continue
+			}
+		}
+
+		// Если ошибка не retriable, выходим из цикла
+		break
 	}
 
-	return nil
+	// Логируем и возвращаем ошибку, если не удалось обновить метрику
+	if err != nil {
+		p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
+	}
+	return err
+}
+
+// Проверка, является ли ошибка retriable.
+func isRetriableError(err *pgconn.PgError) bool {
+	switch err.Code {
+	case pgerrcode.ConnectionException,
+		pgerrcode.ConnectionDoesNotExist,
+		pgerrcode.ConnectionFailure,
+		pgerrcode.DiskFull:
+		return true
+	default:
+		return false
+	}
 }
