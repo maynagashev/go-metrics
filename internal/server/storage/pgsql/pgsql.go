@@ -40,13 +40,6 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresSto
 		ctx:  ctx,
 	}
 
-	// Создание необходимых таблиц в базе данных.
-	err = p.createTables()
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to create tables: %v\n", err))
-		return p, err
-	}
-
 	return p, nil
 }
 
