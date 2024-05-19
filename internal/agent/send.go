@@ -52,7 +52,7 @@ func (a *Agent) sendAllMetrics() {
 		}
 
 		// Логируем ошибку
-		slog.Error(fmt.Sprintf("failed to s end metrics (try=%d): %s", i, err), "metrics", items)
+		slog.Error(fmt.Sprintf("failed to send metrics (try=%d): %s", i, err), "metrics", items)
 
 		// Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
 		if !isRetriableSendError(err) {
@@ -115,8 +115,6 @@ func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int) error {
 	}
 
 	req.SetBody(bytesBody)
-
-	slog.Debug("makeUpdatesRequest", "url", url, "req", req)
 
 	res, err := req.Post(url)
 	if err != nil {

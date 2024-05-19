@@ -8,8 +8,7 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
-
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
@@ -19,14 +18,14 @@ import (
 const maxRetries = 3
 
 type PostgresStorage struct {
-	conn *pgx.Conn
+	conn *pgxpool.Pool
 	cfg  *app.Config
 	log  *zap.Logger
 	ctx  context.Context
 }
 
 func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresStorage, error) {
-	conn, err := pgx.Connect(ctx, config.Database.DSN)
+	conn, err := pgxpool.New(ctx, config.Database.DSN)
 	log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
 
 	if err != nil {
@@ -52,7 +51,8 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresSto
 }
 
 func (p *PostgresStorage) Close() error {
-	return p.conn.Close(p.ctx)
+	p.conn.Close()
+	return nil
 }
 
 func (p *PostgresStorage) Count() int {
