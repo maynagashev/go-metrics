@@ -13,7 +13,8 @@ type Config struct {
 }
 
 type DatabaseConfig struct {
-	DSN string
+	DSN            string
+	MigrationsPath string
 }
 
 func NewConfig(flags *Flags) *Config {
@@ -22,7 +23,10 @@ func NewConfig(flags *Flags) *Config {
 		StoreInterval:   flags.Server.StoreInterval,
 		FileStoragePath: flags.Server.FileStoragePath,
 		Restore:         flags.Server.Restore,
-		Database:        DatabaseConfig{DSN: flags.Database.DSN},
+		Database: DatabaseConfig{
+			DSN:            flags.Database.DSN,
+			MigrationsPath: flags.Database.MigrationsPath,
+		},
 	}
 }
 

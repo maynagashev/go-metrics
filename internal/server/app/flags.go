@@ -21,6 +21,8 @@ type Flags struct {
 	Database struct {
 		// Параметры подключения к БД, например postgres://username:password@localhost:5432/database_name
 		DSN string
+		// Путь к директории с миграциями
+		MigrationsPath string
 	}
 }
 
@@ -42,6 +44,11 @@ func ParseFlags() (*Flags, error) {
 	// Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
 	flag.StringVar(&flags.Database.DSN, "d", "",
 		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
+	// Путь к директории с миграциями относительно корня проекта, по умолчанию "migrations/server".
+	flag.StringVar(&flags.Database.MigrationsPath,
+		"migrations-path",
+		"migrations/server",
+		"Путь к директории с миграциями")
 
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()

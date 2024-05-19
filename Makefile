@@ -18,3 +18,7 @@ agent:
 server_with_agent:
 	@echo "Starting server with agent..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
+
+lint :
+	@echo "Running linter..."
+	@golangci-lint run

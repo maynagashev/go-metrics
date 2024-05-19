@@ -17,9 +17,11 @@ import (
 func TestNew(t *testing.T) {
 	config := &app.Config{
 		Database: struct {
-			DSN string
+			DSN            string
+			MigrationsPath string
 		}{
-			DSN: "postgres://metrics:password@localhost:5432/metrics",
+			DSN:            "postgres://metrics:password@localhost:5432/metrics",
+			MigrationsPath: "migration/server",
 		},
 	}
 	log, _ := zap.NewDevelopmentConfig().Build()

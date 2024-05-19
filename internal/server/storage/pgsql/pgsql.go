@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgsql/migration"
+
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -40,6 +42,8 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresSto
 		ctx:  ctx,
 	}
 
+	// Автоматически накатываем миграции при создании экземпляра хранилища.
+	migration.Up(config.Database.MigrationsPath, config.Database.DSN)
 	return p, nil
 }
 
