@@ -14,6 +14,7 @@ type Flags struct {
 		ReportInterval int
 		PollInterval   int
 	}
+	PrivateKey string
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -29,6 +30,7 @@ func mustParseFlags() Flags {
 	)
 	flag.IntVar(&flags.Server.ReportInterval, "r", 10, "report interval in seconds")
 	flag.IntVar(&flags.Server.PollInterval, "p", 2, "poll interval in seconds")
+	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
 
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()

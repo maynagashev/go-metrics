@@ -24,6 +24,8 @@ type Flags struct {
 		// Путь к директории с миграциями
 		MigrationsPath string
 	}
+
+	PrivateKey string
 }
 
 // ParseFlags обрабатывает аргументы командной строки
@@ -49,6 +51,8 @@ func ParseFlags() (*Flags, error) {
 		"migrations-path",
 		"migrations/server",
 		"Путь к директории с миграциями")
+
+	flag.StringVar(&flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
 
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()

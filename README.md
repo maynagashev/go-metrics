@@ -42,7 +42,16 @@
     - [x] Три повтора (всего 4 попытки). Интервалы между повторами должны увеличиваться: 1s, 3s, 5s.
     - [x] Использование golang-migrate для миграции таблички сервера
     - [x] Makefile для запуска миграций, сервера и агента.
-  
+- Iter14. Подпись передаваемых данных по алгоритму SHA256. Посчитать hash от всего тела запроса и разместить его в HTTP-заголовке HashSHA256.
+    - [ ] **Агент:** 
+        - [ ] Добавьте поддержку аргумента через флаг -k=<КЛЮЧ> и переменную окружения KEY=<КЛЮЧ>.
+        - [ ] При наличии ключа агент должен вычислять хеш и передавать в HTTP-заголовке запроса с именем HashSHA256.
+    - [ ] **Сервер:**
+        - [ ] Добавьте поддержку аргумента через флаг -k=<КЛЮЧ> и переменную окружения KEY=<КЛЮЧ>.
+        - [ ] При наличии ключа во время обработки запроса сервер должен проверять соответствие полученного и вычисленного хеша.
+        - [ ] При несовпадении сервер должен отбрасывать полученные данные и возвращать http.StatusBadRequest.
+        - [ ] При наличии ключа на этапе формирования ответа сервер должен вычислять хеш и передавать его в HTTP-заголовке ответа с именем HashSHA256.
+
 ## Обновление шаблона
 
 Чтобы иметь возможность получать обновления автотестов и других частей шаблона, выполните команду:
@@ -77,19 +86,22 @@ wget https://github.com/Yandex-Practicum/go-autotests/releases/download/v0.10.6/
 chmod +x metricstest-darwin-amd64
 
 # запуск тестов
-./metricstest-darwin-amd64 -test.v  -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . > test.log
+./metricstest-darwin-amd64 -test.v  -binary-path=bin/server -agent-binary-path=bin/agent -source-path . > test.log
 
 # запуск конкретной итерации
-./metricstest-darwin-amd64 -test.v -test.run=^TestIteration7$ -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration7$ -binary-path=bin/server -agent-binary-path=bin/agent -source-path . | tee test.log
 
 # запуск конкретной итерации с  -server-port=8080 
- ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration8$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
+ ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration8$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -source-path . | tee test.log
 
 # проверка iter12
-./metricstest-darwin-amd64 -test.v -test.run=^TestIteration12$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee test.log
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration12$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee test.log
 
 # проверка iter13
-./metricstest-darwin-amd64 -test.v -test.run=^TestIteration13$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee test.log
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration13$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee iter13.log
+
+# проверка iter14
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration14$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee iter13.log
 
 
 # запуск сервера с postgres
