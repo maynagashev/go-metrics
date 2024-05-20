@@ -163,11 +163,9 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 func (ms *MemStorage) GetMetrics() []metrics.Metric {
 	items := make([]metrics.Metric, 0, ms.Count())
 	for id, value := range ms.GetGauges() {
-		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
 		items = append(items, metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
 	}
 	for id, value := range ms.GetCounters() {
-		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
 		items = append(items, metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
 	}
 	// slices.Sort(items)

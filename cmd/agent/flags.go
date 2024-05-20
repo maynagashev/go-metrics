@@ -54,6 +54,10 @@ func mustParseFlags() Flags {
 		}
 		flags.Server.PollInterval = i
 	}
+	// Если передан ключ в параметрах окружения, используем его
+	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
+		flags.PrivateKey = envPrivateKey
+	}
 
 	return flags
 }

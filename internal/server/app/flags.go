@@ -87,5 +87,10 @@ func ParseFlags() (*Flags, error) {
 		flags.Database.DSN = envDatabaseDSN
 	}
 
+	// Если передан ключ в параметрах окружения, используем его
+	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
+		flags.PrivateKey = envPrivateKey
+	}
+
 	return &flags, nil
 }
