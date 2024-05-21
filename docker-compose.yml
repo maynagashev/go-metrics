@@ -21,22 +21,7 @@ services:
       retries: 3
       timeout: 5s
 
-
-#  redis:
-#    container_name: metrics_redis
-#    image: redis:alpine
-#    restart: always
-#    ports:
-#      - "6382:6379"
-#    volumes:
-#      - redis_data:/data
-#    networks:
-#      - metrics_network
-
 volumes:
-#  redis_data:
-#    name: metrics_redis_data
-#    driver: local
   pgsql_data:
     name: metrics_pgsql_data
     driver: local

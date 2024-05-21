@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const defaultStoreInterval = 300
+
 // Flags содержит все флаги сервера.
 type Flags struct {
 	Server struct {
@@ -37,7 +39,12 @@ func ParseFlags() (*Flags, error) {
 	// Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
 	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "IP  адрес и порт на которых следует запустить сервер")
 	// Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
-	flag.IntVar(&flags.Server.StoreInterval, "i", 300, "Интервал сохранения метрик на диск, в секундах")
+	flag.IntVar(
+		&flags.Server.StoreInterval,
+		"i",
+		defaultStoreInterval,
+		"Интервал сохранения метрик на диск, в секундах",
+	)
 	// Регистрируем переменную flagFileStoragePath как аргумент -f со значением metrics.json по умолчанию.
 	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "Путь к файлу для хранения метрик")
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.

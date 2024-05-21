@@ -7,6 +7,9 @@ import (
 	"strconv"
 )
 
+const defaultReportInterval = 10
+const defaultPollInterval = 2
+
 // Flags содержит флаги агента.
 type Flags struct {
 	Server struct {
@@ -28,8 +31,8 @@ func mustParseFlags() Flags {
 		"localhost:8080",
 		"address and port of the server send metrics to",
 	)
-	flag.IntVar(&flags.Server.ReportInterval, "r", 10, "report interval in seconds")
-	flag.IntVar(&flags.Server.PollInterval, "p", 2, "poll interval in seconds")
+	flag.IntVar(&flags.Server.ReportInterval, "r", defaultReportInterval, "report interval in seconds")
+	flag.IntVar(&flags.Server.PollInterval, "p", defaultPollInterval, "poll interval in seconds")
 	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
 
 	// парсим переданные серверу аргументы в зарегистрированные переменные

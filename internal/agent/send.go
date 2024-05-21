@@ -13,6 +13,8 @@ import (
 	"github.com/maynagashev/go-metrics/internal/lib/utils"
 )
 
+const backoffFactor = 2
+
 // Отправка всех накопленных метрик.
 func (a *Agent) sendAllMetrics() {
 	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
@@ -40,7 +42,7 @@ func (a *Agent) sendAllMetrics() {
 		// Пауза перед повторной отправкой.
 		if i > 0 {
 			//nolint:gomnd // количество секунд для паузы зависит от номера попытки
-			sleepSeconds := i*2 - 1 // 1, 3, 5, 7, 9, 11, ...
+			sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
 			slog.Info(fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", i, sleepSeconds))
 			time.Sleep(time.Duration(sleepSeconds) * time.Second)
 		}
