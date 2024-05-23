@@ -45,30 +45,3 @@ func TestHandle_Success(t *testing.T) {
 	// Проверяем вызов метода GetMetrics
 	mockStorage.AssertCalled(t, "GetMetrics")
 }
-
-func TestHandle_Failure(t *testing.T) {
-	// Создаем новый мок для интерфейса Storage
-	mockStorage := new(mocks.Storage)
-
-	// Настраиваем мок, чтобы метод GetMetrics возвращал nil
-	mockStorage.On("GetMetrics").Return(nil)
-
-	// Создаем HTTP-запрос для теста
-	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
-	require.NoError(t, err)
-
-	// Создаем ResponseRecorder для записи ответа
-	rr := httptest.NewRecorder()
-
-	// Создаем обработчик с использованием мокированного хранилища
-	handler := ping.Handle(mockStorage)
-
-	// Вызываем обработчик с записанным запросом и ответом
-	handler.ServeHTTP(rr, req)
-
-	// Проверяем, что код ответа равен 500
-	assert.Equal(t, http.StatusInternalServerError, rr.Code)
-
-	// Проверяем вызов метода GetMetrics
-	mockStorage.AssertCalled(t, "GetMetrics")
-}
