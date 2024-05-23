@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/maynagashev/go-metrics/internal/lib/utils"
+	"github.com/maynagashev/go-metrics/pkg/random"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -71,7 +71,7 @@ func (a *Agent) runPolls() {
 		// Увеличиваем счетчик PollCount на 1.
 		a.counters["PollCount"]++
 		// Добавляем обновляемое рандомное значение по условию.
-		a.gauges["RandomValue"] = utils.GenerateRandomFloat64()
+		a.gauges["RandomValue"] = random.GenerateRandomFloat64()
 
 		// Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
 		slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
