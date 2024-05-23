@@ -172,6 +172,24 @@ func (_m *Repository) UpdateMetric(metric metrics.Metric) error {
 	return r0
 }
 
+// UpdateMetrics provides a mock function with given fields: _a0
+func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error {
+	ret := _m.Called(_a0)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateMetrics")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func([]metrics.Metric) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewRepository(t interface {

@@ -41,4 +41,7 @@ type Repository interface {
 	// UpdateMetric универсальный метод обновления метрики: gauge, counter.
 	// Если метрика существует, то обновляет, иначе создает новую.
 	UpdateMetric(metric metrics.Metric) error
+
+	// UpdateMetrics пакетно обновляет метрики в хранилище.
+	UpdateMetrics(metrics []metrics.Metric) error
 }

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+
 	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
 
 	"github.com/jackc/pgerrcode"
@@ -155,6 +157,64 @@ func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
 	// Логируем и возвращаем ошибку, если не удалось обновить метрику
 	if err != nil {
 		p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
+	}
+	return err
+}
+
+func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
+	var err error
+	q := `INSERT INTO metrics (name, type, value, delta) 
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (name, type) 
+          DO UPDATE SET value = EXCLUDED.value, delta = metrics.delta + EXCLUDED.delta`
+
+	// Подготовка транзакции
+	tx, err := p.conn.Begin(p.ctx)
+	if err != nil {
+		return err
+	}
+	defer func(tx pgx.Tx, ctx context.Context) {
+		err = tx.Rollback(ctx)
+		if err != nil {
+			p.log.Error(fmt.Sprintf("Failed to rollback transaction: %v", err))
+		}
+	}(tx, p.ctx)
+
+	batch := &pgx.Batch{}
+	for _, item := range items {
+		batch.Queue(q, item.Name, item.MType, item.Value, item.Delta)
+	}
+
+	// Выполнение батч-запроса
+	for i := 0; i <= maxRetries; i++ {
+		br := tx.SendBatch(p.ctx, batch)
+		_, err = br.Exec()
+		errClose := br.Close()
+		if errClose != nil {
+			p.log.Error(fmt.Sprintf("Failed to close batch: %v", errClose))
+			continue
+		}
+
+		// Если нет ошибок, подтверждаем транзакцию и выходим из функции
+		if err == nil {
+			return tx.Commit(p.ctx)
+		}
+
+		// Проверяем, является ли ошибка retriable
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && isRetriableError(pgErr) {
+			p.log.Error(fmt.Sprintf("Attempt %d: Retriable error updating metrics: %v", i+1, err))
+			time.Sleep(time.Duration((i+1)*2-1) * time.Second)
+			continue
+		}
+
+		// Если ошибка не retriable, выходим из цикла
+		break
+	}
+
+	// Логируем и возвращаем ошибку, если не удалось обновить метрики
+	if err != nil {
+		p.log.Error(fmt.Sprintf("Failed to update metrics: %v", err))
 	}
 	return err
 }

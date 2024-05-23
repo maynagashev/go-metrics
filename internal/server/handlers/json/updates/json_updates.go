@@ -27,14 +27,11 @@ func NewBulkUpdate(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 			return
 		}
 
-		// Обновляем каждую метрику в хранилище
-		// TODO: Метрики следует обновлять одним запросом или транзакцией, чтобы уменьшить нагрузку на сервер.
-		for _, m := range metricsToUpdate {
-			err = st.UpdateMetric(m)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
+		// Обновляем метрики в хранилище
+		err = st.UpdateMetrics(metricsToUpdate)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		// Отправляем успешный ответ

@@ -117,6 +117,16 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 	return nil
 }
 
+func (ms *MemStorage) UpdateMetrics(items []metrics.Metric) error {
+	for _, item := range items {
+		err := ms.UpdateMetric(item)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (ms *MemStorage) GetGauges() storage.Gauges {
 	return ms.gauges
 }
