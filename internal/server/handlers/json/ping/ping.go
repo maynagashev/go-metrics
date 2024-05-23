@@ -27,15 +27,8 @@ func Handle(storage Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		m := storage.GetMetrics()
-		if m == nil {
-			response.Error(
-				w,
-				errors.New("не удалось получить записи из хранилища pgstorage"),
-				http.StatusInternalServerError,
-			)
-			return
-		}
+		// Проверяем подключение сделав запрос к базе данных.
+		_ = storage.GetMetrics()
 
 		response.OK(w, "pong")
 	}

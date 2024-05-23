@@ -29,6 +29,15 @@ lint :
 	@echo "Running linter..."
 	golangci-lint run
 
+iter10: build
+	@echo "Running iteration 14 tests ..."
+	./bin/metricstest-darwin-amd64 -test.v -test.run=^TestIteration10$  \
+									-server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent \
+									-database-dsn=$(DB_DSN) \
+									-source-path . \
+									-key=iter10 \
+									| tee logs/iter10.log
+
 iter14: build
 	@echo "Running iteration 14 tests ..."
 	./bin/metricstest-darwin-amd64 -test.v -test.run=^TestIteration14$  \
