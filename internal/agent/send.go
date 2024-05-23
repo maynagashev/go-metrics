@@ -9,8 +9,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/maynagashev/go-metrics/pkg/middleware/gzip"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/maynagashev/go-metrics/internal/lib/utils"
 )
 
 const backoffFactor = 2
@@ -110,7 +111,7 @@ func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int) error {
 	// Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
 	if a.SendCompressedData {
 		req.SetHeader("Content-Encoding", "gzip")
-		bytesBody, err = utils.Gzip(bytesBody)
+		bytesBody, err = gzip.Compress(bytesBody)
 		if err != nil {
 			return err
 		}

@@ -1,5 +1,5 @@
-// Package utils методы для управления сжатием данных.
-package utils
+// Package gzip методы для управления сжатием данных в gzip.
+package gzip
 
 import (
 	"bytes"
@@ -7,8 +7,8 @@ import (
 	"fmt"
 )
 
-// Gzip сжимает данные методом gzip (перед отправкой на сервер).
-func Gzip(data []byte) ([]byte, error) {
+// Compress сжимает данные методом gzip (перед отправкой на сервер).
+func Compress(data []byte) ([]byte, error) {
 	var b bytes.Buffer
 	// создаём переменную w — в неё будут записываться входящие данные,
 	// которые будут сжиматься и сохраняться в bytes.Buffer
