@@ -7,7 +7,7 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-	"github.com/maynagashev/go-metrics/internal/server/storage/pgsql"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
 	"go.uber.org/zap"
 )
 
@@ -49,7 +49,7 @@ func main() {
 func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) {
 	// Если указан DATABASE_DSN или флаг -d, то используем PostgreSQL.
 	if cfg.IsDatabaseEnabled() {
-		pg, err := pgsql.New(context.Background(), cfg, log)
+		pg, err := pgstorage.New(context.Background(), cfg, log)
 		if err != nil {
 			return nil, err
 		}

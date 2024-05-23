@@ -6,7 +6,7 @@ import (
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/maynagashev/go-metrics/internal/server/storage/pgsql/migration"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
 )
 
 func main() {

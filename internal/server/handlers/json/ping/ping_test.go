@@ -1,70 +1,74 @@
 package ping_test
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
-	"github.com/maynagashev/go-metrics/internal/server/handlers/json/ping"
-	"github.com/maynagashev/go-metrics/internal/server/storage"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/server/handlers/json/ping"
+	"github.com/maynagashev/go-metrics/mocks"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestNew(t *testing.T) {
-	config := &app.Config{
-		Database: struct {
-			DSN            string
-			MigrationsPath string
-		}{
-			DSN:            "postgres://metrics:password@localhost:5432/metrics",
-			MigrationsPath: "migration/server",
-		},
-	}
-	log, _ := zap.NewDevelopmentConfig().Build()
+func TestHandle_Success(t *testing.T) {
+	// Создаем новый мок для интерфейса Storage
+	mockStorage := new(mocks.Storage)
 
-	type want struct {
-		code        int
-		contentType string
-	}
-	tests := []struct {
-		name    string
-		target  string
-		storage storage.Repository
-		want
-	}{
-		// {
-		//	name:   "ping",
-		//	target: "/ping",
-		//	want: want{
-		//		code:        200,
-		//		contentType: "application/json",
-		//	},
-		// },
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			request := httptest.NewRequest(http.MethodGet, tt.target, nil)
-			w := httptest.NewRecorder()
-			ping.New(config, log)(w, request)
+	// Настраиваем мок, чтобы метод GetMetrics возвращал не пустое значение
+	mockStorage.On("GetMetrics").Return([]metrics.Metric{
+		*metrics.NewCounter("metric1", 1),
+		*metrics.NewCounter("metric1", 2),
+	})
 
-			res := w.Result()
-			var body []byte
-			_, err := res.Body.Read(body)
-			if err != nil {
-				return
-			}
-			assert.Equal(t, tt.want.code, res.StatusCode, res.Body)
+	// Создаем HTTP-запрос для теста
+	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
+	require.NoError(t, err)
 
-			defer res.Body.Close()
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
 
-			resBody, err := io.ReadAll(res.Body)
-			require.NoError(t, err)
-			assert.NotEmpty(t, string(resBody))
-			assert.Equal(t, tt.want.contentType, res.Header.Get("Content-Type"))
-		})
-	}
+	// Создаем обработчик с использованием мокированного хранилища
+	handler := ping.Handle(mockStorage)
+
+	// Вызываем обработчик с записанным запросом и ответом
+	handler.ServeHTTP(rr, req)
+
+	// Проверяем, что код ответа равен 200
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+	assert.Equal(t, `{"status":"OK","message":"pong"}`, rr.Body.String())
+
+	// Проверяем вызов метода GetMetrics
+	mockStorage.AssertCalled(t, "GetMetrics")
+}
+
+func TestHandle_Failure(t *testing.T) {
+	// Создаем новый мок для интерфейса Storage
+	mockStorage := new(mocks.Storage)
+
+	// Настраиваем мок, чтобы метод GetMetrics возвращал nil
+	mockStorage.On("GetMetrics").Return(nil)
+
+	// Создаем HTTP-запрос для теста
+	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
+	require.NoError(t, err)
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Создаем обработчик с использованием мокированного хранилища
+	handler := ping.Handle(mockStorage)
+
+	// Вызываем обработчик с записанным запросом и ответом
+	handler.ServeHTTP(rr, req)
+
+	// Проверяем, что код ответа равен 500
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+
+	// Проверяем вызов метода GetMetrics
+	mockStorage.AssertCalled(t, "GetMetrics")
 }

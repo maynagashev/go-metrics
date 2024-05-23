@@ -1,4 +1,4 @@
-package pgsql
+package pgstorage
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/maynagashev/go-metrics/internal/server/storage/pgsql/migration"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -19,14 +19,15 @@ import (
 
 const maxRetries = 3
 
-type PostgresStorage struct {
+type PgStorage struct {
 	conn *pgxpool.Pool
 	cfg  *app.Config
 	log  *zap.Logger
 	ctx  context.Context
 }
 
-func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresStorage, error) {
+// New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
+func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) {
 	conn, err := pgxpool.New(ctx, config.Database.DSN)
 	log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
 
@@ -35,7 +36,7 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresSto
 		return nil, err
 	}
 
-	p := &PostgresStorage{
+	p := &PgStorage{
 		conn: conn,
 		cfg:  config,
 		log:  log,
@@ -47,12 +48,12 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PostgresSto
 	return p, nil
 }
 
-func (p *PostgresStorage) Close() error {
+func (p *PgStorage) Close() error {
 	p.conn.Close()
 	return nil
 }
 
-func (p *PostgresStorage) Count() int {
+func (p *PgStorage) Count() int {
 	var count int
 	err := p.conn.QueryRow(p.ctx, `SELECT count(*) FROM metrics`).Scan(&count)
 	if err != nil {
@@ -61,7 +62,7 @@ func (p *PostgresStorage) Count() int {
 	return count
 }
 
-func (p *PostgresStorage) GetMetrics() []metrics.Metric {
+func (p *PgStorage) GetMetrics() []metrics.Metric {
 	var items []metrics.Metric
 	rows, err := p.conn.Query(p.ctx, `SELECT name, type, value, delta FROM metrics ORDER BY name`)
 	if err != nil {
@@ -84,7 +85,7 @@ func (p *PostgresStorage) GetMetrics() []metrics.Metric {
 }
 
 // GetMetric получение значения метрики указанного типа в виде универсальной структуры.
-func (p *PostgresStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) {
+func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) {
 	q := `SELECT name, type, value, delta FROM public.metrics WHERE name = $1 AND type = $2`
 	row := p.conn.QueryRow(p.ctx, q, name, mType)
 
@@ -97,7 +98,7 @@ func (p *PostgresStorage) GetMetric(mType metrics.MetricType, name string) (metr
 }
 
 // GetCounter возвращает счетчик по имени.
-func (p *PostgresStorage) GetCounter(name string) (storage.Counter, bool) {
+func (p *PgStorage) GetCounter(name string) (storage.Counter, bool) {
 	m, ok := p.GetMetric(metrics.TypeCounter, name)
 	if !ok {
 		return 0, false
@@ -106,7 +107,7 @@ func (p *PostgresStorage) GetCounter(name string) (storage.Counter, bool) {
 }
 
 // GetGauge возвращает измерение по имени.
-func (p *PostgresStorage) GetGauge(name string) (storage.Gauge, bool) {
+func (p *PgStorage) GetGauge(name string) (storage.Gauge, bool) {
 	m, ok := p.GetMetric(metrics.TypeGauge, name)
 	if !ok {
 		return 0, false
@@ -116,7 +117,7 @@ func (p *PostgresStorage) GetGauge(name string) (storage.Gauge, bool) {
 
 // UpdateMetric универсальный метод обновления метрики: gauge, counter.
 // Если метрика существует, то обновляем, иначе создаем новую.
-func (p *PostgresStorage) UpdateMetric(metric metrics.Metric) error {
+func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
 	var q string
 
 	// Если метрика существует, то обновляем, иначе создаем новую.
