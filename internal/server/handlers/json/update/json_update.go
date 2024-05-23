@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/lib/api/response"
+	"github.com/maynagashev/go-metrics/pkg/response"
 
 	"go.uber.org/zap"
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/lib/api/response"
+	"github.com/maynagashev/go-metrics/pkg/response"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage/pgsql"
