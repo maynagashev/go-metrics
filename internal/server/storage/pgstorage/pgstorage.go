@@ -89,14 +89,36 @@ func (p *PgStorage) GetMetrics() []metrics.Metric {
 // GetMetric получение значения метрики указанного типа в виде универсальной структуры.
 func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) {
 	q := `SELECT name, type, value, delta FROM public.metrics WHERE name = $1 AND type = $2`
-	row := p.conn.QueryRow(p.ctx, q, name, mType)
 
 	var metric metrics.Metric
-	err := row.Scan(&metric.Name, &metric.MType, &metric.Value, &metric.Delta)
-	if err != nil {
-		return metrics.Metric{}, false
+	var err error
+	for i := 0; i <= maxRetries; i++ {
+		row := p.conn.QueryRow(p.ctx, q, name, mType)
+		err = row.Scan(&metric.Name, &metric.MType, &metric.Value, &metric.Delta)
+
+		if err == nil {
+			return metric, true
+		}
+
+		// Проверяем, является ли ошибка retriable
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if isRetriableError(pgErr) {
+				p.log.Error(fmt.Sprintf("Attempt %d: Retriable error getting metric: %v", i+1, err))
+				time.Sleep(time.Duration((i+1)*2-1) * time.Second)
+				continue
+			}
+		}
+
+		// Если ошибка не retriable, выходим из цикла
+		break
 	}
-	return metric, true
+
+	// Логируем и возвращаем ошибку, если не удалось получить метрику
+	if err != nil {
+		p.log.Error(fmt.Sprintf("Failed to get metric: %v", err))
+	}
+	return metrics.Metric{}, false
 }
 
 // GetCounter возвращает счетчик по имени.
@@ -116,9 +138,6 @@ func (p *PgStorage) GetGauge(name string) (storage.Gauge, bool) {
 	}
 	return storage.Gauge(*m.Value), true
 }
-
-// UpdateMetric универсальный метод обновления метрики: gauge, counter.
-// Если метрика существует, то обновляем, иначе создаем новую.
 func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
 	var q string
 
@@ -130,37 +149,16 @@ func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
 		q = `INSERT INTO metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
 	}
 
-	// Попытка выполнения запроса с обработкой retriable-ошибок
-	var err error
-	for i := 0; i <= maxRetries; i++ {
-		_, err = p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
-
-		// Если нет ошибок выходим из цикла и функции.
-		if err == nil {
-			return nil
-		}
-
-		// Проверяем, является ли ошибка retriable
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			if isRetriableError(pgErr) {
-				p.log.Error(fmt.Sprintf("Attempt %d: Retriable error updating metric: %v", i+1, err))
-				time.Sleep(time.Duration((i+1)*2-1) * time.Second)
-				continue
-			}
-		}
-
-		// Если ошибка не retriable, выходим из цикла
-		break
-	}
-
-	// Логируем и возвращаем ошибку, если не удалось обновить метрику
+	// Выполнение запроса
+	_, err := p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
 	if err != nil {
 		p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
+		return err
 	}
-	return err
+	return nil
 }
 
+// UpdateMetrics пакетно обновляет метрики в хранилище.
 func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
 	var err error
 	q := `INSERT INTO metrics (name, type, value, delta) 
@@ -168,17 +166,20 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
           ON CONFLICT (name, type) 
           DO UPDATE SET value = EXCLUDED.value, delta = metrics.delta + EXCLUDED.delta`
 
-	// Подготовка транзакции
+	// Начало транзакции
 	tx, err := p.conn.Begin(p.ctx)
 	if err != nil {
 		return err
 	}
-	defer func(tx pgx.Tx, ctx context.Context) {
-		err = tx.Rollback(ctx)
+
+	// Откатываем транзакцию в случае ошибки
+	defer func() {
 		if err != nil {
-			p.log.Error(fmt.Sprintf("Failed to rollback transaction: %v", err))
+			if rErr := tx.Rollback(p.ctx); rErr != nil && !errors.Is(rErr, pgx.ErrTxClosed) {
+				p.log.Error(fmt.Sprintf("Failed to rollback transaction: %v", rErr))
+			}
 		}
-	}(tx, p.ctx)
+	}()
 
 	batch := &pgx.Batch{}
 	for _, item := range items {
@@ -186,37 +187,25 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
 	}
 
 	// Выполнение батч-запроса
-	for i := 0; i <= maxRetries; i++ {
-		br := tx.SendBatch(p.ctx, batch)
-		_, err = br.Exec()
-		errClose := br.Close()
-		if errClose != nil {
-			p.log.Error(fmt.Sprintf("Failed to close batch: %v", errClose))
-			continue
-		}
-
-		// Если нет ошибок, подтверждаем транзакцию и выходим из функции
-		if err == nil {
-			return tx.Commit(p.ctx)
-		}
-
-		// Проверяем, является ли ошибка retriable
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && isRetriableError(pgErr) {
-			p.log.Error(fmt.Sprintf("Attempt %d: Retriable error updating metrics: %v", i+1, err))
-			time.Sleep(time.Duration((i+1)*2-1) * time.Second)
-			continue
-		}
-
-		// Если ошибка не retriable, выходим из цикла
-		break
+	br := tx.SendBatch(p.ctx, batch)
+	_, err = br.Exec()
+	if errClose := br.Close(); errClose != nil {
+		p.log.Error(fmt.Sprintf("Failed to close batch: %v", errClose))
+		return errClose
 	}
 
-	// Логируем и возвращаем ошибку, если не удалось обновить метрики
 	if err != nil {
 		p.log.Error(fmt.Sprintf("Failed to update metrics: %v", err))
+		return err
 	}
-	return err
+
+	// Подтверждаем транзакцию
+	if err = tx.Commit(p.ctx); err != nil {
+		p.log.Error(fmt.Sprintf("Failed to commit transaction: %v", err))
+		return err
+	}
+
+	return nil
 }
 
 // Проверка, является ли ошибка retriable.
