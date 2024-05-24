@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/maynagashev/go-metrics/pkg/sign"
+
 	"github.com/maynagashev/go-metrics/pkg/middleware/gzip"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -105,6 +107,12 @@ func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int) error {
 	bytesBody, err := json.Marshal(items)
 	if err != nil {
 		return err
+	}
+
+	// Если задан приватный ключ, добавляем хэш в заголовок запроса.
+	if a.IsRequestSigningEnabled() {
+		hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
+		req.SetHeader(sign.HeaderKey, hash)
 	}
 
 	// Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.

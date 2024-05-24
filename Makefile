@@ -15,11 +15,11 @@ migrate:
 
 server:
 	@echo "Starting server..."
-	@go run ./cmd/server/. -d $(DB_DSN)
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example"
 
 agent:
 	@echo "Starting agent..."
-	@go run ./cmd/agent/.
+	@go run ./cmd/agent/. -k="private_key_example"
 
 server_with_agent:
 	@echo "Starting server with agent..."

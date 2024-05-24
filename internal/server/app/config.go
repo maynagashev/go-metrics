@@ -10,6 +10,8 @@ type Config struct {
 	Restore bool
 	// Параметры базы данных
 	Database DatabaseConfig
+	// Приватный ключ для подписи метрик.
+	PrivateKey string
 }
 
 type DatabaseConfig struct {
@@ -27,6 +29,7 @@ func NewConfig(flags *Flags) *Config {
 			DSN:            flags.Database.DSN,
 			MigrationsPath: flags.Database.MigrationsPath,
 		},
+		PrivateKey: flags.PrivateKey,
 	}
 }
 
@@ -58,4 +61,9 @@ func (cfg *Config) GetStoreInterval() int {
 // IsDatabaseEnabled возвращает true, если переданы параметры подключения к БД.
 func (cfg *Config) IsDatabaseEnabled() bool {
 	return cfg.Database.DSN != ""
+}
+
+// IsRequestSigningEnabled включена ли проверка подписи метрик.
+func (cfg *Config) IsRequestSigningEnabled() bool {
+	return cfg.PrivateKey != ""
 }

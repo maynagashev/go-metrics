@@ -39,8 +39,8 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 	// Обработчики запросов
 	r.Get("/", plainIndex.New(storage))
 	r.Post("/update", jsonUpdate.New(config, storage, log))
-	r.Post("/updates", jsonUpdates.NewBulkUpdate(storage, log))
-	r.Post("/value", jasonValue.New(storage))
+	r.Post("/updates", jsonUpdates.NewBulkUpdate(config, storage, log))
+	r.Post("/value", jasonValue.New(config, storage))
 	r.Get("/ping", ping.New(config, log))
 
 	// Первые версии обработчиков для работы тестов начальных итераций

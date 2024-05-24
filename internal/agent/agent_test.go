@@ -8,7 +8,7 @@ import (
 )
 
 func TestAgent_collectRuntimeMetrics(t *testing.T) {
-	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second)
+	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "")
 	tests := []struct {
 		name string
 		want int

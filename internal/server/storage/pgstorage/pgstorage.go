@@ -116,7 +116,7 @@ func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Me
 
 	// Логируем и возвращаем ошибку, если не удалось получить метрику
 	if err != nil {
-		p.log.Error(fmt.Sprintf("Failed to get metric: %v", err))
+		p.log.Error(fmt.Sprintf("Failed to get metric after %d tries: %v", maxRetries+1, err))
 	}
 	return metrics.Metric{}, false
 }
