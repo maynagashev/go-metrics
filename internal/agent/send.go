@@ -18,27 +18,8 @@ import (
 
 const backoffFactor = 2
 
-// Отправка всех накопленных метрик.
-func (a *Agent) sendAllMetrics() {
-	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
-
-	// Делаем копию метрик, чтобы данные не изменились во время отправки.
-	a.mu.Lock()
-	slog.Info("sending metrics", "poll_count", a.counters["PollCount"])
-	for name, value := range a.gauges {
-		items = append(items, metrics.NewGauge(name, value))
-	}
-	for name, value := range a.counters {
-		items = append(items, metrics.NewCounter(name, value))
-	}
-	// Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
-	// Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
-	// Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
-	a.counters["PollCount"] = 0
-	slog.Info("reset poll count", "poll_count", 0)
-
-	a.mu.Unlock()
-
+// Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
+func (a *Agent) sendMetrics(items []*metrics.Metric, workerID int) error {
 	// Отправляем все метрики пачкой на новый маршрут /updates
 	// Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
 	for i := 0; i <= maxSendRetries; i++ {
@@ -46,25 +27,30 @@ func (a *Agent) sendAllMetrics() {
 		if i > 0 {
 			//nolint:gomnd // количество секунд для паузы зависит от номера попытки
 			sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
-			slog.Info(fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", i, sleepSeconds))
+			slog.Info(
+				fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", sleepSeconds, i),
+				"workerID", workerID,
+			)
 			time.Sleep(time.Duration(sleepSeconds) * time.Second)
 		}
 
-		err := a.makeUpdatesRequest(items, i)
+		err := a.makeUpdatesRequest(items, i, workerID)
 		// Если нет ошибок выходим из цикла и функции.
 		if err == nil {
-			return
+			return nil
 		}
 
 		// Логируем ошибку
-		slog.Error(fmt.Sprintf("failed to send metrics (try=%d): %s", i, err), "metrics", items)
+		slog.Error(fmt.Sprintf("failed to send metrics (try=%d): %s", i, err), "workerID", workerID, "metrics", items)
 
 		// Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
 		if !isRetriableSendError(err) {
-			slog.Debug("non-retriable error, stopping retries", "err", err)
-			return
+			slog.Debug("non-retriable error, stopping retries", "workerID", workerID, "err", err)
+			return err
 		}
 	}
+
+	return fmt.Errorf("failed to send metrics after %d retries", maxSendRetries)
 }
 
 func isRetriableSendError(err error) bool {
@@ -93,10 +79,10 @@ func isRetriableSendError(err error) bool {
 
 // Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
 // При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
-func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int) error {
+func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error {
 	var err error
 	url := fmt.Sprintf("%s/updates", a.ServerURL)
-	slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "url", url, "metrics", items)
+	slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "workerID", workerID, "url", url, "metrics", items)
 
 	// Создаем новый запрос.
 	req := a.client.R()

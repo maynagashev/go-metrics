@@ -21,6 +21,11 @@ agent:
 	@echo "Starting agent..."
 	@go run ./cmd/agent/. -k="private_key_example"
 
+fast_agent:
+	@echo "Starting agent with short report interval..."
+	@go run ./cmd/agent/. -k="private_key_example" -r 0.0001
+
+
 server_with_agent:
 	@echo "Starting server with agent..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
