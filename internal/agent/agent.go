@@ -103,8 +103,11 @@ func (a *Agent) runPolls() {
 	defer a.wg.Done()
 	for range a.pollTicker.C {
 		a.mu.Lock()
-		// Перезаписываем метрики свежими показаниями runtime.MemStats.
-		a.gauges = a.CollectRuntimeMetrics()
+		// Перезаписываем метрики свежими показаниями
+		a.ResetMetrics()
+		a.CollectRuntimeMetrics()
+		a.CollectAdditionalMetrics()
+
 		// Увеличиваем счетчик PollCount на 1.
 		a.counters["PollCount"]++
 		// Добавляем обновляемое рандомное значение по условию.
@@ -121,12 +124,12 @@ func (a *Agent) runReports() {
 	a.wg.Add(1)
 	defer a.wg.Done()
 	for range a.reportTicker.C {
-		a.sendQueue <- Job{Metrics: a.readMetrics()}
+		a.sendQueue <- Job{Metrics: a.GetMetrics()}
 	}
 }
 
-// Считывает текущие метрики из агента.
-func (a *Agent) readMetrics() []*metrics.Metric {
+// GetMetrics считывает текущие метрики из агента.
+func (a *Agent) GetMetrics() []*metrics.Metric {
 	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
 
 	// Делаем копию метрик, чтобы данные не изменились во время отправки.
