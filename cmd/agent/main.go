@@ -17,7 +17,7 @@ func main() {
 	pollInterval := time.Duration(flags.Server.PollInterval) * time.Second
 	reportInterval := time.Duration(flags.Server.ReportInterval) * time.Second
 
-	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey)
+	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit)
 	a.Run()
 }
 

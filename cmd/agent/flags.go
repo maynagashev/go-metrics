@@ -18,6 +18,7 @@ type Flags struct {
 		PollInterval   int
 	}
 	PrivateKey string
+	RateLimit  int
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -34,6 +35,7 @@ func mustParseFlags() Flags {
 	flag.IntVar(&flags.Server.ReportInterval, "r", defaultReportInterval, "report interval in seconds")
 	flag.IntVar(&flags.Server.PollInterval, "p", defaultPollInterval, "poll interval in seconds")
 	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
+	flag.StringVar(&flags.PrivateKey, "l", "", "макс. количество одновременно исходящих запросов на сервер")
 
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()
@@ -57,9 +59,15 @@ func mustParseFlags() Flags {
 		}
 		flags.Server.PollInterval = i
 	}
-	// Если передан ключ в параметрах окружения, используем его
 	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
 		flags.PrivateKey = envPrivateKey
+	}
+	if envRateLimit, ok := os.LookupEnv("RATE_LIMIT"); ok {
+		l, err := strconv.Atoi(envRateLimit)
+		if err != nil {
+			panic(fmt.Sprintf("error parsing env RATE_LIMIT %s", err))
+		}
+		flags.RateLimit = l
 	}
 
 	return flags

@@ -20,6 +20,7 @@ type Agent struct {
 	ServerURL          string
 	SendCompressedData bool
 	PrivateKey         string
+	RateLimit          int
 
 	gauges       map[string]float64
 	counters     map[string]int64
@@ -31,13 +32,20 @@ type Agent struct {
 }
 
 // New создает новый экземпляр агента.
-func New(url string, pollInterval time.Duration, reportInterval time.Duration, privateKey string) *Agent {
+func New(
+	url string,
+	pollInterval time.Duration,
+	reportInterval time.Duration,
+	privateKey string,
+	rateLimit int,
+) *Agent {
 	return &Agent{
 		ServerURL:          url,
 		PollInterval:       pollInterval,
 		ReportInterval:     reportInterval,
 		SendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
 		PrivateKey:         privateKey,
+		RateLimit:          rateLimit,
 		gauges:             make(map[string]float64),
 		counters:           make(map[string]int64),
 		client:             resty.New().SetHeader("Content-Type", "text/plain"),
