@@ -13,7 +13,7 @@ import (
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
-func TestMemStorage_GetValue(t *testing.T) {
+func TestMemStorage_GetMetric(t *testing.T) {
 	type fields struct {
 		gauges   storage.Gauges
 		counters storage.Counters
@@ -48,8 +48,8 @@ func TestMemStorage_GetValue(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(_ *testing.T) {
 			ms := memory.New(&app.Config{}, zap.NewNop(), tt.fields.gauges, tt.fields.counters)
-			if got, _ := ms.GetValue(tt.args.metricType, tt.args.name); got.String() != tt.want {
-				t.Errorf("GetValue() = %v, want %v", got, tt.want)
+			if got, _ := ms.GetMetric(tt.args.metricType, tt.args.name); got.ValueString() != tt.want {
+				t.Errorf("GetMetric() = %v, want %v", got.ValueString(), tt.want)
 			}
 		})
 	}
@@ -81,7 +81,12 @@ func TestMemStorage_UpdateCounter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for range tt.times {
-				tt.storage.IncrementCounter(tt.args.metricName, tt.args.metricValue)
+				m := metrics.NewCounter(tt.args.metricName, int64(tt.args.metricValue))
+				err := tt.storage.UpdateMetric(*m)
+				if err != nil {
+					t.Errorf("UpdateCounter() error = %v", err)
+					return
+				}
 			}
 			if got, _ := tt.storage.GetCounter(tt.args.metricName); got != tt.want {
 				t.Errorf("IncrementCounter() = %v, want %v", got, tt.want)

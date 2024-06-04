@@ -16,6 +16,8 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
+const maxRetries = 3
+
 type MemStorage struct {
 	gauges   storage.Gauges
 	counters storage.Counters
@@ -70,6 +72,13 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage {
 	return memStorage
 }
 
+func (ms *MemStorage) Close() error {
+	if ms.cfg.IsStoreEnabled() && !ms.cfg.IsSyncStore() {
+		return ms.storeMetricsToFile()
+	}
+	return nil
+}
+
 // UpdateGauge перезаписывает значение gauge.
 func (ms *MemStorage) UpdateGauge(metricName string, metricValue storage.Gauge) {
 	ms.gauges[metricName] = metricValue
@@ -87,12 +96,12 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 		if metric.Value == nil {
 			return errors.New("gauge value is nil")
 		}
-		ms.UpdateGauge(metric.ID, storage.Gauge(*metric.Value))
+		ms.UpdateGauge(metric.Name, storage.Gauge(*metric.Value))
 	case metrics.TypeCounter:
 		if metric.Delta == nil {
 			return errors.New("counter delta is nil")
 		}
-		ms.IncrementCounter(metric.ID, storage.Counter(*metric.Delta))
+		ms.IncrementCounter(metric.Name, storage.Counter(*metric.Delta))
 	default:
 		return fmt.Errorf("unsupported metric type: %s", metric.MType)
 	}
@@ -103,6 +112,16 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 		if err != nil {
 			// Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
 			ms.log.Error(fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err))
+		}
+	}
+	return nil
+}
+
+func (ms *MemStorage) UpdateMetrics(items []metrics.Metric) error {
+	for _, item := range items {
+		err := ms.UpdateMetric(item)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -135,14 +154,14 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 	case metrics.TypeCounter:
 		v, ok := ms.GetCounter(id)
 		return metrics.Metric{
-			ID:    id,
+			Name:  id,
 			MType: mType,
 			Delta: (*int64)(&v),
 		}, ok
 	case metrics.TypeGauge:
 		v, ok := ms.GetGauge(id)
 		return metrics.Metric{
-			ID:    id,
+			Name:  id,
 			MType: mType,
 			Value: (*float64)(&v),
 		}, ok
@@ -150,29 +169,14 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 	return metrics.Metric{}, false
 }
 
-// GetValue возвращает значение метрики по типу и имени.
-func (ms *MemStorage) GetValue(mType metrics.MetricType, name string) (fmt.Stringer, bool) {
-	switch mType {
-	case metrics.TypeCounter:
-		v, ok := ms.GetCounter(name)
-		return v, ok
-	case metrics.TypeGauge:
-		v, ok := ms.GetGauge(name)
-		return v, ok
-	}
-	return nil, false
-}
-
 // GetMetrics возвращает отсортированный список метрик в формате слайса структур.
 func (ms *MemStorage) GetMetrics() []metrics.Metric {
 	items := make([]metrics.Metric, 0, ms.Count())
 	for id, value := range ms.GetGauges() {
-		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
-		items = append(items, metrics.Metric{ID: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
+		items = append(items, metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
 	}
 	for id, value := range ms.GetCounters() {
-		//nolint:gosec // в Go 1.22, значение в цикле копируется (G601: Implicit memory aliasing in for loop.)
-		items = append(items, metrics.Metric{ID: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
+		items = append(items, metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
 	}
 	// slices.Sort(items)
 	return items
@@ -186,11 +190,24 @@ func (ms *MemStorage) storeMetricsToFile() error {
 		zap.Any("gauges", ms.GetGauges()),
 		zap.Any("counters", ms.GetCounters()))
 
-	// открытие файла для записи
-	f, err := os.Create(path)
-	if err != nil {
-		return err
+	var f *os.File
+	var err error
+
+	for i := 0; i <= maxRetries; i++ {
+		// попытка открытия файла для записи
+		f, err = os.Create(path)
+		if err == nil {
+			break
+		}
+		ms.log.Error(fmt.Sprintf("Attempt %d: Error opening file: %v", i+1, err))
+		time.Sleep(time.Duration((i+1)*2-1) * time.Second)
 	}
+
+	if err != nil {
+		return fmt.Errorf("failed to open file after %d attempts: %w", maxRetries, err)
+	}
+
+	// отложенное закрытие файла
 	defer func() {
 		err = f.Close()
 		if err != nil {

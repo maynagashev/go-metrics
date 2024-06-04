@@ -26,7 +26,40 @@
       умолчанию /tmp/metrics-db.json, пустое значение отключает функцию записи на диск).
     - [x] Флаг `-r`, переменная окружения RESTORE — булево значение (true/false), определяющее, загружать или нет ранее
       сохранённые значения из указанного файла при старте сервера (по умолчанию true).
-
+- **Iter10.** Пакет database/sql. Взаимодействие с базами данных SQL.
+    - [x] Добавьте на сервер функциональность подключения к базе данных. В качестве СУБД используйте PostgreSQL не ниже 10 версии.
+    - [x] Строка с адресом подключения к БД должна получаться из переменной окружения DATABASE_DSN или флага командной строки -d.
+    - [x] Добавьте в сервер хендлер GET /ping, который при запросе проверяет соединение с базой данных. При успешной проверке хендлер должен вернуть HTTP-статус 200 OK, при неуспешной — 500 Internal Server Error.
+- **Iter11.** Пакет database/sql. Взаимодействие с базами данных SQL.
+    - [x] Перепишите сервер для сбора метрик таким образом, чтобы СУБД PostgreSQL стала хранилищем метрик вместо текущей реализации.
+- **Iter12.** Пакет database/sql. Взаимодействие с базами данных SQL.
+    - [x] **Сервер:** Добавьте новый хендлер POST /updates/, принимающий в теле запроса множество метрик в формате: []Metrics (списка метрик).
+    - [x] **Агент:** Научите агент работать с использованием нового API (отправлять метрики батчами).
+- **Iter13.** Добавьте обработку `retriable`-ошибок.
+    - [x] Агент не сумел с первой попытки выгрузить данные на сервер из-за временной невозможности установить соединение с сервером.
+    - [x] При обращении к PostgreSQL cервер получил ошибку транспорта (из категории Class 08 — Connection Exception)
+    - [x] Ошибка доступа к файлу, который был заблокирован другим процессом.
+    - [x] Три повтора (всего 4 попытки). Интервалы между повторами должны увеличиваться: 1s, 3s, 5s.
+    - [x] Использование golang-migrate для миграции таблички сервера
+    - [x] Makefile для запуска миграций, сервера и агента.
+- **Iter14**. Подпись передаваемых данных по алгоритму SHA256. Посчитать hash от всего тела запроса и разместить его в HTTP-заголовке HashSHA256.
+    - [x] **Агент:** 
+        - [x] Добавьте поддержку аргумента через флаг `-k=<КЛЮЧ>` и переменную окружения `KEY=<КЛЮЧ>`.
+        - [x] При наличии ключа агент должен вычислять хеш и передавать в HTTP-заголовке запроса с именем `HashSHA256`.
+    - [x] **Сервер:**
+        - [x] Добавьте поддержку аргумента через флаг `-k=<КЛЮЧ>` и переменную окружения `KEY=<КЛЮЧ`>.
+        - [x] При наличии ключа (хэша) во время обработки запроса сервер должен проверять соответствие полученного и вычисленного хеша.
+        - [x] При несовпадении сервер должен отбрасывать полученные данные и возвращать `http.StatusBadRequest`.
+        - [x] При наличии ключа на этапе формирования ответа сервер должен вычислять хеш и передавать его в HTTP-заголовке ответа с именем HashSHA256.
+- **Iter15**. Паттерны многопоточности.
+    - [x] **Агент**: Добавить флаг -l=<ЗНАЧЕНИЕ> и переменную окружения RATE_LIMIT.
+    - [x] **Агент**: Перепланируйте архитектуру агента таким образом, чтобы сбор метрик (опрос runtime) и их отправка осуществлялись в разных горутинах. 
+    При этом количество одновременно исходящих запросов на сервер нужно ограничивать «сверху» (паттерн worker pool).
+    - [x] **Агент**: Добавьте ещё одну горутину, которая будет использовать пакет gopsutil и собирать дополнительные метрики
+        - TotalMemory,
+        - FreeMemory,
+        - CPUutilization1 (по числу CPU, определяемому во время исполнения)
+      
 ## Обновление шаблона
 
 Чтобы иметь возможность получать обновления автотестов и других частей шаблона, выполните команду:
@@ -61,13 +94,26 @@ wget https://github.com/Yandex-Practicum/go-autotests/releases/download/v0.10.6/
 chmod +x metricstest-darwin-amd64
 
 # запуск тестов
-./metricstest-darwin-amd64 -test.v  -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . > test.log
+./metricstest-darwin-amd64 -test.v  -binary-path=bin/server -agent-binary-path=bin/agent -source-path . > test.log
 
 # запуск конкретной итерации
-./metricstest-darwin-amd64 -test.v -test.run=^TestIteration7$ -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration7$ -binary-path=bin/server -agent-binary-path=bin/agent -source-path . | tee test.log
 
 # запуск конкретной итерации с  -server-port=8080 
- ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration8$ -server-port=8080 -binary-path cmd/server/server -agent-binary-path=cmd/agent/agent -source-path . | tee test.log
+ ./metricstest-darwin-amd64 -test.v -test.run=^TestIteration8$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -source-path . | tee test.log
+
+# проверка iter12
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration12$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee test.log
+
+# проверка iter13
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration13$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee iter13.log
+
+# проверка iter14
+./metricstest-darwin-amd64 -test.v -test.run=^TestIteration14$ -server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent -database-dsn=postgres://metrics:password@localhost:5432/metrics -source-path . | tee iter13.log
+
+
+# запуск сервера с postgres
+go run . -d postgres://metrics:password@localhost:5432/metrics
 ```
 
 ## Запуск линтеров

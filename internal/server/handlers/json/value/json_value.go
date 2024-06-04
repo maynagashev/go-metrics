@@ -7,13 +7,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/pkg/sign"
+
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 // New хэндлер для получения значения метрики с сервера в ответ на запрос `POST /value`.
-func New(storage storage.Repository) http.HandlerFunc {
+func New(cfg *app.Config, storage storage.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		var err error
@@ -24,20 +27,26 @@ func New(storage storage.Repository) http.HandlerFunc {
 		}
 
 		// Получаем значение метрики из хранилища
-		metric, ok := storage.GetMetric(requestMetric.MType, requestMetric.ID)
+		metric, ok := storage.GetMetric(requestMetric.MType, requestMetric.Name)
 		if !ok {
 			http.Error(w, fmt.Sprintf("%s not found", metric.String()), http.StatusNotFound)
 			return
 		}
 
 		// Отправляем json ответ с метрикой
-		encoded, err := json.Marshal(metric)
+		encodedBody, err := json.Marshal(metric)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		_, err = w.Write(encoded)
+		// Если задан приватный ключ, то подписываем ответ
+		if cfg.IsRequestSigningEnabled() {
+			signature := sign.ComputeHMACSHA256(encodedBody, cfg.PrivateKey)
+			w.Header().Set(sign.HeaderKey, signature)
+		}
+
+		_, err = w.Write(encodedBody)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

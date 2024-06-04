@@ -25,5 +25,8 @@ vendor/
 .vscode
 
 # Tests
-metricstest-darwin-amd64
+bin/metricstest-darwin-amd64
 *.log
+
+# Builds
+bin/

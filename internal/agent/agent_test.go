@@ -8,7 +8,7 @@ import (
 )
 
 func TestAgent_collectRuntimeMetrics(t *testing.T) {
-	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second)
+	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0)
 	tests := []struct {
 		name string
 		want int
@@ -20,8 +20,11 @@ func TestAgent_collectRuntimeMetrics(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := a.CollectRuntimeMetrics(); len(got) != tt.want {
-				t.Errorf("CollectRuntimeMetrics() = %v, want %v", len(got), tt.want)
+			a.ResetMetrics()
+			a.CollectRuntimeMetrics()
+			got := len(a.GetMetrics())
+			if got != tt.want {
+				t.Errorf("CollectRuntimeMetrics() = %v, want %v", got, tt.want)
 			}
 		})
 	}

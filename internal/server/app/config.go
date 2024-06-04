@@ -8,6 +8,15 @@ type Config struct {
 	FileStoragePath string
 	// Загружать или нет ранее сохраненные метрики из файла.
 	Restore bool
+	// Параметры базы данных
+	Database DatabaseConfig
+	// Приватный ключ для подписи метрик.
+	PrivateKey string
+}
+
+type DatabaseConfig struct {
+	DSN            string
+	MigrationsPath string
 }
 
 func NewConfig(flags *Flags) *Config {
@@ -16,6 +25,11 @@ func NewConfig(flags *Flags) *Config {
 		StoreInterval:   flags.Server.StoreInterval,
 		FileStoragePath: flags.Server.FileStoragePath,
 		Restore:         flags.Server.Restore,
+		Database: DatabaseConfig{
+			DSN:            flags.Database.DSN,
+			MigrationsPath: flags.Database.MigrationsPath,
+		},
+		PrivateKey: flags.PrivateKey,
 	}
 }
 
@@ -42,4 +56,14 @@ func (cfg *Config) IsSyncStore() bool {
 // GetStoreInterval возвращает интервал сохранения метрик на сервере в секундах.
 func (cfg *Config) GetStoreInterval() int {
 	return cfg.StoreInterval
+}
+
+// IsDatabaseEnabled возвращает true, если переданы параметры подключения к БД.
+func (cfg *Config) IsDatabaseEnabled() bool {
+	return cfg.Database.DSN != ""
+}
+
+// IsRequestSigningEnabled включена ли проверка подписи метрик.
+func (cfg *Config) IsRequestSigningEnabled() bool {
+	return cfg.PrivateKey != ""
 }

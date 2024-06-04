@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const defaultStoreInterval = 300
+
 // Flags содержит все флаги сервера.
 type Flags struct {
 	Server struct {
@@ -17,6 +19,15 @@ type Flags struct {
 		// Загружать или нет ранее сохраненные метрики из файла
 		Restore bool
 	}
+
+	Database struct {
+		// Параметры подключения к БД, например postgres://username:password@localhost:5432/database_name
+		DSN string
+		// Путь к директории с миграциями
+		MigrationsPath string
+	}
+
+	PrivateKey string
 }
 
 // ParseFlags обрабатывает аргументы командной строки
@@ -25,14 +36,30 @@ func ParseFlags() (*Flags, error) {
 	flags := Flags{}
 	var err error
 
-	// Регистрируем переменную flagRunAddr как аргумент -a со значением :8080 по умолчанию.
-	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "address and port to run server")
+	// Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
+	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "IP  адрес и порт на которых следует запустить сервер")
 	// Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
-	flag.IntVar(&flags.Server.StoreInterval, "i", 300, "store interval in seconds")
+	flag.IntVar(
+		&flags.Server.StoreInterval,
+		"i",
+		defaultStoreInterval,
+		"Интервал сохранения метрик на диск, в секундах",
+	)
 	// Регистрируем переменную flagFileStoragePath как аргумент -f со значением metrics.json по умолчанию.
-	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "file storage path")
+	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "Путь к файлу для хранения метрик")
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
-	flag.BoolVar(&flags.Server.Restore, "r", true, "restore metrics from file on start")
+	flag.BoolVar(&flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
+
+	// Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
+	flag.StringVar(&flags.Database.DSN, "d", "",
+		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
+	// Путь к директории с миграциями относительно корня проекта, по умолчанию "migrations/server".
+	flag.StringVar(&flags.Database.MigrationsPath,
+		"migrations-path",
+		"migrations/server",
+		"Путь к директории с миграциями")
+
+	flag.StringVar(&flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
 
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()
@@ -60,6 +87,16 @@ func ParseFlags() (*Flags, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	// Если переданы параметры БД в параметрах окружения, используем их
+	if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok {
+		flags.Database.DSN = envDatabaseDSN
+	}
+
+	// Если передан ключ в параметрах окружения, используем его
+	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
+		flags.PrivateKey = envPrivateKey
 	}
 
 	return &flags, nil

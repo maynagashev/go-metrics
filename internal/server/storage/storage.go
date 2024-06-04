@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -21,6 +20,9 @@ func (v Counter) String() string {
 
 // Repository provides an interface for working with metrics storage.
 type Repository interface {
+	// Close закрывает хранилище метрик.
+	Close() error
+
 	// Count возвращает общее количество метрик в хранилище.
 	Count() int
 
@@ -28,10 +30,7 @@ type Repository interface {
 	GetMetrics() []metrics.Metric
 
 	// GetMetric получение значения метрики указанного типа в виде универсальной структуры.
-	GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool)
-
-	// GetValue возвращает значение метрики по типу и имени.
-	GetValue(metricType metrics.MetricType, name string) (fmt.Stringer, bool)
+	GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool)
 
 	// GetCounter возвращает счетчик по имени.
 	GetCounter(name string) (Counter, bool)
@@ -39,18 +38,10 @@ type Repository interface {
 	// GetGauge возвращает измерение по имени.
 	GetGauge(name string) (Gauge, bool)
 
-	// GetCounters возвращает все счетчики в виде мапы Counters.
-	GetCounters() Counters
-
-	// GetGauges возвращает все измерения в виде мапы Gauges.
-	GetGauges() Gauges
-
-	// IncrementCounter увеличивает значение счетчика на указанное значение.
-	IncrementCounter(metricName string, metricValue Counter)
-
-	// UpdateGauge перезаписывает значения метрики.
-	UpdateGauge(metricName string, metricValue Gauge)
-
 	// UpdateMetric универсальный метод обновления метрики: gauge, counter.
+	// Если метрика существует, то обновляет, иначе создает новую.
 	UpdateMetric(metric metrics.Metric) error
+
+	// UpdateMetrics пакетно обновляет метрики в хранилище.
+	UpdateMetrics(metrics []metrics.Metric) error
 }

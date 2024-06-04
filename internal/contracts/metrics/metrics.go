@@ -14,15 +14,15 @@ const (
 )
 
 type Metric struct {
-	ID    string     `json:"id"`              // Имя метрики
+	Name  string     `json:"id"`              // Имя метрики
 	MType MetricType `json:"type"`            // Параметр, принимающий значение gauge или counter
 	Delta *int64     `json:"delta,omitempty"` // Значение метрики в случае передачи counter
 	Value *float64   `json:"value,omitempty"` // Значение метрики в случае передачи gauge
 }
 
-func NewMetric(id string, mType MetricType, delta *int64, value *float64) *Metric {
+func NewMetric(name string, mType MetricType, delta *int64, value *float64) *Metric {
 	return &Metric{
-		ID:    id,
+		Name:  name,
 		MType: mType,
 		Delta: delta,
 		Value: value,
@@ -42,14 +42,14 @@ func (m *Metric) String() string {
 		return "<nil>"
 	}
 	if m.Delta != nil {
-		return fmt.Sprintf("Metric{ID: %s, Type: %s, Delta: %d}", m.ID, m.MType, *m.Delta)
+		return fmt.Sprintf("Metric{Name: %s, Type: %s, Delta: %d}", m.Name, m.MType, *m.Delta)
 	}
 	if m.Value != nil {
-		return fmt.Sprintf("Metric{ID: %s, Type: %s, Value: %f}", m.ID, m.MType, *m.Value)
+		return fmt.Sprintf("Metric{Name: %s, Type: %s, Value: %f}", m.Name, m.MType, *m.Value)
 	}
 	// Значение метрики может быть не задано в структуре,
 	// т.к. эта же структура используется для парсинга json в запросе получения значения метрики.
-	return fmt.Sprintf("Metric{ID: %s, Type: %s}", m.ID, m.MType)
+	return fmt.Sprintf("Metric{Name: %s, Type: %s}", m.Name, m.MType)
 }
 
 func (m *Metric) ValueString() string {

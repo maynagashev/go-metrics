@@ -19,13 +19,13 @@ func New(storage storage.Repository) http.HandlerFunc {
 		metricType := metrics.MetricType(chi.URLParam(r, "type"))
 		metricName := chi.URLParam(r, "name")
 
-		value, ok := storage.GetValue(metricType, metricName)
+		metric, ok := storage.GetMetric(metricType, metricName)
 		if !ok {
 			http.Error(w, fmt.Sprintf("%s %s not found", metricType, metricName), http.StatusNotFound)
 			return
 		}
 
-		_, err := w.Write([]byte(value.String()))
+		_, err := w.Write([]byte(metric.ValueString()))
 		if err != nil {
 			return
 		}
