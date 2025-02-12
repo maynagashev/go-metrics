@@ -51,3 +51,9 @@ iter14: build
 									-source-path . \
 									-key=iter14 \
 									| tee logs/iter14.log
+
+.PHONY: test-coverage
+test-coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	go tool cover -func=coverage.out
