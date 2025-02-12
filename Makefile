@@ -32,7 +32,7 @@ server_with_agent:
 
 lint :
 	@echo "Running linter..."
-	golangci-lint run
+	golangci-lint run ./...
 
 iter10: build
 	@echo "Running iteration 14 tests ..."

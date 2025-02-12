@@ -40,7 +40,7 @@ func TestHandle_Success(t *testing.T) {
 	// Проверяем, что код ответа равен 200
 	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
-	assert.Equal(t, `{"status":"OK","message":"pong"}`, rr.Body.String())
+	assert.JSONEq(t, `{"status":"OK","message":"pong"}`, rr.Body.String())
 
 	// Проверяем вызов метода GetMetrics
 	mockStorage.AssertCalled(t, "GetMetrics")
