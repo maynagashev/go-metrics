@@ -1,0 +1,10 @@
+goos: linux
+goarch: amd64
+pkg: github.com/maynagashev/go-metrics/internal/benchmarks
+cpu: 13th Gen Intel(R) Core(TM) i7-13700H
+BenchmarkStorageOperations-20       	48524828	        25.37 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMetricsSerialization-20    	 1000000	      1007 ns/op	     136 B/op	       2 allocs/op
+BenchmarkMetricsCompression-20      	    4690	    253124 ns/op	  814113 B/op	      20 allocs/op
+BenchmarkHashCalculation-20         	 1173417	       916.1 ns/op	     512 B/op	       6 allocs/op
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/benchmarks	6.908s

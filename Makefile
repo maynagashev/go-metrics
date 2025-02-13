@@ -57,3 +57,9 @@ test-coverage:
 	go test -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out -o coverage.html
 	go tool cover -func=coverage.out
+
+.PHONY: bench
+bench:
+	@echo "Running benchmarks..."
+	@mkdir -p logs
+	go test -bench=. -benchmem ./internal/benchmarks/... | tee logs/benchmarks.log
