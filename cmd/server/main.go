@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	//nolint:gosec // G108: pprof is used intentionally for debugging and profiling
+	_ "net/http/pprof"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
@@ -12,16 +14,15 @@ import (
 )
 
 func main() {
+	flags, err := app.ParseFlags()
+	if err != nil {
+		panic(err)
+	}
+
 	log := initLogger()
 	defer func() {
 		_ = log.Sync()
 	}()
-
-	flags, err := app.ParseFlags()
-	if err != nil {
-		// Если не удалось распарсить флаги запуска, завершаем программу.
-		panic(err)
-	}
 
 	cfg := app.NewConfig(flags)
 	server := app.New(cfg)

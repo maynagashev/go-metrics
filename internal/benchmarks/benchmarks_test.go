@@ -1,4 +1,4 @@
-package benchmarks
+package benchmarks_test
 
 import (
 	"bytes"
@@ -15,18 +15,14 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 )
 
-// newTestStorage создает тестовое хранилище в памяти с пустым конфигом
-// для измерения производительности операций с метриками без накладных расходов на работу с файлами
+// для измерения производительности операций с метриками без накладных расходов на работу с файлами.
 func newTestStorage() *memory.MemStorage {
 	logger := zap.NewNop()
 	cfg := &app.Config{}
 	return memory.New(cfg, logger)
 }
 
-// BenchmarkStorageOperations измеряет производительность базовых операций с хранилищем:
-// - Запись метрики (UpdateMetric)
-// - Чтение метрики (GetMetric)
-// Это помогает оценить скорость работы in-memory хранилища и выявить потенциальные узкие места
+// Это помогает оценить скорость работы in-memory хранилища и выявить потенциальные узкие места.
 func BenchmarkStorageOperations(b *testing.B) {
 	store := newTestStorage()
 
@@ -37,7 +33,7 @@ func BenchmarkStorageOperations(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		err := store.UpdateMetric(metric)
 		if err != nil {
 			b.Fatal(err)
@@ -49,9 +45,7 @@ func BenchmarkStorageOperations(b *testing.B) {
 	}
 }
 
-// BenchmarkMetricsSerialization измеряет производительность сериализации метрик в JSON
-// Это важно для оценки производительности API сервера при подготовке ответов
-// и для агента при подготовке данных для отправки
+// и для агента при подготовке данных для отправки.
 func BenchmarkMetricsSerialization(b *testing.B) {
 	testMetrics := []metrics.Metric{
 		{
@@ -67,7 +61,7 @@ func BenchmarkMetricsSerialization(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, err := json.Marshal(testMetrics)
 		if err != nil {
 			b.Fatal(err)
@@ -75,14 +69,12 @@ func BenchmarkMetricsSerialization(b *testing.B) {
 	}
 }
 
-// BenchmarkMetricsCompression измеряет производительность сжатия данных алгоритмом gzip
-// Это критично для оценки накладных расходов на сжатие при отправке метрик по сети,
-// особенно при больших объемах данных
+// особенно при больших объемах данных.
 func BenchmarkMetricsCompression(b *testing.B) {
 	data := []byte(`{"metrics":[{"name":"TestGauge1","value":1.23},{"name":"TestCounter1","delta":42}]}`)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		var buf bytes.Buffer
 		gz := gzip.NewWriter(&buf)
 		_, err := gz.Write(data)
@@ -96,23 +88,20 @@ func BenchmarkMetricsCompression(b *testing.B) {
 	}
 }
 
-// BenchmarkHashCalculation измеряет производительность вычисления HMAC-SHA256 хеша
-// Это важно для оценки накладных расходов на подпись данных, которая используется
-// для обеспечения целостности метрик при передаче между агентом и сервером
+// для обеспечения целостности метрик при передаче между агентом и сервером.
 func BenchmarkHashCalculation(b *testing.B) {
 	data := []byte(`{"name":"TestGauge","type":"gauge","value":1.23}`)
 	key := []byte("test_key")
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		h := hmac.New(sha256.New, key)
 		h.Write(data)
 		h.Sum(nil)
 	}
 }
 
-// ptr - вспомогательная функция для создания указателей на значения
-// используется для заполнения полей Value и Delta в структуре Metric
+// используется для заполнения полей Value и Delta в структуре Metric.
 func ptr[T any](v T) *T {
 	return &v
 }

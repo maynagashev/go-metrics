@@ -14,6 +14,8 @@ func main() {
 	initLogger()
 	slog.Debug("parsed flags and env variables", "flags", flags)
 
+	initPprof(flags)
+
 	serverURL := "http://" + flags.Server.Addr
 	pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
 	reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))

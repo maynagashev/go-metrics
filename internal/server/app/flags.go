@@ -18,6 +18,8 @@ type Flags struct {
 		FileStoragePath string
 		// Загружать или нет ранее сохраненные метрики из файла
 		Restore bool
+		// Включить профилирование через pprof
+		EnablePprof bool
 	}
 
 	Database struct {
@@ -49,6 +51,9 @@ func ParseFlags() (*Flags, error) {
 	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "Путь к файлу для хранения метрик")
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
 	flag.BoolVar(&flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
+
+	// Добавляем флаг профилирования
+	flag.BoolVar(&flags.Server.EnablePprof, "pprof", false, "enable pprof profiling with /debug/pprof routes")
 
 	// Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
 	flag.StringVar(&flags.Database.DSN, "d", "",

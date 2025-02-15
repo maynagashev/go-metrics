@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http/pprof"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/maynagashev/go-metrics/internal/server/app"
@@ -46,6 +48,26 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 	// Первые версии обработчиков для работы тестов начальных итераций
 	r.Post("/update/*", plainUpdate.New(storage, log))
 	r.Get("/value/{type}/{name}", plainValue.New(storage))
+
+	// Добавляем pprof хендлеры только если включено профилирование
+	if config.EnablePprof {
+		log.Info("Registering pprof handlers at /debug/pprof/")
+		r.Route("/debug/pprof", func(r chi.Router) {
+			r.HandleFunc("/", pprof.Index)
+			r.HandleFunc("/cmdline", pprof.Cmdline)
+			r.HandleFunc("/profile", pprof.Profile)
+			r.HandleFunc("/symbol", pprof.Symbol)
+			r.HandleFunc("/trace", pprof.Trace)
+
+			/* Постоянно обновляемые метрики, снимают отчеты в реальном времени */
+			r.HandleFunc("/goroutine", pprof.Handler("goroutine").ServeHTTP)
+			r.HandleFunc("/heap", pprof.Handler("heap").ServeHTTP)
+			r.HandleFunc("/threadcreate", pprof.Handler("threadcreate").ServeHTTP)
+			r.HandleFunc("/block", pprof.Handler("block").ServeHTTP)
+			r.HandleFunc("/allocs", pprof.Handler("allocs").ServeHTTP)
+			r.HandleFunc("/mutex", pprof.Handler("mutex").ServeHTTP)
+		})
+	}
 
 	return r
 }

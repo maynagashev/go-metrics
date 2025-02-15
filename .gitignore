@@ -30,3 +30,9 @@ bin/metricstest-darwin-amd64
 
 # Builds
 bin/
+
+# Профили производительности
+# profiles/
+
+# PID файлы
+*.pid

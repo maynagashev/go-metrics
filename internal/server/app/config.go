@@ -12,6 +12,8 @@ type Config struct {
 	Database DatabaseConfig
 	// Приватный ключ для подписи метрик.
 	PrivateKey string
+	// Включить профилирование через pprof
+	EnablePprof bool
 }
 
 type DatabaseConfig struct {
@@ -29,7 +31,8 @@ func NewConfig(flags *Flags) *Config {
 			DSN:            flags.Database.DSN,
 			MigrationsPath: flags.Database.MigrationsPath,
 		},
-		PrivateKey: flags.PrivateKey,
+		PrivateKey:  flags.PrivateKey,
+		EnablePprof: flags.Server.EnablePprof,
 	}
 }
 

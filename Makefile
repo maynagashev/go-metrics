@@ -63,3 +63,43 @@ bench:
 	@echo "Running benchmarks..."
 	@mkdir -p logs
 	go test -bench=. -benchmem ./internal/benchmarks/... | tee logs/benchmarks.log
+
+
+# Профилирование различных компонентов системы
+.PHONY: save-all-profiles
+save-all-profiles: profile-benchmarks profile-server-heap profile-agent-heap
+
+# Запуск сервера с профилированием
+.PHONY: profile-server
+profile-server:
+	@echo "Running server with profiling enabled..."
+	@echo "Open http://localhost:8080/debug/pprof to view profiles"
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -pprof
+
+# Запуск агента с профилированием
+.PHONY: profile-agent
+profile-agent:
+	@echo "Running agent with profiling enabled..."
+	@go run ./cmd/agent/. -k="private_key_example" -pprof
+
+# Сохранение профиля heap для сервера
+.PHONY: profile-server-heap
+profile-server-heap:
+	@mkdir -p profiles
+	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
+	go tool pprof -http=":9090" -output=profiles/server_heap_$(DATE).pprof http://localhost:8080/debug/pprof/heap
+
+# Сохранение профиля heap для агента
+.PHONY: profile-agent-heap
+profile-agent-heap:
+	@mkdir -p profiles
+	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
+	go tool pprof -http=":9091" -output=profiles/agent_heap_$(DATE).pprof http://localhost:6060/debug/pprof/heap
+
+# Сохранение профиля памяти для бенчмарков
+.PHONY: profile-benchmarks
+profile-benchmarks:
+	@echo "Running benchmarks with memory profiling..."
+	@mkdir -p profiles
+	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
+	go test -bench=. -benchmem -memprofile=profiles/bench_mem_$(DATE).pprof ./internal/benchmarks/...
