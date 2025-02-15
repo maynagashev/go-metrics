@@ -67,7 +67,7 @@ bench:
 
 # Профилирование различных компонентов системы
 .PHONY: save-all-profiles
-save-all-profiles: profile-benchmarks profile-server-heap profile-agent-heap
+save-all-profiles: profile-benchmarks profile-server-memory profile-agent-memory
 
 # Запуск сервера с профилированием
 .PHONY: profile-server
@@ -82,19 +82,20 @@ profile-agent:
 	@echo "Running agent with profiling enabled..."
 	@go run ./cmd/agent/. -k="private_key_example" -pprof
 
-# Сохранение профиля heap для сервера
-.PHONY: profile-server-heap
-profile-server-heap:
+# Сохранение профиля memory для сервера
+.PHONY: profile-server-memory
+profile-server-memory:
 	@mkdir -p profiles
 	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
-	go tool pprof -http=":9090" -output=profiles/server_heap_$(DATE).pprof http://localhost:8080/debug/pprof/heap
-
-# Сохранение профиля heap для агента
-.PHONY: profile-agent-heap
-profile-agent-heap:
+	curl -s http://localhost:8080/debug/pprof/heap > profiles/server_heap_$(DATE).pprof
+	curl -s http://localhost:8080/debug/pprof/allocs > profiles/server_allocs_$(DATE).pprof
+# Сохранение профиля memory для агента
+.PHONY: profile-agent-memory
+profile-agent-memory:
 	@mkdir -p profiles
 	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
-	go tool pprof -http=":9091" -output=profiles/agent_heap_$(DATE).pprof http://localhost:6060/debug/pprof/heap
+	curl -s http://localhost:6060/debug/pprof/heap > profiles/agent_heap_$(DATE).pprof
+	curl -s http://localhost:6060/debug/pprof/allocs > profiles/agent_allocs_$(DATE).pprof
 
 # Сохранение профиля памяти для бенчмарков
 .PHONY: profile-benchmarks
