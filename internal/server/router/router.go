@@ -13,7 +13,7 @@ import (
 	plainIndex "github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
 	plainUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 	plainValue "github.com/maynagashev/go-metrics/internal/server/handlers/plain/value"
-	"github.com/maynagashev/go-metrics/internal/server/middleware/decompress"
+	"github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool"
 	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"go.uber.org/zap"
@@ -34,7 +34,7 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 	// Добавляем middleware для сжатия ответов
 	r.Use(middleware.Compress(compressLevel, "application/json", "text/html"))
 	// Обработка сжатых запросов, когда от клиента сразу пришел заголовок Content-Encoding: gzip
-	r.Use(decompress.New(log))
+	r.Use(decompresspool.New(log))
 	// Используем единый логгер для запросов, вместо встроенного логгера chi
 	r.Use(logger.New(log))
 

@@ -52,6 +52,12 @@ iter14: build
 									-key=iter14 \
 									| tee logs/iter14.log
 
+# test
+.PHONY: test
+test:
+	@echo "Running tests..."
+	@go test -v ./... | tee logs/test.log
+
 .PHONY: test-coverage
 test-coverage:
 	go test -coverprofile=coverage.out ./...
