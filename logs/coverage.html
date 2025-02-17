@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/flags.go (0.0%)</option>
+				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/flags.go (100.0%)</option>
 				
 				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/main.go (0.0%)</option>
 				
@@ -168,7 +168,7 @@ type Flags struct {
 
 // mustParseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных.
-func mustParseFlags() Flags <span class="cov0" title="0">{
+func mustParseFlags() Flags <span class="cov8" title="1">{
         flags := Flags{}
 
         flag.StringVar(
@@ -189,47 +189,47 @@ func mustParseFlags() Flags <span class="cov0" title="0">{
 
         // если переданы переменные окружения, то они перезаписывают
         // значения флагов: envServerAddr, envReportInterval, envPollInterval
-        if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" </span><span class="cov0" title="0">{
+        if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" </span><span class="cov8" title="1">{
                 flags.Server.Addr = envServerAddr
         }</span>
-        <span class="cov0" title="0">if envReportInterval := os.Getenv("REPORT_INTERVAL"); envReportInterval != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envReportInterval := os.Getenv("REPORT_INTERVAL"); envReportInterval != "" </span><span class="cov8" title="1">{
                 i, err := strconv.ParseFloat(envReportInterval, 64)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         panic(fmt.Sprintf("error parsing env REPORT_INTERVAL %s", err))</span>
                 }
-                <span class="cov0" title="0">flags.Server.ReportInterval = i</span>
+                <span class="cov8" title="1">flags.Server.ReportInterval = i</span>
         }
-        <span class="cov0" title="0">if envPollInterval := os.Getenv("POLL_INTERVAL"); envPollInterval != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envPollInterval := os.Getenv("POLL_INTERVAL"); envPollInterval != "" </span><span class="cov8" title="1">{
                 i, err := strconv.ParseFloat(envPollInterval, 64)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         panic(fmt.Sprintf("error parsing env POLL_INTERVAL %s", err))</span>
                 }
-                <span class="cov0" title="0">flags.Server.PollInterval = i</span>
+                <span class="cov8" title="1">flags.Server.PollInterval = i</span>
         }
-        <span class="cov0" title="0">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov8" title="1">{
                 flags.PrivateKey = envPrivateKey
         }</span>
-        <span class="cov0" title="0">if envRateLimit, ok := os.LookupEnv("RATE_LIMIT"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envRateLimit, ok := os.LookupEnv("RATE_LIMIT"); ok </span><span class="cov8" title="1">{
                 l, err := strconv.Atoi(envRateLimit)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         panic(fmt.Sprintf("error parsing env RATE_LIMIT %s", err))</span>
                 }
-                <span class="cov0" title="0">flags.RateLimit = l</span>
+                <span class="cov8" title="1">flags.RateLimit = l</span>
         }
 
-        <span class="cov0" title="0">if flags.RateLimit &lt; 1 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if flags.RateLimit &lt; 1 </span><span class="cov8" title="1">{
                 panic("RateLimit should be greater than 0")</span>
         }
 
         // Устанавливаем минимальные допустимые значения для интервалов
-        <span class="cov0" title="0">if flags.Server.ReportInterval &lt; minInterval </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if flags.Server.ReportInterval &lt; minInterval </span><span class="cov8" title="1">{
                 flags.Server.ReportInterval = minInterval
         }</span>
-        <span class="cov0" title="0">if flags.Server.PollInterval &lt; minInterval </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if flags.Server.PollInterval &lt; minInterval </span><span class="cov8" title="1">{
                 flags.Server.PollInterval = minInterval
         }</span>
 
-        <span class="cov0" title="0">return flags</span>
+        <span class="cov8" title="1">return flags</span>
 }
 </pre>
 		
