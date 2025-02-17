@@ -88,7 +88,7 @@ func TestStartPProf(t *testing.T) {
 	}
 }
 
-func TestStartPProf_ServerError(t *testing.T) {
+func TestStartPProf_ServerError(_ *testing.T) {
 	// Сначала запускаем сервер на порту
 	addr := "localhost:9996"
 	srv := &http.Server{

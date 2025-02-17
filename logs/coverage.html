@@ -61,7 +61,7 @@
 				
 				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (100.0%)</option>
 				
-				<option value="file3">github.com/maynagashev/go-metrics/cmd/migrate/main.go (0.0%)</option>
+				<option value="file3">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
 				
 				<option value="file4">github.com/maynagashev/go-metrics/cmd/server/main.go (0.0%)</option>
 				
@@ -318,6 +318,7 @@ func startPProf(pprofAddr string) <span class="cov8" title="1">{
 package main
 
 import (
+        "errors"
         "flag"
 
         _ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -325,21 +326,30 @@ import (
         "github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
 )
 
-func main() <span class="cov0" title="0">{
+func run(dsn, migrationsPath string) error <span class="cov8" title="1">{
+        if dsn == "" </span><span class="cov8" title="1">{
+                return errors.New("не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database")
+        }</span>
+        <span class="cov8" title="1">if migrationsPath == "" </span><span class="cov8" title="1">{
+                return errors.New("не указан путь к директории с миграциями: -migrations-path ../../migrations")
+        }</span>
+
+        <span class="cov0" title="0">if err := migration.Up(migrationsPath, dsn); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func main() <span class="cov8" title="1">{
         var dsn, migrationsPath string
         flag.StringVar(&amp;dsn, "d", "",
                 "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
         flag.StringVar(&amp;migrationsPath, "migrations-path", "", "Путь к директории с миграциями")
         flag.Parse()
 
-        if dsn == "" </span><span class="cov0" title="0">{
-                panic("Не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database")</span>
+        if err := run(dsn, migrationsPath); err != nil </span><span class="cov8" title="1">{
+                panic(err)</span>
         }
-        <span class="cov0" title="0">if migrationsPath == "" </span><span class="cov0" title="0">{
-                panic("Не указан путь к директории с миграциями: -migrations-path ../../migrations")</span>
-        }
-
-        <span class="cov0" title="0">migration.Up(migrationsPath, dsn)</span>
 }
 </pre>
 		
@@ -2267,11 +2277,11 @@ import (
         _ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-// Up применяет миграции к базе данных.
-func Up(path, dsn string) <span class="cov0" title="0">{
+// Up выполняет миграции базы данных.
+func Up(migrationsPath string, dsn string) error <span class="cov0" title="0">{
         var err error
-        slog.Info("Запуск миграций...", "path", path)
-        m, err := migrate.New("file://"+path, dsn)
+        slog.Info("Запуск миграций...", "path", migrationsPath)
+        m, err := migrate.New("file://"+migrationsPath, dsn)
         if err != nil </span><span class="cov0" title="0">{
                 panic(err)</span>
         }
@@ -2279,12 +2289,13 @@ func Up(path, dsn string) <span class="cov0" title="0">{
         <span class="cov0" title="0">if err = m.Up(); err != nil </span><span class="cov0" title="0">{
                 if errors.Is(err, migrate.ErrNoChange) </span><span class="cov0" title="0">{
                         slog.Info("Нет новых миграций для применения.")
-                        return
+                        return nil
                 }</span>
                 <span class="cov0" title="0">panic(err)</span>
         }
 
-        <span class="cov0" title="0">slog.Info("Миграции применены.")</span>
+        <span class="cov0" title="0">slog.Info("Миграции применены.")
+        return nil</span>
 }
 </pre>
 		
@@ -2336,8 +2347,10 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
         }
 
         // Автоматически накатываем миграции при создании экземпляра хранилища.
-        migration.Up(config.Database.MigrationsPath, config.Database.DSN)
-        return p, nil</span>
+        if migrateErr := migration.Up(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to apply migrations: %w", migrateErr)
+        }</span>
+        <span class="cov0" title="0">return p, nil</span>
 }
 
 func (p *PgStorage) Close() error <span class="cov0" title="0">{

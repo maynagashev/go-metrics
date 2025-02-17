@@ -11,11 +11,11 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-// Up применяет миграции к базе данных.
-func Up(path, dsn string) {
+// Up выполняет миграции базы данных.
+func Up(migrationsPath string, dsn string) error {
 	var err error
-	slog.Info("Запуск миграций...", "path", path)
-	m, err := migrate.New("file://"+path, dsn)
+	slog.Info("Запуск миграций...", "path", migrationsPath)
+	m, err := migrate.New("file://"+migrationsPath, dsn)
 	if err != nil {
 		panic(err)
 	}
@@ -23,10 +23,11 @@ func Up(path, dsn string) {
 	if err = m.Up(); err != nil {
 		if errors.Is(err, migrate.ErrNoChange) {
 			slog.Info("Нет новых миграций для применения.")
-			return
+			return nil
 		}
 		panic(err)
 	}
 
 	slog.Info("Миграции применены.")
+	return nil
 }

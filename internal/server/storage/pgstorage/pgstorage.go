@@ -46,7 +46,9 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
 	}
 
 	// Автоматически накатываем миграции при создании экземпляра хранилища.
-	migration.Up(config.Database.MigrationsPath, config.Database.DSN)
+	if migrateErr := migration.Up(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil {
+		return nil, fmt.Errorf("failed to apply migrations: %w", migrateErr)
+	}
 	return p, nil
 }
 
