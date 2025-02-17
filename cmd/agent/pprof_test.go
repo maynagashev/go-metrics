@@ -40,7 +40,10 @@ func TestInitPprof(t *testing.T) {
 			time.Sleep(100 * time.Millisecond)
 
 			// Проверяем доступность сервера pprof
-			_, err := http.Get("http://localhost:" + tt.flags.PprofPort + "/debug/pprof/")
+			resp, err := http.Get("http://localhost:" + tt.flags.PprofPort + "/debug/pprof/")
+			if resp != nil {
+				defer resp.Body.Close()
+			}
 
 			if tt.wantServer {
 				assert.NoError(t, err, "pprof server should be running")
@@ -77,7 +80,10 @@ func TestStartPProf(t *testing.T) {
 			time.Sleep(100 * time.Millisecond)
 
 			// Проверяем доступность сервера pprof
-			_, err := http.Get("http://localhost:9997/debug/pprof/")
+			resp, err := http.Get("http://localhost:9997/debug/pprof/")
+			if resp != nil {
+				defer resp.Body.Close()
+			}
 
 			if tt.wantErr {
 				assert.Error(t, err, "should get error for empty address")
