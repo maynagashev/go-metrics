@@ -41,7 +41,13 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error {
 		}
 
 		// Логируем ошибку
-		slog.Error(fmt.Sprintf("failed to send metrics (try=%d): %s", i, err), "workerID", workerID, "metrics", items)
+		slog.Error(
+			fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
+			"workerID",
+			workerID,
+			"metrics",
+			items,
+		)
 
 		// Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
 		if !isRetriableSendError(err) {
@@ -82,7 +88,15 @@ func isRetriableSendError(err error) bool {
 func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error {
 	var err error
 	url := fmt.Sprintf("%s/updates", a.ServerURL)
-	slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "workerID", workerID, "url", url, "metrics", items)
+	slog.Info(
+		fmt.Sprintf("sending metrics batch (try=%d)", try),
+		"workerID",
+		workerID,
+		"url",
+		url,
+		"metrics",
+		items,
+	)
 
 	// Создаем новый запрос.
 	req := a.client.R()

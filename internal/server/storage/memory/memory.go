@@ -60,7 +60,13 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage {
 		go func() {
 			for {
 				time.Sleep(interval)
-				log.Info(fmt.Sprintf("store %d metrics to file %s", memStorage.Count(), cfg.GetStorePath()))
+				log.Info(
+					fmt.Sprintf(
+						"store %d metrics to file %s",
+						memStorage.Count(),
+						cfg.GetStorePath(),
+					),
+				)
 				err := memStorage.storeMetricsToFile()
 				if err != nil {
 					log.Error("failed to store metrics to file", zap.Error(err))
@@ -111,7 +117,9 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 		err := ms.storeMetricsToFile()
 		if err != nil {
 			// Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
-			ms.log.Error(fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err))
+			ms.log.Error(
+				fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err),
+			)
 		}
 	}
 	return nil
@@ -173,10 +181,16 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 func (ms *MemStorage) GetMetrics() []metrics.Metric {
 	items := make([]metrics.Metric, 0, ms.Count())
 	for id, value := range ms.GetGauges() {
-		items = append(items, metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&value)})
+		items = append(
+			items,
+			metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&value)},
+		)
 	}
 	for id, value := range ms.GetCounters() {
-		items = append(items, metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)})
+		items = append(
+			items,
+			metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&value)},
+		)
 	}
 	// slices.Sort(items)
 	return items

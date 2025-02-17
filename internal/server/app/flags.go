@@ -39,7 +39,12 @@ func ParseFlags() (*Flags, error) {
 	var err error
 
 	// Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
-	flag.StringVar(&flags.Server.Addr, "a", "localhost:8080", "IP  адрес и порт на которых следует запустить сервер")
+	flag.StringVar(
+		&flags.Server.Addr,
+		"a",
+		"localhost:8080",
+		"IP  адрес и порт на которых следует запустить сервер",
+	)
 	// Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
 	flag.IntVar(
 		&flags.Server.StoreInterval,
@@ -48,16 +53,30 @@ func ParseFlags() (*Flags, error) {
 		"Интервал сохранения метрик на диск, в секундах",
 	)
 	// Регистрируем переменную flagFileStoragePath как аргумент -f со значением metrics.json по умолчанию.
-	flag.StringVar(&flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "Путь к файлу для хранения метрик")
+	flag.StringVar(
+		&flags.Server.FileStoragePath,
+		"f",
+		"/tmp/metrics-db.json",
+		"Путь к файлу для хранения метрик",
+	)
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
 	flag.BoolVar(&flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
 
 	// Добавляем флаг профилирования
-	flag.BoolVar(&flags.Server.EnablePprof, "pprof", false, "enable pprof profiling with /debug/pprof routes")
+	flag.BoolVar(
+		&flags.Server.EnablePprof,
+		"pprof",
+		false,
+		"enable pprof profiling with /debug/pprof routes",
+	)
 
 	// Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
-	flag.StringVar(&flags.Database.DSN, "d", "",
-		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
+	flag.StringVar(
+		&flags.Database.DSN,
+		"d",
+		"",
+		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database",
+	)
 	// Путь к директории с миграциями относительно корня проекта, по умолчанию "migrations/server".
 	flag.StringVar(&flags.Database.MigrationsPath,
 		"migrations-path",

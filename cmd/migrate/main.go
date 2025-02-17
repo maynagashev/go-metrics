@@ -12,10 +12,14 @@ import (
 
 func run(dsn, migrationsPath string) error {
 	if dsn == "" {
-		return errors.New("не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database")
+		return errors.New(
+			"не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database",
+		)
 	}
 	if migrationsPath == "" {
-		return errors.New("не указан путь к директории с миграциями: -migrations-path ../../migrations")
+		return errors.New(
+			"не указан путь к директории с миграциями: -migrations-path ../../migrations",
+		)
 	}
 
 	if err := migration.Up(migrationsPath, dsn); err != nil {
@@ -26,8 +30,12 @@ func run(dsn, migrationsPath string) error {
 
 func main() {
 	var dsn, migrationsPath string
-	flag.StringVar(&dsn, "d", "",
-		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
+	flag.StringVar(
+		&dsn,
+		"d",
+		"",
+		"Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database",
+	)
 	flag.StringVar(&migrationsPath, "migrations-path", "", "Путь к директории с миграциями")
 	flag.Parse()
 

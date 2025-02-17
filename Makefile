@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage
+.PHONY: migrate test bench lint test-coverage fmt 
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -122,3 +122,9 @@ profile-benchmarks:
 compare-profiles:
 	@echo "Сравнение профилей памяти..."
 	@go tool pprof -top -diff_base=profiles/base_server_allocs_20250215_230049.pprof profiles/server_allocs_$(shell date '+%Y%m%d_%H%M%S').pprof | tee logs/compare-profiles.log
+
+# Форматирование кода
+fmt:
+	gofmt -s -w .
+	goimports --local -w .
+	golines -w .

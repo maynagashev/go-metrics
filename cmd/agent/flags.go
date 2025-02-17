@@ -38,10 +38,25 @@ func mustParseFlags() Flags {
 		"localhost:8080",
 		"address and port of the server send metrics to",
 	)
-	flag.Float64Var(&flags.Server.ReportInterval, "r", defaultReportInterval, "report interval in seconds")
-	flag.Float64Var(&flags.Server.PollInterval, "p", defaultPollInterval, "poll interval in seconds")
+	flag.Float64Var(
+		&flags.Server.ReportInterval,
+		"r",
+		defaultReportInterval,
+		"report interval in seconds",
+	)
+	flag.Float64Var(
+		&flags.Server.PollInterval,
+		"p",
+		defaultPollInterval,
+		"poll interval in seconds",
+	)
 	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
-	flag.IntVar(&flags.RateLimit, "l", defaultRateLimit, "макс. количество одновременно исходящих запросов на сервер")
+	flag.IntVar(
+		&flags.RateLimit,
+		"l",
+		defaultRateLimit,
+		"макс. количество одновременно исходящих запросов на сервер",
+	)
 	flag.BoolVar(&flags.EnablePprof, "pprof", false, "enable pprof profiling")
 	flag.StringVar(&flags.PprofPort, "pprof-port", "6060", "port for pprof server")
 

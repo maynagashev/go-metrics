@@ -77,7 +77,9 @@ func BenchmarkMetricsSerialization(b *testing.B) {
 
 // особенно при больших объемах данных.
 func BenchmarkMetricsCompression(b *testing.B) {
-	data := []byte(`{"metrics":[{"name":"TestGauge1","value":1.23},{"name":"TestCounter1","delta":42}]}`)
+	data := []byte(
+		`{"metrics":[{"name":"TestGauge1","value":1.23},{"name":"TestCounter1","delta":42}]}`,
+	)
 
 	var buf bytes.Buffer
 	b.ResetTimer()
@@ -163,7 +165,11 @@ func BenchmarkDecompressMiddleware(b *testing.B) {
 			b.ReportAllocs()
 
 			for range b.N {
-				req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(compressedData.Bytes()))
+				req := httptest.NewRequest(
+					http.MethodPost,
+					"/",
+					bytes.NewReader(compressedData.Bytes()),
+				)
 				req.Header.Set("Content-Encoding", "gzip")
 				w := httptest.NewRecorder()
 				h.ServeHTTP(w, req)
@@ -178,7 +184,11 @@ func BenchmarkDecompressMiddleware(b *testing.B) {
 			b.ReportAllocs()
 
 			for range b.N {
-				req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(compressedData.Bytes()))
+				req := httptest.NewRequest(
+					http.MethodPost,
+					"/",
+					bytes.NewReader(compressedData.Bytes()),
+				)
 				req.Header.Set("Content-Encoding", "gzip")
 				w := httptest.NewRecorder()
 				h.ServeHTTP(w, req)

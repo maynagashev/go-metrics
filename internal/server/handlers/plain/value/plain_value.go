@@ -21,7 +21,11 @@ func New(storage storage.Repository) http.HandlerFunc {
 
 		metric, ok := storage.GetMetric(metricType, metricName)
 		if !ok {
-			http.Error(w, fmt.Sprintf("%s %s not found", metricType, metricName), http.StatusNotFound)
+			http.Error(
+				w,
+				fmt.Sprintf("%s %s not found", metricType, metricName),
+				http.StatusNotFound,
+			)
 			return
 		}
 

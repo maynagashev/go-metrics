@@ -177,10 +177,25 @@ func mustParseFlags() Flags <span class="cov8" title="1">{
                 "localhost:8080",
                 "address and port of the server send metrics to",
         )
-        flag.Float64Var(&amp;flags.Server.ReportInterval, "r", defaultReportInterval, "report interval in seconds")
-        flag.Float64Var(&amp;flags.Server.PollInterval, "p", defaultPollInterval, "poll interval in seconds")
+        flag.Float64Var(
+                &amp;flags.Server.ReportInterval,
+                "r",
+                defaultReportInterval,
+                "report interval in seconds",
+        )
+        flag.Float64Var(
+                &amp;flags.Server.PollInterval,
+                "p",
+                defaultPollInterval,
+                "poll interval in seconds",
+        )
         flag.StringVar(&amp;flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
-        flag.IntVar(&amp;flags.RateLimit, "l", defaultRateLimit, "макс. количество одновременно исходящих запросов на сервер")
+        flag.IntVar(
+                &amp;flags.RateLimit,
+                "l",
+                defaultRateLimit,
+                "макс. количество одновременно исходящих запросов на сервер",
+        )
         flag.BoolVar(&amp;flags.EnablePprof, "pprof", false, "enable pprof profiling")
         flag.StringVar(&amp;flags.PprofPort, "pprof-port", "6060", "port for pprof server")
 
@@ -328,10 +343,14 @@ import (
 
 func run(dsn, migrationsPath string) error <span class="cov8" title="1">{
         if dsn == "" </span><span class="cov8" title="1">{
-                return errors.New("не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database")
+                return errors.New(
+                        "не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database",
+                )
         }</span>
         <span class="cov8" title="1">if migrationsPath == "" </span><span class="cov8" title="1">{
-                return errors.New("не указан путь к директории с миграциями: -migrations-path ../../migrations")
+                return errors.New(
+                        "не указан путь к директории с миграциями: -migrations-path ../../migrations",
+                )
         }</span>
 
         <span class="cov0" title="0">if err := migration.Up(migrationsPath, dsn); err != nil </span><span class="cov0" title="0">{
@@ -342,8 +361,12 @@ func run(dsn, migrationsPath string) error <span class="cov8" title="1">{
 
 func main() <span class="cov8" title="1">{
         var dsn, migrationsPath string
-        flag.StringVar(&amp;dsn, "d", "",
-                "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
+        flag.StringVar(
+                &amp;dsn,
+                "d",
+                "",
+                "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database",
+        )
         flag.StringVar(&amp;migrationsPath, "migrations-path", "", "Путь к директории с миграциями")
         flag.Parse()
 
@@ -704,7 +727,13 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span c
                 }</span>
 
                 // Логируем ошибку
-                <span class="cov0" title="0">slog.Error(fmt.Sprintf("failed to send metrics (try=%d): %s", i, err), "workerID", workerID, "metrics", items)
+                <span class="cov0" title="0">slog.Error(
+                        fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
+                        "workerID",
+                        workerID,
+                        "metrics",
+                        items,
+                )
 
                 // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
                 if !isRetriableSendError(err) </span><span class="cov0" title="0">{
@@ -745,7 +774,15 @@ func isRetriableSendError(err error) bool <span class="cov0" title="0">{
 func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov0" title="0">{
         var err error
         url := fmt.Sprintf("%s/updates", a.ServerURL)
-        slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "workerID", workerID, "url", url, "metrics", items)
+        slog.Info(
+                fmt.Sprintf("sending metrics batch (try=%d)", try),
+                "workerID",
+                workerID,
+                "url",
+                url,
+                "metrics",
+                items,
+        )
 
         // Создаем новый запрос.
         req := a.client.R()
@@ -816,7 +853,11 @@ func (a *agent) worker(id int) <span class="cov0" title="0">{
         slog.Debug(fmt.Sprintf("worker %d started", id))
         // По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
         for job := range a.sendQueue </span><span class="cov0" title="0">{
-                slog.Debug(fmt.Sprintf("worker %d received job, calling sendMetrics()...", id), "workerID", id)
+                slog.Debug(
+                        fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
+                        "workerID",
+                        id,
+                )
                 err := a.sendMetrics(job.Metrics, id)
                 // Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
                 // которые потом разбирает коллектор.
@@ -1078,7 +1119,12 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
         var err error
 
         // Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
-        flag.StringVar(&amp;flags.Server.Addr, "a", "localhost:8080", "IP  адрес и порт на которых следует запустить сервер")
+        flag.StringVar(
+                &amp;flags.Server.Addr,
+                "a",
+                "localhost:8080",
+                "IP  адрес и порт на которых следует запустить сервер",
+        )
         // Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
         flag.IntVar(
                 &amp;flags.Server.StoreInterval,
@@ -1087,16 +1133,30 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
                 "Интервал сохранения метрик на диск, в секундах",
         )
         // Регистрируем переменную flagFileStoragePath как аргумент -f со значением metrics.json по умолчанию.
-        flag.StringVar(&amp;flags.Server.FileStoragePath, "f", "/tmp/metrics-db.json", "Путь к файлу для хранения метрик")
+        flag.StringVar(
+                &amp;flags.Server.FileStoragePath,
+                "f",
+                "/tmp/metrics-db.json",
+                "Путь к файлу для хранения метрик",
+        )
         // Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
         flag.BoolVar(&amp;flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
 
         // Добавляем флаг профилирования
-        flag.BoolVar(&amp;flags.Server.EnablePprof, "pprof", false, "enable pprof profiling with /debug/pprof routes")
+        flag.BoolVar(
+                &amp;flags.Server.EnablePprof,
+                "pprof",
+                false,
+                "enable pprof profiling with /debug/pprof routes",
+        )
 
         // Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
-        flag.StringVar(&amp;flags.Database.DSN, "d", "",
-                "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database")
+        flag.StringVar(
+                &amp;flags.Database.DSN,
+                "d",
+                "",
+                "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database",
+        )
         // Путь к директории с миграциями относительно корня проекта, по умолчанию "migrations/server".
         flag.StringVar(&amp;flags.Database.MigrationsPath,
                 "migrations-path",
@@ -1668,7 +1728,11 @@ func New(storage storage.Repository) http.HandlerFunc <span class="cov0" title="
 
                 metric, ok := storage.GetMetric(metricType, metricName)
                 if !ok </span><span class="cov0" title="0">{
-                        http.Error(w, fmt.Sprintf("%s %s not found", metricType, metricName), http.StatusNotFound)
+                        http.Error(
+                                w,
+                                fmt.Sprintf("%s %s not found", metricType, metricName),
+                                http.StatusNotFound,
+                        )
                         return
                 }</span>
 
@@ -1705,7 +1769,11 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov0
                                 gz, err := gzip.NewReader(r.Body)
                                 if err != nil </span><span class="cov0" title="0">{
                                         log.Error("error while decompressing request body", zap.Error(err))
-                                        http.Error(w, "Ошибка при декомпрессии содержимого запроса gzip", http.StatusBadRequest)
+                                        http.Error(
+                                                w,
+                                                "Ошибка при декомпрессии содержимого запроса gzip",
+                                                http.StatusBadRequest,
+                                        )
                                         return
                                 }</span>
 
@@ -1713,7 +1781,11 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov0
                                         err = gz.Close()
                                         if err != nil </span><span class="cov0" title="0">{
                                                 log.Error("error while closing decompression stream", zap.Error(err))
-                                                http.Error(w, "Ошибка при закрытии потока декомпрессии", http.StatusInternalServerError)
+                                                http.Error(
+                                                        w,
+                                                        "Ошибка при закрытии потока декомпрессии",
+                                                        http.StatusInternalServerError,
+                                                )
                                                 return
                                         }</span>
                                 }()
@@ -2061,7 +2133,13 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
                 go func() </span><span class="cov0" title="0">{
                         for </span><span class="cov0" title="0">{
                                 time.Sleep(interval)
-                                log.Info(fmt.Sprintf("store %d metrics to file %s", memStorage.Count(), cfg.GetStorePath()))
+                                log.Info(
+                                        fmt.Sprintf(
+                                                "store %d metrics to file %s",
+                                                memStorage.Count(),
+                                                cfg.GetStorePath(),
+                                        ),
+                                )
                                 err := memStorage.storeMetricsToFile()
                                 if err != nil </span><span class="cov0" title="0">{
                                         log.Error("failed to store metrics to file", zap.Error(err))
@@ -2112,7 +2190,9 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error <span class="cov
                 err := ms.storeMetricsToFile()
                 if err != nil </span><span class="cov0" title="0">{
                         // Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
-                        ms.log.Error(fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err))
+                        ms.log.Error(
+                                fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err),
+                        )
                 }</span>
         }
         <span class="cov8" title="1">return nil</span>
@@ -2174,10 +2254,16 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 func (ms *MemStorage) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
         items := make([]metrics.Metric, 0, ms.Count())
         for id, value := range ms.GetGauges() </span><span class="cov0" title="0">{
-                items = append(items, metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&amp;value)})
+                items = append(
+                        items,
+                        metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&amp;value)},
+                )
         }</span>
         <span class="cov0" title="0">for id, value := range ms.GetCounters() </span><span class="cov0" title="0">{
-                items = append(items, metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&amp;value)})
+                items = append(
+                        items,
+                        metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&amp;value)},
+                )
         }</span>
         // slices.Sort(items)
         <span class="cov0" title="0">return items</span>

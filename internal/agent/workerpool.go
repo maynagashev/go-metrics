@@ -24,7 +24,11 @@ func (a *agent) worker(id int) {
 	slog.Debug(fmt.Sprintf("worker %d started", id))
 	// По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
 	for job := range a.sendQueue {
-		slog.Debug(fmt.Sprintf("worker %d received job, calling sendMetrics()...", id), "workerID", id)
+		slog.Debug(
+			fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
+			"workerID",
+			id,
+		)
 		err := a.sendMetrics(job.Metrics, id)
 		// Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
 		// которые потом разбирает коллектор.
