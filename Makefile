@@ -95,6 +95,7 @@ profile-server-memory:
 	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
 	curl -s http://localhost:8080/debug/pprof/heap > profiles/server_heap_$(DATE).pprof
 	curl -s http://localhost:8080/debug/pprof/allocs > profiles/server_allocs_$(DATE).pprof
+
 # Сохранение профиля memory для агента
 .PHONY: profile-agent-memory
 profile-agent-memory:
@@ -110,3 +111,9 @@ profile-benchmarks:
 	@mkdir -p profiles
 	$(eval DATE := $(shell date '+%Y%m%d_%H%M%S'))
 	go test -bench=. -benchmem -memprofile=profiles/bench_mem_$(DATE).pprof ./internal/benchmarks/...
+
+# Сравнение профилей памяти
+.PHONY: compare-profiles
+compare-profiles:
+	@echo "Comparing profiles..."
+	@go tool pprof -top -diff_base=profiles/base_server_allocs_20250215_230049.pprof profiles/server_allocs_20250217_113632.pprof | tee logs/compare-profiles.log
