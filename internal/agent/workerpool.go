@@ -19,7 +19,7 @@ type Result struct {
 }
 
 // Worker – один из воркеров пула для отправки метрик (обрабатывает задачи из очереди в отдельной горутине).
-func (a *Agent) worker(id int) {
+func (a *agent) worker(id int) {
 	defer a.wg.Done()
 	slog.Debug(fmt.Sprintf("worker %d started", id))
 	// По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
@@ -33,7 +33,7 @@ func (a *Agent) worker(id int) {
 }
 
 // Общий коллектор обрабатывает результаты выполнения задач.
-func (a *Agent) collector() {
+func (a *agent) collector() {
 	defer a.wg.Done()
 	for result := range a.resultQueue {
 		if result.Error != nil {

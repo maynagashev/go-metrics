@@ -19,7 +19,7 @@ import (
 const backoffFactor = 2
 
 // Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
-func (a *Agent) sendMetrics(items []*metrics.Metric, workerID int) error {
+func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error {
 	// Отправляем все метрики пачкой на новый маршрут /updates
 	// Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
 	for i := 0; i <= maxSendRetries; i++ {
@@ -79,7 +79,7 @@ func isRetriableSendError(err error) bool {
 
 // Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
 // При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
-func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error {
+func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error {
 	var err error
 	url := fmt.Sprintf("%s/updates", a.ServerURL)
 	slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "workerID", workerID, "url", url, "metrics", items)

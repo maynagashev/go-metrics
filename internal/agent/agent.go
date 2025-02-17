@@ -16,7 +16,17 @@ import (
 const maxSendRetries = 3
 
 // Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP.
-type Agent struct {
+type Agent interface {
+	Run()
+	IsRequestSigningEnabled() bool
+	ResetMetrics()
+	CollectRuntimeMetrics()
+	CollectAdditionalMetrics()
+	GetMetrics() []*metrics.Metric
+}
+
+// agent конкретная реализация интерфейса Agent.
+type agent struct {
 	PollInterval       time.Duration
 	ReportInterval     time.Duration
 	ServerURL          string
@@ -38,14 +48,16 @@ type Agent struct {
 }
 
 // New создает новый экземпляр агента.
-func New(
+//
+//nolint:gochecknoglobals // используется для подмены в тестах
+var New = func(
 	url string,
 	pollInterval time.Duration,
 	reportInterval time.Duration,
 	privateKey string,
 	rateLimit int,
-) *Agent {
-	return &Agent{
+) Agent {
+	return &agent{
 		ServerURL:          url,
 		PollInterval:       pollInterval,
 		ReportInterval:     reportInterval,
@@ -63,12 +75,12 @@ func New(
 }
 
 // IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
-func (a *Agent) IsRequestSigningEnabled() bool {
+func (a *agent) IsRequestSigningEnabled() bool {
 	return a.PrivateKey != ""
 }
 
 // Run запускает агента и его воркеры.
-func (a *Agent) Run() {
+func (a *agent) Run() {
 	// Запускаем воркеры агента.
 	slog.Info("starting agent...",
 		"server_url", a.ServerURL,
@@ -98,7 +110,7 @@ func (a *Agent) Run() {
 }
 
 // runPolls собирает сведения из системы в отдельной горутине.
-func (a *Agent) runPolls() {
+func (a *agent) runPolls() {
 	a.wg.Add(1)
 	defer a.wg.Done()
 	for range a.pollTicker.C {
@@ -120,7 +132,7 @@ func (a *Agent) runPolls() {
 }
 
 // Создает задачи по отправке метрик в очереди задач на отправку.
-func (a *Agent) runReports() {
+func (a *agent) runReports() {
 	a.wg.Add(1)
 	defer a.wg.Done()
 	for range a.reportTicker.C {
@@ -129,7 +141,7 @@ func (a *Agent) runReports() {
 }
 
 // GetMetrics считывает текущие метрики из агента.
-func (a *Agent) GetMetrics() []*metrics.Metric {
+func (a *agent) GetMetrics() []*metrics.Metric {
 	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
 
 	// Делаем копию метрик, чтобы данные не изменились во время отправки.

@@ -57,9 +57,9 @@
 				
 				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/flags.go (100.0%)</option>
 				
-				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/main.go (0.0%)</option>
+				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/main.go (100.0%)</option>
 				
-				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (0.0%)</option>
+				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (12.5%)</option>
 				
 				<option value="file3">github.com/maynagashev/go-metrics/cmd/migrate/main.go (0.0%)</option>
 				
@@ -244,7 +244,7 @@ import (
         "github.com/maynagashev/go-metrics/internal/agent"
 )
 
-func main() <span class="cov0" title="0">{
+func main() <span class="cov8" title="1">{
         flags := mustParseFlags()
         initLogger()
         slog.Debug("parsed flags and env variables", "flags", flags)
@@ -259,7 +259,7 @@ func main() <span class="cov0" title="0">{
         a.Run()
 }</span>
 
-func initLogger() <span class="cov0" title="0">{
+func initLogger() <span class="cov8" title="1">{
         // Создаем переменную для уровня логирования и устанавливаем ее в Debug
         logLevel := new(slog.LevelVar)
         logLevel.Set(slog.LevelDebug)
@@ -288,7 +288,7 @@ import (
 )
 
 // initPprof запускает pprof сервер если включено профилирование.
-func initPprof(flags Flags) <span class="cov0" title="0">{
+func initPprof(flags Flags) <span class="cov8" title="1">{
         if flags.EnablePprof </span><span class="cov0" title="0">{
                 pprofAddr := fmt.Sprintf("localhost:%s", flags.PprofPort)
                 startPProf(pprofAddr)
@@ -440,7 +440,17 @@ import (
 const maxSendRetries = 3
 
 // Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP.
-type Agent struct {
+type Agent interface {
+        Run()
+        IsRequestSigningEnabled() bool
+        ResetMetrics()
+        CollectRuntimeMetrics()
+        CollectAdditionalMetrics()
+        GetMetrics() []*metrics.Metric
+}
+
+// agent конкретная реализация интерфейса Agent.
+type agent struct {
         PollInterval       time.Duration
         ReportInterval     time.Duration
         ServerURL          string
@@ -462,14 +472,16 @@ type Agent struct {
 }
 
 // New создает новый экземпляр агента.
-func New(
+//
+//nolint:gochecknoglobals // используется для подмены в тестах
+var New = func(
         url string,
         pollInterval time.Duration,
         reportInterval time.Duration,
         privateKey string,
         rateLimit int,
-) *Agent <span class="cov8" title="1">{
-        return &amp;Agent{
+) Agent <span class="cov8" title="1">{
+        return &amp;agent{
                 ServerURL:          url,
                 PollInterval:       pollInterval,
                 ReportInterval:     reportInterval,
@@ -487,12 +499,12 @@ func New(
 }</span>
 
 // IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
-func (a *Agent) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
+func (a *agent) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
         return a.PrivateKey != ""
 }</span>
 
 // Run запускает агента и его воркеры.
-func (a *Agent) Run() <span class="cov0" title="0">{
+func (a *agent) Run() <span class="cov0" title="0">{
         // Запускаем воркеры агента.
         slog.Info("starting agent...",
                 "server_url", a.ServerURL,
@@ -522,7 +534,7 @@ func (a *Agent) Run() <span class="cov0" title="0">{
 }
 
 // runPolls собирает сведения из системы в отдельной горутине.
-func (a *Agent) runPolls() <span class="cov0" title="0">{
+func (a *agent) runPolls() <span class="cov0" title="0">{
         a.wg.Add(1)
         defer a.wg.Done()
         for range a.pollTicker.C </span><span class="cov0" title="0">{
@@ -544,7 +556,7 @@ func (a *Agent) runPolls() <span class="cov0" title="0">{
 }
 
 // Создает задачи по отправке метрик в очереди задач на отправку.
-func (a *Agent) runReports() <span class="cov0" title="0">{
+func (a *agent) runReports() <span class="cov0" title="0">{
         a.wg.Add(1)
         defer a.wg.Done()
         for range a.reportTicker.C </span><span class="cov0" title="0">{
@@ -553,7 +565,7 @@ func (a *Agent) runReports() <span class="cov0" title="0">{
 }
 
 // GetMetrics считывает текущие метрики из агента.
-func (a *Agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
+func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
         items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
 
         // Делаем копию метрик, чтобы данные не изменились во время отправки.
@@ -588,12 +600,12 @@ import (
 )
 
 // ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
-func (a *Agent) ResetMetrics() <span class="cov8" title="1">{
+func (a *agent) ResetMetrics() <span class="cov8" title="1">{
         a.gauges = make(map[string]float64)
         a.counters = make(map[string]int64)
 }</span>
 
-func (a *Agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
+func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
         var m runtime.MemStats
         runtime.ReadMemStats(&amp;m)
 
@@ -627,7 +639,7 @@ func (a *Agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
 }</span>
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
-func (a *Agent) CollectAdditionalMetrics() <span class="cov0" title="0">{
+func (a *agent) CollectAdditionalMetrics() <span class="cov0" title="0">{
         v, _ := mem.VirtualMemory()
         a.gauges["TotalMemory"] = float64(v.Total)
         a.gauges["FreeMemory"] = float64(v.Free)
@@ -660,7 +672,7 @@ import (
 const backoffFactor = 2
 
 // Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
-func (a *Agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
+func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
         // Отправляем все метрики пачкой на новый маршрут /updates
         // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
         for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov0" title="0">{
@@ -720,7 +732,7 @@ func isRetriableSendError(err error) bool <span class="cov0" title="0">{
 
 // Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
 // При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
-func (a *Agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov0" title="0">{
+func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov0" title="0">{
         var err error
         url := fmt.Sprintf("%s/updates", a.ServerURL)
         slog.Info(fmt.Sprintf("sending metrics batch (try=%d)", try), "workerID", workerID, "url", url, "metrics", items)
@@ -789,7 +801,7 @@ type Result struct {
 }
 
 // Worker – один из воркеров пула для отправки метрик (обрабатывает задачи из очереди в отдельной горутине).
-func (a *Agent) worker(id int) <span class="cov0" title="0">{
+func (a *agent) worker(id int) <span class="cov0" title="0">{
         defer a.wg.Done()
         slog.Debug(fmt.Sprintf("worker %d started", id))
         // По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
@@ -803,7 +815,7 @@ func (a *Agent) worker(id int) <span class="cov0" title="0">{
 }
 
 // Общий коллектор обрабатывает результаты выполнения задач.
-func (a *Agent) collector() <span class="cov0" title="0">{
+func (a *agent) collector() <span class="cov0" title="0">{
         defer a.wg.Done()
         for result := range a.resultQueue </span><span class="cov0" title="0">{
                 if result.Error != nil </span><span class="cov0" title="0">{
