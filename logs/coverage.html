@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/main.go (100.0%)</option>
 				
-				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (12.5%)</option>
+				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (100.0%)</option>
 				
 				<option value="file3">github.com/maynagashev/go-metrics/cmd/migrate/main.go (0.0%)</option>
 				
@@ -289,15 +289,15 @@ import (
 
 // initPprof запускает pprof сервер если включено профилирование.
 func initPprof(flags Flags) <span class="cov8" title="1">{
-        if flags.EnablePprof </span><span class="cov0" title="0">{
+        if flags.EnablePprof </span><span class="cov8" title="1">{
                 pprofAddr := fmt.Sprintf("localhost:%s", flags.PprofPort)
                 startPProf(pprofAddr)
         }</span>
 }
 
-func startPProf(pprofAddr string) <span class="cov0" title="0">{
-        if pprofAddr != "" </span><span class="cov0" title="0">{
-                go func() </span><span class="cov0" title="0">{
+func startPProf(pprofAddr string) <span class="cov8" title="1">{
+        if pprofAddr != "" </span><span class="cov8" title="1">{
+                go func() </span><span class="cov8" title="1">{
                         srv := &amp;http.Server{
                                 Addr:              pprofAddr,
                                 Handler:           nil, // использует DefaultServeMux
@@ -306,7 +306,7 @@ func startPProf(pprofAddr string) <span class="cov0" title="0">{
                                 ReadHeaderTimeout: config.DefaultHeaderTimeout,
                                 IdleTimeout:       config.DefaultIdleTimeout,
                         }
-                        if err := srv.ListenAndServe(); err != nil &amp;&amp; err != http.ErrServerClosed </span><span class="cov0" title="0">{
+                        if err := srv.ListenAndServe(); err != nil &amp;&amp; err != http.ErrServerClosed </span><span class="cov8" title="1">{
                                 slog.Error("Failed to start pprof server", "error", err)
                         }</span>
                 }()

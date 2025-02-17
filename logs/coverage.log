@@ -1,8 +1,8 @@
 github.com/maynagashev/go-metrics/cmd/agent/flags.go:32:						mustParseFlags			100.0%
 github.com/maynagashev/go-metrics/cmd/agent/main.go:12:							main				100.0%
 github.com/maynagashev/go-metrics/cmd/agent/main.go:27:							initLogger			100.0%
-github.com/maynagashev/go-metrics/cmd/agent/pprof.go:15:						initPprof			33.3%
-github.com/maynagashev/go-metrics/cmd/agent/pprof.go:22:						startPProf			0.0%
+github.com/maynagashev/go-metrics/cmd/agent/pprof.go:15:						initPprof			100.0%
+github.com/maynagashev/go-metrics/cmd/agent/pprof.go:22:						startPProf			100.0%
 github.com/maynagashev/go-metrics/cmd/migrate/main.go:12:						main				0.0%
 github.com/maynagashev/go-metrics/cmd/server/main.go:16:						main				0.0%
 github.com/maynagashev/go-metrics/cmd/server/main.go:50:						initStorage			0.0%
@@ -103,4 +103,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:28:						Error				0.0
 github.com/maynagashev/go-metrics/pkg/response/response.go:37:						writeResponse			60.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:13:							ComputeHMACSHA256		0.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:20:							VerifyHMACSHA256		0.0%
-total:													(statements)			24.4%
+total:													(statements)			25.1%
