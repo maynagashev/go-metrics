@@ -2,16 +2,22 @@ package benchmarks_test
 
 import (
 	"bytes"
-	"compress/gzip"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"go.uber.org/zap"
 
+	"compress/gzip"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/middleware/decompress"
+	"github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 )
 
@@ -73,9 +79,12 @@ func BenchmarkMetricsSerialization(b *testing.B) {
 func BenchmarkMetricsCompression(b *testing.B) {
 	data := []byte(`{"metrics":[{"name":"TestGauge1","value":1.23},{"name":"TestCounter1","delta":42}]}`)
 
+	var buf bytes.Buffer
 	b.ResetTimer()
+	b.ReportAllocs()
+
 	for range b.N {
-		var buf bytes.Buffer
+		buf.Reset()
 		gz := gzip.NewWriter(&buf)
 		_, err := gz.Write(data)
 		if err != nil {
@@ -104,4 +113,76 @@ func BenchmarkHashCalculation(b *testing.B) {
 // используется для заполнения полей Value и Delta в структуре Metric.
 func ptr[T any](v T) *T {
 	return &v
+}
+
+// BenchmarkDecompressMiddleware сравнивает производительность middleware с пулом и без.
+func BenchmarkDecompressMiddleware(b *testing.B) {
+	testCases := []struct {
+		name string
+		size int
+	}{
+		{"small", 100},
+		{"medium", 10000},
+		{"large", 1000000},
+	}
+
+	logger := zap.NewNop()
+
+	// Создаем тестовый обработчик
+	handler := http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+		_, err := io.Copy(io.Discard, r.Body)
+		if err != nil {
+			b.Error(err)
+		}
+	})
+
+	for _, tc := range testCases {
+		// Создаем тестовые данные
+		testData := make([]byte, tc.size)
+		for i := range testData {
+			testData[i] = 'a'
+		}
+
+		// Сжимаем данные
+		var compressedData bytes.Buffer
+		gz := gzip.NewWriter(&compressedData)
+		_, err := gz.Write(testData)
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = gz.Close()
+		if err != nil {
+			b.Fatal(err)
+		}
+
+		b.Run(tc.name+"/standard", func(b *testing.B) {
+			middleware := decompress.New(logger)
+			h := middleware(handler)
+
+			b.ResetTimer()
+			b.ReportAllocs()
+
+			for range b.N {
+				req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(compressedData.Bytes()))
+				req.Header.Set("Content-Encoding", "gzip")
+				w := httptest.NewRecorder()
+				h.ServeHTTP(w, req)
+			}
+		})
+
+		b.Run(tc.name+"/pool", func(b *testing.B) {
+			middleware := decompresspool.New(logger)
+			h := middleware(handler)
+
+			b.ResetTimer()
+			b.ReportAllocs()
+
+			for range b.N {
+				req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(compressedData.Bytes()))
+				req.Header.Set("Content-Encoding", "gzip")
+				w := httptest.NewRecorder()
+				h.ServeHTTP(w, req)
+			}
+		})
+	}
 }
