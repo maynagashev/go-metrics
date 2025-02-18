@@ -15,13 +15,27 @@ import (
 // Количество попыток отправки запроса на сервер при возникновении ошибок.
 const maxSendRetries = 3
 
-// Agent (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP.
+// Agent представляет собой интерфейс для сбора и отправки метрик на сервер.
+// Реализует функционал сбора runtime метрик и дополнительных системных метрик,
+// а также их отправку на сервер с поддержкой подписи данных.
 type Agent interface {
+	// Run запускает процесс сбора и отправки метрик.
 	Run()
+
+	// IsRequestSigningEnabled возвращает true, если включена подпись запросов.
 	IsRequestSigningEnabled() bool
+
+	// ResetMetrics очищает все собранные метрики.
 	ResetMetrics()
+
+	// CollectRuntimeMetrics собирает метрики времени выполнения.
 	CollectRuntimeMetrics()
+
+	// CollectAdditionalMetrics собирает дополнительные системные метрики,
+	// такие как использование памяти и CPU.
 	CollectAdditionalMetrics()
+
+	// GetMetrics возвращает список всех собранных метрик.
 	GetMetrics() []*metrics.Metric
 }
 

@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt 
+.PHONY: migrate test bench lint test-coverage fmt docs
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -128,3 +128,7 @@ fmt:
 	gofmt -s -w .
 	goimports --local -w .
 	golines -w .
+
+# Запуск сервера с документацией
+docs:
+	godoc -http=:8888 -play

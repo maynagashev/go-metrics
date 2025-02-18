@@ -18,7 +18,7 @@ func (v Counter) String() string {
 	return strconv.FormatInt(int64(v), 10)
 }
 
-// Repository provides an interface for working with metrics storage.
+// Repository предоставляет интерфейс для работы с хранилищем метрик.
 type Repository interface {
 	// Close закрывает хранилище метрик.
 	Close() error
@@ -29,19 +29,22 @@ type Repository interface {
 	// GetMetrics возвращает все метрики в виде структур.
 	GetMetrics() []metrics.Metric
 
-	// GetMetric получение значения метрики указанного типа в виде универсальной структуры.
+	// GetMetric получает значение метрики указанного типа.
+	// Возвращает метрику и флаг, указывающий на её наличие в хранилище.
 	GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool)
 
-	// GetCounter возвращает счетчик по имени.
+	// GetCounter возвращает значение счетчика по имени.
+	// Возвращает значение и флаг, указывающий на наличие счетчика.
 	GetCounter(name string) (Counter, bool)
 
-	// GetGauge возвращает измерение по имени.
+	// GetGauge возвращает значение gauge-метрики по имени.
+	// Возвращает значение и флаг, указывающий на наличие метрики.
 	GetGauge(name string) (Gauge, bool)
 
-	// UpdateMetric универсальный метод обновления метрики: gauge, counter.
-	// Если метрика существует, то обновляет, иначе создает новую.
+	// UpdateMetric обновляет или создает метрику в хранилище.
+	// Поддерживает типы gauge и counter.
 	UpdateMetric(metric metrics.Metric) error
 
-	// UpdateMetrics пакетно обновляет метрики в хранилище.
+	// UpdateMetrics пакетно обновляет набор метрик в хранилище.
 	UpdateMetrics(metrics []metrics.Metric) error
 }

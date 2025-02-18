@@ -1,6 +1,8 @@
 package app
 
+// Config содержит конфигурацию сервера метрик.
 type Config struct {
+	// Addr адрес и порт для запуска сервера.
 	Addr string
 	// Интервал сохранения метрик на сервере в секундах.
 	StoreInterval int
@@ -16,8 +18,11 @@ type Config struct {
 	EnablePprof bool
 }
 
+// DatabaseConfig содержит настройки подключения к базе данных.
 type DatabaseConfig struct {
-	DSN            string
+	// DSN строка подключения к базе данных.
+	DSN string
+	// MigrationsPath путь к директории с миграциями.
 	MigrationsPath string
 }
 
