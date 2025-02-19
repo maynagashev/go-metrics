@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -132,3 +132,8 @@ fmt:
 # Запуск сервера с документацией
 docs:
 	godoc -http=:8888 -play
+
+# Запуск staticcheck
+staticcheck:
+	@echo "Запуск staticcheck..."
+	staticcheck ./... | tee logs/staticcheck.log
