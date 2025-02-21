@@ -51,15 +51,17 @@ type analysisResult struct {
 	pass      *analysis.Pass
 }
 
-// ignoredFunctions содержит имена функций, ошибки которых можно игнорировать
+// ignoredFunctions содержит имена функций, ошибки которых можно игнорировать.
+//
+//nolint:gochecknoglobals // Необходимо для хранения списка игнорируемых функций
 var ignoredFunctions = map[string]bool{
 	"fmt.Print":   true,
 	"fmt.Printf":  true,
 	"fmt.Println": true,
 }
 
-// shouldIgnoreCall проверяет, нужно ли игнорировать ошибки от данного вызова
-func shouldIgnoreCall(pass *analysis.Pass, call *ast.CallExpr) bool {
+// shouldIgnoreCall проверяет, нужно ли игнорировать ошибки от данного вызова.
+func shouldIgnoreCall(_ *analysis.Pass, call *ast.CallExpr) bool {
 	fun, ok := call.Fun.(*ast.SelectorExpr)
 	if !ok {
 		return false
