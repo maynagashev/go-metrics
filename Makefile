@@ -137,3 +137,8 @@ docs:
 staticcheck:
 	@echo "Запуск staticcheck..."
 	staticcheck ./... | tee logs/staticcheck.log
+
+# Запуск кастомного мультичекера
+staticlint:
+	@echo "Запуск кастомного мультичекера staticlint..."
+	go run ./cmd/staticlint/ ./...
