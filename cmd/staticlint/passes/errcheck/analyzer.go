@@ -3,6 +3,7 @@ package errcheck
 import (
 	"go/ast"
 	"go/types"
+	"strings"
 
 	"golang.org/x/tools/go/analysis"
 )
@@ -50,13 +51,45 @@ type analysisResult struct {
 	pass      *analysis.Pass
 }
 
+// ignoredFunctions содержит имена функций, ошибки которых можно игнорировать
+var ignoredFunctions = map[string]bool{
+	"fmt.Print":   true,
+	"fmt.Printf":  true,
+	"fmt.Println": true,
+}
+
+// shouldIgnoreCall проверяет, нужно ли игнорировать ошибки от данного вызова
+func shouldIgnoreCall(pass *analysis.Pass, call *ast.CallExpr) bool {
+	fun, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return false
+	}
+
+	pkgName, ok := fun.X.(*ast.Ident)
+	if !ok {
+		return false
+	}
+
+	// Получаем полное имя функции в формате "пакет.функция"
+	fullName := pkgName.Name + "." + fun.Sel.Name
+
+	// Проверяем, есть ли функция в списке игнорируемых
+	for prefix := range ignoredFunctions {
+		if strings.HasPrefix(fullName, prefix) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // processExprStmt проверяет выражения на необработанные ошибки.
 func (r *analysisResult) processExprStmt(x *ast.ExprStmt) {
 	call, ok := x.X.(*ast.CallExpr)
 	if !ok {
 		return
 	}
-	if isReturnError(r.pass, call) {
+	if isReturnError(r.pass, call) && !shouldIgnoreCall(r.pass, call) {
 		r.hasIssues = true
 		r.pass.Reportf(x.Pos(), "expression returns unchecked error")
 	}
@@ -66,6 +99,9 @@ func (r *analysisResult) processExprStmt(x *ast.ExprStmt) {
 func (r *analysisResult) processTupleAssign(x *ast.AssignStmt) {
 	call, ok := x.Rhs[0].(*ast.CallExpr)
 	if !ok {
+		return
+	}
+	if shouldIgnoreCall(r.pass, call) {
 		return
 	}
 	results := resultErrors(r.pass, call)
@@ -86,6 +122,9 @@ func (r *analysisResult) processMultiAssign(x *ast.AssignStmt) {
 		}
 		call, isCall := x.Rhs[i].(*ast.CallExpr)
 		if !isCall {
+			continue
+		}
+		if shouldIgnoreCall(r.pass, call) {
 			continue
 		}
 		if id.Name == "_" && isReturnError(r.pass, call) {
