@@ -1,7 +1,6 @@
 package errcheck
 
 import (
-	"errors"
 	"go/ast"
 	"go/types"
 
@@ -44,12 +43,6 @@ var Analyzer = NewAnalyzer()
 func isErrorType(t types.Type) bool {
 	return types.Implements(t, getErrorType())
 }
-
-// ErrNoIssuesFound возвращается, когда анализатор не нашел проблем.
-var ErrNoIssuesFound = errors.New("no issues found")
-
-// ErrAnalysisCompleted возвращается при успешном завершении анализа.
-var ErrAnalysisCompleted = errors.New("analysis completed")
 
 // analysisResult содержит результаты анализа.
 type analysisResult struct {
@@ -128,13 +121,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		ast.Inspect(file, result.processNode)
 	}
 
-	// Если нет проблем, возвращаем "ошибку" что нет проблем
-	if !result.hasIssues {
-		return nil, ErrNoIssuesFound
-	}
-
-	// Возвращаем ошибку что анализ завершен
-	return nil, ErrAnalysisCompleted
+	//nolint:nilnil // Стандартное поведение для анализаторов - возвращать nil, nil если проблем не найдено
+	return nil, nil
 }
 
 // resultErrors возвращает булев массив со значениями true,
