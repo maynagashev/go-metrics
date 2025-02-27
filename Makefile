@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs staticcheck
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -141,4 +141,4 @@ staticcheck:
 # Запуск кастомного мультичекера
 staticlint:
 	@echo "Запуск кастомного мультичекера staticlint..."
-	go run ./cmd/staticlint/ ./...
+	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
