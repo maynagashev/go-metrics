@@ -107,7 +107,7 @@
 				
 				<option value="file25">github.com/maynagashev/go-metrics/internal/server/router/router.go (56.7%)</option>
 				
-				<option value="file26">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (19.4%)</option>
+				<option value="file26">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (18.7%)</option>
 				
 				<option value="file27">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
@@ -1324,11 +1324,11 @@ import (
 
 // New возвращает http.HandlerFunc, который отдает список метрик на сервере.
 func New(st storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
-        return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
                 w.Header().Set("Content-Type", "application/json")
 
                 // Возвращаем метрики в формате JSON архива
-                metrics := st.GetMetrics()
+                metrics := st.GetMetrics(r.Context())
                 jsonData, err := json.Marshal(metrics)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1364,16 +1364,16 @@ type Response struct {
 }
 
 type Storage interface {
-        GetMetrics() []metrics.Metric
+        GetMetrics(ctx context.Context) []metrics.Metric
 }
 
 // Handle логика обработчика ping с указанной базой данных, чтобы можно было провести тестирование моком.
 func Handle(storage Storage) http.HandlerFunc <span class="cov8" title="1">{
-        return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 w.Header().Set("Content-Type", "application/json")
 
                 // Проверяем подключение сделав запрос к базе данных.
-                _ = storage.GetMetrics()
+                _ = storage.GetMetrics(r.Context())
 
                 response.OK(w, "pong")
         }</span>
@@ -1446,7 +1446,7 @@ func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.Handler
 
                 // Конвертируем локальную структуру в структуру из контракта
                 metric := metrics.Metric(requestedMetric)
-                err = strg.UpdateMetric(metric)
+                err = strg.UpdateMetric(r.Context(), metric)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusBadRequest)
                         return
@@ -1455,7 +1455,7 @@ func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.Handler
                 <span class="cov0" title="0">var resMessage string
 
                 // Получаем значение метрики из хранилища
-                m, ok := strg.GetMetric(metric.MType, metric.Name)
+                m, ok := strg.GetMetric(r.Context(), metric.MType, metric.Name)
                 if ok </span><span class="cov0" title="0">{
                         resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), m.String())
                 }</span> else<span class="cov0" title="0"> {
@@ -1548,7 +1548,7 @@ func NewBulkUpdate(cfg *app.Config, st storage.Repository, log *zap.Logger) http
                 }</span>
 
                 // Обновляем метрики в хранилище.
-                <span class="cov0" title="0">err = st.UpdateMetrics(metricsToUpdate)
+                <span class="cov0" title="0">err = st.UpdateMetrics(r.Context(), metricsToUpdate)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusBadRequest)
                         return
@@ -1629,7 +1629,7 @@ func New(cfg *app.Config, storage storage.Repository) http.HandlerFunc <span cla
                 }</span>
 
                 // Получаем значение метрики из хранилища
-                <span class="cov0" title="0">metric, ok := storage.GetMetric(requestMetric.MType, requestMetric.Name)
+                <span class="cov0" title="0">metric, ok := storage.GetMetric(r.Context(), requestMetric.MType, requestMetric.Name)
                 if !ok </span><span class="cov0" title="0">{
                         http.Error(w, fmt.Sprintf("%s not found", metric.String()), http.StatusNotFound)
                         return
@@ -1688,12 +1688,12 @@ import (
 
 // New возвращает http.HandlerFunc, который отдает список метрик на сервере.
 func New(st storage.Repository) http.HandlerFunc <span class="cov8" title="1">{
-        return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 w.Header().Set("Content-Type", "text/html")
 
                 // Возвращаем метрики в виде списка строк (первоначальный вариант)
-                ms := st.GetMetrics()
-                items := make([]string, 0, st.Count())
+                ms := st.GetMetrics(r.Context())
+                items := make([]string, 0, st.Count(r.Context()))
                 for _, metric := range ms </span><span class="cov8" title="1">{
                         switch metric.MType </span>{
                         case metrics.TypeGauge:<span class="cov8" title="1">
@@ -1780,14 +1780,14 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc <span class="c
                 }
 
                 // Обновляем метрику в хранилище
-                <span class="cov8" title="1">err := st.UpdateMetric(*m)
+                <span class="cov8" title="1">err := st.UpdateMetric(r.Context(), *m)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusBadRequest)
                 }</span>
 
                 <span class="cov8" title="1">var resMessage string
                 // Получаем значение метрики из хранилища
-                v, ok := st.GetMetric(metricType, metricName)
+                v, ok := st.GetMetric(r.Context(), metricType, metricName)
                 if ok </span><span class="cov8" title="1">{
                         resMessage = fmt.Sprintf("metric %s/%s updated with value %s, result: %s",
                                 metricType, metricName, metricValue, v.String())
@@ -1832,7 +1832,7 @@ func New(storage storage.Repository) http.HandlerFunc <span class="cov0" title="
                 metricType := metrics.MetricType(chi.URLParam(r, "type"))
                 metricName := chi.URLParam(r, "name")
 
-                metric, ok := storage.GetMetric(metricType, metricName)
+                metric, ok := storage.GetMetric(r.Context(), metricType, metricName)
                 if !ok </span><span class="cov0" title="0">{
                         http.Error(
                                 w,
@@ -2181,6 +2181,7 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 package memory
 
 import (
+        "context"
         "encoding/json"
         "errors"
         "fmt"
@@ -2242,7 +2243,7 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
                                 log.Info(
                                         fmt.Sprintf(
                                                 "store %d metrics to file %s",
-                                                memStorage.Count(),
+                                                memStorage.Count(context.Background()),
                                                 cfg.GetStorePath(),
                                         ),
                                 )
@@ -2275,7 +2276,7 @@ func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Co
 }</span>
 
 // UpdateMetric универсальный метод обновления метрики в хранилище: gauge, counter.
-func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error <span class="cov8" title="1">{
+func (ms *MemStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error <span class="cov8" title="1">{
         switch metric.MType </span>{
         case metrics.TypeGauge:<span class="cov0" title="0">
                 if metric.Value == nil </span><span class="cov0" title="0">{
@@ -2304,9 +2305,9 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error <span class="cov
         <span class="cov8" title="1">return nil</span>
 }
 
-func (ms *MemStorage) UpdateMetrics(items []metrics.Metric) error <span class="cov0" title="0">{
+func (ms *MemStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov0" title="0">{
         for _, item := range items </span><span class="cov0" title="0">{
-                err := ms.UpdateMetric(item)
+                err := ms.UpdateMetric(ctx, item)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
@@ -2322,31 +2323,31 @@ func (ms *MemStorage) GetCounters() storage.Counters <span class="cov0" title="0
         return ms.counters
 }</span>
 
-func (ms *MemStorage) GetGauge(name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+func (ms *MemStorage) GetGauge(ctx context.Context, name string) (storage.Gauge, bool) <span class="cov0" title="0">{
         value, ok := ms.gauges[name]
         return value, ok
 }</span>
 
-func (ms *MemStorage) GetCounter(name string) (storage.Counter, bool) <span class="cov8" title="1">{
+func (ms *MemStorage) GetCounter(ctx context.Context, name string) (storage.Counter, bool) <span class="cov8" title="1">{
         value, ok := ms.counters[name]
         return value, ok
 }</span>
 
-func (ms *MemStorage) Count() int <span class="cov0" title="0">{
+func (ms *MemStorage) Count(ctx context.Context) int <span class="cov0" title="0">{
         return len(ms.gauges) + len(ms.counters)
 }</span>
 
-func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool) <span class="cov8" title="1">{
+func (ms *MemStorage) GetMetric(ctx context.Context, mType metrics.MetricType, id string) (metrics.Metric, bool) <span class="cov8" title="1">{
         switch mType </span>{
         case metrics.TypeCounter:<span class="cov8" title="1">
-                v, ok := ms.GetCounter(id)
+                v, ok := ms.GetCounter(ctx, id)
                 return metrics.Metric{
                         Name:  id,
                         MType: mType,
                         Delta: (*int64)(&amp;v),
                 }, ok</span>
         case metrics.TypeGauge:<span class="cov0" title="0">
-                v, ok := ms.GetGauge(id)
+                v, ok := ms.GetGauge(ctx, id)
                 return metrics.Metric{
                         Name:  id,
                         MType: mType,
@@ -2357,8 +2358,8 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 }
 
 // GetMetrics возвращает отсортированный список метрик в формате слайса структур.
-func (ms *MemStorage) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
-        items := make([]metrics.Metric, 0, ms.Count())
+func (ms *MemStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov0" title="0">{
+        items := make([]metrics.Metric, 0, ms.Count(ctx))
         for id, value := range ms.GetGauges() </span><span class="cov0" title="0">{
                 items = append(
                         items,
@@ -2411,7 +2412,7 @@ func (ms *MemStorage) storeMetricsToFile() error <span class="cov0" title="0">{
         // сериализация метрик metrics.Metric в json и запись сразу в файл
         <span class="cov0" title="0">encoder := json.NewEncoder(f)
         encoder.SetIndent("", "    ")
-        err = encoder.Encode(ms.GetMetrics())
+        err = encoder.Encode(ms.GetMetrics(context.Background()))
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
@@ -2446,14 +2447,43 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0
 
         // обновление метрик в хранилище в памяти
         <span class="cov0" title="0">for m := range parsed </span><span class="cov0" title="0">{
-                err = ms.UpdateMetric(parsed[m])
+                err = ms.UpdateMetric(context.Background(), parsed[m])
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
         }
 
-        <span class="cov0" title="0">return nil</span>
+        // Выводим информацию о восстановленных метриках в лог.
+        <span class="cov0" title="0">ms.log.Info(
+                "Metrics restored from file",
+                zap.String("file", ms.cfg.GetStorePath()),
+                zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
+        )
+        return nil</span>
 }
+
+// Dump выводит информацию о хранилище в лог.
+func (ms *MemStorage) Dump() <span class="cov0" title="0">{
+        ms.log.Info(
+                "Memory storage dump",
+                zap.Int("gauges", len(ms.gauges)),
+                zap.Int("counters", len(ms.counters)),
+                zap.Int("total", ms.Count(context.Background())),
+        )
+}</span>
+
+// Restore восстанавливает метрики из файла.
+func (ms *MemStorage) Restore() error <span class="cov0" title="0">{
+        // ... existing code ...
+
+        // Выводим информацию о восстановленных метриках в лог.
+        ms.log.Info(
+                "Metrics restored from file",
+                zap.String("file", ms.cfg.GetStorePath()),
+                zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
+        )
+        return nil
+}</span>
 </pre>
 		
 		<pre class="file" id="file27" style="display: none">package migration
@@ -2518,7 +2548,6 @@ type PgStorage struct {
         conn *pgxpool.Pool
         cfg  *app.Config
         log  *zap.Logger
-        ctx  context.Context
 }
 
 // New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
@@ -2535,7 +2564,6 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
                 conn: conn,
                 cfg:  config,
                 log:  log,
-                ctx:  ctx,
         }
 
         // Автоматически накатываем миграции при создании экземпляра хранилища.
@@ -2550,18 +2578,18 @@ func (p *PgStorage) Close() error <span class="cov0" title="0">{
         return nil
 }</span>
 
-func (p *PgStorage) Count() int <span class="cov0" title="0">{
+func (p *PgStorage) Count(ctx context.Context) int <span class="cov0" title="0">{
         var count int
-        err := p.conn.QueryRow(p.ctx, `SELECT count(*) FROM metrics`).Scan(&amp;count)
+        err := p.conn.QueryRow(ctx, `SELECT count(*) FROM metrics`).Scan(&amp;count)
         if err != nil </span><span class="cov0" title="0">{
                 p.log.Error(err.Error())
         }</span>
         <span class="cov0" title="0">return count</span>
 }
 
-func (p *PgStorage) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
+func (p *PgStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov0" title="0">{
         var items []metrics.Metric
-        rows, err := p.conn.Query(p.ctx, `SELECT name, type, value, delta FROM metrics ORDER BY name`)
+        rows, err := p.conn.Query(ctx, `SELECT name, type, value, delta FROM metrics ORDER BY name`)
         if err != nil </span><span class="cov0" title="0">{
                 p.log.Error(err.Error())
                 return nil
@@ -2582,13 +2610,13 @@ func (p *PgStorage) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
 }
 
 // GetMetric получение значения метрики указанного типа в виде универсальной структуры.
-func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov0" title="0">{
+func (p *PgStorage) GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov0" title="0">{
         q := `SELECT name, type, value, delta FROM public.metrics WHERE name = $1 AND type = $2`
 
         var metric metrics.Metric
         var err error
         for i := 0; i &lt;= maxRetries; i++ </span><span class="cov0" title="0">{
-                row := p.conn.QueryRow(p.ctx, q, name, mType)
+                row := p.conn.QueryRow(ctx, q, name, mType)
                 err = row.Scan(&amp;metric.Name, &amp;metric.MType, &amp;metric.Value, &amp;metric.Delta)
 
                 if err == nil </span><span class="cov0" title="0">{
@@ -2617,8 +2645,8 @@ func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Me
 }
 
 // GetCounter возвращает счетчик по имени.
-func (p *PgStorage) GetCounter(name string) (storage.Counter, bool) <span class="cov0" title="0">{
-        m, ok := p.GetMetric(metrics.TypeCounter, name)
+func (p *PgStorage) GetCounter(ctx context.Context, name string) (storage.Counter, bool) <span class="cov0" title="0">{
+        m, ok := p.GetMetric(ctx, metrics.TypeCounter, name)
         if !ok </span><span class="cov0" title="0">{
                 return 0, false
         }</span>
@@ -2626,18 +2654,19 @@ func (p *PgStorage) GetCounter(name string) (storage.Counter, bool) <span class=
 }
 
 // GetGauge возвращает измерение по имени.
-func (p *PgStorage) GetGauge(name string) (storage.Gauge, bool) <span class="cov0" title="0">{
-        m, ok := p.GetMetric(metrics.TypeGauge, name)
+func (p *PgStorage) GetGauge(ctx context.Context, name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+        m, ok := p.GetMetric(ctx, metrics.TypeGauge, name)
         if !ok </span><span class="cov0" title="0">{
                 return 0, false
         }</span>
         <span class="cov0" title="0">return storage.Gauge(*m.Value), true</span>
 }
-func (p *PgStorage) UpdateMetric(metric metrics.Metric) error <span class="cov0" title="0">{
+
+func (p *PgStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error <span class="cov0" title="0">{
         var q string
 
         // Если метрика существует, то обновляем, иначе создаем новую.
-        _, ok := p.GetMetric(metric.MType, metric.Name)
+        _, ok := p.GetMetric(ctx, metric.MType, metric.Name)
         if ok </span><span class="cov0" title="0">{
                 q = `UPDATE metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
         }</span> else<span class="cov0" title="0"> {
@@ -2645,7 +2674,7 @@ func (p *PgStorage) UpdateMetric(metric metrics.Metric) error <span class="cov0"
         }</span>
 
         // Выполнение запроса
-        <span class="cov0" title="0">_, err := p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
+        <span class="cov0" title="0">_, err := p.conn.Exec(ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
         if err != nil </span><span class="cov0" title="0">{
                 p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
                 return err
@@ -2654,7 +2683,7 @@ func (p *PgStorage) UpdateMetric(metric metrics.Metric) error <span class="cov0"
 }
 
 // UpdateMetrics пакетно обновляет метрики в хранилище.
-func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error <span class="cov0" title="0">{
+func (p *PgStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov0" title="0">{
         var err error
         q := `INSERT INTO metrics (name, type, value, delta) 
           VALUES ($1, $2, $3, $4)
@@ -2662,7 +2691,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error <span class="cov
           DO UPDATE SET value = EXCLUDED.value, delta = metrics.delta + EXCLUDED.delta`
 
         // Начало транзакции
-        tx, err := p.conn.Begin(p.ctx)
+        tx, err := p.conn.Begin(ctx)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
@@ -2670,7 +2699,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error <span class="cov
         // Откатываем транзакцию в случае ошибки
         <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
                 if err != nil </span><span class="cov0" title="0">{
-                        if rErr := tx.Rollback(p.ctx); rErr != nil &amp;&amp; !errors.Is(rErr, pgx.ErrTxClosed) </span><span class="cov0" title="0">{
+                        if rErr := tx.Rollback(ctx); rErr != nil &amp;&amp; !errors.Is(rErr, pgx.ErrTxClosed) </span><span class="cov0" title="0">{
                                 p.log.Error(fmt.Sprintf("Failed to rollback transaction: %v", rErr))
                         }</span>
                 }
@@ -2682,7 +2711,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error <span class="cov
         }</span>
 
         // Выполнение батч-запроса
-        <span class="cov0" title="0">br := tx.SendBatch(p.ctx, batch)
+        <span class="cov0" title="0">br := tx.SendBatch(ctx, batch)
         _, err = br.Exec()
         if errClose := br.Close(); errClose != nil </span><span class="cov0" title="0">{
                 p.log.Error(fmt.Sprintf("Failed to close batch: %v", errClose))
@@ -2695,7 +2724,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error <span class="cov
         }</span>
 
         // Подтверждаем транзакцию
-        <span class="cov0" title="0">if err = tx.Commit(p.ctx); err != nil </span><span class="cov0" title="0">{
+        <span class="cov0" title="0">if err = tx.Commit(ctx); err != nil </span><span class="cov0" title="0">{
                 p.log.Error(fmt.Sprintf("Failed to commit transaction: %v", err))
                 return err
         }</span>
@@ -2720,6 +2749,7 @@ func isRetriableError(err *pgconn.PgError) bool <span class="cov0" title="0">{
 		<pre class="file" id="file29" style="display: none">package storage
 
 import (
+        "context"
         "strconv"
 
         "github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -2743,29 +2773,29 @@ type Repository interface {
         Close() error
 
         // Count возвращает общее количество метрик в хранилище.
-        Count() int
+        Count(ctx context.Context) int
 
         // GetMetrics возвращает все метрики в виде структур.
-        GetMetrics() []metrics.Metric
+        GetMetrics(ctx context.Context) []metrics.Metric
 
         // GetMetric получает значение метрики указанного типа.
         // Возвращает метрику и флаг, указывающий на её наличие в хранилище.
-        GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool)
+        GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool)
 
         // GetCounter возвращает значение счетчика по имени.
         // Возвращает значение и флаг, указывающий на наличие счетчика.
-        GetCounter(name string) (Counter, bool)
+        GetCounter(ctx context.Context, name string) (Counter, bool)
 
         // GetGauge возвращает значение gauge-метрики по имени.
         // Возвращает значение и флаг, указывающий на наличие метрики.
-        GetGauge(name string) (Gauge, bool)
+        GetGauge(ctx context.Context, name string) (Gauge, bool)
 
         // UpdateMetric обновляет или создает метрику в хранилище.
         // Поддерживает типы gauge и counter.
-        UpdateMetric(metric metrics.Metric) error
+        UpdateMetric(ctx context.Context, metric metrics.Metric) error
 
         // UpdateMetrics пакетно обновляет набор метрик в хранилище.
-        UpdateMetrics(metrics []metrics.Metric) error
+        UpdateMetrics(ctx context.Context, metrics []metrics.Metric) error
 }
 </pre>
 		
@@ -2981,6 +3011,7 @@ func NewRepository(t interface {
 package mocks
 
 import (
+        context "context"
         metrics "github.com/maynagashev/go-metrics/internal/contracts/metrics"
         mock "github.com/stretchr/testify/mock"
 )
@@ -2990,17 +3021,17 @@ type Storage struct {
         mock.Mock
 }
 
-// GetMetrics provides a mock function with given fields:
-func (_m *Storage) GetMetrics() []metrics.Metric <span class="cov8" title="1">{
-        ret := _m.Called()
+// GetMetrics provides a mock function with given fields: ctx
+func (_m *Storage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov8" title="1">{
+        ret := _m.Called(ctx)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetMetrics")</span>
         }
 
         <span class="cov8" title="1">var r0 []metrics.Metric
-        if rf, ok := ret.Get(0).(func() []metrics.Metric); ok </span><span class="cov0" title="0">{
-                r0 = rf()
+        if rf, ok := ret.Get(0).(func(context.Context) []metrics.Metric); ok </span><span class="cov0" title="0">{
+                r0 = rf(ctx)
         }</span> else<span class="cov8" title="1"> {
                 if ret.Get(0) != nil </span><span class="cov8" title="1">{
                         r0 = ret.Get(0).([]metrics.Metric)

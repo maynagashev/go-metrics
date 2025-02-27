@@ -2,6 +2,7 @@ package benchmarks_test
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
@@ -31,6 +32,7 @@ func newTestStorage() *memory.MemStorage {
 // Это помогает оценить скорость работы in-memory хранилища и выявить потенциальные узкие места.
 func BenchmarkStorageOperations(b *testing.B) {
 	store := newTestStorage()
+	ctx := context.Background()
 
 	metric := metrics.Metric{
 		Name:  "TestGauge",
@@ -40,11 +42,11 @@ func BenchmarkStorageOperations(b *testing.B) {
 
 	b.ResetTimer()
 	for range b.N {
-		err := store.UpdateMetric(metric)
+		err := store.UpdateMetric(ctx, metric)
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, found := store.GetMetric(metric.MType, metric.Name)
+		_, found := store.GetMetric(ctx, metric.MType, metric.Name)
 		if !found {
 			b.Fatal("metric not found")
 		}

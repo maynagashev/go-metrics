@@ -2,6 +2,7 @@
 package memory
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -63,7 +64,7 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage {
 				log.Info(
 					fmt.Sprintf(
 						"store %d metrics to file %s",
-						memStorage.Count(),
+						memStorage.Count(context.Background()),
 						cfg.GetStorePath(),
 					),
 				)
@@ -96,7 +97,7 @@ func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Co
 }
 
 // UpdateMetric универсальный метод обновления метрики в хранилище: gauge, counter.
-func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
+func (ms *MemStorage) UpdateMetric(_ context.Context, metric metrics.Metric) error {
 	switch metric.MType {
 	case metrics.TypeGauge:
 		if metric.Value == nil {
@@ -125,9 +126,9 @@ func (ms *MemStorage) UpdateMetric(metric metrics.Metric) error {
 	return nil
 }
 
-func (ms *MemStorage) UpdateMetrics(items []metrics.Metric) error {
+func (ms *MemStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error {
 	for _, item := range items {
-		err := ms.UpdateMetric(item)
+		err := ms.UpdateMetric(ctx, item)
 		if err != nil {
 			return err
 		}
@@ -143,31 +144,35 @@ func (ms *MemStorage) GetCounters() storage.Counters {
 	return ms.counters
 }
 
-func (ms *MemStorage) GetGauge(name string) (storage.Gauge, bool) {
+func (ms *MemStorage) GetGauge(_ context.Context, name string) (storage.Gauge, bool) {
 	value, ok := ms.gauges[name]
 	return value, ok
 }
 
-func (ms *MemStorage) GetCounter(name string) (storage.Counter, bool) {
+func (ms *MemStorage) GetCounter(_ context.Context, name string) (storage.Counter, bool) {
 	value, ok := ms.counters[name]
 	return value, ok
 }
 
-func (ms *MemStorage) Count() int {
+func (ms *MemStorage) Count(_ context.Context) int {
 	return len(ms.gauges) + len(ms.counters)
 }
 
-func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Metric, bool) {
+func (ms *MemStorage) GetMetric(
+	ctx context.Context,
+	mType metrics.MetricType,
+	id string,
+) (metrics.Metric, bool) {
 	switch mType {
 	case metrics.TypeCounter:
-		v, ok := ms.GetCounter(id)
+		v, ok := ms.GetCounter(ctx, id)
 		return metrics.Metric{
 			Name:  id,
 			MType: mType,
 			Delta: (*int64)(&v),
 		}, ok
 	case metrics.TypeGauge:
-		v, ok := ms.GetGauge(id)
+		v, ok := ms.GetGauge(ctx, id)
 		return metrics.Metric{
 			Name:  id,
 			MType: mType,
@@ -178,8 +183,8 @@ func (ms *MemStorage) GetMetric(mType metrics.MetricType, id string) (metrics.Me
 }
 
 // GetMetrics возвращает отсортированный список метрик в формате слайса структур.
-func (ms *MemStorage) GetMetrics() []metrics.Metric {
-	items := make([]metrics.Metric, 0, ms.Count())
+func (ms *MemStorage) GetMetrics(ctx context.Context) []metrics.Metric {
+	items := make([]metrics.Metric, 0, ms.Count(ctx))
 	for id, value := range ms.GetGauges() {
 		items = append(
 			items,
@@ -232,7 +237,7 @@ func (ms *MemStorage) storeMetricsToFile() error {
 	// сериализация метрик metrics.Metric в json и запись сразу в файл
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "    ")
-	err = encoder.Encode(ms.GetMetrics())
+	err = encoder.Encode(ms.GetMetrics(context.Background()))
 	if err != nil {
 		return err
 	}
@@ -267,11 +272,40 @@ func (ms *MemStorage) restoreMetricsFromFile() error {
 
 	// обновление метрик в хранилище в памяти
 	for m := range parsed {
-		err = ms.UpdateMetric(parsed[m])
+		err = ms.UpdateMetric(context.Background(), parsed[m])
 		if err != nil {
 			return err
 		}
 	}
 
+	// Выводим информацию о восстановленных метриках в лог.
+	ms.log.Info(
+		"Metrics restored from file",
+		zap.String("file", ms.cfg.GetStorePath()),
+		zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
+	)
+	return nil
+}
+
+// Dump выводит информацию о хранилище в лог.
+func (ms *MemStorage) Dump() {
+	ms.log.Info(
+		"Memory storage dump",
+		zap.Int("gauges", len(ms.gauges)),
+		zap.Int("counters", len(ms.counters)),
+		zap.Int("total", ms.Count(context.Background())),
+	)
+}
+
+// Restore восстанавливает метрики из файла.
+func (ms *MemStorage) Restore() error {
+	// ... existing code ...
+
+	// Выводим информацию о восстановленных метриках в лог.
+	ms.log.Info(
+		"Metrics restored from file",
+		zap.String("file", ms.cfg.GetStorePath()),
+		zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
+	)
 	return nil
 }

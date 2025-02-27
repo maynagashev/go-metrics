@@ -27,7 +27,12 @@ func Example_update() {
 
 	// Создаем запрос с контекстом
 	ctx := context.Background()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, example.ServerAddr+"/update", bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		example.ServerAddr+"/update",
+		bytes.NewBuffer(body),
+	)
 	if err != nil {
 		fmt.Printf("Ошибка создания запроса: %v\n", err)
 		return
@@ -61,7 +66,12 @@ func Example_getValue() {
 
 	body, _ := json.Marshal(metric)
 	ctx := context.Background()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, example.ServerAddr+"/value", bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		example.ServerAddr+"/value",
+		bytes.NewBuffer(body),
+	)
 	if err != nil {
 		fmt.Printf("Ошибка создания запроса: %v\n", err)
 		return
@@ -110,7 +120,12 @@ func Example_updateBatch() {
 
 	body, _ := json.Marshal(metrics)
 	ctx := context.Background()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, example.ServerAddr+"/updates/", bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		example.ServerAddr+"/updates/",
+		bytes.NewBuffer(body),
+	)
 	if err != nil {
 		fmt.Printf("Ошибка создания запроса: %v\n", err)
 		return

@@ -28,7 +28,12 @@ func SetupTestMetric() error {
 
 	body, _ := json.Marshal(metric)
 	ctx := context.Background()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ServerAddr+"/update", bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		ServerAddr+"/update",
+		bytes.NewBuffer(body),
+	)
 	if err != nil {
 		return err
 	}

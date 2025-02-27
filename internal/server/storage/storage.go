@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -24,27 +25,27 @@ type Repository interface {
 	Close() error
 
 	// Count возвращает общее количество метрик в хранилище.
-	Count() int
+	Count(ctx context.Context) int
 
 	// GetMetrics возвращает все метрики в виде структур.
-	GetMetrics() []metrics.Metric
+	GetMetrics(ctx context.Context) []metrics.Metric
 
 	// GetMetric получает значение метрики указанного типа.
 	// Возвращает метрику и флаг, указывающий на её наличие в хранилище.
-	GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool)
+	GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool)
 
 	// GetCounter возвращает значение счетчика по имени.
 	// Возвращает значение и флаг, указывающий на наличие счетчика.
-	GetCounter(name string) (Counter, bool)
+	GetCounter(ctx context.Context, name string) (Counter, bool)
 
 	// GetGauge возвращает значение gauge-метрики по имени.
 	// Возвращает значение и флаг, указывающий на наличие метрики.
-	GetGauge(name string) (Gauge, bool)
+	GetGauge(ctx context.Context, name string) (Gauge, bool)
 
 	// UpdateMetric обновляет или создает метрику в хранилище.
 	// Поддерживает типы gauge и counter.
-	UpdateMetric(metric metrics.Metric) error
+	UpdateMetric(ctx context.Context, metric metrics.Metric) error
 
 	// UpdateMetrics пакетно обновляет набор метрик в хранилище.
-	UpdateMetrics(metrics []metrics.Metric) error
+	UpdateMetrics(ctx context.Context, metrics []metrics.Metric) error
 }

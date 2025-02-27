@@ -1,6 +1,7 @@
 package ping_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +20,7 @@ func TestHandle_Success(t *testing.T) {
 	mockStorage := new(mocks.Storage)
 
 	// Настраиваем мок, чтобы метод GetMetrics возвращал не пустое значение
-	mockStorage.On("GetMetrics").Return([]metrics.Metric{
+	mockStorage.On("GetMetrics", context.Background()).Return([]metrics.Metric{
 		*metrics.NewCounter("metric1", 1),
 		*metrics.NewCounter("metric1", 2),
 	})
@@ -43,5 +44,5 @@ func TestHandle_Success(t *testing.T) {
 	assert.JSONEq(t, `{"status":"OK","message":"pong"}`, rr.Body.String())
 
 	// Проверяем вызов метода GetMetrics
-	mockStorage.AssertCalled(t, "GetMetrics")
+	mockStorage.AssertCalled(t, "GetMetrics", context.Background())
 }

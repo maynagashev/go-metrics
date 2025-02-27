@@ -19,7 +19,7 @@ func New(storage storage.Repository) http.HandlerFunc {
 		metricType := metrics.MetricType(chi.URLParam(r, "type"))
 		metricName := chi.URLParam(r, "name")
 
-		metric, ok := storage.GetMetric(metricType, metricName)
+		metric, ok := storage.GetMetric(r.Context(), metricType, metricName)
 		if !ok {
 			http.Error(
 				w,
