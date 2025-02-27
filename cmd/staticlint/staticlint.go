@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"os"
+	"strings"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
@@ -23,11 +25,21 @@ type ConfigData struct {
 }
 
 func main() {
+	log.SetOutput(os.Stdout)
+
 	mychecks := []*analysis.Analyzer{
-		errcheck.Analyzer,
+		// анализаторы из golang.org/x/tools/go/analysis/passes
 		printf.Analyzer,
 		shadow.Analyzer,
 		structtag.Analyzer,
+
+		// собственный публичный анализатор
+		errcheck.Analyzer,
+	}
+
+	// анализаторы из staticcheck.io
+	for _, analyzer := range staticcheck.Analyzers {
+		mychecks = append(mychecks, analyzer.Analyzer)
 	}
 
 	// Пытаемся прочитать конфигурационный файл
@@ -40,15 +52,28 @@ func main() {
 			for _, v := range cfg.Staticcheck {
 				checks[v] = true
 			}
-			for _, v := range staticcheck.Analyzers {
-				if checks[v.Analyzer.Name] {
-					mychecks = append(mychecks, v.Analyzer)
+			for _, analyzer := range staticcheck.Analyzers {
+				if checks[analyzer.Analyzer.Name] {
+					mychecks = append(mychecks, analyzer.Analyzer)
 				}
 			}
 		}
 	}
 
+	// выводим список анализаторов, короткий список c нумерацией и однострочным описанием
+	log.Println("Включает в себя следующие анализаторы:")
+	for i, analyzer := range mychecks {
+		description := analyzer.Doc
+		// берем только первую строку описания
+		if newlineIndex := strings.Index(description, "\n"); newlineIndex != -1 {
+			description = description[:newlineIndex]
+		}
+		log.Printf("%d. %s: %s\n", i+1, analyzer.Name, description)
+	}
+
+	log.Println("Запуск анализатора...")
 	multichecker.Main(
 		mychecks...,
 	)
+	log.Println("Анализ завершен.")
 }
