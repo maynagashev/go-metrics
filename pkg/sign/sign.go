@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"log/slog"
 )
 
 const HeaderKey = "HashSHA256"
@@ -14,7 +15,11 @@ const HeaderKey = "HashSHA256"
 // ComputeHMACSHA256 вычисляет хеш SHA256 от данных с использованием ключа.
 func ComputeHMACSHA256(data []byte, key string) string {
 	h := hmac.New(sha256.New, []byte(key))
-	h.Write(data)
+	if _, err := h.Write(data); err != nil {
+		// Log the error or handle it appropriately
+		// Since we know this won't fail, we can just panic or log a message
+		slog.Error("unexpected error writing to hash", "error", err)
+	}
 	return hex.EncodeToString(h.Sum(nil))
 }
 

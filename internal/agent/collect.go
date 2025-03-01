@@ -3,6 +3,7 @@ package agent
 
 import (
 	"fmt"
+	"log/slog"
 	"runtime"
 
 	"github.com/shirou/gopsutil/cpu"
@@ -50,11 +51,19 @@ func (a *agent) CollectRuntimeMetrics() {
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
 func (a *agent) CollectAdditionalMetrics() {
-	v, _ := mem.VirtualMemory()
+	v, err := mem.VirtualMemory()
+	if err != nil {
+		slog.Error("failed to collect virtual memory metrics", "error", err)
+		return
+	}
 	a.gauges["TotalMemory"] = float64(v.Total)
 	a.gauges["FreeMemory"] = float64(v.Free)
 
-	c, _ := cpu.Percent(0, true)
+	c, err := cpu.Percent(0, true)
+	if err != nil {
+		slog.Error("failed to collect CPU metrics", "error", err)
+		return
+	}
 	for i, percent := range c {
 		a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
 	}

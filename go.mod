@@ -2,7 +2,7 @@ module github.com/maynagashev/go-metrics
 
 go 1.23
 
-toolchain go1.23.2
+toolchain go1.23.6
 
 require (
 	github.com/go-chi/chi/v5 v5.0.12
