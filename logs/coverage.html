@@ -85,29 +85,29 @@
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/server/app/app.go (0.0%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/server/app/config.go (75.0%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/server/app/config.go (87.5%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/server/app/flags.go (0.0%)</option>
 				
-				<option value="file17">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (0.0%)</option>
+				<option value="file17">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (63.6%)</option>
 				
-				<option value="file18">github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go (33.3%)</option>
+				<option value="file18">github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go (91.7%)</option>
 				
-				<option value="file19">github.com/maynagashev/go-metrics/internal/server/handlers/json/update/json_update.go (0.0%)</option>
+				<option value="file19">github.com/maynagashev/go-metrics/internal/server/handlers/json/update/json_update.go (88.9%)</option>
 				
-				<option value="file20">github.com/maynagashev/go-metrics/internal/server/handlers/json/updates/json_updates.go (3.0%)</option>
+				<option value="file20">github.com/maynagashev/go-metrics/internal/server/handlers/json/updates/json_updates.go (90.9%)</option>
 				
-				<option value="file21">github.com/maynagashev/go-metrics/internal/server/handlers/json/value/json_value.go (0.0%)</option>
+				<option value="file21">github.com/maynagashev/go-metrics/internal/server/handlers/json/value/json_value.go (83.3%)</option>
 				
 				<option value="file22">github.com/maynagashev/go-metrics/internal/server/handlers/plain/index/index.go (85.7%)</option>
 				
 				<option value="file23">github.com/maynagashev/go-metrics/internal/server/handlers/plain/update/plain_update.go (78.9%)</option>
 				
-				<option value="file24">github.com/maynagashev/go-metrics/internal/server/handlers/plain/value/plain_value.go (0.0%)</option>
+				<option value="file24">github.com/maynagashev/go-metrics/internal/server/handlers/plain/value/plain_value.go (90.9%)</option>
 				
-				<option value="file25">github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go (0.0%)</option>
+				<option value="file25">github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go (84.2%)</option>
 				
-				<option value="file26">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (15.6%)</option>
+				<option value="file26">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (71.1%)</option>
 				
 				<option value="file27">github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go (85.7%)</option>
 				
@@ -117,7 +117,7 @@
 				
 				<option value="file30">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
-				<option value="file31">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (0.0%)</option>
+				<option value="file31">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (5.4%)</option>
 				
 				<option value="file32">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (0.0%)</option>
 				
@@ -1927,7 +1927,7 @@ func (cfg *Config) IsDatabaseEnabled() bool <span class="cov8" title="1">{
 }</span>
 
 // IsRequestSigningEnabled включена ли проверка подписи метрик.
-func (cfg *Config) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsRequestSigningEnabled() bool <span class="cov8" title="1">{
         return cfg.PrivateKey != ""
 }</span>
 </pre>
@@ -2073,8 +2073,8 @@ import (
 )
 
 // New возвращает http.HandlerFunc, который отдает список метрик на сервере.
-func New(st storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
-        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+func New(st storage.Repository) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 w.Header().Set("Content-Type", "application/json")
 
                 // Возвращаем метрики в формате JSON архива
@@ -2084,7 +2084,7 @@ func New(st storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
-                <span class="cov0" title="0">_, err = w.Write(jsonData)
+                <span class="cov8" title="1">_, err = w.Write(jsonData)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusInternalServerError)
                         return
@@ -2132,19 +2132,19 @@ func Handle(storage Storage) http.HandlerFunc <span class="cov8" title="1">{
 }
 
 // New создает подключение к базе данных из конфига и возвращает обработчик запроса.
-func New(config *app.Config, log *zap.Logger) http.HandlerFunc <span class="cov0" title="0">{
+func New(config *app.Config, log *zap.Logger) http.HandlerFunc <span class="cov8" title="1">{
         // Если не используется PostgreSQL, то возвращаем обработчик, который возвращает ошибку.
-        if !config.IsDatabaseEnabled() </span><span class="cov0" title="0">{
-                return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov0" title="0">{
+        if !config.IsDatabaseEnabled() </span><span class="cov8" title="1">{
+                return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov8" title="1">{
                         response.Error(w, errors.New("не указана база данных"), http.StatusInternalServerError)
                 }</span>
         }
 
         // Создаем экземпляр хранилища на основе PostgreSQL, здесь создается подключение и накатываются миграции.
-        <span class="cov0" title="0">db, err := pgstorage.New(context.Background(), config, log)
+        <span class="cov8" title="1">db, err := pgstorage.New(context.Background(), config, log)
         // Если не удалось создать хранилище, то возвращаем обработчик, который возвращает ошибку.
-        if err != nil </span><span class="cov0" title="0">{
-                return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
+                return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov8" title="1">{
                         response.Error(w, err, http.StatusInternalServerError)
                 }</span>
         }
@@ -2188,15 +2188,15 @@ type Metric struct {
 }
 
 // New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
-func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFunc <span class="cov0" title="0">{
-        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 requestedMetric, err := parseMetricFromRequest(r, log, cfg)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         log.Error("error while parsing metric", zap.Error(err))
                         http.Error(w, err.Error(), http.StatusBadRequest)
                         return
                 }</span>
-                <span class="cov0" title="0">log.Debug("parsed metric", zap.Any("metric", requestedMetric))
+                <span class="cov8" title="1">log.Debug("parsed metric", zap.Any("metric", requestedMetric))
 
                 // Конвертируем локальную структуру в структуру из контракта
                 metric := metrics.Metric(requestedMetric)
@@ -2206,18 +2206,18 @@ func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.Handler
                         return
                 }</span>
 
-                <span class="cov0" title="0">var resMessage string
+                <span class="cov8" title="1">var resMessage string
 
                 // Получаем значение метрики из хранилища
                 m, ok := strg.GetMetric(r.Context(), metric.MType, metric.Name)
-                if ok </span><span class="cov0" title="0">{
+                if ok </span><span class="cov8" title="1">{
                         resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), m.String())
                 }</span> else<span class="cov0" title="0"> {
                         resMessage = fmt.Sprintf("metric %s not found", metric.String())
                 }</span>
 
                 // Логируем ответ для отладки
-                <span class="cov0" title="0">log.Info(resMessage)
+                <span class="cov8" title="1">log.Info(resMessage)
 
                 // Отправляем успешный ответ
                 response.OK(w, resMessage)</span>
@@ -2225,7 +2225,7 @@ func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.Handler
 }
 
 // Читаем метрику из json запроса.
-func parseMetricFromRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (Metric, error) <span class="cov0" title="0">{
+func parseMetricFromRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (Metric, error) <span class="cov8" title="1">{
         m := Metric{}
         buf := new(bytes.Buffer)
         _, err := buf.ReadFrom(r.Body)
@@ -2234,27 +2234,27 @@ func parseMetricFromRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (
                 return m, err
         }</span>
 
-        <span class="cov0" title="0">log.Debug("request body", zap.String("body", buf.String()))
+        <span class="cov8" title="1">log.Debug("request body", zap.String("body", buf.String()))
 
         body := buf.Bytes()
 
-        if cfg.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+        if cfg.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
                 // Проверяем подпись запроса
                 expectedHash := r.Header.Get(sign.HeaderKey)
                 requestHash, vErr := sign.VerifyHMACSHA256(body, cfg.PrivateKey, expectedHash)
-                if vErr != nil </span><span class="cov0" title="0">{
+                if vErr != nil </span><span class="cov8" title="1">{
                         log.Error("error while verifying request signature", zap.Error(vErr),
                                 zap.String("expected_hash", expectedHash), zap.String("request_hash", requestHash))
                         return m, vErr
                 }</span>
         }
 
-        <span class="cov0" title="0">err = json.Unmarshal(body, &amp;m)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">err = json.Unmarshal(body, &amp;m)
+        if err != nil </span><span class="cov8" title="1">{
                 return m, err
         }</span>
 
-        <span class="cov0" title="0">return m, nil</span>
+        <span class="cov8" title="1">return m, nil</span>
 }
 </pre>
 		
@@ -2282,36 +2282,36 @@ import (
 // NewBulkUpdate возвращает http.HandlerFunc, который обновляет множество метрик в хранилище.
 // Метрики передаются в теле запроса в формате JSON.
 func NewBulkUpdate(cfg *app.Config, st storage.Repository, log *zap.Logger) http.HandlerFunc <span class="cov8" title="1">{
-        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 var err error
                 w.Header().Set("Content-Type", "application/json")
 
                 // Проверяем запрос на валидность и подпись если требуется.
                 body, err := validateRequest(r, log, cfg)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         log.Debug("validate request failed", zap.Error(err))
                         response.Error(w, err, http.StatusBadRequest)
                         return
                 }</span>
 
                 // Парсим тело запроса в слайс метрик.
-                <span class="cov0" title="0">var metricsToUpdate []metrics.Metric
+                <span class="cov8" title="1">var metricsToUpdate []metrics.Metric
                 err = json.Unmarshal([]byte(body), &amp;metricsToUpdate)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         log.Debug("json decode failed", zap.Error(err))
                         response.Error(w, err, http.StatusBadRequest)
                         return
                 }</span>
 
                 // Обновляем метрики в хранилище.
-                <span class="cov0" title="0">err = st.UpdateMetrics(r.Context(), metricsToUpdate)
+                <span class="cov8" title="1">err = st.UpdateMetrics(r.Context(), metricsToUpdate)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusBadRequest)
                         return
                 }</span>
 
                 // Отправляем успешный ответ.
-                <span class="cov0" title="0">w.WriteHeader(http.StatusOK)
+                <span class="cov8" title="1">w.WriteHeader(http.StatusOK)
 
                 // Логируем ответ для отладки
                 log.Info("Metrics updated successfully")
@@ -2322,17 +2322,17 @@ func NewBulkUpdate(cfg *app.Config, st storage.Repository, log *zap.Logger) http
 }
 
 // validateRequest проверяет запрос на валидность.
-func validateRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (string, error) <span class="cov0" title="0">{
+func validateRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (string, error) <span class="cov8" title="1">{
         buf := new(bytes.Buffer)
         _, err := buf.ReadFrom(r.Body)
         if err != nil </span><span class="cov0" title="0">{
                 return "", err
         }</span>
 
-        <span class="cov0" title="0">body := buf.Bytes()
+        <span class="cov8" title="1">body := buf.Bytes()
 
         // Проверяем подпись запроса
-        if cfg.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+        if cfg.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
                 hashFromRequest := r.Header.Get(sign.HeaderKey)
                 hash, vErr := sign.VerifyHMACSHA256(body, cfg.PrivateKey, hashFromRequest)
 
@@ -2347,12 +2347,12 @@ func validateRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (string,
                         zap.String("body", buf.String()),
                 )
 
-                if vErr != nil </span><span class="cov0" title="0">{
+                if vErr != nil </span><span class="cov8" title="1">{
                         return "", vErr
                 }</span>
         }
 
-        <span class="cov0" title="0">return buf.String(), nil</span>
+        <span class="cov8" title="1">return buf.String(), nil</span>
 }
 </pre>
 		
@@ -2374,37 +2374,37 @@ import (
 )
 
 // New хэндлер для получения значения метрики с сервера в ответ на запрос `POST /value`.
-func New(cfg *app.Config, storage storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
-        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+func New(cfg *app.Config, storage storage.Repository) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 w.Header().Set("Content-Type", "application/json")
                 var err error
 
                 requestMetric, err := parseMetricFromRequest(r)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         http.Error(w, err.Error(), http.StatusBadRequest)
                 }</span>
 
                 // Получаем значение метрики из хранилища
-                <span class="cov0" title="0">metric, ok := storage.GetMetric(r.Context(), requestMetric.MType, requestMetric.Name)
-                if !ok </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">metric, ok := storage.GetMetric(r.Context(), requestMetric.MType, requestMetric.Name)
+                if !ok </span><span class="cov8" title="1">{
                         http.Error(w, fmt.Sprintf("%s not found", metric.String()), http.StatusNotFound)
                         return
                 }</span>
 
                 // Отправляем json ответ с метрикой
-                <span class="cov0" title="0">encodedBody, err := json.Marshal(metric)
+                <span class="cov8" title="1">encodedBody, err := json.Marshal(metric)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusInternalServerError)
                         return
                 }</span>
 
                 // Если задан приватный ключ, то подписываем ответ
-                <span class="cov0" title="0">if cfg.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if cfg.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
                         signature := sign.ComputeHMACSHA256(encodedBody, cfg.PrivateKey)
                         w.Header().Set(sign.HeaderKey, signature)
                 }</span>
 
-                <span class="cov0" title="0">_, err = w.Write(encodedBody)
+                <span class="cov8" title="1">_, err = w.Write(encodedBody)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, err.Error(), http.StatusInternalServerError)
                         return
@@ -2413,7 +2413,7 @@ func New(cfg *app.Config, storage storage.Repository) http.HandlerFunc <span cla
 }
 
 // Читаем метрику из json запроса.
-func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) <span class="cov0" title="0">{
+func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) <span class="cov8" title="1">{
         m := metrics.Metric{}
         buf := new(bytes.Buffer)
         _, err := buf.ReadFrom(r.Body)
@@ -2422,12 +2422,12 @@ func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) <span class
                 return m, err
         }</span>
 
-        <span class="cov0" title="0">err = json.Unmarshal(buf.Bytes(), &amp;m)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">err = json.Unmarshal(buf.Bytes(), &amp;m)
+        if err != nil </span><span class="cov8" title="1">{
                 return m, err
         }</span>
 
-        <span class="cov0" title="0">return m, nil</span>
+        <span class="cov8" title="1">return m, nil</span>
 }
 </pre>
 		
@@ -2585,15 +2585,15 @@ import (
 )
 
 // New хэндлер для получения занчения метрики с сервера /value/{type}/{name}.
-func New(storage storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
-        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+func New(storage storage.Repository) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 w.Header().Set("Content-Type", "text/plain")
 
                 metricType := metrics.MetricType(chi.URLParam(r, "type"))
                 metricName := chi.URLParam(r, "name")
 
                 metric, ok := storage.GetMetric(r.Context(), metricType, metricName)
-                if !ok </span><span class="cov0" title="0">{
+                if !ok </span><span class="cov8" title="1">{
                         http.Error(
                                 w,
                                 fmt.Sprintf("%s %s not found", metricType, metricName),
@@ -2602,7 +2602,7 @@ func New(storage storage.Repository) http.HandlerFunc <span class="cov0" title="
                         return
                 }</span>
 
-                <span class="cov0" title="0">_, err := w.Write([]byte(metric.ValueString()))
+                <span class="cov8" title="1">_, err := w.Write([]byte(metric.ValueString()))
                 if err != nil </span><span class="cov0" title="0">{
                         return
                 }</span>
@@ -2621,19 +2621,19 @@ import (
         "go.uber.org/zap"
 )
 
-func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov0" title="0">{
+func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov8" title="1">{
         // Возвращаем функцию, которая принимает следующий обработчик
-        return func(next http.Handler) http.Handler </span><span class="cov0" title="0">{
+        return func(next http.Handler) http.Handler </span><span class="cov8" title="1">{
                 log.Info("decompress middleware enabled")
 
                 // Функция-обработчик запроса
-                fn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                fn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                         // Проверяем заголовок Content-Encoding: gzip
-                        if r.Header.Get("Content-Encoding") == "gzip" </span><span class="cov0" title="0">{
+                        if r.Header.Get("Content-Encoding") == "gzip" </span><span class="cov8" title="1">{
                                 log.Debug("content encoded with gzip, replacing body with gzip.Reader")
 
                                 gz, err := gzip.NewReader(r.Body)
-                                if err != nil </span><span class="cov0" title="0">{
+                                if err != nil </span><span class="cov8" title="1">{
                                         log.Error("error while decompressing request body", zap.Error(err))
                                         http.Error(
                                                 w,
@@ -2643,7 +2643,7 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov0
                                         return
                                 }</span>
 
-                                <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                                <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
                                         err = gz.Close()
                                         if err != nil </span><span class="cov0" title="0">{
                                                 log.Error("error while closing decompression stream", zap.Error(err))
@@ -2657,11 +2657,11 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov0
                                 }()
 
                                 // Заменяем тело запроса на декомпрессированный поток
-                                <span class="cov0" title="0">r.Body = gz</span>
+                                <span class="cov8" title="1">r.Body = gz</span>
                         }
-                        <span class="cov0" title="0">next.ServeHTTP(w, r)</span>
+                        <span class="cov8" title="1">next.ServeHTTP(w, r)</span>
                 }
-                <span class="cov0" title="0">return http.HandlerFunc(fn)</span>
+                <span class="cov8" title="1">return http.HandlerFunc(fn)</span>
         }
 }
 </pre>
@@ -2691,12 +2691,12 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov8
         m := &amp;Middleware{
                 log: log,
                 readerPool: sync.Pool{
-                        New: func() interface{} </span><span class="cov0" title="0">{
+                        New: func() interface{} </span><span class="cov8" title="1">{
                                 return new(gzip.Reader)
                         }</span>,
                 },
                 closerPool: sync.Pool{
-                        New: func() interface{} <span class="cov0" title="0">{
+                        New: func() interface{} <span class="cov8" title="1">{
                                 return new(gzipReadCloser)
                         }</span>,
                 },
@@ -2715,18 +2715,18 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
                         return
                 }</span>
 
-                <span class="cov0" title="0">m.log.Debug("content encoded with gzip, replacing body with gzip.Reader")
+                <span class="cov8" title="1">m.log.Debug("content encoded with gzip, replacing body with gzip.Reader")
 
                 // Получаем Reader из пула
                 reader, ok := m.readerPool.Get().(*gzip.Reader)
-                if !ok </span><span class="cov0" title="0">{
+                if !ok </span><span class="cov8" title="1">{
                         m.log.Error("error getting reader from pool")
                         http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
                         return
                 }</span>
 
                 // Инициализируем Reader новым источником данных
-                <span class="cov0" title="0">if err := reader.Reset(r.Body); err != nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if err := reader.Reset(r.Body); err != nil </span><span class="cov8" title="1">{
                         m.log.Error("error initializing gzip reader", zap.Error(err))
                         m.readerPool.Put(reader)
                         http.Error(w, "Ошибка при декомпрессии содержимого запроса gzip", http.StatusBadRequest)
@@ -2734,8 +2734,8 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
                 }</span>
 
                 // Получаем closer из пула
-                <span class="cov0" title="0">closer, ok := m.closerPool.Get().(*gzipReadCloser)
-                if !ok </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">closer, ok := m.closerPool.Get().(*gzipReadCloser)
+                if !ok </span><span class="cov8" title="1">{
                         m.log.Error("error getting closer from pool")
                         m.readerPool.Put(reader)
                         http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
@@ -2743,7 +2743,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
                 }</span>
 
                 // Инициализируем closer
-                <span class="cov0" title="0">closer.Reader = reader
+                <span class="cov8" title="1">closer.Reader = reader
                 closer.middleware = m
                 closer.log = m.log
                 closer.originalBody = r.Body
@@ -3325,11 +3325,11 @@ type PgStorage struct {
 }
 
 // New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
-func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov0" title="0">{
+func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov8" title="1">{
         conn, err := pgxpool.New(ctx, config.Database.DSN)
         log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 log.Error(fmt.Sprintf("Unable to connect to database: %v\n", err))
                 return nil, err
         }</span>
