@@ -22,7 +22,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// TestUpdateHandler is testing the plain update handler, not the JSON update handler
+// TestUpdateHandler is testing the plain update handler, not the JSON update handler.
 func TestUpdateHandler(t *testing.T) {
 	type want struct {
 		code        int

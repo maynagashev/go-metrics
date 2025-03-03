@@ -61,7 +61,7 @@ func TestError(t *testing.T) {
 	}
 }
 
-// TestWriteResponseError проверяет обработку ошибок в функции writeResponse
+// TestWriteResponseError проверяет обработку ошибок в функции writeResponse.
 func TestWriteResponseError(t *testing.T) {
 	// Создаем тестовый HTTP-рекордер с ошибкой записи
 	w := &errorWriter{
@@ -77,13 +77,13 @@ func TestWriteResponseError(t *testing.T) {
 	// так как errorWriter не позволяет его установить
 }
 
-// errorWriter - мок http.ResponseWriter, который возвращает ошибку при записи
+// errorWriter - мок http.ResponseWriter, который возвращает ошибку при записи.
 type errorWriter struct {
 	http.ResponseWriter
 	failOnWrite bool
 }
 
-// Write возвращает ошибку, если failOnWrite установлен в true
+// Write возвращает ошибку, если failOnWrite установлен в true.
 func (w *errorWriter) Write(b []byte) (int, error) {
 	if w.failOnWrite {
 		return 0, errors.New("write error")

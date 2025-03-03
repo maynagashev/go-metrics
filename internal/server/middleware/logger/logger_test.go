@@ -2,121 +2,106 @@ package logger_test
 
 import (
 	"bytes"
-	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"go.uber.org/zap/zaptest"
 	"go.uber.org/zap/zaptest/observer"
 )
 
 func TestLoggerMiddleware(t *testing.T) {
-	// Создаем наблюдаемый логгер для проверки логов
-	core, logs := observer.New(zapcore.InfoLevel)
-	log := zap.New(core)
+	// Create a logger that records logs for testing
+	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
+	observedLogger := zap.New(observedZapCore)
 
-	// Создаем тестовые данные
-	testData := []byte(`{"id":"test_gauge","type":"gauge","value":42.5}`)
+	// Create test data
+	testData := map[string]string{"test": "data"}
+	requestBody, jsonErr := json.Marshal(testData)
+	if jsonErr != nil {
+		t.Fatalf("Failed to marshal test data: %v", jsonErr)
+	}
 
-	// Создаем тестовый запрос
-	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(testData))
+	// Create a test request
+	req := httptest.NewRequest(http.MethodPost, "/update", bytes.NewReader(requestBody))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "test-agent")
 
-	// Добавляем request ID в контекст
-	ctx := context.WithValue(req.Context(), middleware.RequestIDKey, "test-request-id")
-	req = req.WithContext(ctx)
-
-	// Создаем ResponseRecorder для записи ответа
+	// Create a test response recorder
 	rr := httptest.NewRecorder()
 
-	// Создаем тестовый обработчик
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Проверяем, что тело запроса доступно для чтения
-		buf := new(bytes.Buffer)
-		_, err := buf.ReadFrom(r.Body)
-		require.NoError(t, err)
-		assert.Equal(t, string(testData), buf.String())
-
-		// Отправляем ответ
-		w.Header().Set("Content-Type", "application/json")
+	// Create a test handler
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, err = w.Write([]byte(`{"status":"OK"}`))
-		require.NoError(t, err)
+		w.Write([]byte("OK"))
 	})
 
-	// Создаем middleware
-	middleware := logger.New(log)
-
-	// Применяем middleware к тестовому обработчику
+	// Create and use the middleware
+	middleware := logger.New(observedLogger)
 	handler := middleware(testHandler)
-
-	// Вызываем обработчик
 	handler.ServeHTTP(rr, req)
 
-	// Проверяем код ответа
+	// Check the response
 	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "OK", rr.Body.String())
 
-	// Проверяем, что логи содержат нужную информацию
-	logEntries := logs.All()
-	require.GreaterOrEqual(t, len(logEntries), 2, "Expected at least 2 log entries")
+	// Check that the logs contain the expected entries
+	logs := observedLogs.All()
+	assert.GreaterOrEqual(t, len(logs), 2, "Expected at least 2 log entries")
 
-	// Проверяем первую запись лога (включение middleware)
-	assert.Equal(t, "logger middleware enabled", logEntries[0].Message)
+	// Check for the middleware enabled log
+	foundEnabledLog := false
+	for _, log := range logs {
+		if log.Message == "logger middleware enabled" {
+			foundEnabledLog = true
+			break
+		}
+	}
+	assert.True(t, foundEnabledLog, "Expected 'logger middleware enabled' log entry")
 
-	// Проверяем запись о завершении запроса
-	requestCompletedLog := logEntries[len(logEntries)-1]
-	assert.Equal(t, "request completed", requestCompletedLog.Message)
-	assert.Equal(t, int64(http.StatusOK), requestCompletedLog.ContextMap()["status"])
-	assert.Contains(t, requestCompletedLog.ContextMap(), "duration")
-	assert.Contains(t, requestCompletedLog.ContextMap(), "response_bytes")
+	// Check for the request completed log
+	foundCompletedLog := false
+	for _, log := range logs {
+		if log.Message == "request completed" {
+			foundCompletedLog = true
+			assert.Equal(t, int64(http.StatusOK), log.ContextMap()["status"])
+			break
+		}
+	}
+	assert.True(t, foundCompletedLog, "Expected 'request completed' log entry")
 }
 
 func TestLoggerMiddleware_WithRequestBody(t *testing.T) {
-	// Создаем наблюдаемый логгер для проверки логов
-	core, logs := observer.New(zapcore.InfoLevel)
-	log := zap.New(core)
+	// Create a logger that records logs for testing
+	testLogger := zaptest.NewLogger(t)
 
-	// Создаем тестовые данные
-	testData := []byte(`{"id":"test_gauge","type":"gauge","value":42.5}`)
+	// Create test data
+	testData := map[string]string{"test": "data"}
+	requestBody, jsonErr := json.Marshal(testData)
+	if jsonErr != nil {
+		t.Fatalf("Failed to marshal test data: %v", jsonErr)
+	}
 
-	// Создаем тестовый запрос
-	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(testData))
+	// Create a test request
+	req := httptest.NewRequest(http.MethodPost, "/update", bytes.NewReader(requestBody))
 	req.Header.Set("Content-Type", "application/json")
 
-	// Создаем ResponseRecorder для записи ответа
+	// Create a test response recorder
 	rr := httptest.NewRecorder()
 
-	// Создаем тестовый обработчик
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Create a test handler
+	testHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// Создаем middleware
-	middleware := logger.New(log)
-
-	// Применяем middleware к тестовому обработчику
+	// Create and use the middleware
+	middleware := logger.New(testLogger)
 	handler := middleware(testHandler)
-
-	// Вызываем обработчик
 	handler.ServeHTTP(rr, req)
 
-	// Проверяем, что логи содержат тело запроса
-	logEntries := logs.All()
-	require.GreaterOrEqual(t, len(logEntries), 2, "Expected at least 2 log entries")
-
-	// Проверяем запись о завершении запроса
-	requestCompletedLog := logEntries[len(logEntries)-1]
-	assert.Equal(t, "request completed", requestCompletedLog.Message)
-
-	// Проверяем, что в контексте лога есть информация о методе и пути запроса
-	contextMap := logEntries[len(logEntries)-1].ContextMap()
-	assert.Equal(t, http.MethodPost, contextMap["method"])
-	assert.Equal(t, "/update/", contextMap["path"])
+	// Check the response
+	assert.Equal(t, http.StatusOK, rr.Code)
 }

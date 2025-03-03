@@ -19,116 +19,216 @@ import (
 )
 
 func TestJSONValueHandler(t *testing.T) {
-	// Create a logger and config
+	// Setup
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)
-	cfg := &app.Config{}
-
-	// Create a storage with some test metrics
-	storage := memory.New(cfg, logger)
-	ctx := context.Background()
-
-	// Add a gauge metric
-	gaugeValue := 42.5
-	gaugeName := "test_gauge"
-	gaugeMetric := metrics.Metric{
-		Name:  "test_gauge",
-		MType: metrics.TypeGauge,
-		Value: &gaugeValue,
-	}
-	err = storage.UpdateMetric(ctx, gaugeMetric)
-	require.NoError(t, err)
-
-	// Add a counter metric
-	counterValue := int64(100)
-	counterName := "test_counter"
-	counterMetric := metrics.Metric{
-		Name:  "test_counter",
-		MType: metrics.TypeCounter,
-		Delta: &counterValue,
-	}
-	err = storage.UpdateMetric(ctx, counterMetric)
-	require.NoError(t, err)
-
-	// Create the handler
-	handler := value.New(cfg, storage)
 
 	tests := []struct {
 		name           string
 		requestMetric  metrics.Metric
+		expectedMetric *metrics.Metric
 		expectedStatus int
-		expectedMetric metrics.Metric
-		expectError    bool
 	}{
 		{
-			name: "Get existing gauge metric",
+			name: "Valid gauge metric",
 			requestMetric: metrics.Metric{
-				Name:  gaugeName,
+				Name:  "test_gauge",
 				MType: metrics.TypeGauge,
 			},
-			expectedStatus: http.StatusOK,
-			expectedMetric: gaugeMetric,
-			expectError:    false,
-		},
-		{
-			name: "Get existing counter metric",
-			requestMetric: metrics.Metric{
-				Name:  counterName,
-				MType: metrics.TypeCounter,
+			expectedMetric: &metrics.Metric{
+				Name:  "test_gauge",
+				MType: metrics.TypeGauge,
+				Value: metrics.FloatPtr(42.0),
 			},
 			expectedStatus: http.StatusOK,
-			expectedMetric: counterMetric,
-			expectError:    false,
 		},
 		{
-			name: "Get non-existent metric",
+			name: "Valid counter metric",
+			requestMetric: metrics.Metric{
+				Name:  "test_counter",
+				MType: metrics.TypeCounter,
+			},
+			expectedMetric: &metrics.Metric{
+				Name:  "test_counter",
+				MType: metrics.TypeCounter,
+				Delta: metrics.Int64Ptr(10),
+			},
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name: "Non-existent metric",
 			requestMetric: metrics.Metric{
 				Name:  "non_existent",
 				MType: metrics.TypeGauge,
 			},
+			expectedMetric: nil,
 			expectedStatus: http.StatusNotFound,
-			expectError:    true,
+		},
+		{
+			name: "Invalid metric type",
+			requestMetric: metrics.Metric{
+				Name:  "test_gauge",
+				MType: "invalid",
+			},
+			expectedMetric: nil,
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name: "Missing metric name",
+			requestMetric: metrics.Metric{
+				MType: metrics.TypeGauge,
+			},
+			expectedMetric: nil,
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name: "Missing metric type",
+			requestMetric: metrics.Metric{
+				Name: "test_gauge",
+			},
+			expectedMetric: nil,
+			expectedStatus: http.StatusBadRequest,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create request body
-			requestBody, err := json.Marshal(tt.requestMetric)
-			require.NoError(t, err)
+			// Create a test storage with test metrics
+			storage := setupTestStorage(t)
+			ctx := context.Background()
 
-			// Create request
-			req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(requestBody))
+			// Create the handler
+			handler := value.New(storage, logger)
+
+			// Create a request
+			requestJSON, marshalErr := json.Marshal(tt.requestMetric)
+			require.NoError(t, marshalErr)
+
+			req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(requestJSON))
 			req.Header.Set("Content-Type", "application/json")
 
-			// Create response recorder
+			// Create a response recorder
 			rr := httptest.NewRecorder()
 
 			// Call the handler
 			handler.ServeHTTP(rr, req)
 
-			// Check status code
+			// Check the status code
 			assert.Equal(t, tt.expectedStatus, rr.Code)
 
-			if !tt.expectError {
-				// Parse response
+			// If we expect a successful response, check the response body
+			if tt.expectedStatus == http.StatusOK {
 				var responseMetric metrics.Metric
-				err = json.Unmarshal(rr.Body.Bytes(), &responseMetric)
-				require.NoError(t, err)
+				decodeErr := json.NewDecoder(rr.Body).Decode(&responseMetric)
+				require.NoError(t, decodeErr)
 
-				// Check response
-				if tt.expectedMetric.MType == metrics.TypeGauge {
-					assert.Equal(t, tt.expectedMetric.Name, responseMetric.Name)
-					assert.Equal(t, tt.expectedMetric.MType, responseMetric.MType)
-					assert.Equal(t, *tt.expectedMetric.Value, *responseMetric.Value)
-				} else {
-					assert.Equal(t, tt.expectedMetric.Name, responseMetric.Name)
-					assert.Equal(t, tt.expectedMetric.MType, responseMetric.MType)
+				assert.Equal(t, tt.expectedMetric.Name, responseMetric.Name)
+				assert.Equal(t, tt.expectedMetric.MType, responseMetric.MType)
+
+				if tt.expectedMetric.Value != nil {
+					require.NotNil(t, responseMetric.Value)
+					assert.InDelta(t, *tt.expectedMetric.Value, *responseMetric.Value, 0.0001)
+				}
+
+				if tt.expectedMetric.Delta != nil {
+					require.NotNil(t, responseMetric.Delta)
 					assert.Equal(t, *tt.expectedMetric.Delta, *responseMetric.Delta)
 				}
 			}
 		})
 	}
+}
+
+func TestJSONValueHandler_InvalidJSON(t *testing.T) {
+	// Setup
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+
+	// Create a test storage
+	storage := setupTestStorage(t)
+
+	// Create the handler
+	handler := value.New(storage, logger)
+
+	// Create a request with invalid JSON
+	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader([]byte(`{invalid json}`)))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create a response recorder
+	rr := httptest.NewRecorder()
+
+	// Call the handler
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestJSONValueHandler_GaugeMetric(t *testing.T) {
+	// Setup
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+
+	// Create a test storage with a gauge metric
+	storage := setupTestStorage(t)
+	ctx := context.Background()
+
+	// Create a gauge metric request
+	gaugeValue := 42.0
+	gaugeMetric := metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+	}
+
+	// Create the handler
+	handler := value.New(storage, logger)
+
+	// Create a request
+	requestJSON, marshalErr := json.Marshal(gaugeMetric)
+	require.NoError(t, marshalErr)
+
+	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(requestJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create a response recorder
+	rr := httptest.NewRecorder()
+
+	// Call the handler
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	// Check the response body
+	var responseMetric metrics.Metric
+	decodeErr := json.NewDecoder(rr.Body).Decode(&responseMetric)
+	require.NoError(t, decodeErr)
+
+	assert.Equal(t, gaugeMetric.Name, responseMetric.Name)
+	assert.Equal(t, gaugeMetric.MType, responseMetric.MType)
+	require.NotNil(t, responseMetric.Value)
+	assert.InDelta(t, gaugeValue, *responseMetric.Value, 0.0001)
+}
+
+// setupTestStorage creates a test storage with some test metrics
+func setupTestStorage(t *testing.T) *memory.MemStorage {
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+
+	storage := memory.New(nil, logger)
+	ctx := context.Background()
+
+	// Add a gauge metric
+	gaugeMetric := metrics.NewGauge("test_gauge", 42.0)
+	err = storage.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
+
+	// Add a counter metric
+	counterMetric := metrics.NewCounter("test_counter", 10)
+	err = storage.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
+
+	return storage
 }
 
 func TestJSONValueHandler_WithSigning(t *testing.T) {
@@ -198,33 +298,4 @@ func TestJSONValueHandler_WithSigning(t *testing.T) {
 	// Verify signature
 	expectedSignature := sign.ComputeHMACSHA256(rr.Body.Bytes(), privateKey)
 	assert.Equal(t, expectedSignature, signature)
-}
-
-func TestJSONValueHandler_InvalidJSON(t *testing.T) {
-	// Create a logger and config
-	logger, err := zap.NewDevelopment()
-	require.NoError(t, err)
-	cfg := &app.Config{}
-
-	// Create storage
-	storage := memory.New(cfg, logger)
-
-	// Create the handler
-	handler := value.New(cfg, storage)
-
-	// Create invalid JSON request
-	invalidJSON := []byte(`{"id": "test", "type": "gauge"`) // Missing closing brace
-
-	// Create request
-	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(invalidJSON))
-	req.Header.Set("Content-Type", "application/json")
-
-	// Create response recorder
-	rr := httptest.NewRecorder()
-
-	// Call the handler
-	handler.ServeHTTP(rr, req)
-
-	// Check status code
-	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }

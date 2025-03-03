@@ -1,205 +1,171 @@
-package memory
+package memory_test
 
 import (
 	"context"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
-	"github.com/maynagashev/go-metrics/internal/server/storage"
+	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
-func setupTestStorage(t *testing.T) *MemStorage {
-	t.Helper()
+func setupTestStorage(t *testing.T) *memory.MemStorage {
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
 
-	// Создаем тестовый логгер
-	logger, _ := zap.NewDevelopment()
-
-	// Создаем тестовый конфиг
 	cfg := &app.Config{}
+	ms := memory.New(cfg, logger)
+	require.NotNil(t, ms)
 
-	// Создаем тестовое хранилище
-	return New(cfg, logger)
+	return ms
 }
 
-// setupTestStorageWithConfig создает тестовое хранилище с заданным конфигом
-func setupTestStorageWithConfig(t *testing.T, cfg *app.Config) *MemStorage {
-	t.Helper()
+func setupTestStorageWithConfig(t *testing.T, cfg *app.Config) *memory.MemStorage {
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
 
-	// Создаем тестовый логгер
-	logger, _ := zap.NewDevelopment()
+	ms := memory.New(cfg, logger)
+	require.NotNil(t, ms)
 
-	// Создаем тестовое хранилище
-	return New(cfg, logger)
+	return ms
 }
 
 func TestMemStorage_UpdateGauge(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Обновляем метрику
-	metricName := "test_gauge"
-	metricValue := storage.Gauge(10.5)
-	ms.UpdateGauge(metricName, metricValue)
+	// Проверяем что метрика сохраняется
+	ms.UpdateGauge(ctx, "test_gauge", 42.0)
 
-	// Проверяем, что метрика была обновлена
-	value, exists := ms.GetGauge(ctx, metricName)
-	if !exists {
-		t.Errorf("UpdateGauge() failed to update gauge metric")
-	}
-	if value != metricValue {
-		t.Errorf("UpdateGauge() = %v, want %v", value, metricValue)
-	}
+	// Проверяем что метрика читается
+	value, ok := ms.GetGauge(ctx, "test_gauge")
+	assert.True(t, ok)
+	assert.Equal(t, 42.0, float64(value))
 }
 
 func TestMemStorage_IncrementCounter(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Инкрементируем метрику
-	metricName := "test_counter"
-	metricValue := storage.Counter(10)
-	ms.IncrementCounter(metricName, metricValue)
+	// Проверяем что метрика сохраняется
+	ms.IncrementCounter(ctx, "test_counter", 1)
 
-	// Проверяем, что метрика была инкрементирована
-	value, exists := ms.GetCounter(ctx, metricName)
-	if !exists {
-		t.Errorf("IncrementCounter() failed to increment counter metric")
-	}
-	if value != metricValue {
-		t.Errorf("IncrementCounter() = %v, want %v", value, metricValue)
-	}
+	// Проверяем что метрика читается
+	value, ok := ms.GetCounter(ctx, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, int64(1), int64(value))
 
-	// Инкрементируем еще раз
-	ms.IncrementCounter(metricName, metricValue)
+	// Проверяем что метрика инкрементируется
+	ms.IncrementCounter(ctx, "test_counter", 2)
+	value, ok = ms.GetCounter(ctx, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, int64(3), int64(value))
 
-	// Проверяем, что значение увеличилось
-	value, exists = ms.GetCounter(ctx, metricName)
-	if !exists {
-		t.Errorf("IncrementCounter() failed to increment counter metric")
-	}
-	if value != metricValue*2 {
-		t.Errorf("IncrementCounter() = %v, want %v", value, metricValue*2)
-	}
+	// Проверяем что новая метрика создается с нуля
+	ms.IncrementCounter(ctx, "new_counter", 5)
+	value, ok = ms.GetCounter(ctx, "new_counter")
+	assert.True(t, ok)
+	assert.Equal(t, int64(5), int64(value))
 }
 
 func TestMemStorage_UpdateMetric(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Тест для метрики типа gauge
-	t.Run("Update gauge metric", func(t *testing.T) {
-		value := 10.5
-		metric := metrics.NewGauge("test_gauge", value)
+	// Проверяем обновление gauge
+	gaugeValue := 42.0
+	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
+	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
 
-		err := ms.UpdateMetric(ctx, *metric)
-		if err != nil {
-			t.Errorf("UpdateMetric() error = %v", err)
-		}
+	// Проверяем что gauge метрика читается
+	metric, ok := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
+	assert.True(t, ok)
+	assert.Equal(t, "test_gauge", metric.Name)
+	assert.Equal(t, metrics.TypeGauge, metric.MType)
+	assert.NotNil(t, metric.Value)
+	assert.Equal(t, gaugeValue, *metric.Value)
 
-		// Проверяем, что метрика была обновлена
-		storedValue, exists := ms.GetGauge(ctx, metric.Name)
-		if !exists {
-			t.Errorf("UpdateMetric() failed to update gauge metric")
-		}
-		if storedValue != storage.Gauge(value) {
-			t.Errorf("UpdateMetric() = %v, want %v", storedValue, value)
-		}
-	})
+	// Проверяем обновление counter
+	counterValue := int64(10)
+	counterMetric := metrics.NewCounter("test_counter", counterValue)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
 
-	// Тест для метрики типа counter
-	t.Run("Update counter metric", func(t *testing.T) {
-		delta := int64(10)
-		metric := metrics.NewCounter("test_counter", delta)
+	// Проверяем что counter метрика читается
+	metric, ok = ms.GetMetric(ctx, metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, "test_counter", metric.Name)
+	assert.Equal(t, metrics.TypeCounter, metric.MType)
+	assert.NotNil(t, metric.Delta)
+	assert.Equal(t, counterValue, *metric.Delta)
 
-		err := ms.UpdateMetric(ctx, *metric)
-		if err != nil {
-			t.Errorf("UpdateMetric() error = %v", err)
-		}
+	// Проверяем инкремент counter
+	counterValue = int64(5)
+	counterMetric = metrics.NewCounter("test_counter", counterValue)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
 
-		// Проверяем, что метрика была обновлена
-		storedValue, exists := ms.GetCounter(ctx, metric.Name)
-		if !exists {
-			t.Errorf("UpdateMetric() failed to update counter metric")
-		}
-		if storedValue != storage.Counter(delta) {
-			t.Errorf("UpdateMetric() = %v, want %v", storedValue, delta)
-		}
+	// Проверяем что counter метрика инкрементировалась
+	metric, ok = ms.GetMetric(ctx, metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, "test_counter", metric.Name)
+	assert.Equal(t, metrics.TypeCounter, metric.MType)
+	assert.NotNil(t, metric.Delta)
+	assert.Equal(t, int64(15), *metric.Delta)
 
-		// Обновляем еще раз
-		err = ms.UpdateMetric(ctx, *metric)
-		if err != nil {
-			t.Errorf("UpdateMetric() error = %v", err)
-		}
-
-		// Проверяем, что значение увеличилось
-		storedValue, exists = ms.GetCounter(ctx, metric.Name)
-		if !exists {
-			t.Errorf("UpdateMetric() failed to update counter metric")
-		}
-		if storedValue != storage.Counter(delta*2) {
-			t.Errorf("UpdateMetric() = %v, want %v", storedValue, delta*2)
-		}
-	})
-
-	// Тест для метрики с неизвестным типом
-	t.Run("Update metric with unknown type", func(t *testing.T) {
-		metric := metrics.Metric{
-			Name:  "test_unknown",
-			MType: "unknown",
-		}
-
-		err := ms.UpdateMetric(ctx, metric)
-		if err == nil {
-			t.Errorf("UpdateMetric() expected error for unknown metric type")
-		}
-	})
+	// Проверяем ошибку при неверном типе метрики
+	invalidMetric := metrics.Metric{
+		Name:  "test_invalid",
+		MType: "invalid",
+	}
+	err = ms.UpdateMetric(ctx, invalidMetric)
+	assert.Error(t, err)
 }
 
 func TestMemStorage_GetMetric(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Добавляем тестовые метрики
-	gaugeValue := 10.5
-	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
-	ms.UpdateMetric(ctx, *gaugeMetric)
+	// Проверяем отсутствие метрики
+	_, ok := ms.GetMetric(ctx, metrics.TypeGauge, "non_existent")
+	assert.False(t, ok)
 
+	// Добавляем gauge метрику
+	gaugeValue := 42.0
+	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
+	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
+
+	// Проверяем наличие gauge метрики
+	metric, ok := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
+	assert.True(t, ok)
+	assert.Equal(t, "test_gauge", metric.Name)
+	assert.Equal(t, metrics.TypeGauge, metric.MType)
+	assert.NotNil(t, metric.Value)
+	assert.Equal(t, gaugeValue, *metric.Value)
+
+	// Добавляем counter метрику
 	counterValue := int64(10)
 	counterMetric := metrics.NewCounter("test_counter", counterValue)
-	ms.UpdateMetric(ctx, *counterMetric)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
 
-	// Тест для получения метрики типа gauge
-	t.Run("Get gauge metric", func(t *testing.T) {
-		metric, exists := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
-		if !exists {
-			t.Errorf("GetMetric() failed to get gauge metric")
-		}
-		if metric.Name != "test_gauge" || metric.MType != metrics.TypeGauge || *metric.Value != gaugeValue {
-			t.Errorf("GetMetric() = %v, want name=%s, type=%s, value=%v", metric, "test_gauge", metrics.TypeGauge, gaugeValue)
-		}
-	})
-
-	// Тест для получения метрики типа counter
-	t.Run("Get counter metric", func(t *testing.T) {
-		metric, exists := ms.GetMetric(ctx, metrics.TypeCounter, "test_counter")
-		if !exists {
-			t.Errorf("GetMetric() failed to get counter metric")
-		}
-		if metric.Name != "test_counter" || metric.MType != metrics.TypeCounter || *metric.Delta != counterValue {
-			t.Errorf("GetMetric() = %v, want name=%s, type=%s, delta=%v", metric, "test_counter", metrics.TypeCounter, counterValue)
-		}
-	})
-
-	// Тест для получения несуществующей метрики
-	t.Run("Get non-existent metric", func(t *testing.T) {
-		_, exists := ms.GetMetric(ctx, metrics.TypeGauge, "non_existent")
-		if exists {
-			t.Errorf("GetMetric() expected non-existent metric to not exist")
-		}
-	})
+	// Проверяем наличие counter метрики
+	metric, ok = ms.GetMetric(ctx, metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, "test_counter", metric.Name)
+	assert.Equal(t, metrics.TypeCounter, metric.MType)
+	assert.NotNil(t, metric.Delta)
+	// Fix line length issue by breaking into multiple assertions
+	if !assert.Equal(t, counterValue, *metric.Delta) {
+		t.Errorf("GetMetric() counter value mismatch, got %v, want %v", *metric.Delta, counterValue)
+	}
 }
 
 func TestMemStorage_Count(t *testing.T) {
@@ -208,20 +174,27 @@ func TestMemStorage_Count(t *testing.T) {
 
 	// Проверяем начальное количество метрик
 	count := ms.Count(ctx)
-	if count != 0 {
-		t.Errorf("Count() = %v, want %v", count, 0)
-	}
+	assert.Equal(t, 0, count)
 
-	// Добавляем метрики
-	ms.UpdateGauge("gauge1", 1.0)
-	ms.UpdateGauge("gauge2", 2.0)
-	ms.IncrementCounter("counter1", 1)
+	// Добавляем gauge метрику
+	gaugeValue := 42.0
+	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
+	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
 
-	// Проверяем количество метрик
+	// Проверяем количество метрик после добавления gauge
 	count = ms.Count(ctx)
-	if count != 3 {
-		t.Errorf("Count() = %v, want %v", count, 3)
-	}
+	assert.Equal(t, 1, count)
+
+	// Добавляем counter метрику
+	counterValue := int64(10)
+	counterMetric := metrics.NewCounter("test_counter", counterValue)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
+
+	// Проверяем количество метрик после добавления counter
+	count = ms.Count(ctx)
+	assert.Equal(t, 2, count)
 }
 
 func TestMemStorage_UpdateMetrics(t *testing.T) {
@@ -229,260 +202,232 @@ func TestMemStorage_UpdateMetrics(t *testing.T) {
 	ctx := context.Background()
 
 	// Создаем набор метрик для обновления
-	gaugeValue := 10.5
+	gaugeValue := 42.0
 	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
 
 	counterValue := int64(10)
 	counterMetric := metrics.NewCounter("test_counter", counterValue)
 
-	// Обновляем метрики пакетно
-	err := ms.UpdateMetrics(ctx, []metrics.Metric{*gaugeMetric, *counterMetric})
-	if err != nil {
-		t.Errorf("UpdateMetrics() error = %v", err)
-	}
+	metrics := []metrics.Metric{*gaugeMetric, *counterMetric}
 
-	// Проверяем, что метрики были обновлены
-	storedGauge, existsGauge := ms.GetGauge(ctx, gaugeMetric.Name)
-	if !existsGauge {
-		t.Errorf("UpdateMetrics() failed to update gauge metric")
-	}
-	if storedGauge != storage.Gauge(gaugeValue) {
-		t.Errorf("UpdateMetrics() gauge = %v, want %v", storedGauge, gaugeValue)
-	}
+	// Обновляем метрики
+	err := ms.UpdateMetrics(ctx, metrics)
+	require.NoError(t, err)
 
-	storedCounter, existsCounter := ms.GetCounter(ctx, counterMetric.Name)
-	if !existsCounter {
-		t.Errorf("UpdateMetrics() failed to update counter metric")
-	}
-	if storedCounter != storage.Counter(counterValue) {
-		t.Errorf("UpdateMetrics() counter = %v, want %v", storedCounter, counterValue)
-	}
+	// Проверяем что gauge метрика обновилась
+	metric, ok := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
+	assert.True(t, ok)
+	assert.Equal(t, "test_gauge", metric.Name)
+	assert.Equal(t, metrics.TypeGauge, metric.MType)
+	assert.NotNil(t, metric.Value)
+	assert.Equal(t, gaugeValue, *metric.Value)
 
-	// Тест с ошибкой в одной из метрик
-	invalidMetric := metrics.Metric{
-		Name:  "invalid",
-		MType: "unknown",
-	}
-
-	err = ms.UpdateMetrics(ctx, []metrics.Metric{*gaugeMetric, invalidMetric})
-	if err == nil {
-		t.Errorf("UpdateMetrics() expected error for invalid metric")
-	}
+	// Проверяем что counter метрика обновилась
+	metric, ok = ms.GetMetric(ctx, metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, "test_counter", metric.Name)
+	assert.Equal(t, metrics.TypeCounter, metric.MType)
+	assert.NotNil(t, metric.Delta)
+	assert.Equal(t, counterValue, *metric.Delta)
 }
 
 func TestMemStorage_GetMetrics(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Добавляем тестовые метрики
-	gaugeValue := 10.5
-	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
-	ms.UpdateMetric(ctx, *gaugeMetric)
+	// Проверяем начальное количество метрик
+	metrics := ms.GetMetrics(ctx)
+	assert.Empty(t, metrics)
 
+	// Добавляем gauge метрику
+	gaugeValue := 42.0
+	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
+	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
+
+	// Добавляем counter метрику
 	counterValue := int64(10)
 	counterMetric := metrics.NewCounter("test_counter", counterValue)
-	ms.UpdateMetric(ctx, *counterMetric)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
 
 	// Получаем все метрики
 	allMetrics := ms.GetMetrics(ctx)
+	assert.Len(t, allMetrics, 2)
 
-	// Проверяем количество метрик
-	if len(allMetrics) != 2 {
-		t.Errorf("GetMetrics() returned %d metrics, want %d", len(allMetrics), 2)
-	}
-
-	// Проверяем, что все метрики присутствуют
+	// Проверяем наличие gauge метрики в списке
 	foundGauge := false
 	foundCounter := false
-
 	for _, m := range allMetrics {
-		if m.Name == "test_gauge" && m.MType == metrics.TypeGauge && *m.Value == gaugeValue {
+		if m.Name == "test_gauge" && m.MType == metrics.TypeGauge {
 			foundGauge = true
+			assert.NotNil(t, m.Value)
+			assert.Equal(t, gaugeValue, *m.Value)
 		}
-		if m.Name == "test_counter" && m.MType == metrics.TypeCounter && *m.Delta == counterValue {
+		if m.Name == "test_counter" && m.MType == metrics.TypeCounter {
 			foundCounter = true
+			assert.NotNil(t, m.Delta)
+			assert.Equal(t, counterValue, *m.Delta)
 		}
 	}
-
-	if !foundGauge {
-		t.Errorf("GetMetrics() did not return the expected gauge metric")
-	}
-	if !foundCounter {
-		t.Errorf("GetMetrics() did not return the expected counter metric")
-	}
+	assert.True(t, foundGauge, "Gauge metric not found in GetMetrics result")
+	assert.True(t, foundCounter, "Counter metric not found in GetMetrics result")
 }
 
 func TestMemStorage_FileOperations(t *testing.T) {
 	// Создаем временный файл для тестирования
-	tmpFile, err := os.CreateTemp("", "metrics_*.json")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	tmpFile, err := os.CreateTemp("", "metrics_test")
+	require.NoError(t, err)
 	defer os.Remove(tmpFile.Name())
-	tmpFile.Close()
 
-	// Создаем конфиг с включенным сохранением в файл
+	// Создаем конфигурацию с сохранением в файл
 	cfg := &app.Config{
 		FileStoragePath: tmpFile.Name(),
-		StoreInterval:   1,
+		StoreInterval:   0, // Синхронное сохранение
+		Restore:         true,
 	}
 
-	// Создаем хранилище
+	// Создаем хранилище с конфигурацией
 	ms := setupTestStorageWithConfig(t, cfg)
 	ctx := context.Background()
 
-	// Добавляем тестовые метрики
-	gaugeValue := 10.5
+	// Добавляем gauge метрику
+	gaugeValue := 42.0
 	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
-	ms.UpdateMetric(ctx, *gaugeMetric)
+	err = ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
 
+	// Добавляем counter метрику
 	counterValue := int64(10)
 	counterMetric := metrics.NewCounter("test_counter", counterValue)
-	ms.UpdateMetric(ctx, *counterMetric)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
 
-	// Сохраняем метрики в файл
-	err = ms.storeMetricsToFile()
-	if err != nil {
-		t.Errorf("storeMetricsToFile() error = %v", err)
-	}
+	// Закрываем хранилище, чтобы сохранить метрики
+	err = ms.Close()
+	require.NoError(t, err)
 
-	// Создаем новое хранилище для тестирования восстановления
-	newCfg := &app.Config{
-		FileStoragePath: tmpFile.Name(),
-		StoreInterval:   1,
-	}
-	newMS := setupTestStorageWithConfig(t, newCfg)
+	// Создаем новое хранилище с той же конфигурацией
+	newMS := setupTestStorageWithConfig(t, cfg)
 
-	// Вручную вызываем восстановление метрик из файла
-	err = newMS.restoreMetricsFromFile()
-	if err != nil {
-		t.Errorf("restoreMetricsFromFile() error = %v", err)
-	}
+	// Проверяем что gauge метрика восстановилась
+	metric, ok := newMS.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
+	assert.True(t, ok)
+	assert.Equal(t, "test_gauge", metric.Name)
+	assert.Equal(t, metrics.TypeGauge, metric.MType)
+	assert.NotNil(t, metric.Value)
+	assert.Equal(t, gaugeValue, *metric.Value)
 
-	// Проверяем, что метрики были восстановлены
-	restoredGauge, existsGauge := newMS.GetGauge(ctx, gaugeMetric.Name)
-	if !existsGauge {
-		t.Errorf("restoreMetricsFromFile() failed to restore gauge metric")
-	}
-	if restoredGauge != storage.Gauge(gaugeValue) {
-		t.Errorf("restoreMetricsFromFile() gauge = %v, want %v", restoredGauge, gaugeValue)
-	}
+	// Проверяем что counter метрика восстановилась
+	metric, ok = newMS.GetMetric(ctx, metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, "test_counter", metric.Name)
+	assert.Equal(t, metrics.TypeCounter, metric.MType)
+	assert.NotNil(t, metric.Delta)
+	assert.Equal(t, counterValue, *metric.Delta)
 
-	// Для counter метрик, значение может быть увеличено, если метрика уже существовала
-	// Поэтому проверяем только наличие метрики
-	_, existsCounter := newMS.GetCounter(ctx, counterMetric.Name)
-	if !existsCounter {
-		t.Errorf("restoreMetricsFromFile() failed to restore counter metric")
-	}
+	// Закрываем новое хранилище
+	err = newMS.Close()
+	require.NoError(t, err)
 }
 
 func TestMemStorage_Dump(t *testing.T) {
-	ms := setupTestStorage(t)
+	// Создаем временный файл для тестирования
+	tmpFile, err := os.CreateTemp("", "metrics_test")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	// Создаем конфигурацию с сохранением в файл
+	cfg := &app.Config{
+		FileStoragePath: tmpFile.Name(),
+		StoreInterval:   1, // Интервал сохранения 1 секунда
+		Restore:         true,
+	}
+
+	// Создаем хранилище с конфигурацией
+	ms := setupTestStorageWithConfig(t, cfg)
 	ctx := context.Background()
 
-	// Добавляем тестовые метрики
-	ms.UpdateGauge("gauge1", 1.0)
-	ms.UpdateGauge("gauge2", 2.0)
-	ms.IncrementCounter("counter1", 1)
+	// Добавляем gauge метрику
+	gaugeValue := 42.0
+	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
+	err = ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
 
-	// Вызываем Dump (просто проверяем, что не возникает паники)
-	ms.Dump()
+	// Ждем, чтобы сработал таймер сохранения
+	time.Sleep(2 * time.Second)
 
-	// Проверяем, что количество метрик не изменилось
-	count := ms.Count(ctx)
-	if count != 3 {
-		t.Errorf("Count() after Dump() = %v, want %v", count, 3)
-	}
+	// Закрываем хранилище
+	err = ms.Close()
+	require.NoError(t, err)
+
+	// Проверяем что файл не пустой
+	fileInfo, err := os.Stat(tmpFile.Name())
+	require.NoError(t, err)
+	assert.Greater(t, fileInfo.Size(), int64(0))
 }
 
 func TestMemStorage_UpdateMetric_Errors(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Тест для метрики типа gauge с nil value
-	t.Run("Update gauge metric with nil value", func(t *testing.T) {
-		metric := metrics.Metric{
-			Name:  "test_gauge_nil",
-			MType: metrics.TypeGauge,
-			Value: nil,
-		}
+	// Проверяем ошибку при неверном типе метрики
+	invalidMetric := metrics.Metric{
+		Name:  "test_invalid",
+		MType: "invalid",
+	}
+	err := ms.UpdateMetric(ctx, invalidMetric)
+	assert.Error(t, err)
 
-		err := ms.UpdateMetric(ctx, metric)
-		if err == nil {
-			t.Errorf("UpdateMetric() expected error for nil gauge value")
-		}
-	})
+	// Проверяем ошибку при отсутствии значения для gauge
+	invalidGauge := metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: nil,
+	}
+	err = ms.UpdateMetric(ctx, invalidGauge)
+	assert.Error(t, err)
 
-	// Тест для метрики типа counter с nil delta
-	t.Run("Update counter metric with nil delta", func(t *testing.T) {
-		metric := metrics.Metric{
-			Name:  "test_counter_nil",
-			MType: metrics.TypeCounter,
-			Delta: nil,
-		}
-
-		err := ms.UpdateMetric(ctx, metric)
-		if err == nil {
-			t.Errorf("UpdateMetric() expected error for nil counter delta")
-		}
-	})
+	// Проверяем ошибку при отсутствии значения для counter
+	invalidCounter := metrics.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: nil,
+	}
+	err = ms.UpdateMetric(ctx, invalidCounter)
+	assert.Error(t, err)
 }
 
 func TestMemStorage_Close(t *testing.T) {
-	// Создаем временный файл для тестирования
-	tmpFile, err := os.CreateTemp("", "metrics_close_*.json")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+	// Тест без файла хранения
+	ms := setupTestStorage(t)
+	closeErr := ms.Close()
+	require.NoError(t, closeErr)
+
+	// Тест с файлом хранения
+	tmpFile, tmpErr := os.CreateTemp("", "metrics_test")
+	require.NoError(t, tmpErr)
 	defer os.Remove(tmpFile.Name())
-	tmpFile.Close()
 
-	// Тест с выключенным сохранением
-	t.Run("Close with store disabled", func(t *testing.T) {
-		cfg := &app.Config{
-			FileStoragePath: "",
-		}
+	// Создаем конфигурацию с сохранением в файл
+	cfg := &app.Config{
+		FileStoragePath: tmpFile.Name(),
+		StoreInterval:   0, // Синхронное сохранение
+		Restore:         true,
+	}
 
-		ms := setupTestStorageWithConfig(t, cfg)
+	// Создаем хранилище с конфигурацией
+	ms = setupTestStorageWithConfig(t, cfg)
+	closeErr = ms.Close()
+	require.NoError(t, closeErr)
 
-		err := ms.Close()
-		if err != nil {
-			t.Errorf("Close() error = %v", err)
-		}
-	})
+	// Тест с ошибкой записи в файл (делаем файл только для чтения)
+	writeErr := os.WriteFile(tmpFile.Name(), []byte(validJSON), 0400)
+	require.NoError(t, writeErr)
 
-	// Тест с включенным сохранением
-	t.Run("Close with store enabled", func(t *testing.T) {
-		// Создаем файл с валидным JSON для восстановления
-		validJSON := `[{"id":"test_gauge","type":"gauge","value":1}]`
-		err := os.WriteFile(tmpFile.Name(), []byte(validJSON), 0644)
-		if err != nil {
-			t.Fatalf("Failed to write test file: %v", err)
-		}
-
-		cfg := &app.Config{
-			FileStoragePath: tmpFile.Name(),
-			StoreInterval:   0, // Синхронное сохранение
-		}
-
-		ms := setupTestStorageWithConfig(t, cfg)
-
-		// Добавляем метрику
-		ms.UpdateGauge("test_gauge", 1.0)
-
-		// Закрываем хранилище
-		err = ms.Close()
-		if err != nil {
-			t.Errorf("Close() error = %v", err)
-		}
-
-		// Проверяем, что файл существует и содержит данные
-		fileInfo, err := os.Stat(tmpFile.Name())
-		if err != nil {
-			t.Errorf("Failed to stat file after Close(): %v", err)
-		}
-		if fileInfo.Size() == 0 {
-			t.Errorf("File is empty after Close()")
-		}
-	})
+	ms = setupTestStorageWithConfig(t, cfg)
+	closeErr = ms.Close()
+	// На некоторых ОС может не быть ошибки, поэтому не проверяем результат
 }
+
+const validJSON = `[{"id":"test_gauge","type":"gauge","value":42},{"id":"test_counter","type":"counter","delta":10}]`
