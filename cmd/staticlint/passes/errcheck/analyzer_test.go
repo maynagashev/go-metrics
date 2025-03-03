@@ -22,5 +22,5 @@ func TestAnalyzer(t *testing.T) {
 	// функция analysistest.Run применяет тестируемый анализатор
 	// к пакетам из папки testdata и проверяет ожидания
 	// ./... — проверка всех поддиректорий в testdata
-	analysistest.Run(t, analysistest.TestData(), errcheck.Analyzer, "./...")
+	analysistest.Run(t, analysistest.TestData(), errcheck.NewAnalyzer(), "./...")
 }

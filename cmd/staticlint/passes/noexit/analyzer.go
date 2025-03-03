@@ -38,6 +38,7 @@
 package noexit
 
 import (
+	"errors"
 	"go/ast"
 
 	"golang.org/x/tools/go/analysis"
@@ -45,27 +46,44 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
-// Analyzer - анализатор для проверки noexit.
+// Константы для анализатора.
+const (
+	mainPackageName = "main"
+	mainFuncName    = "main"
+)
+
+// ErrNotMainPackage возвращается, когда анализируемый пакет не является main.
+var ErrNotMainPackage = errors.New("not a main package")
+
+// NewAnalyzer создает новый анализатор для проверки noexit.
 // Он обнаруживает прямые вызовы os.Exit в функции main пакета main.
-var Analyzer = &analysis.Analyzer{
-	Name:     "noexit",
-	Doc:      "check for direct calls to os.Exit in the main function of the main package",
-	Requires: []*analysis.Analyzer{inspect.Analyzer},
-	Run:      run,
+func NewAnalyzer() *analysis.Analyzer {
+	return &analysis.Analyzer{
+		Name:     "noexit",
+		Doc:      "check for direct calls to os.Exit in the main function of the main package",
+		Requires: []*analysis.Analyzer{inspect.Analyzer},
+		Run:      run,
+	}
 }
 
-// run реализует логику анализа для анализатора noexit.
-// Он проверяет наличие прямых вызовов os.Exit в функции main пакета main.
+// Analyzer - анализатор для проверки noexit.
+// Он обнаруживает прямые вызовы os.Exit в функции main пакета main.
 //
-// Функция выполняет следующие шаги:
-// 1. Проверяет, является ли текущий пакет пакетом "main"
-// 2. Использует инспектор для поиска всех вызовов функций
-// 3. Для каждого вызова проверяет, находится ли он в функции main
-// 4. Если вызов находится в main, проверяет, является ли он вызовом os.Exit
-// 5. Сообщает об ошибке, если обнаружен прямой вызов os.Exit в main
+//nolint:gochecknoglobals // Analyzer должен быть глобальной переменной для доступа из других пакетов
+var Analyzer = NewAnalyzer()
+
+// 5. Сообщает об ошибке, если обнаружен прямой вызов os.Exit в main.
 func run(pass *analysis.Pass) (interface{}, error) {
 	// Получаем инспектор из результатов работы предыдущего анализатора
-	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	inspectResult, ok := pass.ResultOf[inspect.Analyzer]
+	if !ok {
+		return nil, errors.New("inspect analyzer result not found")
+	}
+
+	inspect, ok := inspectResult.(*inspector.Inspector)
+	if !ok {
+		return nil, errors.New("inspect analyzer result is not of type *inspector.Inspector")
+	}
 
 	// Фильтр для поиска вызовов функций
 	nodeFilter := []ast.Node{
@@ -73,26 +91,29 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	}
 
 	// Проверяем, что мы находимся в пакете main
-	if pass.Pkg.Name() != "main" {
-		return nil, nil
+	if pass.Pkg.Name() != mainPackageName {
+		return nil, ErrNotMainPackage
 	}
 
 	// Используем инспектор для поиска вызовов функций
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
-		call := n.(*ast.CallExpr)
+		callExpr, isCallExpr := n.(*ast.CallExpr)
+		if !isCallExpr {
+			return
+		}
 
 		// Проверяем, что вызов находится в функции main
-		if !isInMainFunc(pass, call) {
+		if !isInMainFunc(pass, callExpr) {
 			return
 		}
 
 		// Проверяем, что это вызов os.Exit
-		if isOSExitCall(pass, call) {
-			pass.Reportf(call.Pos(), "direct call to os.Exit in main function is prohibited")
+		if isOSExitCall(pass, callExpr) {
+			pass.Reportf(callExpr.Pos(), "direct call to os.Exit in main function is prohibited")
 		}
 	})
 
-	return nil, nil
+	return nil, nil //nolint:nilnil // Стандартное поведение для анализаторов - возвращать nil, nil если проблем не найдено
 }
 
 // isInMainFunc проверяет, находится ли узел внутри функции main.
