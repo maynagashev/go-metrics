@@ -15,6 +15,7 @@ import (
 	"honnef.co/go/tools/stylecheck"
 
 	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck"
+	"github.com/nishanths/exhaustive"
 )
 
 // Config — имя файла конфигурации.
@@ -133,6 +134,9 @@ func main() {
 
 		// собственный публичный анализатор
 		errcheck.Analyzer,
+
+		// exhaustive - проверяет полноту switch для перечислений
+		exhaustive.Analyzer,
 	}
 
 	// Загружаем конфигурацию
