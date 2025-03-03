@@ -15,6 +15,7 @@ import (
 	"honnef.co/go/tools/stylecheck"
 
 	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck"
+	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit"
 	"github.com/nishanths/exhaustive"
 	"github.com/timakin/bodyclose/passes/bodyclose"
 )
@@ -133,8 +134,9 @@ func main() {
 		shadow.Analyzer,
 		structtag.Analyzer,
 
-		// собственный публичный анализатор
+		// собственные публичные анализаторы
 		errcheck.Analyzer,
+		noexit.Analyzer,
 
 		// exhaustive - проверяет полноту switch для перечислений
 		exhaustive.Analyzer,
