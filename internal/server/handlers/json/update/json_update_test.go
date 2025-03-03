@@ -128,7 +128,7 @@ func TestJSONUpdateHandler_Gauge(t *testing.T) {
 	// Проверяем, что метрика была сохранена в хранилище
 	savedMetric, ok := repo.GetMetric(context.Background(), metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, value, *savedMetric.Value)
+	assert.InDelta(t, value, *savedMetric.Value, 0.0001)
 }
 
 func TestJSONUpdateHandler_Counter(t *testing.T) {
@@ -249,7 +249,7 @@ func TestJSONUpdateHandler_WithSignature(t *testing.T) {
 	// Проверяем, что метрика была сохранена в хранилище
 	savedMetric, ok := repo.GetMetric(context.Background(), metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, value, *savedMetric.Value)
+	assert.InDelta(t, value, *savedMetric.Value, 0.0001)
 }
 
 func TestJSONUpdateHandler_InvalidSignature(t *testing.T) {

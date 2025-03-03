@@ -31,7 +31,7 @@ func TestNewMetric(t *testing.T) {
 		name := "test_counter"
 		mType := metrics.TypeCounter
 		delta := int64(10)
-		var value *float64 = nil
+		var value *float64
 
 		metric := metrics.NewMetric(name, mType, &delta, value)
 
@@ -53,7 +53,7 @@ func TestNewMetric(t *testing.T) {
 	t.Run("Create gauge metric", func(t *testing.T) {
 		name := "test_gauge"
 		mType := metrics.TypeGauge
-		var delta *int64 = nil
+		var delta *int64
 		value := 10.5
 
 		metric := metrics.NewMetric(name, mType, delta, &value)
@@ -99,7 +99,7 @@ func TestNewGauge(t *testing.T) {
 	assert.Equal(t, "test_gauge", metric.Name)
 	assert.Equal(t, metrics.TypeGauge, metric.MType)
 	assert.NotNil(t, metric.Value)
-	assert.Equal(t, value, *metric.Value)
+	assert.InDelta(t, value, *metric.Value, 1e-9)
 	assert.Nil(t, metric.Delta)
 
 	// Test with zero value
@@ -107,7 +107,7 @@ func TestNewGauge(t *testing.T) {
 	assert.Equal(t, "test_gauge", metric.Name)
 	assert.Equal(t, metrics.TypeGauge, metric.MType)
 	assert.NotNil(t, metric.Value)
-	assert.Equal(t, 0.0, *metric.Value)
+	assert.InDelta(t, 0.0, *metric.Value, 1e-9)
 	assert.Nil(t, metric.Delta)
 }
 
@@ -142,7 +142,7 @@ func TestMetric_String(t *testing.T) {
 func TestMetric_ValueString(t *testing.T) {
 	// Тест для nil метрики
 	t.Run("Nil metric", func(t *testing.T) {
-		var metric *metrics.Metric = nil
+		var metric *metrics.Metric
 		expected := "<nil>"
 		if result := metric.ValueString(); result != expected {
 			t.Errorf("Metric.ValueString() = %v, want %v", result, expected)
@@ -240,11 +240,11 @@ func TestFloatPtr(t *testing.T) {
 	value := 42.0
 	ptr := FloatPtr(value)
 	assert.NotNil(t, ptr)
-	assert.Equal(t, value, *ptr)
+	assert.InDelta(t, value, *ptr, 1e-9)
 
 	ptr = FloatPtr(0.0)
 	assert.NotNil(t, ptr)
-	assert.Equal(t, 0.0, *ptr)
+	assert.InDelta(t, 0.0, *ptr, 1e-9)
 }
 
 func TestInt64Ptr(t *testing.T) {

@@ -1,4 +1,4 @@
-package response
+package response_test
 
 import (
 	"errors"
@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/pkg/response"
 )
 
 func TestOK(t *testing.T) {
@@ -13,7 +15,7 @@ func TestOK(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	// Вызываем функцию OK
-	OK(w, "test message")
+	response.OK(w, "test message")
 
 	// Проверяем статус-код
 	if w.Code != http.StatusOK {
@@ -41,7 +43,7 @@ func TestError(t *testing.T) {
 	testErr := errors.New("test error")
 
 	// Вызываем функцию Error
-	Error(w, testErr, http.StatusBadRequest)
+	response.Error(w, testErr, http.StatusBadRequest)
 
 	// Проверяем статус-код
 	if w.Code != http.StatusBadRequest {
@@ -62,7 +64,7 @@ func TestError(t *testing.T) {
 }
 
 // TestWriteResponseError проверяет обработку ошибок в функции writeResponse.
-func TestWriteResponseError(t *testing.T) {
+func TestWriteResponseError(_ *testing.T) {
 	// Создаем тестовый HTTP-рекордер с ошибкой записи
 	w := &errorWriter{
 		ResponseWriter: httptest.NewRecorder(),
@@ -70,7 +72,7 @@ func TestWriteResponseError(t *testing.T) {
 	}
 
 	// Вызываем функцию OK, которая использует writeResponse
-	OK(w, "test message")
+	response.OK(w, "test message")
 
 	// Проверяем, что был установлен статус ошибки
 	// Примечание: в данном случае мы не можем проверить статус-код,

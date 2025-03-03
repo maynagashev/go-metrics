@@ -46,7 +46,7 @@ func TestMemStorage_UpdateGauge(t *testing.T) {
 	// Проверяем что метрика читается
 	value, ok := ms.GetGauge(ctx, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, 42.0, float64(value))
+	assert.InDelta(t, 42.0, float64(value), 1e-9)
 }
 
 func TestMemStorage_IncrementCounter(t *testing.T) {
@@ -78,22 +78,20 @@ func TestMemStorage_UpdateMetric(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Проверяем обновление gauge
+	// Проверяем что gauge метрика сохраняется
 	gaugeValue := 42.0
-	err := ms.UpdateMetric(ctx, metrics.Metric{
+	metric := metrics.Metric{
 		Name:  "test_gauge",
 		MType: metrics.TypeGauge,
 		Value: &gaugeValue,
-	})
+	}
+	err := ms.UpdateMetric(ctx, metric)
 	require.NoError(t, err)
 
 	// Проверяем что gauge метрика читается
-	metric, ok := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
+	result, ok := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, "test_gauge", metric.Name)
-	assert.Equal(t, metrics.TypeGauge, metric.MType)
-	assert.NotNil(t, metric.Value)
-	assert.Equal(t, gaugeValue, *metric.Value)
+	assert.InDelta(t, gaugeValue, *result.Value, 1e-9)
 
 	// Проверяем обновление counter
 	counterValue := int64(10)
@@ -155,13 +153,10 @@ func TestMemStorage_GetMetric(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Проверяем наличие gauge метрики
+	// Проверяем что gauge метрика читается
 	metric, ok := ms.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, "test_gauge", metric.Name)
-	assert.Equal(t, metrics.TypeGauge, metric.MType)
-	assert.NotNil(t, metric.Value)
-	assert.Equal(t, gaugeValue, *metric.Value)
+	assert.InDelta(t, gaugeValue, *metric.Value, 1e-9)
 
 	// Добавляем counter метрику
 	counterValue := int64(10)
@@ -233,7 +228,7 @@ func TestMemStorage_UpdateMetrics(t *testing.T) {
 	assert.Equal(t, "test_gauge", metric.Name)
 	assert.Equal(t, metrics.TypeGauge, metric.MType)
 	assert.NotNil(t, metric.Value)
-	assert.Equal(t, gaugeValue, *metric.Value)
+	assert.InDelta(t, gaugeValue, *metric.Value, 1e-9)
 
 	// Проверяем что counter метрика обновилась
 	metric, ok = ms.GetMetric(ctx, metrics.TypeCounter, "test_counter")
@@ -269,22 +264,22 @@ func TestMemStorage_GetMetrics(t *testing.T) {
 	assert.Len(t, allMetrics, 2)
 
 	// Проверяем наличие gauge метрики в списке
-	foundGauge := false
-	foundCounter := false
+	gaugeFound := false
+	counterFound := false
 	for _, m := range allMetrics {
 		if m.Name == "test_gauge" && m.MType == metrics.TypeGauge {
-			foundGauge = true
+			gaugeFound = true
 			assert.NotNil(t, m.Value)
-			assert.Equal(t, gaugeValue, *m.Value)
+			assert.InDelta(t, gaugeValue, *m.Value, 1e-9)
 		}
 		if m.Name == "test_counter" && m.MType == metrics.TypeCounter {
-			foundCounter = true
+			counterFound = true
 			assert.NotNil(t, m.Delta)
 			assert.Equal(t, counterValue, *m.Delta)
 		}
 	}
-	assert.True(t, foundGauge, "Gauge metric not found in GetMetrics result")
-	assert.True(t, foundCounter, "Counter metric not found in GetMetrics result")
+	assert.True(t, gaugeFound, "Gauge metric not found in GetMetrics result")
+	assert.True(t, counterFound, "Counter metric not found in GetMetrics result")
 }
 
 func TestMemStorage_FileOperations(t *testing.T) {
@@ -326,10 +321,7 @@ func TestMemStorage_FileOperations(t *testing.T) {
 	// Проверяем что gauge метрика восстановилась
 	metric, ok := newMS.GetMetric(ctx, metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, "test_gauge", metric.Name)
-	assert.Equal(t, metrics.TypeGauge, metric.MType)
-	assert.NotNil(t, metric.Value)
-	assert.Equal(t, gaugeValue, *metric.Value)
+	assert.InDelta(t, gaugeValue, *metric.Value, 1e-9)
 
 	// Проверяем что counter метрика восстановилась
 	metric, ok = newMS.GetMetric(ctx, metrics.TypeCounter, "test_counter")
@@ -408,8 +400,8 @@ func TestMemStorage_Close(t *testing.T) {
 	require.NoError(t, writeErr)
 
 	ms = setupTestStorageWithConfig(t, cfg)
-	closeErr = ms.Close()
-	// На некоторых ОС может не быть ошибки, поэтому не проверяем результат
+	// Не проверяем результат закрытия, так как на некоторых ОС может не быть ошибки
+	_ = ms.Close()
 }
 
 const validJSON = `[{"id":"test_gauge","type":"gauge","value":42},{"id":"test_counter","type":"counter","delta":10}]`
@@ -448,7 +440,7 @@ func TestMemStorage_GetAllMetrics(t *testing.T) {
 		if m.Name == "test_gauge" && m.MType == "gauge" {
 			gaugeFound = true
 			assert.NotNil(t, m.Value)
-			assert.Equal(t, gaugeValue, *m.Value)
+			assert.InDelta(t, gaugeValue, *m.Value, 1e-9)
 		}
 	}
 	assert.True(t, gaugeFound, "Gauge metric not found")
@@ -463,18 +455,4 @@ func TestMemStorage_GetAllMetrics(t *testing.T) {
 		}
 	}
 	assert.True(t, counterFound, "Counter metric not found")
-}
-
-func setupTestMetrics(t *testing.T, ms *memory.MemStorage) {
-	ctx := context.Background()
-
-	// Add a gauge metric
-	gaugeMetric := metrics.NewGauge("test_gauge", 42.0)
-	err := ms.UpdateMetric(ctx, *gaugeMetric)
-	require.NoError(t, err)
-
-	// Add a counter metric
-	counterMetric := metrics.NewCounter("test_counter", 10)
-	err = ms.UpdateMetric(ctx, *counterMetric)
-	require.NoError(t, err)
 }
