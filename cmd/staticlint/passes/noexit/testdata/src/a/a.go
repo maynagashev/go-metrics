@@ -1,4 +1,4 @@
-// Package main is a test package for the noexit analyzer.
+// Package main тестовый пакет для анализатора noexit
 package main
 
 import (
