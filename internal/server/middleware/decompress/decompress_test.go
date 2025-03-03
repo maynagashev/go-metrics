@@ -11,132 +11,137 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/middleware/decompress"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest"
 )
 
-// compressData сжимает данные с помощью gzip
+// compressData compresses the input data using gzip
 func compressData(data []byte) ([]byte, error) {
 	var buf bytes.Buffer
-	w := gzip.NewWriter(&buf)
-	_, err := w.Write(data)
+	gzipWriter := gzip.NewWriter(&buf)
+
+	_, err := gzipWriter.Write(data)
 	if err != nil {
 		return nil, err
 	}
-	err = w.Close()
-	if err != nil {
+
+	if err = gzipWriter.Close(); err != nil {
 		return nil, err
 	}
+
 	return buf.Bytes(), nil
 }
 
 func TestDecompressMiddleware_WithGzip(t *testing.T) {
-	// Создаем тестовые данные
-	testData := []byte(`{"id":"test_gauge","type":"gauge","value":42.5}`)
+	// Create a logger for testing
+	logger := zaptest.NewLogger(t)
 
-	// Сжимаем данные
-	compressedData, err := compressData(testData)
-	require.NoError(t, err)
+	// Prepare test data
+	testData := []byte(`{"id":"test","type":"gauge","value":123.45}`)
 
-	// Создаем тестовый запрос со сжатыми данными
-	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(compressedData))
-	req.Header.Set("Content-Type", "application/json")
+	// Compress the data
+	compressedData, compressErr := compressData(testData)
+	require.NoError(t, compressErr)
+
+	// Create a test request with compressed data
+	req := httptest.NewRequest(http.MethodPost, "/update", bytes.NewReader(compressedData))
 	req.Header.Set("Content-Encoding", "gzip")
 
-	// Создаем ResponseRecorder для записи ответа
+	// Create a test response recorder
 	rr := httptest.NewRecorder()
 
-	// Создаем тестовый обработчик, который будет проверять, что данные были распакованы
+	// Create a test handler that checks if the body was decompressed
+	var decompressedBody []byte
 	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Читаем тело запроса
-		body, err := io.ReadAll(r.Body)
-		require.NoError(t, err)
+		// Read the decompressed body
+		body, readErr := io.ReadAll(r.Body)
+		if readErr != nil {
+			http.Error(w, readErr.Error(), http.StatusInternalServerError)
+			return
+		}
+		decompressedBody = body
 
-		// Проверяем, что данные были распакованы
-		assert.Equal(t, testData, body)
-
-		// Отправляем успешный ответ
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// Создаем middleware
-	logger, _ := zap.NewDevelopment()
+	// Create and use the middleware
 	middleware := decompress.New(logger)
-
-	// Применяем middleware к тестовому обработчику
 	handler := middleware(testHandler)
-
-	// Вызываем обработчик
 	handler.ServeHTTP(rr, req)
 
-	// Проверяем код ответа
+	// Check the response
 	assert.Equal(t, http.StatusOK, rr.Code)
+
+	// Check that the body was correctly decompressed
+	assert.Equal(t, testData, decompressedBody)
 }
 
 func TestDecompressMiddleware_WithoutGzip(t *testing.T) {
-	// Создаем тестовые данные
-	testData := []byte(`{"id":"test_gauge","type":"gauge","value":42.5}`)
+	// Create a logger for testing
+	logger := zaptest.NewLogger(t)
 
-	// Создаем тестовый запрос с несжатыми данными
-	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(testData))
-	req.Header.Set("Content-Type", "application/json")
+	// Prepare test data
+	testData := []byte(`{"id":"test","type":"gauge","value":123.45}`)
 
-	// Создаем ResponseRecorder для записи ответа
+	// Create a test request with uncompressed data
+	req := httptest.NewRequest(http.MethodPost, "/update", bytes.NewReader(testData))
+
+	// Create a test response recorder
 	rr := httptest.NewRecorder()
 
-	// Создаем тестовый обработчик, который будет проверять, что данные не изменились
+	// Create a test handler that checks if the body is unchanged
+	var receivedBody []byte
 	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Читаем тело запроса
-		body, err := io.ReadAll(r.Body)
-		require.NoError(t, err)
+		// Read the body
+		body, readErr := io.ReadAll(r.Body)
+		if readErr != nil {
+			http.Error(w, readErr.Error(), http.StatusInternalServerError)
+			return
+		}
+		receivedBody = body
 
-		// Проверяем, что данные не изменились
-		assert.Equal(t, testData, body)
-
-		// Отправляем успешный ответ
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// Создаем middleware
-	logger, _ := zap.NewDevelopment()
+	// Create and use the middleware
 	middleware := decompress.New(logger)
-
-	// Применяем middleware к тестовому обработчику
 	handler := middleware(testHandler)
-
-	// Вызываем обработчик
 	handler.ServeHTTP(rr, req)
 
-	// Проверяем код ответа
+	// Check the response
 	assert.Equal(t, http.StatusOK, rr.Code)
+
+	// Check that the body is unchanged
+	assert.Equal(t, testData, receivedBody)
 }
 
 func TestDecompressMiddleware_InvalidGzip(t *testing.T) {
-	// Создаем тестовые данные с невалидным gzip
-	invalidGzip := []byte("invalid gzip data")
+	// Create a logger for testing
+	logger := zaptest.NewLogger(t)
 
-	// Создаем тестовый запрос с невалидными сжатыми данными
-	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(invalidGzip))
-	req.Header.Set("Content-Type", "application/json")
+	// Prepare invalid gzip data
+	invalidData := []byte(`not a valid gzip data`)
+
+	// Create a test request with invalid compressed data
+	req := httptest.NewRequest(http.MethodPost, "/update", bytes.NewReader(invalidData))
 	req.Header.Set("Content-Encoding", "gzip")
 
-	// Создаем ResponseRecorder для записи ответа
+	// Create a test response recorder
 	rr := httptest.NewRecorder()
 
-	// Создаем тестовый обработчик, который не должен быть вызван
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		t.Error("Handler should not be called with invalid gzip data")
+	// Create a test handler that should not be called
+	handlerCalled := false
+	testHandler := http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
+		handlerCalled = true
 	})
 
-	// Создаем middleware
-	logger, _ := zap.NewDevelopment()
+	// Create and use the middleware
 	middleware := decompress.New(logger)
-
-	// Применяем middleware к тестовому обработчику
 	handler := middleware(testHandler)
-
-	// Вызываем обработчик
 	handler.ServeHTTP(rr, req)
 
-	// Проверяем код ответа
+	// Check the response
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
+
+	// Check that the handler was not called
+	assert.False(t, handlerCalled)
 }

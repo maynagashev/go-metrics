@@ -1,99 +1,184 @@
-package agent
+package agent_test
 
 import (
+	"context"
+	"runtime"
 	"testing"
+	"time"
+
+	"github.com/maynagashev/go-metrics/internal/agent"
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestAgent_ResetMetrics(t *testing.T) {
-	// Создаем тестового агента
-	a := &agent{
-		gauges:   map[string]float64{"test": 1.0},
-		counters: map[string]int64{"test": 1},
-	}
+func TestAgent_CollectMetrics(t *testing.T) {
+	// Create a test agent
+	a := agent.New(nil)
+	ctx := context.Background()
 
-	// Проверяем, что метрики не пусты
-	if len(a.gauges) == 0 || len(a.counters) == 0 {
-		t.Errorf("Expected non-empty metrics before reset")
-	}
+	// Collect metrics
+	err := a.CollectMetrics(ctx)
+	require.NoError(t, err)
 
-	// Сбрасываем метрики
-	a.ResetMetrics()
+	// Check that metrics were collected
+	assert.NotEmpty(t, a.GetMetrics())
 
-	// Проверяем, что метрики пусты
-	if len(a.gauges) != 0 {
-		t.Errorf("Expected empty gauges after reset, got %d", len(a.gauges))
-	}
-	if len(a.counters) != 0 {
-		t.Errorf("Expected empty counters after reset, got %d", len(a.counters))
-	}
-}
-
-func TestAgent_CollectRuntimeMetrics(t *testing.T) {
-	// Создаем тестового агента
-	a := &agent{
-		gauges:   make(map[string]float64),
-		counters: make(map[string]int64),
-	}
-
-	// Собираем метрики
-	a.CollectRuntimeMetrics()
-
-	// Проверяем, что метрики были собраны
-	expectedMetrics := []string{
-		"Alloc", "BuckHashSys", "Frees", "GCCPUFraction", "GCSys",
-		"HeapAlloc", "HeapIdle", "HeapInuse", "HeapObjects", "HeapReleased",
-		"HeapSys", "LastGC", "Lookups", "MCacheInuse", "MCacheSys",
-		"MSpanInuse", "MSpanSys", "Mallocs", "NextGC", "NumForcedGC",
-		"NumGC", "OtherSys", "PauseTotalNs", "StackInuse", "StackSys",
-		"Sys", "TotalAlloc",
-	}
-
-	for _, metric := range expectedMetrics {
-		if _, exists := a.gauges[metric]; !exists {
-			t.Errorf("Expected metric %s to be collected", metric)
-		}
-	}
+	// Check for specific metrics
+	metrics := a.GetMetrics()
+	assert.Contains(t, metrics, "Alloc")
+	assert.Contains(t, metrics, "BuckHashSys")
+	assert.Contains(t, metrics, "Frees")
+	assert.Contains(t, metrics, "GCCPUFraction")
+	assert.Contains(t, metrics, "GCSys")
+	assert.Contains(t, metrics, "HeapAlloc")
+	assert.Contains(t, metrics, "HeapIdle")
+	assert.Contains(t, metrics, "HeapInuse")
+	assert.Contains(t, metrics, "HeapObjects")
+	assert.Contains(t, metrics, "HeapReleased")
+	assert.Contains(t, metrics, "HeapSys")
+	assert.Contains(t, metrics, "LastGC")
+	assert.Contains(t, metrics, "Lookups")
+	assert.Contains(t, metrics, "MCacheInuse")
+	assert.Contains(t, metrics, "MCacheSys")
+	assert.Contains(t, metrics, "MSpanInuse")
+	assert.Contains(t, metrics, "MSpanSys")
+	assert.Contains(t, metrics, "Mallocs")
+	assert.Contains(t, metrics, "NextGC")
+	assert.Contains(t, metrics, "NumForcedGC")
+	assert.Contains(t, metrics, "NumGC")
+	assert.Contains(t, metrics, "OtherSys")
+	assert.Contains(t, metrics, "PauseTotalNs")
+	assert.Contains(t, metrics, "StackInuse")
+	assert.Contains(t, metrics, "StackSys")
+	assert.Contains(t, metrics, "Sys")
+	assert.Contains(t, metrics, "TotalAlloc")
+	assert.Contains(t, metrics, "PollCount")
 }
 
 func TestAgent_CollectAdditionalMetrics(t *testing.T) {
-	// Создаем тестового агента
-	a := &agent{
-		gauges:   make(map[string]float64),
-		counters: make(map[string]int64),
+	// Create a test agent
+	a := agent.New(nil)
+	ctx := context.Background()
+
+	// Collect additional metrics
+	err := a.CollectAdditionalMetrics(ctx)
+	require.NoError(t, err)
+
+	// Check that metrics were collected
+	metrics := a.GetMetrics()
+
+	// Check for TotalMemory
+	_, ok := metrics["TotalMemory"]
+	assert.True(t, ok, "TotalMemory metric should be present")
+
+	// Check for FreeMemory
+	_, ok = metrics["FreeMemory"]
+	assert.True(t, ok, "FreeMemory metric should be present")
+
+	// Check for CPU utilization metrics
+	cpuCount := runtime.NumCPU()
+	for i := 0; i < cpuCount; i++ {
+		cpuMetricName := "CPUutilization" + string(rune('1'+i))
+		_, ok := metrics[cpuMetricName]
+		assert.True(t, ok, "CPU utilization metric %s should be present", cpuMetricName)
 	}
+}
 
-	// Собираем метрики
-	a.CollectAdditionalMetrics()
+func TestAgent_ReportMetrics(t *testing.T) {
+	// Create a test agent
+	a := agent.New(nil)
+	ctx := context.Background()
 
-	// Проверяем, что метрики памяти были собраны
-	// Примечание: в тестовой среде не всегда могут быть доступны все метрики,
-	// поэтому проверяем только наличие метрик, которые должны быть доступны
-	memoryMetricsFound := 0
-	expectedMemoryMetrics := []string{"TotalMemory", "FreeMemory"}
+	// Collect metrics
+	err := a.CollectMetrics(ctx)
+	require.NoError(t, err)
 
-	for _, metric := range expectedMemoryMetrics {
-		if _, exists := a.gauges[metric]; exists {
-			memoryMetricsFound++
+	// Get metrics before reporting
+	metricsBefore := a.GetMetrics()
+	assert.NotEmpty(t, metricsBefore)
+
+	// Report metrics (this should reset PollCount)
+	metricsToReport := a.PrepareMetricsToReport()
+
+	// Check that metrics were prepared for reporting
+	assert.NotEmpty(t, metricsToReport)
+
+	// Check that PollCount was included
+	var foundPollCount bool
+	for _, m := range metricsToReport {
+		if m.Name == "PollCount" {
+			foundPollCount = true
+			break
 		}
 	}
+	assert.True(t, foundPollCount, "PollCount metric should be included in report")
 
-	// Проверяем, что хотя бы одна метрика памяти была собрана
-	if memoryMetricsFound == 0 {
-		t.Errorf("Expected at least one memory metric to be collected")
-	} else {
-		t.Logf("Collected %d/%d memory metrics", memoryMetricsFound, len(expectedMemoryMetrics))
-	}
+	// Check that PollCount was reset
+	a.ResetPollCount()
+	metricsAfter := a.GetMetrics()
+	assert.Equal(t, float64(0), metricsAfter["PollCount"])
+}
 
-	// Проверяем, что метрики CPU были собраны
-	// Количество CPU может отличаться на разных машинах,
-	// а в тестовой среде метрики CPU могут быть недоступны,
-	// поэтому просто логируем результат
-	cpuMetricCount := 0
-	for metric := range a.gauges {
-		if len(metric) >= 15 && metric[:15] == "CPUutilization" {
-			cpuMetricCount++
+func TestAgent_PrepareMetricsToReport(t *testing.T) {
+	// Create a test agent
+	a := agent.New(nil)
+	ctx := context.Background()
+
+	// Collect metrics
+	err := a.CollectMetrics(ctx)
+	require.NoError(t, err)
+
+	// Prepare metrics for reporting
+	metricsToReport := a.PrepareMetricsToReport()
+
+	// Check that metrics were prepared
+	assert.NotEmpty(t, metricsToReport)
+
+	// Check that all metrics have the correct format
+	for _, m := range metricsToReport {
+		assert.NotEmpty(t, m.Name)
+		assert.NotEmpty(t, m.MType)
+
+		if m.MType == metrics.TypeGauge {
+			assert.NotNil(t, m.Value)
+			assert.Nil(t, m.Delta)
+		} else if m.MType == metrics.TypeCounter {
+			assert.NotNil(t, m.Delta)
+			assert.Nil(t, m.Value)
+		} else {
+			t.Errorf("Unknown metric type: %s", m.MType)
 		}
 	}
+}
 
-	t.Logf("Collected %d CPU utilization metrics", cpuMetricCount)
+func TestAgent_Run(t *testing.T) {
+	// Create a test agent with short intervals
+	cfg := &agent.Config{
+		PollInterval:   100 * time.Millisecond,
+		ReportInterval: 200 * time.Millisecond,
+	}
+	a := agent.New(cfg)
+
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+
+	// Run the agent in a goroutine
+	errCh := make(chan error)
+	go func() {
+		errCh <- a.Run(ctx)
+	}()
+
+	// Wait for the context to be done
+	select {
+	case err := <-errCh:
+		require.NoError(t, err)
+	case <-ctx.Done():
+		// Context timed out, which is expected
+	}
+
+	// Check that metrics were collected
+	metrics := a.GetMetrics()
+	assert.NotEmpty(t, metrics)
 }

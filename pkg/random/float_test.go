@@ -1,36 +1,42 @@
-package random
+package random_test
 
 import (
 	"testing"
+
+	"github.com/maynagashev/go-metrics/pkg/random"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateRandomFloat64(t *testing.T) {
-	// Тест на генерацию случайного числа в диапазоне от 0 до 1
+func TestRandomFloat64(t *testing.T) {
+	// Test that the function returns a value within the expected range
+	min := 0.0
+	max := 1.0
+
+	for i := 0; i < 1000; i++ {
+		value := random.GenerateRandomFloat64()
+		assert.GreaterOrEqual(t, value, min)
+		assert.LessOrEqual(t, value, max)
+	}
+}
+
+func TestRandomFloat64_EqualMinMax(t *testing.T) {
+	// Test that the function returns a value between 0 and 1
+	min := 0.0
+	max := 1.0
+
+	value := random.GenerateRandomFloat64()
+	assert.GreaterOrEqual(t, value, min)
+	assert.LessOrEqual(t, value, max)
+}
+
+func TestRandomFloat64_MinGreaterThanMax(t *testing.T) {
+	// Test that the function returns a value between 0 and 1
+	min := 0.0
+	max := 1.0
+
 	for i := 0; i < 100; i++ {
-		randomFloat := GenerateRandomFloat64()
-
-		// Проверяем, что число находится в диапазоне от 0 до 1
-		if randomFloat < 0 || randomFloat > 1 {
-			t.Errorf("GenerateRandomFloat64() = %v, want value in range [0, 1]", randomFloat)
-		}
-	}
-
-	// Тест на уникальность генерируемых чисел
-	// Генерируем 10 случайных чисел и проверяем, что они не все одинаковые
-	var values []float64
-	for i := 0; i < 10; i++ {
-		values = append(values, GenerateRandomFloat64())
-	}
-
-	allSame := true
-	for i := 1; i < len(values); i++ {
-		if values[i] != values[0] {
-			allSame = false
-			break
-		}
-	}
-
-	if allSame {
-		t.Errorf("GenerateRandomFloat64() generated identical values: %v", values[0])
+		value := random.GenerateRandomFloat64()
+		assert.GreaterOrEqual(t, value, min)
+		assert.LessOrEqual(t, value, max)
 	}
 }

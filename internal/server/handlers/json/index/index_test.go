@@ -17,110 +17,136 @@ import (
 )
 
 func TestJSONIndexHandler(t *testing.T) {
-	// Create a logger and config
-	logger, err := zap.NewDevelopment()
+	// Create a test storage with some test metrics
+	storage := setupTestStorage(t)
+
+	// Create the handler
+	handler := index.New(storage)
+
+	// Create a request
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set("Accept", "application/json")
+
+	// Create a response recorder
+	rr := httptest.NewRecorder()
+
+	// Call the handler
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	// Check the content type
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+
+	// Parse the response
+	var metricsResponse []metrics.Metric
+	err := json.Unmarshal(rr.Body.Bytes(), &metricsResponse)
 	require.NoError(t, err)
-	cfg := &app.Config{}
 
-	// Create a storage with some test metrics
-	storage := memory.New(cfg, logger)
-	ctx := context.Background()
+	// Check that we got the expected metrics
+	assert.Len(t, metricsResponse, 2)
 
-	// Add a gauge metric
-	gaugeValue := 42.5
-	gaugeMetric := metrics.Metric{
+	// Find and check the gauge metric
+	gaugeValue := 42.0
+	var gaugeMetric = &metrics.Metric{
 		Name:  "test_gauge",
 		MType: metrics.TypeGauge,
 		Value: &gaugeValue,
 	}
-	err = storage.UpdateMetric(ctx, gaugeMetric)
-	require.NoError(t, err)
 
-	// Add a counter metric
-	counterValue := int64(100)
-	counterMetric := metrics.Metric{
+	foundGauge := false
+	for _, m := range metricsResponse {
+		if m.Name == "test_gauge" && m.MType == metrics.TypeGauge {
+			foundGauge = true
+			assert.NotNil(t, m.Value)
+			assert.InDelta(t, *gaugeMetric.Value, *m.Value, 0.0001)
+		}
+	}
+	assert.True(t, foundGauge, "Gauge metric not found in response")
+
+	// Find and check the counter metric
+	counterValue := int64(10)
+	var counterMetric = &metrics.Metric{
 		Name:  "test_counter",
 		MType: metrics.TypeCounter,
 		Delta: &counterValue,
 	}
-	err = storage.UpdateMetric(ctx, counterMetric)
-	require.NoError(t, err)
 
-	// Create the handler
-	handler := index.New(storage)
-
-	// Create request
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-
-	// Create response recorder
-	rr := httptest.NewRecorder()
-
-	// Call the handler
-	handler.ServeHTTP(rr, req)
-
-	// Check status code
-	assert.Equal(t, http.StatusOK, rr.Code)
-
-	// Check content type
-	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
-
-	// Parse response
-	var responseMetrics []metrics.Metric
-	err = json.Unmarshal(rr.Body.Bytes(), &responseMetrics)
-	require.NoError(t, err)
-
-	// Check that we have at least our two metrics
-	assert.GreaterOrEqual(t, len(responseMetrics), 2)
-
-	// Check that our metrics are in the response
-	foundGauge := false
 	foundCounter := false
-	for _, m := range responseMetrics {
-		if m.Name == gaugeMetric.Name && m.MType == gaugeMetric.MType {
-			foundGauge = true
-			assert.Equal(t, *gaugeMetric.Value, *m.Value)
-		}
-		if m.Name == counterMetric.Name && m.MType == counterMetric.MType {
+	for _, m := range metricsResponse {
+		if m.Name == "test_counter" && m.MType == metrics.TypeCounter {
 			foundCounter = true
+			assert.NotNil(t, m.Delta)
 			assert.Equal(t, *counterMetric.Delta, *m.Delta)
 		}
 	}
-	assert.True(t, foundGauge, "Gauge metric not found in response")
 	assert.True(t, foundCounter, "Counter metric not found in response")
 }
 
 func TestJSONIndexHandler_EmptyStorage(t *testing.T) {
-	// Create a logger and config
+	// Setup
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)
-	cfg := &app.Config{}
 
 	// Create an empty storage
-	storage := memory.New(cfg, logger)
+	storage := memory.New(&app.Config{}, logger)
 
 	// Create the handler
 	handler := index.New(storage)
 
-	// Create request
+	// Create a request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set("Accept", "application/json")
 
-	// Create response recorder
+	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	// Call the handler
 	handler.ServeHTTP(rr, req)
 
-	// Check status code
+	// Check the status code
 	assert.Equal(t, http.StatusOK, rr.Code)
 
-	// Check content type
+	// Check the content type
 	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
 
-	// Parse response
-	var responseMetrics []metrics.Metric
-	err = json.Unmarshal(rr.Body.Bytes(), &responseMetrics)
+	// Parse the response
+	var metricsResponse []metrics.Metric
+	err = json.Unmarshal(rr.Body.Bytes(), &metricsResponse)
 	require.NoError(t, err)
 
-	// Check that we have an empty array
-	assert.Empty(t, responseMetrics)
+	// Check that we got an empty array
+	assert.Empty(t, metricsResponse)
+}
+
+// setupTestStorage creates a test storage with some test metrics
+func setupTestStorage(t *testing.T) *memory.MemStorage {
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+
+	storage := memory.New(&app.Config{}, logger)
+	ctx := context.Background()
+
+	// Add a gauge metric
+	gaugeValue := 42.0
+	gaugeMetric := &metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: &gaugeValue,
+	}
+	err = storage.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
+
+	// Add a counter metric
+	counterValue := int64(10)
+	counterMetric := &metrics.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: &counterValue,
+	}
+	err = storage.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
+
+	return storage
 }
