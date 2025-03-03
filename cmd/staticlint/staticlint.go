@@ -16,6 +16,7 @@ import (
 
 	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck"
 	"github.com/nishanths/exhaustive"
+	"github.com/timakin/bodyclose/passes/bodyclose"
 )
 
 // Config — имя файла конфигурации.
@@ -137,6 +138,9 @@ func main() {
 
 		// exhaustive - проверяет полноту switch для перечислений
 		exhaustive.Analyzer,
+
+		// bodyclose - проверяет, что тела HTTP-ответов закрываются
+		bodyclose.Analyzer,
 	}
 
 	// Загружаем конфигурацию
