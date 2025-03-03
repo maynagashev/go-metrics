@@ -65,7 +65,7 @@
 				
 				<option value="file4">github.com/maynagashev/go-metrics/cmd/server/main.go (0.0%)</option>
 				
-				<option value="file5">github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go (69.9%)</option>
+				<option value="file5">github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go (81.9%)</option>
 				
 				<option value="file6">github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit/analyzer.go (85.4%)</option>
 				
@@ -75,17 +75,17 @@
 				
 				<option value="file9">github.com/maynagashev/go-metrics/internal/agent/agent.go (29.7%)</option>
 				
-				<option value="file10">github.com/maynagashev/go-metrics/internal/agent/collect.go (72.1%)</option>
+				<option value="file10">github.com/maynagashev/go-metrics/internal/agent/collect.go (90.7%)</option>
 				
 				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/send.go (0.0%)</option>
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (0.0%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (60.0%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (95.0%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/server/app/app.go (0.0%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/server/app/config.go (37.5%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/server/app/config.go (75.0%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/server/app/flags.go (0.0%)</option>
 				
@@ -113,7 +113,7 @@
 				
 				<option value="file28">github.com/maynagashev/go-metrics/internal/server/router/router.go (56.7%)</option>
 				
-				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (18.7%)</option>
+				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (78.5%)</option>
 				
 				<option value="file30">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
@@ -125,13 +125,13 @@
 				
 				<option value="file34">github.com/maynagashev/go-metrics/mocks/Storage.go (50.0%)</option>
 				
-				<option value="file35">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (0.0%)</option>
+				<option value="file35">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
-				<option value="file36">github.com/maynagashev/go-metrics/pkg/random/float.go (0.0%)</option>
+				<option value="file36">github.com/maynagashev/go-metrics/pkg/random/float.go (80.0%)</option>
 				
-				<option value="file37">github.com/maynagashev/go-metrics/pkg/response/response.go (57.1%)</option>
+				<option value="file37">github.com/maynagashev/go-metrics/pkg/response/response.go (85.7%)</option>
 				
-				<option value="file38">github.com/maynagashev/go-metrics/pkg/sign/sign.go (0.0%)</option>
+				<option value="file38">github.com/maynagashev/go-metrics/pkg/sign/sign.go (90.0%)</option>
 				
 				</select>
 			</div>
@@ -676,7 +676,7 @@ func (r *analysisResult) processTupleAssign(x *ast.AssignStmt) <span class="cov8
         if !ok </span><span class="cov0" title="0">{
                 return
         }</span>
-        <span class="cov8" title="1">if shouldIgnoreCall(r.pass, call) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if shouldIgnoreCall(r.pass, call) </span><span class="cov8" title="1">{
                 return
         }</span>
         <span class="cov8" title="1">results := resultErrors(r.pass, call)
@@ -693,20 +693,20 @@ func (r *analysisResult) processTupleAssign(x *ast.AssignStmt) <span class="cov8
 //
 // Параметры:
 //   - x: выражение присваивания для проверки
-func (r *analysisResult) processMultiAssign(x *ast.AssignStmt) <span class="cov0" title="0">{
-        for i := range x.Lhs </span><span class="cov0" title="0">{
+func (r *analysisResult) processMultiAssign(x *ast.AssignStmt) <span class="cov8" title="1">{
+        for i := range x.Lhs </span><span class="cov8" title="1">{
                 id, isIdent := x.Lhs[i].(*ast.Ident)
                 if !isIdent </span><span class="cov0" title="0">{
                         continue</span>
                 }
-                <span class="cov0" title="0">call, isCall := x.Rhs[i].(*ast.CallExpr)
-                if !isCall </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">call, isCall := x.Rhs[i].(*ast.CallExpr)
+                if !isCall </span><span class="cov8" title="1">{
                         continue</span>
                 }
-                <span class="cov0" title="0">if shouldIgnoreCall(r.pass, call) </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if shouldIgnoreCall(r.pass, call) </span><span class="cov0" title="0">{
                         continue</span>
                 }
-                <span class="cov0" title="0">if id.Name == "_" &amp;&amp; isReturnError(r.pass, call) </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if id.Name == "_" &amp;&amp; isReturnError(r.pass, call) </span><span class="cov0" title="0">{
                         r.hasIssues = true
                         r.pass.Reportf(id.NamePos, "assignment with unchecked error")
                 }</span>
@@ -727,7 +727,7 @@ func (r *analysisResult) processNode(node ast.Node) bool <span class="cov8" titl
         case *ast.AssignStmt:<span class="cov8" title="1">
                 if len(x.Rhs) == 1 </span><span class="cov8" title="1">{
                         r.processTupleAssign(x)
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov8" title="1"> {
                         r.processMultiAssign(x)
                 }</span>
         }
@@ -1504,13 +1504,13 @@ func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
 }</span>
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
-func (a *agent) CollectAdditionalMetrics() <span class="cov0" title="0">{
+func (a *agent) CollectAdditionalMetrics() <span class="cov8" title="1">{
         v, err := mem.VirtualMemory()
         if err != nil </span><span class="cov0" title="0">{
                 slog.Error("failed to collect virtual memory metrics", "error", err)
                 return
         }</span>
-        <span class="cov0" title="0">a.gauges["TotalMemory"] = float64(v.Total)
+        <span class="cov8" title="1">a.gauges["TotalMemory"] = float64(v.Total)
         a.gauges["FreeMemory"] = float64(v.Free)
 
         c, err := cpu.Percent(0, true)
@@ -1518,7 +1518,7 @@ func (a *agent) CollectAdditionalMetrics() <span class="cov0" title="0">{
                 slog.Error("failed to collect CPU metrics", "error", err)
                 return
         }</span>
-        <span class="cov0" title="0">for i, percent := range c </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">for i, percent := range c </span><span class="cov8" title="1">{
                 a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
         }</span>
 }
@@ -1761,7 +1761,7 @@ func NewGauge(id string, value float64) *Metric <span class="cov8" title="1">{
 }</span>
 
 func (m *Metric) String() string <span class="cov8" title="1">{
-        if m == nil </span><span class="cov0" title="0">{
+        if m == nil </span><span class="cov8" title="1">{
                 return "&lt;nil&gt;"
         }</span>
         <span class="cov8" title="1">if m.Delta != nil </span><span class="cov8" title="1">{
@@ -1772,11 +1772,11 @@ func (m *Metric) String() string <span class="cov8" title="1">{
         }</span>
         // Значение метрики может быть не задано в структуре,
         // т.к. эта же структура используется для парсинга json в запросе получения значения метрики.
-        <span class="cov0" title="0">return fmt.Sprintf("Metric{Name: %s, Type: %s}", m.Name, m.MType)</span>
+        <span class="cov8" title="1">return fmt.Sprintf("Metric{Name: %s, Type: %s}", m.Name, m.MType)</span>
 }
 
 func (m *Metric) ValueString() string <span class="cov8" title="1">{
-        if m == nil </span><span class="cov0" title="0">{
+        if m == nil </span><span class="cov8" title="1">{
                 return "&lt;nil&gt;"
         }</span>
         <span class="cov8" title="1">switch m.MType </span>{
@@ -1785,15 +1785,15 @@ func (m *Metric) ValueString() string <span class="cov8" title="1">{
         case TypeGauge:<span class="cov8" title="1">
                 return strconv.FormatFloat(*m.Value, 'f', -1, 64)</span>
         }
-        <span class="cov0" title="0">return ""</span>
+        <span class="cov8" title="1">return ""</span>
 }
 
-func (m *Metric) ToJSON() []byte <span class="cov0" title="0">{
+func (m *Metric) ToJSON() []byte <span class="cov8" title="1">{
         encoded, err := json.Marshal(m)
         if err != nil </span><span class="cov0" title="0">{
                 return nil
         }</span>
-        <span class="cov0" title="0">return encoded</span>
+        <span class="cov8" title="1">return encoded</span>
 }
 </pre>
 		
@@ -1907,17 +1907,17 @@ func (cfg *Config) IsRestoreEnabled() bool <span class="cov8" title="1">{
 }</span>
 
 // GetStorePath возвращает путь к файлу для сохранения метрик.
-func (cfg *Config) GetStorePath() string <span class="cov0" title="0">{
+func (cfg *Config) GetStorePath() string <span class="cov8" title="1">{
         return cfg.FileStoragePath
 }</span>
 
 // IsSyncStore сохранение метрик на сервере синхронно (сразу после изменения, если нулевой интервал).
-func (cfg *Config) IsSyncStore() bool <span class="cov0" title="0">{
+func (cfg *Config) IsSyncStore() bool <span class="cov8" title="1">{
         return cfg.StoreInterval == 0
 }</span>
 
 // GetStoreInterval возвращает интервал сохранения метрик на сервере в секундах.
-func (cfg *Config) GetStoreInterval() int <span class="cov0" title="0">{
+func (cfg *Config) GetStoreInterval() int <span class="cov8" title="1">{
         return cfg.StoreInterval
 }</span>
 
@@ -2991,20 +2991,20 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
         }
 
         // Если переданы метрики для инициализации (для тестов хранилища) то обновляем их в хранилище.
-        <span class="cov8" title="1">for _, option := range options </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">for _, option := range options </span><span class="cov0" title="0">{
                 switch opt := option.(type) </span>{
-                case storage.Gauges:<span class="cov8" title="1">
+                case storage.Gauges:<span class="cov0" title="0">
                         memStorage.gauges = opt</span>
-                case storage.Counters:<span class="cov8" title="1">
+                case storage.Counters:<span class="cov0" title="0">
                         memStorage.counters = opt</span>
                 }
         }
 
         // Запускаем сохранение метрик в файл с указанным интервалом.
-        <span class="cov8" title="1">if cfg.IsStoreEnabled() &amp;&amp; !cfg.IsSyncStore() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if cfg.IsStoreEnabled() &amp;&amp; !cfg.IsSyncStore() </span><span class="cov8" title="1">{
                 interval := time.Duration(cfg.GetStoreInterval()) * time.Second
-                go func() </span><span class="cov0" title="0">{
-                        for </span><span class="cov0" title="0">{
+                go func() </span><span class="cov8" title="1">{
+                        for </span><span class="cov8" title="1">{
                                 time.Sleep(interval)
                                 log.Info(
                                         fmt.Sprintf(
@@ -3024,15 +3024,15 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
         <span class="cov8" title="1">return memStorage</span>
 }
 
-func (ms *MemStorage) Close() error <span class="cov0" title="0">{
+func (ms *MemStorage) Close() error <span class="cov8" title="1">{
         if ms.cfg.IsStoreEnabled() &amp;&amp; !ms.cfg.IsSyncStore() </span><span class="cov0" title="0">{
                 return ms.storeMetricsToFile()
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // UpdateGauge перезаписывает значение gauge.
-func (ms *MemStorage) UpdateGauge(metricName string, metricValue storage.Gauge) <span class="cov0" title="0">{
+func (ms *MemStorage) UpdateGauge(metricName string, metricValue storage.Gauge) <span class="cov8" title="1">{
         ms.gauges[metricName] = metricValue
 }</span>
 
@@ -3044,17 +3044,17 @@ func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Co
 // UpdateMetric универсальный метод обновления метрики в хранилище: gauge, counter.
 func (ms *MemStorage) UpdateMetric(_ context.Context, metric metrics.Metric) error <span class="cov8" title="1">{
         switch metric.MType </span>{
-        case metrics.TypeGauge:<span class="cov0" title="0">
-                if metric.Value == nil </span><span class="cov0" title="0">{
+        case metrics.TypeGauge:<span class="cov8" title="1">
+                if metric.Value == nil </span><span class="cov8" title="1">{
                         return errors.New("gauge value is nil")
                 }</span>
-                <span class="cov0" title="0">ms.UpdateGauge(metric.Name, storage.Gauge(*metric.Value))</span>
+                <span class="cov8" title="1">ms.UpdateGauge(metric.Name, storage.Gauge(*metric.Value))</span>
         case metrics.TypeCounter:<span class="cov8" title="1">
-                if metric.Delta == nil </span><span class="cov0" title="0">{
+                if metric.Delta == nil </span><span class="cov8" title="1">{
                         return errors.New("counter delta is nil")
                 }</span>
                 <span class="cov8" title="1">ms.IncrementCounter(metric.Name, storage.Counter(*metric.Delta))</span>
-        default:<span class="cov0" title="0">
+        default:<span class="cov8" title="1">
                 return fmt.Errorf("unsupported metric type: %s", metric.MType)</span>
         }
 
@@ -3071,25 +3071,25 @@ func (ms *MemStorage) UpdateMetric(_ context.Context, metric metrics.Metric) err
         <span class="cov8" title="1">return nil</span>
 }
 
-func (ms *MemStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov0" title="0">{
-        for _, item := range items </span><span class="cov0" title="0">{
+func (ms *MemStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov8" title="1">{
+        for _, item := range items </span><span class="cov8" title="1">{
                 err := ms.UpdateMetric(ctx, item)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return err
                 }</span>
         }
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
-func (ms *MemStorage) GetGauges() storage.Gauges <span class="cov0" title="0">{
+func (ms *MemStorage) GetGauges() storage.Gauges <span class="cov8" title="1">{
         return ms.gauges
 }</span>
 
-func (ms *MemStorage) GetCounters() storage.Counters <span class="cov0" title="0">{
+func (ms *MemStorage) GetCounters() storage.Counters <span class="cov8" title="1">{
         return ms.counters
 }</span>
 
-func (ms *MemStorage) GetGauge(_ context.Context, name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+func (ms *MemStorage) GetGauge(_ context.Context, name string) (storage.Gauge, bool) <span class="cov8" title="1">{
         value, ok := ms.gauges[name]
         return value, ok
 }</span>
@@ -3099,7 +3099,7 @@ func (ms *MemStorage) GetCounter(_ context.Context, name string) (storage.Counte
         return value, ok
 }</span>
 
-func (ms *MemStorage) Count(_ context.Context) int <span class="cov0" title="0">{
+func (ms *MemStorage) Count(_ context.Context) int <span class="cov8" title="1">{
         return len(ms.gauges) + len(ms.counters)
 }</span>
 
@@ -3116,7 +3116,7 @@ func (ms *MemStorage) GetMetric(
                         MType: mType,
                         Delta: (*int64)(&amp;v),
                 }, ok</span>
-        case metrics.TypeGauge:<span class="cov0" title="0">
+        case metrics.TypeGauge:<span class="cov8" title="1">
                 v, ok := ms.GetGauge(ctx, id)
                 return metrics.Metric{
                         Name:  id,
@@ -3128,26 +3128,26 @@ func (ms *MemStorage) GetMetric(
 }
 
 // GetMetrics возвращает отсортированный список метрик в формате слайса структур.
-func (ms *MemStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov0" title="0">{
+func (ms *MemStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov8" title="1">{
         items := make([]metrics.Metric, 0, ms.Count(ctx))
-        for id, value := range ms.GetGauges() </span><span class="cov0" title="0">{
+        for id, value := range ms.GetGauges() </span><span class="cov8" title="1">{
                 items = append(
                         items,
                         metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&amp;value)},
                 )
         }</span>
-        <span class="cov0" title="0">for id, value := range ms.GetCounters() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">for id, value := range ms.GetCounters() </span><span class="cov8" title="1">{
                 items = append(
                         items,
                         metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&amp;value)},
                 )
         }</span>
         // slices.Sort(items)
-        <span class="cov0" title="0">return items</span>
+        <span class="cov8" title="1">return items</span>
 }
 
 // StoreMetricsToFile сохраняет метрики в файл.
-func (ms *MemStorage) storeMetricsToFile() error <span class="cov0" title="0">{
+func (ms *MemStorage) storeMetricsToFile() error <span class="cov8" title="1">{
         path := ms.cfg.GetStorePath()
         ms.log.Debug("store metrics to file",
                 zap.String("path", path),
@@ -3157,22 +3157,22 @@ func (ms *MemStorage) storeMetricsToFile() error <span class="cov0" title="0">{
         var f *os.File
         var err error
 
-        for i := 0; i &lt;= maxRetries; i++ </span><span class="cov0" title="0">{
+        for i := 0; i &lt;= maxRetries; i++ </span><span class="cov8" title="1">{
                 // попытка открытия файла для записи
                 f, err = os.Create(path)
-                if err == nil </span><span class="cov0" title="0">{
+                if err == nil </span><span class="cov8" title="1">{
                         break</span>
                 }
                 <span class="cov0" title="0">ms.log.Error(fmt.Sprintf("Attempt %d: Error opening file: %v", i+1, err))
                 time.Sleep(time.Duration((i+1)*2-1) * time.Second)</span>
         }
 
-        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("failed to open file after %d attempts: %w", maxRetries, err)
         }</span>
 
         // отложенное закрытие файла
-        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
                 err = f.Close()
                 if err != nil </span><span class="cov0" title="0">{
                         ms.log.Error(fmt.Sprintf("error closing file: %s", err))
@@ -3180,18 +3180,18 @@ func (ms *MemStorage) storeMetricsToFile() error <span class="cov0" title="0">{
         }()
 
         // сериализация метрик metrics.Metric в json и запись сразу в файл
-        <span class="cov0" title="0">encoder := json.NewEncoder(f)
+        <span class="cov8" title="1">encoder := json.NewEncoder(f)
         encoder.SetIndent("", "    ")
         err = encoder.Encode(ms.GetMetrics(context.Background()))
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // RestoreMetricsFromFile загружает метрики из файла.
-func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0">{
+func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov8" title="1">{
         path := ms.cfg.GetStorePath()
         ms.log.Debug("load metrics from file", zap.String("path", path))
 
@@ -3200,7 +3200,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
                 err = f.Close()
                 if err != nil </span><span class="cov0" title="0">{
                         ms.log.Error(fmt.Sprintf("error closing file: %s", err), zap.Any("file", f))
@@ -3208,7 +3208,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0
         }()
 
         // парсинг json метрик metrics.Metric
-        <span class="cov0" title="0">var parsed []metrics.Metric
+        <span class="cov8" title="1">var parsed []metrics.Metric
         decoder := json.NewDecoder(f)
         err = decoder.Decode(&amp;parsed)
         if err != nil </span><span class="cov0" title="0">{
@@ -3216,7 +3216,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0
         }</span>
 
         // обновление метрик в хранилище в памяти
-        <span class="cov0" title="0">for m := range parsed </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">for m := range parsed </span><span class="cov8" title="1">{
                 err = ms.UpdateMetric(context.Background(), parsed[m])
                 if err != nil </span><span class="cov0" title="0">{
                         return err
@@ -3224,7 +3224,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0
         }
 
         // Выводим информацию о восстановленных метриках в лог.
-        <span class="cov0" title="0">ms.log.Info(
+        <span class="cov8" title="1">ms.log.Info(
                 "Metrics restored from file",
                 zap.String("file", ms.cfg.GetStorePath()),
                 zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
@@ -3233,7 +3233,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0
 }
 
 // Dump выводит информацию о хранилище в лог.
-func (ms *MemStorage) Dump() <span class="cov0" title="0">{
+func (ms *MemStorage) Dump() <span class="cov8" title="1">{
         ms.log.Info(
                 "Memory storage dump",
                 zap.Int("gauges", len(ms.gauges)),
@@ -3850,7 +3850,7 @@ import (
 // Compress сжимает данные методом gzip.
 // Использует максимальный уровень сжатия.
 // Возвращает сжатые данные и ошибку в случае неудачи.
-func Compress(data []byte) ([]byte, error) <span class="cov0" title="0">{
+func Compress(data []byte) ([]byte, error) <span class="cov8" title="1">{
         var b bytes.Buffer
         // создаём переменную w — в неё будут записываться входящие данные,
         // которые будут сжиматься и сохраняться в bytes.Buffer
@@ -3860,7 +3860,7 @@ func Compress(data []byte) ([]byte, error) <span class="cov0" title="0">{
         }</span>
 
         // запись данных
-        <span class="cov0" title="0">_, err = w.Write(data)
+        <span class="cov8" title="1">_, err = w.Write(data)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed write data to compress temporary buffer: %w", err)
         }</span>
@@ -3868,12 +3868,12 @@ func Compress(data []byte) ([]byte, error) <span class="cov0" title="0">{
         // обязательно нужно вызвать метод Close() — в противном случае часть данных
         // может не записаться в буфер b; если нужно выгрузить все упакованные данные
         // в какой-то момент сжатия, используйте метод Flush()
-        <span class="cov0" title="0">err = w.Close()
+        <span class="cov8" title="1">err = w.Close()
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed compress data: %w", err)
         }</span>
         // буфер b содержит сжатые данные
-        <span class="cov0" title="0">return b.Bytes(), nil</span>
+        <span class="cov8" title="1">return b.Bytes(), nil</span>
 }
 </pre>
 		
@@ -3888,7 +3888,7 @@ import (
 )
 
 // GenerateRandomFloat64 генерирует случайное число типа float64 в диапазоне от 0 до 1.
-func GenerateRandomFloat64() float64 <span class="cov0" title="0">{
+func GenerateRandomFloat64() float64 <span class="cov8" title="1">{
         // Генерация случайного int64.
         randomInt, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt64))
         if err != nil </span><span class="cov0" title="0">{
@@ -3896,7 +3896,7 @@ func GenerateRandomFloat64() float64 <span class="cov0" title="0">{
         }</span>
 
         // Преобразование int64 в float64 в диапазоне от 0 до 1.
-        <span class="cov0" title="0">randomFloat := float64(randomInt.Int64()) / float64(math.MaxInt64)
+        <span class="cov8" title="1">randomFloat := float64(randomInt.Int64()) / float64(math.MaxInt64)
 
         return randomFloat</span>
 }
@@ -3931,7 +3931,7 @@ func OK(w http.ResponseWriter, msg string) <span class="cov8" title="1">{
         writeResponse(w, resp, http.StatusOK)
 }</span>
 
-func Error(w http.ResponseWriter, err error, statusCode int) <span class="cov0" title="0">{
+func Error(w http.ResponseWriter, err error, statusCode int) <span class="cov8" title="1">{
         resp := Response{
                 Status: StatusError,
                 Error:  err.Error(),
@@ -3953,7 +3953,7 @@ func writeResponse(w http.ResponseWriter, resp Response, statusCode int) <span c
 
         // Отправляем ответ.
         <span class="cov8" title="1">_, err = fmt.Fprint(w, string(encoded))
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(w, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
@@ -3975,32 +3975,32 @@ import (
 const HeaderKey = "HashSHA256"
 
 // ComputeHMACSHA256 вычисляет хеш SHA256 от данных с использованием ключа.
-func ComputeHMACSHA256(data []byte, key string) string <span class="cov0" title="0">{
+func ComputeHMACSHA256(data []byte, key string) string <span class="cov8" title="1">{
         h := hmac.New(sha256.New, []byte(key))
         if _, err := h.Write(data); err != nil </span><span class="cov0" title="0">{
                 // Log the error or handle it appropriately
                 // Since we know this won't fail, we can just panic or log a message
                 slog.Error("unexpected error writing to hash", "error", err)
         }</span>
-        <span class="cov0" title="0">return hex.EncodeToString(h.Sum(nil))</span>
+        <span class="cov8" title="1">return hex.EncodeToString(h.Sum(nil))</span>
 }
 
 // VerifyHMACSHA256 проверяет, что хеш SHA256 от данных с использованием ключа совпадает с ожидаемым значением.
-func VerifyHMACSHA256(data []byte, key string, expectedMAC string) (string, error) <span class="cov0" title="0">{
+func VerifyHMACSHA256(data []byte, key string, expectedMAC string) (string, error) <span class="cov8" title="1">{
         // Если хэш не задан, то и не проверяем.
         // Тесты предполагают что с пустым хэшем его не следует проверять, даже если указан приватный ключ -k при старте.
         // См. обсуждение в чате: https://app.pachca.com/chats/8850763?message=245816301
-        if expectedMAC == "" </span><span class="cov0" title="0">{
+        if expectedMAC == "" </span><span class="cov8" title="1">{
                 return "", nil
         }</span>
 
-        <span class="cov0" title="0">mac := ComputeHMACSHA256(data, key)
+        <span class="cov8" title="1">mac := ComputeHMACSHA256(data, key)
 
-        if !hmac.Equal([]byte(mac), []byte(expectedMAC)) </span><span class="cov0" title="0">{
+        if !hmac.Equal([]byte(mac), []byte(expectedMAC)) </span><span class="cov8" title="1">{
                 return mac, errors.New("invalid hash in request header")
         }</span>
 
-        <span class="cov0" title="0">return mac, nil</span>
+        <span class="cov8" title="1">return mac, nil</span>
 }
 </pre>
 		
