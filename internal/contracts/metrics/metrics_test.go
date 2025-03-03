@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Helper functions for tests
+// Helper functions for tests.
 func MetricToString(m *metrics.Metric) string {
 	if m == nil {
 		return "<nil>"

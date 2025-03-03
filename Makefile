@@ -54,7 +54,7 @@ bench:
 # Запуск линтера
 lint:
 	@echo "Запуск линтера..."
-	golangci-lint run ./...
+	golangci-lint run ./... --fix
 
 # Пример запуска автотеста для итерации 10
 iter10: build

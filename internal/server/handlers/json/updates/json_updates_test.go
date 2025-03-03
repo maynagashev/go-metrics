@@ -59,7 +59,7 @@ func TestNewBulkUpdate_Success(t *testing.T) {
 	// Проверяем, что метрики были сохранены в хранилище
 	savedGaugeMetric, ok := repo.GetMetric(context.Background(), metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, gaugeValue, *savedGaugeMetric.Value)
+	assert.InDelta(t, gaugeValue, *savedGaugeMetric.Value, 0.0001)
 
 	savedCounterMetric, ok := repo.GetMetric(context.Background(), metrics.TypeCounter, "test_counter")
 	assert.True(t, ok)
@@ -139,7 +139,7 @@ func TestNewBulkUpdate_WithSignature(t *testing.T) {
 	// Проверяем, что метрики были сохранены в хранилище
 	savedGaugeMetric, ok := repo.GetMetric(context.Background(), metrics.TypeGauge, "test_gauge")
 	assert.True(t, ok)
-	assert.Equal(t, gaugeValue, *savedGaugeMetric.Value)
+	assert.InDelta(t, gaugeValue, *savedGaugeMetric.Value, 0.0001)
 
 	savedCounterMetric, ok := repo.GetMetric(context.Background(), metrics.TypeCounter, "test_counter")
 	assert.True(t, ok)

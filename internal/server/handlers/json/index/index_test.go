@@ -120,7 +120,7 @@ func TestJSONIndexHandler_EmptyStorage(t *testing.T) {
 	assert.Empty(t, metricsResponse)
 }
 
-// setupTestStorage creates a test storage with some test metrics
+// setupTestStorage creates a test storage with some test metrics.
 func setupTestStorage(t *testing.T) *memory.MemStorage {
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)

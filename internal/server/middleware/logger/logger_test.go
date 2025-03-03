@@ -36,7 +36,10 @@ func TestLoggerMiddleware(t *testing.T) {
 	// Create a test handler
 	testHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, err := w.Write([]byte("OK"))
+		if err != nil {
+			t.Fatalf("Failed to write response: %v", err)
+		}
 	})
 
 	// Create and use the middleware
