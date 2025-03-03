@@ -1,3 +1,38 @@
+// Package main утилита для статического анализа кода с заранее выбранными анализаторами.
+//
+// # Обзор
+//
+// Этот мультичекер включает:
+//   - Стандартные анализаторы из пакета golang.org/x/tools/go/analysis/passes
+//   - Все анализаторы класса SA из пакета staticcheck.io
+//   - Выбранные анализаторы из других классов пакета staticcheck.io
+//   - Собственные анализаторы (noexit, errcheck)
+//   - Сторонние анализаторы (exhaustive, bodyclose)
+//
+// # Использование
+//
+// Запустите мультичекер с помощью:
+//
+//	go run cmd/staticlint/staticlint.go [пакеты]
+//
+// Или скомпилируйте и запустите:
+//
+//	go build -o staticlint ./cmd/staticlint
+//	./staticlint [пакеты]
+//
+// # Конфигурация
+//
+// Мультичекер можно настроить с помощью JSON-файла, расположенного по пути cmd/staticlint/config.json.
+// Файл конфигурации позволяет указать, какие анализаторы из staticcheck и stylecheck использовать.
+//
+// Пример конфигурации:
+//
+//	{
+//	    "staticcheck": ["SA4006", "SA5000"],
+//	    "stylecheck": ["ST1000"]
+//	}
+//
+// Если файл конфигурации не найден или содержит ошибки, будут использованы все доступные анализаторы.
 package main
 
 import (
@@ -21,16 +56,21 @@ import (
 )
 
 // Config — имя файла конфигурации.
+// Файл должен находиться в директории cmd/staticlint.
 const Config = `cmd/staticlint/config.json`
 
 // ConfigData описывает структуру файла конфигурации.
+// Содержит списки анализаторов из staticcheck и stylecheck, которые нужно использовать.
 type ConfigData struct {
+	// Staticcheck содержит список имен анализаторов из пакета staticcheck.
 	Staticcheck []string `json:"staticcheck"`
-	Stylecheck  []string `json:"stylecheck"`
+	// Stylecheck содержит список имен анализаторов из пакета stylecheck.
+	Stylecheck []string `json:"stylecheck"`
 }
 
 // loadConfig загружает конфигурацию из файла.
 // Возвращает конфигурацию и флаг успешности загрузки.
+// Если файл не найден или содержит ошибки, возвращает пустую конфигурацию и false.
 func loadConfig(path string) (ConfigData, bool) {
 	var cfg ConfigData
 	data, err := os.ReadFile(path)
@@ -50,6 +90,16 @@ func loadConfig(path string) (ConfigData, bool) {
 
 // addAnalyzers добавляет анализаторы из указанного списка в mychecks.
 // Функция обрабатывает анализаторы из staticcheck и stylecheck.
+//
+// Параметры:
+//   - mychecks: текущий список анализаторов
+//   - cfg: конфигурация, содержащая списки анализаторов
+//   - analyzerType: тип анализаторов ("staticcheck" или "stylecheck")
+//   - analyzers: полный список доступных анализаторов указанного типа
+//
+// Возвращает обновленный список анализаторов.
+// Если в конфигурации указаны конкретные анализаторы, добавляет только их.
+// Если список пуст или отсутствует, добавляет все доступные анализаторы.
 func addAnalyzers(
 	mychecks []*analysis.Analyzer,
 	cfg ConfigData,
@@ -92,7 +142,8 @@ func addAnalyzers(
 	return mychecks
 }
 
-// getAllStaticcheckAnalyzers возвращает список анализаторов из staticcheck.
+// getAllStaticcheckAnalyzers возвращает список всех анализаторов из пакета staticcheck.
+// Эти анализаторы проверяют корректность кода и выявляют потенциальные ошибки.
 func getAllStaticcheckAnalyzers() []*analysis.Analyzer {
 	result := make([]*analysis.Analyzer, len(staticcheck.Analyzers))
 	for i, a := range staticcheck.Analyzers {
@@ -101,7 +152,8 @@ func getAllStaticcheckAnalyzers() []*analysis.Analyzer {
 	return result
 }
 
-// getAllStylecheckAnalyzers возвращает список анализаторов из stylecheck.
+// getAllStylecheckAnalyzers возвращает список всех анализаторов из пакета stylecheck.
+// Эти анализаторы проверяют стиль кода и соответствие стандартам оформления.
 func getAllStylecheckAnalyzers() []*analysis.Analyzer {
 	result := make([]*analysis.Analyzer, len(stylecheck.Analyzers))
 	for i, a := range stylecheck.Analyzers {
@@ -111,6 +163,7 @@ func getAllStylecheckAnalyzers() []*analysis.Analyzer {
 }
 
 // printAnalyzersList выводит список анализаторов с их описаниями.
+// Для каждого анализатора выводится его имя и краткое описание (первая строка документации).
 func printAnalyzersList(analyzers []*analysis.Analyzer) {
 	log.Println("Итоговый список анализаторов:")
 	for i, analyzer := range analyzers {
@@ -123,6 +176,13 @@ func printAnalyzersList(analyzers []*analysis.Analyzer) {
 	}
 }
 
+// main инициализирует и запускает multichecker со всеми настроенными анализаторами.
+// Функция выполняет следующие шаги:
+// 1. Инициализирует базовый набор анализаторов
+// 2. Загружает конфигурацию из файла
+// 3. Добавляет анализаторы из staticcheck и stylecheck согласно конфигурации
+// 4. Выводит список используемых анализаторов
+// 5. Запускает multichecker
 func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(0)

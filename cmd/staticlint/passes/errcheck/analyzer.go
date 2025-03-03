@@ -1,6 +1,54 @@
-// Package errcheck реализует анализатор для проверки необработанных ошибок в Go коде.
-// Анализатор выявляет случаи, когда возвращаемая функцией ошибка игнорируется
-// или явно отбрасывается через присваивание пустому идентификатору "_".
+// Package errcheck реализует анализатор для проверки необработанных ошибок в Go-коде.
+// Анализатор обнаруживает случаи, когда возвращаемая функцией ошибка игнорируется
+// или явно отбрасывается путем присваивания её "_".
+//
+// # Обзор
+//
+// Обработка ошибок является критически важной частью написания надежного Go-кода.
+// Этот анализатор помогает убедиться, что ошибки, возвращаемые функциями,
+// правильно проверяются и обрабатываются.
+//
+// Анализатор обнаруживает два основных паттерна:
+//   - Вызов функции, которая возвращает ошибку, без использования результата
+//   - Явное отбрасывание ошибки путем присваивания её "_"
+//
+// # Использование
+//
+// Чтобы использовать этот анализатор, включите его в ваш мультичекер:
+//
+//	mychecks := []*analysis.Analyzer{
+//		errcheck.Analyzer,
+//		// другие анализаторы...
+//	}
+//	multichecker.Main(mychecks...)
+//
+// # Пример
+//
+// Следующий код вызовет предупреждения:
+//
+//	func example() {
+//		// Ошибка не проверяется
+//		os.Remove("file.txt")
+//
+//		// Ошибка явно отбрасывается
+//		_, _ = os.Open("file.txt")
+//	}
+//
+// Лучшим подходом будет правильная обработка ошибок:
+//
+//	func example() error {
+//		err := os.Remove("file.txt")
+//		if err != nil {
+//			return fmt.Errorf("failed to remove file: %w", err)
+//		}
+//
+//		file, err := os.Open("file.txt")
+//		if err != nil {
+//			return fmt.Errorf("failed to open file: %w", err)
+//		}
+//		defer file.Close()
+//		return nil
+//	}
 package errcheck
 
 import (
@@ -12,6 +60,8 @@ import (
 )
 
 // getErrorType возвращает интерфейс типа error.
+// Функция получает тип error из universe scope и возвращает его как интерфейс.
+// Паникует, если тип error не найден или имеет неожиданный тип.
 func getErrorType() *types.Interface {
 	err := types.Universe.Lookup("error")
 	if err == nil {
@@ -33,6 +83,7 @@ func getErrorType() *types.Interface {
 }
 
 // NewAnalyzer создает новый анализатор для проверки обработки ошибок.
+// Возвращает настроенный анализатор, готовый к использованию.
 func NewAnalyzer() *analysis.Analyzer {
 	return &analysis.Analyzer{
 		Name: "errcheck",
@@ -41,7 +92,8 @@ func NewAnalyzer() *analysis.Analyzer {
 	}
 }
 
-//nolint:gochecknoglobals // Analyzer должен быть глобальной переменной по дизайну пакета analysis
+// Analyzer - анализатор для проверки необработанных ошибок.
+// Он обнаруживает случаи, когда возвращаемая функцией ошибка игнорируется или явно отбрасывается.
 var Analyzer = NewAnalyzer()
 
 func isErrorType(t types.Type) bool {
@@ -49,21 +101,26 @@ func isErrorType(t types.Type) bool {
 }
 
 // analysisResult содержит результаты анализа.
+// Он отслеживает, были ли найдены проблемы, и хранит ссылку на проход анализа.
 type analysisResult struct {
 	hasIssues bool
 	pass      *analysis.Pass
 }
 
 // ignoredFunctions содержит имена функций, ошибки которых можно игнорировать.
-//
-//nolint:gochecknoglobals // Необходимо для хранения списка игнорируемых функций
+// Это карта для эффективного поиска, с именами функций в качестве ключей.
 var ignoredFunctions = map[string]bool{
 	"fmt.Print":   true,
 	"fmt.Printf":  true,
 	"fmt.Println": true,
 }
 
-// shouldIgnoreCall проверяет, нужно ли игнорировать ошибки от данного вызова.
+// shouldIgnoreCall проверяет, следует ли игнорировать ошибки от данного вызова.
+// Возвращает true, если вызов функции находится в списке игнорируемых функций.
+//
+// Параметры:
+//   - pass: проход анализа
+//   - call: выражение вызова для проверки
 func shouldIgnoreCall(_ *analysis.Pass, call *ast.CallExpr) bool {
 	fun, ok := call.Fun.(*ast.SelectorExpr)
 	if !ok {
@@ -89,6 +146,10 @@ func shouldIgnoreCall(_ *analysis.Pass, call *ast.CallExpr) bool {
 }
 
 // processExprStmt проверяет выражения на необработанные ошибки.
+// Сообщает о проблеме, если выражение возвращает ошибку, которая не проверяется.
+//
+// Параметры:
+//   - x: выражение для проверки
 func (r *analysisResult) processExprStmt(x *ast.ExprStmt) {
 	call, ok := x.X.(*ast.CallExpr)
 	if !ok {
@@ -100,7 +161,11 @@ func (r *analysisResult) processExprStmt(x *ast.ExprStmt) {
 	}
 }
 
-// processTupleAssign проверяет присваивания с множественными значениями.
+// processTupleAssign проверяет присваивания кортежей на необработанные ошибки.
+// Сообщает о проблеме, если ошибка явно отбрасывается путем присваивания "_".
+//
+// Параметры:
+//   - x: выражение присваивания для проверки
 func (r *analysisResult) processTupleAssign(x *ast.AssignStmt) {
 	call, ok := x.Rhs[0].(*ast.CallExpr)
 	if !ok {
@@ -118,7 +183,11 @@ func (r *analysisResult) processTupleAssign(x *ast.AssignStmt) {
 	}
 }
 
-// processMultiAssign проверяет множественные присваивания.
+// processMultiAssign проверяет множественные присваивания на необработанные ошибки.
+// Сообщает о проблеме, если ошибка явно отбрасывается путем присваивания "_".
+//
+// Параметры:
+//   - x: выражение присваивания для проверки
 func (r *analysisResult) processMultiAssign(x *ast.AssignStmt) {
 	for i := range x.Lhs {
 		id, isIdent := x.Lhs[i].(*ast.Ident)
@@ -140,6 +209,12 @@ func (r *analysisResult) processMultiAssign(x *ast.AssignStmt) {
 }
 
 // processNode обрабатывает один узел AST.
+// Он направляет обработку в соответствующий обработчик в зависимости от типа узла.
+//
+// Параметры:
+//   - node: узел AST для обработки
+//
+// Возвращает true для продолжения обхода AST.
 func (r *analysisResult) processNode(node ast.Node) bool {
 	switch x := node.(type) {
 	case *ast.ExprStmt:
@@ -154,6 +229,13 @@ func (r *analysisResult) processNode(node ast.Node) bool {
 	return true
 }
 
+// run реализует логику анализа для анализатора errcheck.
+// Он обходит AST каждого файла в пакете и проверяет наличие необработанных ошибок.
+//
+// Параметры:
+//   - pass: проход анализа, содержащий AST и информацию о типах
+//
+// Возвращает nil, nil, если проблемы не найдены (стандартное поведение для анализаторов).
 func run(pass *analysis.Pass) (interface{}, error) {
 	result := &analysisResult{
 		pass: pass,
@@ -171,6 +253,12 @@ func run(pass *analysis.Pass) (interface{}, error) {
 
 // resultErrors возвращает булев массив со значениями true,
 // если тип i-го возвращаемого значения соответствует ошибке.
+//
+// Параметры:
+//   - pass: проход анализа, содержащий информацию о типах
+//   - call: выражение вызова для проверки
+//
+// Возвращает булев массив, указывающий, какие возвращаемые значения являются ошибками.
 func resultErrors(pass *analysis.Pass, call *ast.CallExpr) []bool {
 	switch t := pass.TypesInfo.Types[call].Type.(type) {
 	case *types.Named:
@@ -192,7 +280,13 @@ func resultErrors(pass *analysis.Pass, call *ast.CallExpr) []bool {
 	return []bool{false}
 }
 
-// isReturnError возвращает true, если среди возвращаемых значений есть ошибка.
+// isReturnError возвращает true, если любое из возвращаемых значений является ошибкой.
+//
+// Параметры:
+//   - pass: проход анализа, содержащий информацию о типах
+//   - call: выражение вызова для проверки
+//
+// Возвращает true, если вызов функции возвращает ошибку, иначе false.
 func isReturnError(pass *analysis.Pass, call *ast.CallExpr) bool {
 	for _, isError := range resultErrors(pass, call) {
 		if isError {
