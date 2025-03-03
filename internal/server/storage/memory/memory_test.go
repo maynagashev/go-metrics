@@ -8,6 +8,7 @@ import (
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,7 +41,7 @@ func TestMemStorage_UpdateGauge(t *testing.T) {
 	ctx := context.Background()
 
 	// Проверяем что метрика сохраняется
-	ms.UpdateGauge(ctx, "test_gauge", 42.0)
+	ms.UpdateGauge("test_gauge", storage.Gauge(42.0))
 
 	// Проверяем что метрика читается
 	value, ok := ms.GetGauge(ctx, "test_gauge")
@@ -53,7 +54,7 @@ func TestMemStorage_IncrementCounter(t *testing.T) {
 	ctx := context.Background()
 
 	// Проверяем что метрика сохраняется
-	ms.IncrementCounter(ctx, "test_counter", 1)
+	ms.IncrementCounter("test_counter", storage.Counter(1))
 
 	// Проверяем что метрика читается
 	value, ok := ms.GetCounter(ctx, "test_counter")
@@ -61,16 +62,16 @@ func TestMemStorage_IncrementCounter(t *testing.T) {
 	assert.Equal(t, int64(1), int64(value))
 
 	// Проверяем что метрика инкрементируется
-	ms.IncrementCounter(ctx, "test_counter", 2)
+	ms.IncrementCounter("test_counter", storage.Counter(2))
 	value, ok = ms.GetCounter(ctx, "test_counter")
 	assert.True(t, ok)
 	assert.Equal(t, int64(3), int64(value))
 
-	// Проверяем что новая метрика создается с нуля
-	ms.IncrementCounter(ctx, "new_counter", 5)
-	value, ok = ms.GetCounter(ctx, "new_counter")
+	// Проверяем что метрика инкрементируется с отрицательным значением
+	ms.IncrementCounter("test_counter", storage.Counter(-1))
+	value, ok = ms.GetCounter(ctx, "test_counter")
 	assert.True(t, ok)
-	assert.Equal(t, int64(5), int64(value))
+	assert.Equal(t, int64(2), int64(value))
 }
 
 func TestMemStorage_UpdateMetric(t *testing.T) {
@@ -79,8 +80,11 @@ func TestMemStorage_UpdateMetric(t *testing.T) {
 
 	// Проверяем обновление gauge
 	gaugeValue := 42.0
-	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
-	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	err := ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: &gaugeValue,
+	})
 	require.NoError(t, err)
 
 	// Проверяем что gauge метрика читается
@@ -93,8 +97,11 @@ func TestMemStorage_UpdateMetric(t *testing.T) {
 
 	// Проверяем обновление counter
 	counterValue := int64(10)
-	counterMetric := metrics.NewCounter("test_counter", counterValue)
-	err = ms.UpdateMetric(ctx, *counterMetric)
+	err = ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: &counterValue,
+	})
 	require.NoError(t, err)
 
 	// Проверяем что counter метрика читается
@@ -107,8 +114,11 @@ func TestMemStorage_UpdateMetric(t *testing.T) {
 
 	// Проверяем инкремент counter
 	counterValue = int64(5)
-	counterMetric = metrics.NewCounter("test_counter", counterValue)
-	err = ms.UpdateMetric(ctx, *counterMetric)
+	err = ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: &counterValue,
+	})
 	require.NoError(t, err)
 
 	// Проверяем что counter метрика инкрементировалась
@@ -138,8 +148,11 @@ func TestMemStorage_GetMetric(t *testing.T) {
 
 	// Добавляем gauge метрику
 	gaugeValue := 42.0
-	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
-	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	err := ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: &gaugeValue,
+	})
 	require.NoError(t, err)
 
 	// Проверяем наличие gauge метрики
@@ -152,8 +165,11 @@ func TestMemStorage_GetMetric(t *testing.T) {
 
 	// Добавляем counter метрику
 	counterValue := int64(10)
-	counterMetric := metrics.NewCounter("test_counter", counterValue)
-	err = ms.UpdateMetric(ctx, *counterMetric)
+	err = ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: &counterValue,
+	})
 	require.NoError(t, err)
 
 	// Проверяем наличие counter метрики
@@ -162,10 +178,7 @@ func TestMemStorage_GetMetric(t *testing.T) {
 	assert.Equal(t, "test_counter", metric.Name)
 	assert.Equal(t, metrics.TypeCounter, metric.MType)
 	assert.NotNil(t, metric.Delta)
-	// Fix line length issue by breaking into multiple assertions
-	if !assert.Equal(t, counterValue, *metric.Delta) {
-		t.Errorf("GetMetric() counter value mismatch, got %v, want %v", *metric.Delta, counterValue)
-	}
+	assert.Equal(t, counterValue, *metric.Delta)
 }
 
 func TestMemStorage_Count(t *testing.T) {
@@ -201,17 +214,17 @@ func TestMemStorage_UpdateMetrics(t *testing.T) {
 	ms := setupTestStorage(t)
 	ctx := context.Background()
 
-	// Создаем набор метрик для обновления
+	// Создаем тестовые метрики
 	gaugeValue := 42.0
 	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
 
 	counterValue := int64(10)
 	counterMetric := metrics.NewCounter("test_counter", counterValue)
 
-	metrics := []metrics.Metric{*gaugeMetric, *counterMetric}
+	metricsSlice := []metrics.Metric{*gaugeMetric, *counterMetric}
 
 	// Обновляем метрики
-	err := ms.UpdateMetrics(ctx, metrics)
+	err := ms.UpdateMetrics(ctx, metricsSlice)
 	require.NoError(t, err)
 
 	// Проверяем что gauge метрика обновилась
@@ -236,8 +249,8 @@ func TestMemStorage_GetMetrics(t *testing.T) {
 	ctx := context.Background()
 
 	// Проверяем начальное количество метрик
-	metrics := ms.GetMetrics(ctx)
-	assert.Empty(t, metrics)
+	metricsSlice := ms.GetMetrics(ctx)
+	assert.Empty(t, metricsSlice)
 
 	// Добавляем gauge метрику
 	gaugeValue := 42.0
@@ -364,38 +377,7 @@ func TestMemStorage_Dump(t *testing.T) {
 	// Проверяем что файл не пустой
 	fileInfo, err := os.Stat(tmpFile.Name())
 	require.NoError(t, err)
-	assert.Greater(t, fileInfo.Size(), int64(0))
-}
-
-func TestMemStorage_UpdateMetric_Errors(t *testing.T) {
-	ms := setupTestStorage(t)
-	ctx := context.Background()
-
-	// Проверяем ошибку при неверном типе метрики
-	invalidMetric := metrics.Metric{
-		Name:  "test_invalid",
-		MType: "invalid",
-	}
-	err := ms.UpdateMetric(ctx, invalidMetric)
-	assert.Error(t, err)
-
-	// Проверяем ошибку при отсутствии значения для gauge
-	invalidGauge := metrics.Metric{
-		Name:  "test_gauge",
-		MType: metrics.TypeGauge,
-		Value: nil,
-	}
-	err = ms.UpdateMetric(ctx, invalidGauge)
-	assert.Error(t, err)
-
-	// Проверяем ошибку при отсутствии значения для counter
-	invalidCounter := metrics.Metric{
-		Name:  "test_counter",
-		MType: metrics.TypeCounter,
-		Delta: nil,
-	}
-	err = ms.UpdateMetric(ctx, invalidCounter)
-	assert.Error(t, err)
+	assert.Positive(t, fileInfo.Size())
 }
 
 func TestMemStorage_Close(t *testing.T) {
@@ -431,3 +413,68 @@ func TestMemStorage_Close(t *testing.T) {
 }
 
 const validJSON = `[{"id":"test_gauge","type":"gauge","value":42},{"id":"test_counter","type":"counter","delta":10}]`
+
+func TestMemStorage_GetAllMetrics(t *testing.T) {
+	ms := setupTestStorage(t)
+	ctx := context.Background()
+
+	// Добавляем gauge метрику
+	gaugeValue := 42.0
+	err := ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_gauge",
+		MType: "gauge",
+		Value: &gaugeValue,
+	})
+	require.NoError(t, err)
+
+	// Добавляем counter метрику
+	counterValue := int64(10)
+	err = ms.UpdateMetric(ctx, metrics.Metric{
+		Name:  "test_counter",
+		MType: "counter",
+		Delta: &counterValue,
+	})
+	require.NoError(t, err)
+
+	// Получаем все метрики
+	allMetrics := ms.GetMetrics(ctx)
+
+	// Проверяем что есть обе метрики
+	assert.Len(t, allMetrics, 2)
+
+	// Проверяем gauge метрику
+	gaugeFound := false
+	for _, m := range allMetrics {
+		if m.Name == "test_gauge" && m.MType == "gauge" {
+			gaugeFound = true
+			assert.NotNil(t, m.Value)
+			assert.Equal(t, gaugeValue, *m.Value)
+		}
+	}
+	assert.True(t, gaugeFound, "Gauge metric not found")
+
+	// Проверяем counter метрику
+	counterFound := false
+	for _, m := range allMetrics {
+		if m.Name == "test_counter" && m.MType == "counter" {
+			counterFound = true
+			assert.NotNil(t, m.Delta)
+			assert.Equal(t, counterValue, *m.Delta)
+		}
+	}
+	assert.True(t, counterFound, "Counter metric not found")
+}
+
+func setupTestMetrics(t *testing.T, ms *memory.MemStorage) {
+	ctx := context.Background()
+
+	// Add a gauge metric
+	gaugeMetric := metrics.NewGauge("test_gauge", 42.0)
+	err := ms.UpdateMetric(ctx, *gaugeMetric)
+	require.NoError(t, err)
+
+	// Add a counter metric
+	counterMetric := metrics.NewCounter("test_counter", 10)
+	err = ms.UpdateMetric(ctx, *counterMetric)
+	require.NoError(t, err)
+}

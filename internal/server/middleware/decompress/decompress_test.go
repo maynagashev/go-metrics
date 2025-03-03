@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap/zaptest"
 )
 
-// compressData compresses the input data using gzip
+// compressData compresses the input data using gzip.
 func compressData(data []byte) ([]byte, error) {
 	var buf bytes.Buffer
 	gzipWriter := gzip.NewWriter(&buf)

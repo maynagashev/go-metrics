@@ -31,7 +31,7 @@ github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:157:					getAllSt
 github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:167:					printAnalyzersList		0.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:180:					main				0.0%
 github.com/maynagashev/go-metrics/example/setup.go:22:							SetupTestMetric			80.0%
-github.com/maynagashev/go-metrics/internal/agent/agent.go:92:						IsRequestSigningEnabled		0.0%
+github.com/maynagashev/go-metrics/internal/agent/agent.go:92:						IsRequestSigningEnabled		100.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:97:						Run				0.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:127:						runPolls			0.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:149:						runReports			0.0%
@@ -47,7 +47,7 @@ github.com/maynagashev/go-metrics/internal/agent/workerpool.go:40:					collector
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:25:				NewMetric			100.0%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:34:				NewCounter			100.0%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:38:				NewGauge			100.0%
-github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:42:				String				100.0%
+github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:42:				String				85.7%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:57:				ValueString			100.0%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:70:				ToJSON				75.0%
 github.com/maynagashev/go-metrics/internal/server/app/app.go:25:					New				0.0%
@@ -76,17 +76,17 @@ github.com/maynagashev/go-metrics/internal/server/handlers/plain/update/plain_up
 github.com/maynagashev/go-metrics/internal/server/handlers/plain/value/plain_value.go:15:		New				90.9%
 github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go:12:		New				84.2%
 github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:22:	New				100.0%
-github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:41:	Handler				100.0%
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:41:	Handler				75.0%
 github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:98:	Close				0.0%
 github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:16:			New				100.0%
 github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:57:			readRequestBody			66.7%
 github.com/maynagashev/go-metrics/internal/server/router/router.go:25:					New				56.7%
-github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:31:				New				65.0%
-github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:82:				Close				66.7%
+github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:31:				New				80.0%
+github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:82:				Close				100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:90:				UpdateGauge			100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:95:				IncrementCounter		100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:100:				UpdateMetric			76.9%
-github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:129:				UpdateMetrics			100.0%
+github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:129:				UpdateMetrics			80.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:139:				GetGauges			100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:143:				GetCounters			100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:147:				GetGauge			100.0%
@@ -95,8 +95,8 @@ github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:157:	
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:161:				GetMetric			83.3%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:186:				GetMetrics			100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:205:				storeMetricsToFile		77.3%
-github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:249:				restoreMetricsFromFile		80.0%
-github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:291:				Dump				100.0%
+github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:249:				restoreMetricsFromFile		85.0%
+github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:291:				Dump				0.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:301:				Restore				0.0%
 github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go:17:		Up				0.0%
 github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:33:			New				55.6%
@@ -129,4 +129,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error				100
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse			80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256		75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256		100.0%
-total:													(statements)			57.0%
+total:													(statements)			56.7%

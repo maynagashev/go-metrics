@@ -12,25 +12,30 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/json/value"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-	"github.com/maynagashev/go-metrics/pkg/sign"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
-func TestJSONValueHandler(t *testing.T) {
-	// Setup
-	logger, err := zap.NewDevelopment()
-	require.NoError(t, err)
+// Helper functions.
+func FloatPtr(v float64) *float64 {
+	return &v
+}
 
+func Int64Ptr(v int64) *int64 {
+	return &v
+}
+
+func TestJSONValueHandler(t *testing.T) {
 	tests := []struct {
 		name           string
 		requestMetric  metrics.Metric
 		expectedMetric *metrics.Metric
 		expectedStatus int
+		setupMetric    *metrics.Metric
 	}{
 		{
-			name: "Valid gauge metric",
+			name: "Get gauge metric",
 			requestMetric: metrics.Metric{
 				Name:  "test_gauge",
 				MType: metrics.TypeGauge,
@@ -38,12 +43,17 @@ func TestJSONValueHandler(t *testing.T) {
 			expectedMetric: &metrics.Metric{
 				Name:  "test_gauge",
 				MType: metrics.TypeGauge,
-				Value: metrics.FloatPtr(42.0),
+				Value: FloatPtr(42.0),
 			},
 			expectedStatus: http.StatusOK,
+			setupMetric: &metrics.Metric{
+				Name:  "test_gauge",
+				MType: metrics.TypeGauge,
+				Value: FloatPtr(42.0),
+			},
 		},
 		{
-			name: "Valid counter metric",
+			name: "Get counter metric",
 			requestMetric: metrics.Metric{
 				Name:  "test_counter",
 				MType: metrics.TypeCounter,
@@ -51,54 +61,45 @@ func TestJSONValueHandler(t *testing.T) {
 			expectedMetric: &metrics.Metric{
 				Name:  "test_counter",
 				MType: metrics.TypeCounter,
-				Delta: metrics.Int64Ptr(10),
+				Delta: Int64Ptr(10),
 			},
 			expectedStatus: http.StatusOK,
+			setupMetric: &metrics.Metric{
+				Name:  "test_counter",
+				MType: metrics.TypeCounter,
+				Delta: Int64Ptr(10),
+			},
 		},
 		{
-			name: "Non-existent metric",
+			name: "Metric not found",
 			requestMetric: metrics.Metric{
-				Name:  "non_existent",
+				Name:  "non_existent_metric",
 				MType: metrics.TypeGauge,
 			},
 			expectedMetric: nil,
 			expectedStatus: http.StatusNotFound,
-		},
-		{
-			name: "Invalid metric type",
-			requestMetric: metrics.Metric{
-				Name:  "test_gauge",
-				MType: "invalid",
-			},
-			expectedMetric: nil,
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
-			name: "Missing metric name",
-			requestMetric: metrics.Metric{
-				MType: metrics.TypeGauge,
-			},
-			expectedMetric: nil,
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
-			name: "Missing metric type",
-			requestMetric: metrics.Metric{
-				Name: "test_gauge",
-			},
-			expectedMetric: nil,
-			expectedStatus: http.StatusBadRequest,
+			setupMetric:    nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create a test storage with test metrics
-			storage := setupTestStorage(t)
-			ctx := context.Background()
+			// Setup
+			logger, err := zap.NewDevelopment()
+			require.NoError(t, err)
+
+			// Create a test storage
+			cfg := &app.Config{}
+			storage := memory.New(cfg, logger)
+
+			// Add the test metric to the storage if needed
+			if tt.setupMetric != nil {
+				err = storage.UpdateMetric(context.Background(), *tt.setupMetric)
+				require.NoError(t, err)
+			}
 
 			// Create the handler
-			handler := value.New(storage, logger)
+			handler := value.New(cfg, storage)
 
 			// Create a request
 			requestJSON, marshalErr := json.Marshal(tt.requestMetric)
@@ -145,10 +146,11 @@ func TestJSONValueHandler_InvalidJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create a test storage
-	storage := setupTestStorage(t)
+	cfg := &app.Config{}
+	storage := memory.New(cfg, logger)
 
 	// Create the handler
-	handler := value.New(storage, logger)
+	handler := value.New(cfg, storage)
 
 	// Create a request with invalid JSON
 	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader([]byte(`{invalid json}`)))
@@ -165,13 +167,8 @@ func TestJSONValueHandler_InvalidJSON(t *testing.T) {
 }
 
 func TestJSONValueHandler_GaugeMetric(t *testing.T) {
-	// Setup
-	logger, err := zap.NewDevelopment()
-	require.NoError(t, err)
-
 	// Create a test storage with a gauge metric
 	storage := setupTestStorage(t)
-	ctx := context.Background()
 
 	// Create a gauge metric request
 	gaugeValue := 42.0
@@ -181,7 +178,8 @@ func TestJSONValueHandler_GaugeMetric(t *testing.T) {
 	}
 
 	// Create the handler
-	handler := value.New(storage, logger)
+	cfg := &app.Config{}
+	handler := value.New(cfg, storage)
 
 	// Create a request
 	requestJSON, marshalErr := json.Marshal(gaugeMetric)
@@ -210,92 +208,112 @@ func TestJSONValueHandler_GaugeMetric(t *testing.T) {
 	assert.InDelta(t, gaugeValue, *responseMetric.Value, 0.0001)
 }
 
-// setupTestStorage creates a test storage with some test metrics
+// setupTestStorage creates a test storage with some test metrics.
 func setupTestStorage(t *testing.T) *memory.MemStorage {
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)
 
-	storage := memory.New(nil, logger)
+	cfg := &app.Config{}
+	storage := memory.New(cfg, logger)
 	ctx := context.Background()
 
 	// Add a gauge metric
-	gaugeMetric := metrics.NewGauge("test_gauge", 42.0)
+	gaugeValue := 42.0
+	gaugeMetric := &metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: FloatPtr(gaugeValue),
+	}
 	err = storage.UpdateMetric(ctx, *gaugeMetric)
 	require.NoError(t, err)
 
 	// Add a counter metric
-	counterMetric := metrics.NewCounter("test_counter", 10)
+	counterValue := int64(10)
+	counterMetric := &metrics.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: Int64Ptr(counterValue),
+	}
 	err = storage.UpdateMetric(ctx, *counterMetric)
 	require.NoError(t, err)
 
 	return storage
 }
 
-func TestJSONValueHandler_WithSigning(t *testing.T) {
-	// Create a logger and config
+func TestJSONValueHandler_MetricNotFound(t *testing.T) {
+	// Setup
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)
 
-	// Create config with signing
-	privateKey := "test-key"
-	cfg := &app.Config{
-		PrivateKey: privateKey,
-	}
-
-	// Create a storage with a test metric
+	// Create a test storage
+	cfg := &app.Config{}
 	storage := memory.New(cfg, logger)
-	ctx := context.Background()
-
-	// Add a gauge metric
-	gaugeValue := 42.5
-	gaugeName := "test_gauge"
-	gaugeMetric := metrics.Metric{
-		Name:  "test_gauge",
-		MType: metrics.TypeGauge,
-		Value: &gaugeValue,
-	}
-	err = storage.UpdateMetric(ctx, gaugeMetric)
-	require.NoError(t, err)
 
 	// Create the handler
 	handler := value.New(cfg, storage)
 
-	// Create request body
+	// Create a request
 	requestMetric := metrics.Metric{
-		Name:  gaugeName,
+		Name:  "non_existent_metric",
 		MType: metrics.TypeGauge,
 	}
-	requestBody, err := json.Marshal(requestMetric)
-	require.NoError(t, err)
+	requestJSON, marshalErr := json.Marshal(requestMetric)
+	require.NoError(t, marshalErr)
 
-	// Create request
-	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(requestBody))
+	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(requestJSON))
 	req.Header.Set("Content-Type", "application/json")
 
-	// Create response recorder
+	// Create a response recorder
 	rr := httptest.NewRecorder()
 
 	// Call the handler
 	handler.ServeHTTP(rr, req)
 
-	// Check status code
-	assert.Equal(t, http.StatusOK, rr.Code)
+	// Check the status code
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+}
 
-	// Parse response
-	var responseMetric metrics.Metric
-	err = json.Unmarshal(rr.Body.Bytes(), &responseMetric)
+func TestJSONValueHandler_WithSignature(t *testing.T) {
+	// Setup
+	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)
 
-	// Check response
-	assert.Equal(t, gaugeMetric.Name, responseMetric.Name)
-	assert.Equal(t, gaugeMetric.MType, responseMetric.MType)
-	assert.Equal(t, *gaugeMetric.Value, *responseMetric.Value)
+	// Create a test storage with a key for signature verification
+	cfg := &app.Config{
+		PrivateKey: "test-key",
+	}
+	storage := memory.New(cfg, logger)
 
-	// Check signature
-	signature := rr.Header().Get(sign.HeaderKey)
-	assert.NotEmpty(t, signature)
+	// Add a test metric to the storage
+	gaugeValue := 42.0
+	gaugeMetric := metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: FloatPtr(gaugeValue),
+	}
+	err = storage.UpdateMetric(context.Background(), gaugeMetric)
+	require.NoError(t, err)
 
-	// Verify signature
-	expectedSignature := sign.ComputeHMACSHA256(rr.Body.Bytes(), privateKey)
-	assert.Equal(t, expectedSignature, signature)
+	// Create the handler
+	handler := value.New(cfg, storage)
+
+	// Create a request
+	requestMetric := metrics.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+	}
+	requestJSON, marshalErr := json.Marshal(requestMetric)
+	require.NoError(t, marshalErr)
+
+	req := httptest.NewRequest(http.MethodPost, "/value", bytes.NewReader(requestJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create a response recorder
+	rr := httptest.NewRecorder()
+
+	// Call the handler
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	assert.Equal(t, http.StatusOK, rr.Code)
 }

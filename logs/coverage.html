@@ -73,7 +73,7 @@
 				
 				<option value="file8">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file9">github.com/maynagashev/go-metrics/internal/agent/agent.go (29.7%)</option>
+				<option value="file9">github.com/maynagashev/go-metrics/internal/agent/agent.go (32.4%)</option>
 				
 				<option value="file10">github.com/maynagashev/go-metrics/internal/agent/collect.go (90.7%)</option>
 				
@@ -81,7 +81,7 @@
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (0.0%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (95.0%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (90.0%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/server/app/app.go (0.0%)</option>
 				
@@ -107,13 +107,13 @@
 				
 				<option value="file25">github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go (84.2%)</option>
 				
-				<option value="file26">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (71.1%)</option>
+				<option value="file26">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (55.6%)</option>
 				
 				<option value="file27">github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go (85.7%)</option>
 				
 				<option value="file28">github.com/maynagashev/go-metrics/internal/server/router/router.go (56.7%)</option>
 				
-				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (78.5%)</option>
+				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (81.3%)</option>
 				
 				<option value="file30">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
@@ -1363,7 +1363,7 @@ var New = func(
 }</span>
 
 // IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
-func (a *agent) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
+func (a *agent) IsRequestSigningEnabled() bool <span class="cov8" title="1">{
         return a.PrivateKey != ""
 }</span>
 
@@ -1761,7 +1761,7 @@ func NewGauge(id string, value float64) *Metric <span class="cov8" title="1">{
 }</span>
 
 func (m *Metric) String() string <span class="cov8" title="1">{
-        if m == nil </span><span class="cov8" title="1">{
+        if m == nil </span><span class="cov0" title="0">{
                 return "&lt;nil&gt;"
         }</span>
         <span class="cov8" title="1">if m.Delta != nil </span><span class="cov8" title="1">{
@@ -2719,7 +2719,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
 
                 // Получаем Reader из пула
                 reader, ok := m.readerPool.Get().(*gzip.Reader)
-                if !ok </span><span class="cov8" title="1">{
+                if !ok </span><span class="cov0" title="0">{
                         m.log.Error("error getting reader from pool")
                         http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
                         return
@@ -2735,7 +2735,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
 
                 // Получаем closer из пула
                 <span class="cov8" title="1">closer, ok := m.closerPool.Get().(*gzipReadCloser)
-                if !ok </span><span class="cov8" title="1">{
+                if !ok </span><span class="cov0" title="0">{
                         m.log.Error("error getting closer from pool")
                         m.readerPool.Put(reader)
                         http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
@@ -2983,9 +2983,9 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
         log.Debug("memory storage created", zap.Any("storage", memStorage))
 
         // Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла.
-        if cfg.IsRestoreEnabled() </span><span class="cov0" title="0">{
+        if cfg.IsRestoreEnabled() </span><span class="cov8" title="1">{
                 err := memStorage.restoreMetricsFromFile()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         log.Error("failed to read metrics from file", zap.Error(err))
                 }</span>
         }
@@ -3025,7 +3025,7 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
 }
 
 func (ms *MemStorage) Close() error <span class="cov8" title="1">{
-        if ms.cfg.IsStoreEnabled() &amp;&amp; !ms.cfg.IsSyncStore() </span><span class="cov0" title="0">{
+        if ms.cfg.IsStoreEnabled() &amp;&amp; !ms.cfg.IsSyncStore() </span><span class="cov8" title="1">{
                 return ms.storeMetricsToFile()
         }</span>
         <span class="cov8" title="1">return nil</span>
@@ -3045,12 +3045,12 @@ func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Co
 func (ms *MemStorage) UpdateMetric(_ context.Context, metric metrics.Metric) error <span class="cov8" title="1">{
         switch metric.MType </span>{
         case metrics.TypeGauge:<span class="cov8" title="1">
-                if metric.Value == nil </span><span class="cov8" title="1">{
+                if metric.Value == nil </span><span class="cov0" title="0">{
                         return errors.New("gauge value is nil")
                 }</span>
                 <span class="cov8" title="1">ms.UpdateGauge(metric.Name, storage.Gauge(*metric.Value))</span>
         case metrics.TypeCounter:<span class="cov8" title="1">
-                if metric.Delta == nil </span><span class="cov8" title="1">{
+                if metric.Delta == nil </span><span class="cov0" title="0">{
                         return errors.New("counter delta is nil")
                 }</span>
                 <span class="cov8" title="1">ms.IncrementCounter(metric.Name, storage.Counter(*metric.Delta))</span>
@@ -3059,7 +3059,7 @@ func (ms *MemStorage) UpdateMetric(_ context.Context, metric metrics.Metric) err
         }
 
         // Сохраняем метрики в файл сразу после изменения, если включено синхронное сохранение.
-        <span class="cov8" title="1">if ms.cfg.IsStoreEnabled() &amp;&amp; ms.cfg.IsSyncStore() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if ms.cfg.IsStoreEnabled() &amp;&amp; ms.cfg.IsSyncStore() </span><span class="cov8" title="1">{
                 err := ms.storeMetricsToFile()
                 if err != nil </span><span class="cov0" title="0">{
                         // Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
@@ -3074,7 +3074,7 @@ func (ms *MemStorage) UpdateMetric(_ context.Context, metric metrics.Metric) err
 func (ms *MemStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov8" title="1">{
         for _, item := range items </span><span class="cov8" title="1">{
                 err := ms.UpdateMetric(ctx, item)
-                if err != nil </span><span class="cov8" title="1">{
+                if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
         }
@@ -3211,7 +3211,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov8" title="1
         <span class="cov8" title="1">var parsed []metrics.Metric
         decoder := json.NewDecoder(f)
         err = decoder.Decode(&amp;parsed)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
 
@@ -3233,7 +3233,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov8" title="1
 }
 
 // Dump выводит информацию о хранилище в лог.
-func (ms *MemStorage) Dump() <span class="cov8" title="1">{
+func (ms *MemStorage) Dump() <span class="cov0" title="0">{
         ms.log.Info(
                 "Memory storage dump",
                 zap.Int("gauges", len(ms.gauges)),
