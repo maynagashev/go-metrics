@@ -6,104 +6,105 @@
 3. structtag: check that struct field tags conform to reflect.StructTag.Get
 4. errcheck: check for unchecked errors
 5. exhaustive: check exhaustiveness of enum switch statements
-6. SA1000: Invalid regular expression
-7. SA1001: Invalid template
-8. SA1002: Invalid format in time.Parse
-9. SA1003: Unsupported argument to functions in encoding/binary
-10. SA1004: Suspiciously small untyped constant in time.Sleep
-11. SA1005: Invalid first argument to exec.Command
-12. SA1006: Printf with dynamic first argument and no further arguments
-13. SA1007: Invalid URL in net/url.Parse
-14. SA1008: Non-canonical key in http.Header map
-15. SA1010: (*regexp.Regexp).FindAll called with n == 0, which will always return zero results
-16. SA1011: Various methods in the 'strings' package expect valid UTF-8, but invalid input is provided
-17. SA1012: A nil context.Context is being passed to a function, consider using context.TODO instead
-18. SA1013: io.Seeker.Seek is being called with the whence constant as the first argument, but it should be the second
-19. SA1014: Non-pointer value passed to Unmarshal or Decode
-20. SA1015: Using time.Tick in a way that will leak. Consider using time.NewTicker, and only use time.Tick in tests, commands and endless functions
-21. SA1016: Trapping a signal that cannot be trapped
-22. SA1017: Channels used with os/signal.Notify should be buffered
-23. SA1018: strings.Replace called with n == 0, which does nothing
-24. SA1019: Using a deprecated function, variable, constant or field
-25. SA1020: Using an invalid host:port pair with a net.Listen-related function
-26. SA1021: Using bytes.Equal to compare two net.IP
-27. SA1023: Modifying the buffer in an io.Writer implementation
-28. SA1024: A string cutset contains duplicate characters
-29. SA1025: It is not possible to use (*time.Timer).Reset's return value correctly
-30. SA1026: Cannot marshal channels or functions
-31. SA1027: Atomic access to 64-bit variable must be 64-bit aligned
-32. SA1028: sort.Slice can only be used on slices
-33. SA1029: Inappropriate key in call to context.WithValue
-34. SA1030: Invalid argument in call to a strconv function
-35. SA1031: Overlapping byte slices passed to an encoder
-36. SA1032: Wrong order of arguments to errors.Is
-37. SA2000: sync.WaitGroup.Add called inside the goroutine, leading to a race condition
-38. SA2001: Empty critical section, did you mean to defer the unlock?
-39. SA2002: Called testing.T.FailNow or SkipNow in a goroutine, which isn't allowed
-40. SA2003: Deferred Lock right after locking, likely meant to defer Unlock instead
-41. SA3000: TestMain doesn't call os.Exit, hiding test failures
-42. SA3001: Assigning to b.N in benchmarks distorts the results
-43. SA4000: Binary operator has identical expressions on both sides
-44. SA4001: &*x gets simplified to x, it does not copy x
-45. SA4003: Comparing unsigned values against negative values is pointless
-46. SA4004: The loop exits unconditionally after one iteration
-47. SA4005: Field assignment that will never be observed. Did you mean to use a pointer receiver?
-48. SA4006: A value assigned to a variable is never read before being overwritten. Forgotten error check or dead code?
-49. SA4008: The variable in the loop condition never changes, are you incrementing the wrong variable?
-50. SA4009: A function argument is overwritten before its first use
-51. SA4010: The result of append will never be observed anywhere
-52. SA4011: Break statement with no effect. Did you mean to break out of an outer loop?
-53. SA4012: Comparing a value against NaN even though no value is equal to NaN
-54. SA4013: Negating a boolean twice (!!b) is the same as writing b. This is either redundant, or a typo.
-55. SA4014: An if/else if chain has repeated conditions and no side-effects; if the condition didn't match the first time, it won't match the second time, either
-56. SA4015: Calling functions like math.Ceil on floats converted from integers doesn't do anything useful
-57. SA4016: Certain bitwise operations, such as x ^ 0, do not do anything useful
-58. SA4017: Discarding the return values of a function without side effects, making the call pointless
-59. SA4018: Self-assignment of variables
-60. SA4019: Multiple, identical build constraints in the same file
-61. SA4020: Unreachable case clause in a type switch
-62. SA4021: 'x = append(y)' is equivalent to 'x = y'
-63. SA4022: Comparing the address of a variable against nil
-64. SA4023: Impossible comparison of interface value with untyped nil
-65. SA4024: Checking for impossible return value from a builtin function
-66. SA4025: Integer division of literals that results in zero
-67. SA4026: Go constants cannot express negative zero
-68. SA4027: (*net/url.URL).Query returns a copy, modifying it doesn't change the URL
-69. SA4028: x % 1 is always zero
-70. SA4029: Ineffective attempt at sorting slice
-71. SA4030: Ineffective attempt at generating random number
-72. SA4031: Checking never-nil value against nil
-73. SA4032: Comparing runtime.GOOS or runtime.GOARCH against impossible value
-74. SA5000: Assignment to nil map
-75. SA5001: Deferring Close before checking for a possible error
-76. SA5002: The empty for loop ('for {}') spins and can block the scheduler
-77. SA5003: Defers in infinite loops will never execute
-78. SA5004: 'for { select { ...' with an empty default branch spins
-79. SA5005: The finalizer references the finalized object, preventing garbage collection
-80. SA5007: Infinite recursive call
-81. SA5008: Invalid struct tag
-82. SA5009: Invalid Printf call
-83. SA5010: Impossible type assertion
-84. SA5011: Possible nil pointer dereference
-85. SA5012: Passing odd-sized slice to function expecting even size
-86. SA6000: Using regexp.Match or related in a loop, should use regexp.Compile
-87. SA6001: Missing an optimization opportunity when indexing maps by byte slices
-88. SA6002: Storing non-pointer values in sync.Pool allocates memory
-89. SA6003: Converting a string to a slice of runes before ranging over it
-90. SA6005: Inefficient string comparison with strings.ToLower or strings.ToUpper
-91. SA6006: Using io.WriteString to write []byte
-92. SA9001: Defers in range loops may not run when you expect them to
-93. SA9002: Using a non-octal os.FileMode that looks like it was meant to be in octal.
-94. SA9003: Empty body in an if or else branch
-95. SA9004: Only the first constant has an explicit type
-96. SA9005: Trying to marshal a struct with no public fields nor custom marshaling
-97. SA9006: Dubious bit shifting of a fixed size integer value
-98. SA9007: Deleting a directory that shouldn't be deleted
-99. SA9008: else branch of a type assertion is probably not reading the right value
-100. SA9009: Ineffectual Go compiler directive
-101. ST1000: Incorrect or missing package comment
-102. ST1003: Poorly chosen identifier
-103. ST1005: Incorrectly formatted error string
-104. ST1006: Poorly chosen receiver name
-105. ST1011: Poorly chosen name for variable of type time.Duration
+6. bodyclose: checks whether HTTP response body is closed successfully
+7. SA1000: Invalid regular expression
+8. SA1001: Invalid template
+9. SA1002: Invalid format in time.Parse
+10. SA1003: Unsupported argument to functions in encoding/binary
+11. SA1004: Suspiciously small untyped constant in time.Sleep
+12. SA1005: Invalid first argument to exec.Command
+13. SA1006: Printf with dynamic first argument and no further arguments
+14. SA1007: Invalid URL in net/url.Parse
+15. SA1008: Non-canonical key in http.Header map
+16. SA1010: (*regexp.Regexp).FindAll called with n == 0, which will always return zero results
+17. SA1011: Various methods in the 'strings' package expect valid UTF-8, but invalid input is provided
+18. SA1012: A nil context.Context is being passed to a function, consider using context.TODO instead
+19. SA1013: io.Seeker.Seek is being called with the whence constant as the first argument, but it should be the second
+20. SA1014: Non-pointer value passed to Unmarshal or Decode
+21. SA1015: Using time.Tick in a way that will leak. Consider using time.NewTicker, and only use time.Tick in tests, commands and endless functions
+22. SA1016: Trapping a signal that cannot be trapped
+23. SA1017: Channels used with os/signal.Notify should be buffered
+24. SA1018: strings.Replace called with n == 0, which does nothing
+25. SA1019: Using a deprecated function, variable, constant or field
+26. SA1020: Using an invalid host:port pair with a net.Listen-related function
+27. SA1021: Using bytes.Equal to compare two net.IP
+28. SA1023: Modifying the buffer in an io.Writer implementation
+29. SA1024: A string cutset contains duplicate characters
+30. SA1025: It is not possible to use (*time.Timer).Reset's return value correctly
+31. SA1026: Cannot marshal channels or functions
+32. SA1027: Atomic access to 64-bit variable must be 64-bit aligned
+33. SA1028: sort.Slice can only be used on slices
+34. SA1029: Inappropriate key in call to context.WithValue
+35. SA1030: Invalid argument in call to a strconv function
+36. SA1031: Overlapping byte slices passed to an encoder
+37. SA1032: Wrong order of arguments to errors.Is
+38. SA2000: sync.WaitGroup.Add called inside the goroutine, leading to a race condition
+39. SA2001: Empty critical section, did you mean to defer the unlock?
+40. SA2002: Called testing.T.FailNow or SkipNow in a goroutine, which isn't allowed
+41. SA2003: Deferred Lock right after locking, likely meant to defer Unlock instead
+42. SA3000: TestMain doesn't call os.Exit, hiding test failures
+43. SA3001: Assigning to b.N in benchmarks distorts the results
+44. SA4000: Binary operator has identical expressions on both sides
+45. SA4001: &*x gets simplified to x, it does not copy x
+46. SA4003: Comparing unsigned values against negative values is pointless
+47. SA4004: The loop exits unconditionally after one iteration
+48. SA4005: Field assignment that will never be observed. Did you mean to use a pointer receiver?
+49. SA4006: A value assigned to a variable is never read before being overwritten. Forgotten error check or dead code?
+50. SA4008: The variable in the loop condition never changes, are you incrementing the wrong variable?
+51. SA4009: A function argument is overwritten before its first use
+52. SA4010: The result of append will never be observed anywhere
+53. SA4011: Break statement with no effect. Did you mean to break out of an outer loop?
+54. SA4012: Comparing a value against NaN even though no value is equal to NaN
+55. SA4013: Negating a boolean twice (!!b) is the same as writing b. This is either redundant, or a typo.
+56. SA4014: An if/else if chain has repeated conditions and no side-effects; if the condition didn't match the first time, it won't match the second time, either
+57. SA4015: Calling functions like math.Ceil on floats converted from integers doesn't do anything useful
+58. SA4016: Certain bitwise operations, such as x ^ 0, do not do anything useful
+59. SA4017: Discarding the return values of a function without side effects, making the call pointless
+60. SA4018: Self-assignment of variables
+61. SA4019: Multiple, identical build constraints in the same file
+62. SA4020: Unreachable case clause in a type switch
+63. SA4021: 'x = append(y)' is equivalent to 'x = y'
+64. SA4022: Comparing the address of a variable against nil
+65. SA4023: Impossible comparison of interface value with untyped nil
+66. SA4024: Checking for impossible return value from a builtin function
+67. SA4025: Integer division of literals that results in zero
+68. SA4026: Go constants cannot express negative zero
+69. SA4027: (*net/url.URL).Query returns a copy, modifying it doesn't change the URL
+70. SA4028: x % 1 is always zero
+71. SA4029: Ineffective attempt at sorting slice
+72. SA4030: Ineffective attempt at generating random number
+73. SA4031: Checking never-nil value against nil
+74. SA4032: Comparing runtime.GOOS or runtime.GOARCH against impossible value
+75. SA5000: Assignment to nil map
+76. SA5001: Deferring Close before checking for a possible error
+77. SA5002: The empty for loop ('for {}') spins and can block the scheduler
+78. SA5003: Defers in infinite loops will never execute
+79. SA5004: 'for { select { ...' with an empty default branch spins
+80. SA5005: The finalizer references the finalized object, preventing garbage collection
+81. SA5007: Infinite recursive call
+82. SA5008: Invalid struct tag
+83. SA5009: Invalid Printf call
+84. SA5010: Impossible type assertion
+85. SA5011: Possible nil pointer dereference
+86. SA5012: Passing odd-sized slice to function expecting even size
+87. SA6000: Using regexp.Match or related in a loop, should use regexp.Compile
+88. SA6001: Missing an optimization opportunity when indexing maps by byte slices
+89. SA6002: Storing non-pointer values in sync.Pool allocates memory
+90. SA6003: Converting a string to a slice of runes before ranging over it
+91. SA6005: Inefficient string comparison with strings.ToLower or strings.ToUpper
+92. SA6006: Using io.WriteString to write []byte
+93. SA9001: Defers in range loops may not run when you expect them to
+94. SA9002: Using a non-octal os.FileMode that looks like it was meant to be in octal.
+95. SA9003: Empty body in an if or else branch
+96. SA9004: Only the first constant has an explicit type
+97. SA9005: Trying to marshal a struct with no public fields nor custom marshaling
+98. SA9006: Dubious bit shifting of a fixed size integer value
+99. SA9007: Deleting a directory that shouldn't be deleted
+100. SA9008: else branch of a type assertion is probably not reading the right value
+101. SA9009: Ineffectual Go compiler directive
+102. ST1000: Incorrect or missing package comment
+103. ST1003: Poorly chosen identifier
+104. ST1005: Incorrectly formatted error string
+105. ST1006: Poorly chosen receiver name
+106. ST1011: Poorly chosen name for variable of type time.Duration
 Запуск мультичекера...
