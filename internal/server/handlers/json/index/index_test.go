@@ -49,36 +49,26 @@ func TestJSONIndexHandler(t *testing.T) {
 
 	// Find and check the gauge metric
 	gaugeValue := 42.0
-	var gaugeMetric = &metrics.Metric{
-		Name:  "test_gauge",
-		MType: metrics.TypeGauge,
-		Value: &gaugeValue,
-	}
 
 	foundGauge := false
 	for _, m := range metricsResponse {
 		if m.Name == "test_gauge" && m.MType == metrics.TypeGauge {
 			foundGauge = true
 			assert.NotNil(t, m.Value)
-			assert.InDelta(t, *gaugeMetric.Value, *m.Value, 0.0001)
+			assert.InDelta(t, gaugeValue, *m.Value, 0.0001)
 		}
 	}
 	assert.True(t, foundGauge, "Gauge metric not found in response")
 
 	// Find and check the counter metric
 	counterValue := int64(10)
-	var counterMetric = &metrics.Metric{
-		Name:  "test_counter",
-		MType: metrics.TypeCounter,
-		Delta: &counterValue,
-	}
 
 	foundCounter := false
 	for _, m := range metricsResponse {
 		if m.Name == "test_counter" && m.MType == metrics.TypeCounter {
 			foundCounter = true
 			assert.NotNil(t, m.Delta)
-			assert.Equal(t, *counterMetric.Delta, *m.Delta)
+			assert.Equal(t, counterValue, *m.Delta)
 		}
 	}
 	assert.True(t, foundCounter, "Counter metric not found in response")

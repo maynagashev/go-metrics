@@ -91,8 +91,8 @@ func TestAgent_CollectAdditionalMetrics(t *testing.T) {
 	cpuCount := runtime.NumCPU()
 	for i := range cpuCount {
 		cpuMetricName := fmt.Sprintf("CPUutilization%d", i+1)
-		_, ok := metricsMap[cpuMetricName]
-		assert.True(t, ok, "CPU utilization metric %s should be present", cpuMetricName)
+		_, exists := metricsMap[cpuMetricName]
+		assert.True(t, exists, "CPU utilization metric %s should be present", cpuMetricName)
 	}
 }
 
@@ -122,13 +122,14 @@ func TestAgent_GetMetrics(t *testing.T) {
 		assert.NotEmpty(t, m.Name)
 		assert.NotEmpty(t, m.MType)
 
-		if m.MType == metrics.TypeGauge {
+		switch m.MType {
+		case metrics.TypeGauge:
 			assert.NotNil(t, m.Value)
 			assert.Nil(t, m.Delta)
-		} else if m.MType == metrics.TypeCounter {
+		case metrics.TypeCounter:
 			assert.NotNil(t, m.Delta)
 			assert.Nil(t, m.Value)
-		} else {
+		default:
 			t.Errorf("Unknown metric type: %s", m.MType)
 		}
 	}
