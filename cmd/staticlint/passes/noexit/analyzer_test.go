@@ -1,8 +1,9 @@
-package noexit
+package noexit_test
 
 import (
 	"testing"
 
+	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit"
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
@@ -17,5 +18,5 @@ import (
 // Каждый тестовый файл содержит комментарии с аннотациями "want", указывающими ожидаемые диагностические сообщения.
 func TestAnalyzer(t *testing.T) {
 	testdata := analysistest.TestData()
-	analysistest.Run(t, testdata, Analyzer, "a")
+	analysistest.Run(t, testdata, noexit.NewAnalyzer(), "a")
 }

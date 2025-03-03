@@ -94,6 +94,8 @@ func NewAnalyzer() *analysis.Analyzer {
 
 // Analyzer - анализатор для проверки необработанных ошибок.
 // Он обнаруживает случаи, когда возвращаемая функцией ошибка игнорируется или явно отбрасывается.
+//
+//nolint:gochecknoglobals // Analyzer должен быть глобальной переменной для доступа из других пакетов
 var Analyzer = NewAnalyzer()
 
 func isErrorType(t types.Type) bool {
@@ -107,12 +109,14 @@ type analysisResult struct {
 	pass      *analysis.Pass
 }
 
-// ignoredFunctions содержит имена функций, ошибки которых можно игнорировать.
+// getIgnoredFunctions возвращает карту имен функций, ошибки которых можно игнорировать.
 // Это карта для эффективного поиска, с именами функций в качестве ключей.
-var ignoredFunctions = map[string]bool{
-	"fmt.Print":   true,
-	"fmt.Printf":  true,
-	"fmt.Println": true,
+func getIgnoredFunctions() map[string]bool {
+	return map[string]bool{
+		"fmt.Print":   true,
+		"fmt.Printf":  true,
+		"fmt.Println": true,
+	}
 }
 
 // shouldIgnoreCall проверяет, следует ли игнорировать ошибки от данного вызова.
@@ -136,6 +140,7 @@ func shouldIgnoreCall(_ *analysis.Pass, call *ast.CallExpr) bool {
 	fullName := pkgName.Name + "." + fun.Sel.Name
 
 	// Проверяем, есть ли функция в списке игнорируемых
+	ignoredFunctions := getIgnoredFunctions()
 	for prefix := range ignoredFunctions {
 		if strings.HasPrefix(fullName, prefix) {
 			return true
@@ -251,45 +256,52 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	return nil, nil
 }
 
-// resultErrors возвращает булев массив со значениями true,
-// если тип i-го возвращаемого значения соответствует ошибке.
+// resultErrors определяет, какие из возвращаемых значений функции являются ошибками.
+// Возвращает массив булевых значений, где true означает, что соответствующее
+// возвращаемое значение имеет тип error.
 //
 // Параметры:
 //   - pass: проход анализа, содержащий информацию о типах
 //   - call: выражение вызова для проверки
-//
-// Возвращает булев массив, указывающий, какие возвращаемые значения являются ошибками.
 func resultErrors(pass *analysis.Pass, call *ast.CallExpr) []bool {
-	switch t := pass.TypesInfo.Types[call].Type.(type) {
-	case *types.Named:
-		return []bool{isErrorType(t)}
-	case *types.Pointer:
-		return []bool{isErrorType(t)}
-	case *types.Tuple:
-		s := make([]bool, t.Len())
-		for i := range t.Len() {
-			switch mt := t.At(i).Type().(type) {
-			case *types.Named:
-				s[i] = isErrorType(mt)
-			case *types.Pointer:
-				s[i] = isErrorType(mt)
-			}
-		}
-		return s
+	// Получаем тип выражения вызова
+	callType := pass.TypesInfo.Types[call].Type
+	if callType == nil {
+		return nil
 	}
-	return []bool{false}
+
+	// Получаем тип функции
+	switch t := callType.(type) {
+	case *types.Tuple:
+		// Функция возвращает несколько значений
+		n := t.Len()
+		res := make([]bool, n)
+		for i := range n {
+			res[i] = isErrorType(t.At(i).Type())
+		}
+		return res
+	default:
+		// Функция возвращает одно значение
+		return []bool{isErrorType(callType)}
+	}
 }
 
-// isReturnError возвращает true, если любое из возвращаемых значений является ошибкой.
+// isReturnError проверяет, возвращает ли вызов функции ошибку.
+// Возвращает true, если хотя бы одно из возвращаемых значений имеет тип error.
 //
 // Параметры:
 //   - pass: проход анализа, содержащий информацию о типах
 //   - call: выражение вызова для проверки
-//
-// Возвращает true, если вызов функции возвращает ошибку, иначе false.
 func isReturnError(pass *analysis.Pass, call *ast.CallExpr) bool {
-	for _, isError := range resultErrors(pass, call) {
-		if isError {
+	// Получаем информацию о типах возвращаемых значений
+	results := resultErrors(pass, call)
+	if results == nil {
+		return false
+	}
+
+	// Проверяем, есть ли среди возвращаемых значений ошибка
+	for _, isErr := range results {
+		if isErr {
 			return true
 		}
 	}

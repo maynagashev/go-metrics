@@ -176,13 +176,7 @@ func printAnalyzersList(analyzers []*analysis.Analyzer) {
 	}
 }
 
-// main инициализирует и запускает multichecker со всеми настроенными анализаторами.
-// Функция выполняет следующие шаги:
-// 1. Инициализирует базовый набор анализаторов
-// 2. Загружает конфигурацию из файла
-// 3. Добавляет анализаторы из staticcheck и stylecheck согласно конфигурации
-// 4. Выводит список используемых анализаторов
-// 5. Запускает multichecker
+// 5. Запускает multichecker.
 func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(0)

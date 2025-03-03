@@ -12,7 +12,7 @@ import (
 // Он проверяет, что функция корректно загружает и парсит файл конфигурации.
 func TestLoadConfig(t *testing.T) {
 	// Test with non-existent file
-	cfg, ok := loadConfig("non_existent_file.json")
+	_, ok := loadConfig("non_existent_file.json")
 	if ok {
 		t.Errorf("Expected loadConfig to return false for non-existent file, got true")
 	}
@@ -30,7 +30,7 @@ func TestLoadConfig(t *testing.T) {
 	defer os.Remove(tempFile)
 
 	// Test with valid file
-	cfg, ok = loadConfig(tempFile)
+	cfg, ok := loadConfig(tempFile)
 	if !ok {
 		t.Errorf("Expected loadConfig to return true for valid file, got false")
 	}
