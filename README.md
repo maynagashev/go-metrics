@@ -80,7 +80,23 @@
   - [x] Напишите и добавьте в multichecker собственный анализатор, запрещающий использовать прямой вызов os.Exit в функции main пакета main.
   - [x] Добавьте документацию в формате godoc, подробно опишите в ней механизм запуска multichecker, а также каждый анализатор и его назначение.
   - [x] Покрытие вашего кода тестами к концу спринта должно быть не менее 55%.
-  
+- **Iter20**. Флаги сборки и компиляции.
+  - [ ] Добавьте в пакеты `cmd/agent` и `cmd/server` глобальные переменные:
+
+    ```golang
+    var BuildVersion string
+    var BuildDate string
+    var BuildCommit string
+    ```
+
+  - [ ] При старте приложения выводите в stdout сообщение в следующем формате:
+
+    ```bash
+    Build version: <buildVersion> (или "N/A" при отсутствии значения)
+    Build date: <buildDate> (или "N/A" при отсутствии значения)
+    Build commit: <buildCommit> (или "N/A" при отсутствии значения)
+    ```
+
 ## Обновление шаблона
 
 Чтобы иметь возможность получать обновления автотестов и других частей шаблона, выполните команду:
@@ -152,4 +168,12 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/segmentio/golines@latest
 go install honnef.co/go/tools/cmd/staticcheck@latest
+```
+
+## Сборка с указанием версий
+
+Пример:
+
+```bash
+go run -ldflags "-X main.BuildVersion=v1.0.1 -X 'main.BuildDate=$(date +'%Y/%m/%d %H:%M:%S')' -X main.BuildCommit=dev
 ```
