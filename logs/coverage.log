@@ -1,13 +1,15 @@
 github.com/maynagashev/go-metrics/cmd/agent/flags.go:32:						mustParseFlags			100.0%
-github.com/maynagashev/go-metrics/cmd/agent/main.go:12:							main				100.0%
-github.com/maynagashev/go-metrics/cmd/agent/main.go:27:							initLogger			100.0%
+github.com/maynagashev/go-metrics/cmd/agent/main.go:25:							printVersion			100.0%
+github.com/maynagashev/go-metrics/cmd/agent/main.go:31:							main				100.0%
+github.com/maynagashev/go-metrics/cmd/agent/main.go:48:							initLogger			100.0%
 github.com/maynagashev/go-metrics/cmd/agent/pprof.go:15:						initPprof			100.0%
 github.com/maynagashev/go-metrics/cmd/agent/pprof.go:22:						startPProf			100.0%
 github.com/maynagashev/go-metrics/cmd/migrate/main.go:13:						run				57.1%
 github.com/maynagashev/go-metrics/cmd/migrate/main.go:31:						main				100.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:49:						main				0.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:85:						initStorage			0.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:98:						initLogger			0.0%
+github.com/maynagashev/go-metrics/cmd/server/main.go:63:						printVersion			100.0%
+github.com/maynagashev/go-metrics/cmd/server/main.go:69:						main				0.0%
+github.com/maynagashev/go-metrics/cmd/server/main.go:107:						initStorage			0.0%
+github.com/maynagashev/go-metrics/cmd/server/main.go:120:						initLogger			0.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:65:			getErrorType			69.2%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:87:			NewAnalyzer			100.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:101:			isErrorType			100.0%
@@ -129,4 +131,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error				100
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse			80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256		75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256		100.0%
-total:													(statements)			56.7%
+total:													(statements)			56.9%

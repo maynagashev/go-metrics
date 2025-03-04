@@ -63,7 +63,7 @@
 				
 				<option value="file3">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
 				
-				<option value="file4">github.com/maynagashev/go-metrics/cmd/server/main.go (0.0%)</option>
+				<option value="file4">github.com/maynagashev/go-metrics/cmd/server/main.go (8.3%)</option>
 				
 				<option value="file5">github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go (81.9%)</option>
 				
@@ -260,6 +260,7 @@ func mustParseFlags() Flags <span class="cov8" title="1">{
 package main
 
 import (
+        "fmt"
         "log/slog"
         "os"
         "time"
@@ -267,9 +268,29 @@ import (
         "github.com/maynagashev/go-metrics/internal/agent"
 )
 
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+        BuildVersion = "N/A"
+        BuildDate    = "N/A"
+        BuildCommit  = "N/A"
+)
+
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() <span class="cov8" title="1">{
+        fmt.Println("Build version:", BuildVersion)
+        fmt.Println("Build date:", BuildDate)
+        fmt.Println("Build commit:", BuildCommit)
+}</span>
+
 func main() <span class="cov8" title="1">{
-        flags := mustParseFlags()
         initLogger()
+        printVersion()
+
+        flags := mustParseFlags()
         slog.Debug("parsed flags and env variables", "flags", flags)
 
         initPprof(flags)
@@ -424,6 +445,8 @@ import (
         //nolint:gosec // G108: pprof is used intentionally for debugging and profiling
         _ "net/http/pprof"
 
+        "fmt"
+
         "github.com/maynagashev/go-metrics/internal/server/app"
         "github.com/maynagashev/go-metrics/internal/server/router"
         "github.com/maynagashev/go-metrics/internal/server/storage"
@@ -432,18 +455,38 @@ import (
         "go.uber.org/zap"
 )
 
-func main() <span class="cov0" title="0">{
-        flags, err := app.ParseFlags()
-        if err != nil </span><span class="cov0" title="0">{
-                panic(err)</span>
-        }
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+        BuildVersion = "N/A"
+        BuildDate    = "N/A"
+        BuildCommit  = "N/A"
+)
 
-        <span class="cov0" title="0">log := initLogger()
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() <span class="cov8" title="1">{
+        fmt.Println("Build version:", BuildVersion)
+        fmt.Println("Build date:", BuildDate)
+        fmt.Println("Build commit:", BuildCommit)
+}</span>
+
+func main() <span class="cov0" title="0">{
+        log := initLogger()
         defer func() </span><span class="cov0" title="0">{
                 if syncErr := log.Sync(); syncErr != nil </span><span class="cov0" title="0">{
                         log.Error("failed to sync logger", zap.Error(syncErr))
                 }</span>
         }()
+
+        <span class="cov0" title="0">printVersion()
+
+        flags, err := app.ParseFlags()
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
 
         <span class="cov0" title="0">cfg := app.NewConfig(flags)
         server := app.New(cfg)
