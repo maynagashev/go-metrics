@@ -38,6 +38,8 @@ import (
 	//nolint:gosec // G108: pprof is used intentionally for debugging and profiling
 	_ "net/http/pprof"
 
+	"fmt"
+
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
@@ -46,18 +48,38 @@ import (
 	"go.uber.org/zap"
 )
 
-func main() {
-	flags, err := app.ParseFlags()
-	if err != nil {
-		panic(err)
-	}
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+	BuildVersion = "N/A"
+	BuildDate    = "N/A"
+	BuildCommit  = "N/A"
+)
 
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() {
+	fmt.Println("Build version:", BuildVersion)
+	fmt.Println("Build date:", BuildDate)
+	fmt.Println("Build commit:", BuildCommit)
+}
+
+func main() {
 	log := initLogger()
 	defer func() {
 		if syncErr := log.Sync(); syncErr != nil {
 			log.Error("failed to sync logger", zap.Error(syncErr))
 		}
 	}()
+
+	printVersion()
+
+	flags, err := app.ParseFlags()
+	if err != nil {
+		panic(err)
+	}
 
 	cfg := app.NewConfig(flags)
 	server := app.New(cfg)
