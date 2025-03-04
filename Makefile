@@ -142,3 +142,27 @@ staticcheck:
 staticlint:
 	@echo "Запуск кастомного мультичекера staticlint..."
 	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
+
+# Установка версий для сборки
+set-versions:
+	$(eval BUILD_VERSION := $(shell git describe --tags --always))
+	$(eval BUILD_DATE := $(shell date "+%Y-%m-%d_%H:%M:%S"))
+	$(eval BUILD_COMMIT := $(shell git rev-parse HEAD))
+	@echo "Build version: $(BUILD_VERSION)"
+	@echo "Build date: $(BUILD_DATE)"
+	@echo "Build commit: $(BUILD_COMMIT)"
+
+# Сборка с указанием версий
+build-with-versions: set-versions
+	@echo "Сборка с указанием версий..."
+
+	@go build -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" -o ./bin/server ./cmd/server/.
+	@go build -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" -o ./bin/agent ./cmd/agent/.
+
+server-with-version: set-versions
+	@echo "Запуск сервера с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
+
+agent-with-version: set-versions
+	@echo "Запуск агента с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
