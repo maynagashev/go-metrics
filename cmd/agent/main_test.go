@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"crypto/rsa"
+
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/stretchr/testify/assert"
@@ -25,6 +27,11 @@ func (m *MockAgent) Run() {
 }
 
 func (m *MockAgent) IsRequestSigningEnabled() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockAgent) IsEncryptionEnabled() bool {
 	args := m.Called()
 	return args.Bool(0)
 }
@@ -77,6 +84,7 @@ func TestMain(t *testing.T) {
 		reportInterval time.Duration,
 		privateKey string,
 		rateLimit int,
+		publicKey *rsa.PublicKey,
 	) agent.Agent {
 		// Проверяем, что параметры переданы правильно
 		assert.Equal(t, "http://localhost:9090", serverURL)
@@ -84,6 +92,7 @@ func TestMain(t *testing.T) {
 		assert.Equal(t, 5*time.Second, reportInterval)
 		assert.Equal(t, "test-key", privateKey)
 		assert.Equal(t, 5, rateLimit)
+		assert.Nil(t, publicKey)
 		return mockAgent
 	}
 

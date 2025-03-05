@@ -1,5 +1,13 @@
 package app
 
+import (
+	"crypto/rsa"
+	"log/slog"
+	"os"
+
+	"github.com/maynagashev/go-metrics/pkg/crypto"
+)
+
 // Config содержит конфигурацию сервера метрик.
 type Config struct {
 	// Addr адрес и порт для запуска сервера.
@@ -16,6 +24,8 @@ type Config struct {
 	PrivateKey string
 	// Включить профилирование через pprof
 	EnablePprof bool
+	// Приватный ключ для расшифровки данных.
+	PrivateRSAKey *rsa.PrivateKey
 }
 
 // DatabaseConfig содержит настройки подключения к базе данных.
@@ -27,7 +37,7 @@ type DatabaseConfig struct {
 }
 
 func NewConfig(flags *Flags) *Config {
-	return &Config{
+	cfg := &Config{
 		Addr:            flags.Server.Addr,
 		StoreInterval:   flags.Server.StoreInterval,
 		FileStoragePath: flags.Server.FileStoragePath,
@@ -39,6 +49,19 @@ func NewConfig(flags *Flags) *Config {
 		PrivateKey:  flags.PrivateKey,
 		EnablePprof: flags.Server.EnablePprof,
 	}
+
+	// Load private key for decryption if provided
+	if flags.CryptoKey != "" {
+		var err error
+		cfg.PrivateRSAKey, err = crypto.LoadPrivateKey(flags.CryptoKey)
+		if err != nil {
+			slog.Error("failed to load private key", "error", err, "path", flags.CryptoKey)
+			os.Exit(1)
+		}
+		slog.Info("loaded private key for decryption", "path", flags.CryptoKey)
+	}
+
+	return cfg
 }
 
 // IsStoreEnabled возвращает true, если включено сохранение метрик на сервере.
@@ -48,7 +71,7 @@ func (cfg *Config) IsStoreEnabled() bool {
 
 // IsRestoreEnabled надо ли восстанавливать метрики из файла при старте.
 func (cfg *Config) IsRestoreEnabled() bool {
-	return cfg.Restore
+	return cfg.Restore && cfg.IsStoreEnabled()
 }
 
 // GetStorePath возвращает путь к файлу для сохранения метрик.
@@ -74,4 +97,9 @@ func (cfg *Config) IsDatabaseEnabled() bool {
 // IsRequestSigningEnabled включена ли проверка подписи метрик.
 func (cfg *Config) IsRequestSigningEnabled() bool {
 	return cfg.PrivateKey != ""
+}
+
+// IsEncryptionEnabled возвращает true, если включено шифрование.
+func (cfg *Config) IsEncryptionEnabled() bool {
+	return cfg.PrivateRSAKey != nil
 }

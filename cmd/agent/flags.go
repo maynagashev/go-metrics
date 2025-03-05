@@ -22,6 +22,7 @@ type Flags struct {
 		PollInterval   float64
 	}
 	PrivateKey  string
+	CryptoKey   string // путь к файлу с публичным ключом для шифрования
 	RateLimit   int
 	EnablePprof bool   // добавляем поле для профилирования
 	PprofPort   string // добавляем порт для pprof
@@ -51,6 +52,7 @@ func mustParseFlags() Flags {
 		"poll interval in seconds",
 	)
 	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
+	flag.StringVar(&flags.CryptoKey, "crypto-key", "", "путь к файлу с публичным ключом для шифрования")
 	flag.IntVar(
 		&flags.RateLimit,
 		"l",
@@ -84,6 +86,9 @@ func mustParseFlags() Flags {
 	}
 	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
 		flags.PrivateKey = envPrivateKey
+	}
+	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
+		flags.CryptoKey = envCryptoKey
 	}
 	if envRateLimit, ok := os.LookupEnv("RATE_LIMIT"); ok {
 		l, err := strconv.Atoi(envRateLimit)

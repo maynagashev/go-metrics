@@ -30,6 +30,7 @@ type Flags struct {
 	}
 
 	PrivateKey string
+	CryptoKey  string // Path to the private key file for decryption
 }
 
 // ParseFlags обрабатывает аргументы командной строки
@@ -84,6 +85,7 @@ func ParseFlags() (*Flags, error) {
 		"Путь к директории с миграциями")
 
 	flag.StringVar(&flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
+	flag.StringVar(&flags.CryptoKey, "crypto-key", "", "Путь к файлу с приватным ключом для расшифровки")
 
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()
@@ -121,6 +123,11 @@ func ParseFlags() (*Flags, error) {
 	// Если передан ключ в параметрах окружения, используем его
 	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
 		flags.PrivateKey = envPrivateKey
+	}
+
+	// Если передан путь к файлу с приватным ключом в параметрах окружения, используем его
+	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
+		flags.CryptoKey = envCryptoKey
 	}
 
 	return &flags, nil

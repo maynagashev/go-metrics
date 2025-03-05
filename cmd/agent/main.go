@@ -2,10 +2,13 @@
 package main
 
 import (
+	"crypto/rsa"
 	"fmt"
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/maynagashev/go-metrics/pkg/crypto"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
 )
@@ -37,11 +40,23 @@ func main() {
 
 	initPprof(flags)
 
+	// Загружаем публичный ключ для шифрования, если он указан
+	var publicKey *rsa.PublicKey
+	if flags.CryptoKey != "" {
+		var err error
+		publicKey, err = crypto.LoadPublicKey(flags.CryptoKey)
+		if err != nil {
+			slog.Error("failed to load public key", "error", err, "path", flags.CryptoKey)
+			os.Exit(1)
+		}
+		slog.Info("loaded public key for encryption", "path", flags.CryptoKey)
+	}
+
 	serverURL := "http://" + flags.Server.Addr
 	pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
 	reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))
 
-	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit)
+	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit, publicKey)
 	a.Run()
 }
 

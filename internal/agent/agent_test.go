@@ -10,7 +10,7 @@ import (
 )
 
 func TestAgent_collectRuntimeMetrics(t *testing.T) {
-	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0)
+	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0, nil)
 	tests := []struct {
 		name string
 		want int
@@ -41,6 +41,11 @@ func (m *MockAgent) Run() {
 }
 
 func (m *MockAgent) IsRequestSigningEnabled() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockAgent) IsEncryptionEnabled() bool {
 	args := m.Called()
 	return args.Bool(0)
 }

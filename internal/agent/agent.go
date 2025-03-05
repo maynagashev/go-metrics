@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"crypto/rsa"
 	"log/slog"
 	"sync"
 	"time"
@@ -25,6 +26,9 @@ type Agent interface {
 	// IsRequestSigningEnabled возвращает true, если включена подпись запросов.
 	IsRequestSigningEnabled() bool
 
+	// IsEncryptionEnabled возвращает true, если включено шифрование.
+	IsEncryptionEnabled() bool
+
 	// ResetMetrics очищает все собранные метрики.
 	ResetMetrics()
 
@@ -47,6 +51,7 @@ type agent struct {
 	SendCompressedData bool
 	PrivateKey         string
 	RateLimit          int
+	PublicKey          *rsa.PublicKey // Public key for encryption
 
 	gauges       map[string]float64
 	counters     map[string]int64
@@ -70,6 +75,7 @@ var New = func(
 	reportInterval time.Duration,
 	privateKey string,
 	rateLimit int,
+	publicKey *rsa.PublicKey,
 ) Agent {
 	return &agent{
 		ServerURL:          url,
@@ -78,6 +84,7 @@ var New = func(
 		SendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
 		PrivateKey:         privateKey,
 		RateLimit:          rateLimit,
+		PublicKey:          publicKey,
 		gauges:             make(map[string]float64),
 		counters:           make(map[string]int64),
 		client:             resty.New().SetHeader("Content-Type", "text/plain"),
@@ -93,6 +100,11 @@ func (a *agent) IsRequestSigningEnabled() bool {
 	return a.PrivateKey != ""
 }
 
+// IsEncryptionEnabled возвращает true, если задан публичный ключ и агент должен шифровать данные.
+func (a *agent) IsEncryptionEnabled() bool {
+	return a.PublicKey != nil
+}
+
 // Run запускает агента и его воркеры.
 func (a *agent) Run() {
 	// Запускаем воркеры агента.
@@ -103,6 +115,7 @@ func (a *agent) Run() {
 		"send_compressed_data", a.SendCompressedData,
 		"private_key", a.PrivateKey,
 		"send_hash", a.IsRequestSigningEnabled(),
+		"encryption_enabled", a.IsEncryptionEnabled(),
 		"rate_limit", a.RateLimit,
 	)
 	// Горутина для сбора метрик (с интервалом PollInterval).
