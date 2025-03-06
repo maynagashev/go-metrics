@@ -25,7 +25,6 @@ type PgStorage struct {
 	conn *pgxpool.Pool
 	cfg  *app.Config
 	log  *zap.Logger
-	ctx  context.Context
 }
 
 // New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
@@ -42,11 +41,12 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
 		conn: conn,
 		cfg:  config,
 		log:  log,
-		ctx:  ctx,
 	}
 
 	// Автоматически накатываем миграции при создании экземпляра хранилища.
-	migration.Up(config.Database.MigrationsPath, config.Database.DSN)
+	if migrateErr := migration.Up(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil {
+		return nil, fmt.Errorf("failed to apply migrations: %w", migrateErr)
+	}
 	return p, nil
 }
 
@@ -55,18 +55,18 @@ func (p *PgStorage) Close() error {
 	return nil
 }
 
-func (p *PgStorage) Count() int {
+func (p *PgStorage) Count(ctx context.Context) int {
 	var count int
-	err := p.conn.QueryRow(p.ctx, `SELECT count(*) FROM metrics`).Scan(&count)
+	err := p.conn.QueryRow(ctx, `SELECT count(*) FROM metrics`).Scan(&count)
 	if err != nil {
 		p.log.Error(err.Error())
 	}
 	return count
 }
 
-func (p *PgStorage) GetMetrics() []metrics.Metric {
+func (p *PgStorage) GetMetrics(ctx context.Context) []metrics.Metric {
 	var items []metrics.Metric
-	rows, err := p.conn.Query(p.ctx, `SELECT name, type, value, delta FROM metrics ORDER BY name`)
+	rows, err := p.conn.Query(ctx, `SELECT name, type, value, delta FROM metrics ORDER BY name`)
 	if err != nil {
 		p.log.Error(err.Error())
 		return nil
@@ -87,13 +87,17 @@ func (p *PgStorage) GetMetrics() []metrics.Metric {
 }
 
 // GetMetric получение значения метрики указанного типа в виде универсальной структуры.
-func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) {
+func (p *PgStorage) GetMetric(
+	ctx context.Context,
+	mType metrics.MetricType,
+	name string,
+) (metrics.Metric, bool) {
 	q := `SELECT name, type, value, delta FROM public.metrics WHERE name = $1 AND type = $2`
 
 	var metric metrics.Metric
 	var err error
 	for i := 0; i <= maxRetries; i++ {
-		row := p.conn.QueryRow(p.ctx, q, name, mType)
+		row := p.conn.QueryRow(ctx, q, name, mType)
 		err = row.Scan(&metric.Name, &metric.MType, &metric.Value, &metric.Delta)
 
 		if err == nil {
@@ -122,8 +126,8 @@ func (p *PgStorage) GetMetric(mType metrics.MetricType, name string) (metrics.Me
 }
 
 // GetCounter возвращает счетчик по имени.
-func (p *PgStorage) GetCounter(name string) (storage.Counter, bool) {
-	m, ok := p.GetMetric(metrics.TypeCounter, name)
+func (p *PgStorage) GetCounter(ctx context.Context, name string) (storage.Counter, bool) {
+	m, ok := p.GetMetric(ctx, metrics.TypeCounter, name)
 	if !ok {
 		return 0, false
 	}
@@ -131,18 +135,19 @@ func (p *PgStorage) GetCounter(name string) (storage.Counter, bool) {
 }
 
 // GetGauge возвращает измерение по имени.
-func (p *PgStorage) GetGauge(name string) (storage.Gauge, bool) {
-	m, ok := p.GetMetric(metrics.TypeGauge, name)
+func (p *PgStorage) GetGauge(ctx context.Context, name string) (storage.Gauge, bool) {
+	m, ok := p.GetMetric(ctx, metrics.TypeGauge, name)
 	if !ok {
 		return 0, false
 	}
 	return storage.Gauge(*m.Value), true
 }
-func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
+
+func (p *PgStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error {
 	var q string
 
 	// Если метрика существует, то обновляем, иначе создаем новую.
-	_, ok := p.GetMetric(metric.MType, metric.Name)
+	_, ok := p.GetMetric(ctx, metric.MType, metric.Name)
 	if ok {
 		q = `UPDATE metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
 	} else {
@@ -150,7 +155,7 @@ func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
 	}
 
 	// Выполнение запроса
-	_, err := p.conn.Exec(p.ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
+	_, err := p.conn.Exec(ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
 	if err != nil {
 		p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
 		return err
@@ -159,7 +164,7 @@ func (p *PgStorage) UpdateMetric(metric metrics.Metric) error {
 }
 
 // UpdateMetrics пакетно обновляет метрики в хранилище.
-func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
+func (p *PgStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error {
 	var err error
 	q := `INSERT INTO metrics (name, type, value, delta) 
           VALUES ($1, $2, $3, $4)
@@ -167,7 +172,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
           DO UPDATE SET value = EXCLUDED.value, delta = metrics.delta + EXCLUDED.delta`
 
 	// Начало транзакции
-	tx, err := p.conn.Begin(p.ctx)
+	tx, err := p.conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
@@ -175,7 +180,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
 	// Откатываем транзакцию в случае ошибки
 	defer func() {
 		if err != nil {
-			if rErr := tx.Rollback(p.ctx); rErr != nil && !errors.Is(rErr, pgx.ErrTxClosed) {
+			if rErr := tx.Rollback(ctx); rErr != nil && !errors.Is(rErr, pgx.ErrTxClosed) {
 				p.log.Error(fmt.Sprintf("Failed to rollback transaction: %v", rErr))
 			}
 		}
@@ -187,7 +192,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
 	}
 
 	// Выполнение батч-запроса
-	br := tx.SendBatch(p.ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if errClose := br.Close(); errClose != nil {
 		p.log.Error(fmt.Sprintf("Failed to close batch: %v", errClose))
@@ -200,7 +205,7 @@ func (p *PgStorage) UpdateMetrics(items []metrics.Metric) error {
 	}
 
 	// Подтверждаем транзакцию
-	if err = tx.Commit(p.ctx); err != nil {
+	if err = tx.Commit(ctx); err != nil {
 		p.log.Error(fmt.Sprintf("Failed to commit transaction: %v", err))
 		return err
 	}

@@ -42,7 +42,7 @@ func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.Handler
 
 		// Конвертируем локальную структуру в структуру из контракта
 		metric := metrics.Metric(requestedMetric)
-		err = strg.UpdateMetric(metric)
+		err = strg.UpdateMetric(r.Context(), metric)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -51,7 +51,7 @@ func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.Handler
 		var resMessage string
 
 		// Получаем значение метрики из хранилища
-		m, ok := strg.GetMetric(metric.MType, metric.Name)
+		m, ok := strg.GetMetric(r.Context(), metric.MType, metric.Name)
 		if ok {
 			resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), m.String())
 		} else {

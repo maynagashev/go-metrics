@@ -13,17 +13,21 @@ const (
 	DefaultIdleTimeout  = 120 * time.Second
 )
 
-// Server (HTTP-клиент) для сбора рантайм-метрик от агентов.
+// Server представляет собой HTTP-сервер для сбора метрик.
+// Обрабатывает запросы от агентов и сохраняет метрики в хранилище.
 type Server struct {
 	cfg *Config
 }
 
+// New создает новый экземпляр сервера с указанной конфигурацией.
 func New(cfg *Config) *Server {
 	return &Server{
 		cfg: cfg,
 	}
 }
 
+// Start запускает HTTP-сервер с указанным обработчиком и логгером.
+// Настраивает таймауты и другие параметры сервера.
 func (s *Server) Start(log *zap.Logger, handler http.Handler) {
 	log.Info("starting server", zap.Any("config", s.cfg))
 
@@ -42,6 +46,7 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) {
 	}
 }
 
+// GetStoreInterval возвращает интервал сохранения метрик в секундах.
 func (s *Server) GetStoreInterval() int {
 	return s.cfg.StoreInterval
 }

@@ -19,16 +19,16 @@ type Response struct {
 }
 
 type Storage interface {
-	GetMetrics() []metrics.Metric
+	GetMetrics(ctx context.Context) []metrics.Metric
 }
 
 // Handle логика обработчика ping с указанной базой данных, чтобы можно было провести тестирование моком.
 func Handle(storage Storage) http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		// Проверяем подключение сделав запрос к базе данных.
-		_ = storage.GetMetrics()
+		_ = storage.GetMetrics(r.Context())
 
 		response.OK(w, "pong")
 	}

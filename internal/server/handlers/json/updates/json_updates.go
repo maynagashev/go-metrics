@@ -42,7 +42,7 @@ func NewBulkUpdate(cfg *app.Config, st storage.Repository, log *zap.Logger) http
 		}
 
 		// Обновляем метрики в хранилище.
-		err = st.UpdateMetrics(metricsToUpdate)
+		err = st.UpdateMetrics(r.Context(), metricsToUpdate)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

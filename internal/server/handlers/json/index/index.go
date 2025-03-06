@@ -9,11 +9,11 @@ import (
 
 // New возвращает http.HandlerFunc, который отдает список метрик на сервере.
 func New(st storage.Repository) http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		// Возвращаем метрики в формате JSON архива
-		metrics := st.GetMetrics()
+		metrics := st.GetMetrics(r.Context())
 		jsonData, err := json.Marshal(metrics)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

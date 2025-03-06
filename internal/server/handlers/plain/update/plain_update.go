@@ -62,14 +62,14 @@ func New(st storage.Repository, log *zap.Logger) http.HandlerFunc {
 		}
 
 		// Обновляем метрику в хранилище
-		err := st.UpdateMetric(*m)
+		err := st.UpdateMetric(r.Context(), *m)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
 		var resMessage string
 		// Получаем значение метрики из хранилища
-		v, ok := st.GetMetric(metricType, metricName)
+		v, ok := st.GetMetric(r.Context(), metricType, metricName)
 		if ok {
 			resMessage = fmt.Sprintf("metric %s/%s updated with value %s, result: %s",
 				metricType, metricName, metricValue, v.String())

@@ -23,7 +23,11 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler {
 				gz, err := gzip.NewReader(r.Body)
 				if err != nil {
 					log.Error("error while decompressing request body", zap.Error(err))
-					http.Error(w, "Ошибка при декомпрессии содержимого запроса gzip", http.StatusBadRequest)
+					http.Error(
+						w,
+						"Ошибка при декомпрессии содержимого запроса gzip",
+						http.StatusBadRequest,
+					)
 					return
 				}
 
@@ -31,7 +35,11 @@ func New(log *zap.Logger) func(next http.Handler) http.Handler {
 					err = gz.Close()
 					if err != nil {
 						log.Error("error while closing decompression stream", zap.Error(err))
-						http.Error(w, "Ошибка при закрытии потока декомпрессии", http.StatusInternalServerError)
+						http.Error(
+							w,
+							"Ошибка при закрытии потока декомпрессии",
+							http.StatusInternalServerError,
+						)
 						return
 					}
 				}()

@@ -1,0 +1,3249 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>agent: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/flags.go (100.0%)</option>
+				
+				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/main.go (100.0%)</option>
+				
+				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (100.0%)</option>
+				
+				<option value="file3">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
+				
+				<option value="file4">github.com/maynagashev/go-metrics/cmd/server/main.go (0.0%)</option>
+				
+				<option value="file5">github.com/maynagashev/go-metrics/example/setup.go (84.6%)</option>
+				
+				<option value="file6">github.com/maynagashev/go-metrics/internal/agent/agent.go (29.7%)</option>
+				
+				<option value="file7">github.com/maynagashev/go-metrics/internal/agent/collect.go (83.8%)</option>
+				
+				<option value="file8">github.com/maynagashev/go-metrics/internal/agent/send.go (0.0%)</option>
+				
+				<option value="file9">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (0.0%)</option>
+				
+				<option value="file10">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (60.0%)</option>
+				
+				<option value="file11">github.com/maynagashev/go-metrics/internal/server/app/app.go (0.0%)</option>
+				
+				<option value="file12">github.com/maynagashev/go-metrics/internal/server/app/config.go (37.5%)</option>
+				
+				<option value="file13">github.com/maynagashev/go-metrics/internal/server/app/flags.go (0.0%)</option>
+				
+				<option value="file14">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (0.0%)</option>
+				
+				<option value="file15">github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go (33.3%)</option>
+				
+				<option value="file16">github.com/maynagashev/go-metrics/internal/server/handlers/json/update/json_update.go (0.0%)</option>
+				
+				<option value="file17">github.com/maynagashev/go-metrics/internal/server/handlers/json/updates/json_updates.go (3.0%)</option>
+				
+				<option value="file18">github.com/maynagashev/go-metrics/internal/server/handlers/json/value/json_value.go (0.0%)</option>
+				
+				<option value="file19">github.com/maynagashev/go-metrics/internal/server/handlers/plain/index/index.go (85.7%)</option>
+				
+				<option value="file20">github.com/maynagashev/go-metrics/internal/server/handlers/plain/update/plain_update.go (78.9%)</option>
+				
+				<option value="file21">github.com/maynagashev/go-metrics/internal/server/handlers/plain/value/plain_value.go (0.0%)</option>
+				
+				<option value="file22">github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go (0.0%)</option>
+				
+				<option value="file23">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (15.6%)</option>
+				
+				<option value="file24">github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go (90.0%)</option>
+				
+				<option value="file25">github.com/maynagashev/go-metrics/internal/server/router/router.go (56.7%)</option>
+				
+				<option value="file26">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (18.7%)</option>
+				
+				<option value="file27">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
+				
+				<option value="file28">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (0.0%)</option>
+				
+				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (0.0%)</option>
+				
+				<option value="file30">github.com/maynagashev/go-metrics/mocks/Repository.go (0.0%)</option>
+				
+				<option value="file31">github.com/maynagashev/go-metrics/mocks/Storage.go (50.0%)</option>
+				
+				<option value="file32">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (0.0%)</option>
+				
+				<option value="file33">github.com/maynagashev/go-metrics/pkg/random/float.go (0.0%)</option>
+				
+				<option value="file34">github.com/maynagashev/go-metrics/pkg/response/response.go (57.1%)</option>
+				
+				<option value="file35">github.com/maynagashev/go-metrics/pkg/sign/sign.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "flag"
+        "fmt"
+        "os"
+        "strconv"
+)
+
+const (
+        defaultReportInterval = 10.0
+        defaultPollInterval   = 2.0
+        defaultRateLimit      = 3
+        minInterval           = 0.000001 // Минимально допустимый интервал в секундах.
+)
+
+// Flags содержит флаги агента.
+type Flags struct {
+        Server struct {
+                Addr           string
+                ReportInterval float64
+                PollInterval   float64
+        }
+        PrivateKey  string
+        RateLimit   int
+        EnablePprof bool   // добавляем поле для профилирования
+        PprofPort   string // добавляем порт для pprof
+}
+
+// mustParseFlags обрабатывает аргументы командной строки
+// и сохраняет их значения в соответствующих переменных.
+func mustParseFlags() Flags <span class="cov8" title="1">{
+        flags := Flags{}
+
+        flag.StringVar(
+                &amp;flags.Server.Addr,
+                "a",
+                "localhost:8080",
+                "address and port of the server send metrics to",
+        )
+        flag.Float64Var(
+                &amp;flags.Server.ReportInterval,
+                "r",
+                defaultReportInterval,
+                "report interval in seconds",
+        )
+        flag.Float64Var(
+                &amp;flags.Server.PollInterval,
+                "p",
+                defaultPollInterval,
+                "poll interval in seconds",
+        )
+        flag.StringVar(&amp;flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
+        flag.IntVar(
+                &amp;flags.RateLimit,
+                "l",
+                defaultRateLimit,
+                "макс. количество одновременно исходящих запросов на сервер",
+        )
+        flag.BoolVar(&amp;flags.EnablePprof, "pprof", false, "enable pprof profiling")
+        flag.StringVar(&amp;flags.PprofPort, "pprof-port", "6060", "port for pprof server")
+
+        // парсим переданные серверу аргументы в зарегистрированные переменные
+        flag.Parse()
+
+        // если переданы переменные окружения, то они перезаписывают
+        // значения флагов: envServerAddr, envReportInterval, envPollInterval
+        if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" </span><span class="cov8" title="1">{
+                flags.Server.Addr = envServerAddr
+        }</span>
+        <span class="cov8" title="1">if envReportInterval := os.Getenv("REPORT_INTERVAL"); envReportInterval != "" </span><span class="cov8" title="1">{
+                i, err := strconv.ParseFloat(envReportInterval, 64)
+                if err != nil </span><span class="cov8" title="1">{
+                        panic(fmt.Sprintf("error parsing env REPORT_INTERVAL %s", err))</span>
+                }
+                <span class="cov8" title="1">flags.Server.ReportInterval = i</span>
+        }
+        <span class="cov8" title="1">if envPollInterval := os.Getenv("POLL_INTERVAL"); envPollInterval != "" </span><span class="cov8" title="1">{
+                i, err := strconv.ParseFloat(envPollInterval, 64)
+                if err != nil </span><span class="cov8" title="1">{
+                        panic(fmt.Sprintf("error parsing env POLL_INTERVAL %s", err))</span>
+                }
+                <span class="cov8" title="1">flags.Server.PollInterval = i</span>
+        }
+        <span class="cov8" title="1">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov8" title="1">{
+                flags.PrivateKey = envPrivateKey
+        }</span>
+        <span class="cov8" title="1">if envRateLimit, ok := os.LookupEnv("RATE_LIMIT"); ok </span><span class="cov8" title="1">{
+                l, err := strconv.Atoi(envRateLimit)
+                if err != nil </span><span class="cov8" title="1">{
+                        panic(fmt.Sprintf("error parsing env RATE_LIMIT %s", err))</span>
+                }
+                <span class="cov8" title="1">flags.RateLimit = l</span>
+        }
+
+        <span class="cov8" title="1">if flags.RateLimit &lt; 1 </span><span class="cov8" title="1">{
+                panic("RateLimit should be greater than 0")</span>
+        }
+
+        // Устанавливаем минимальные допустимые значения для интервалов
+        <span class="cov8" title="1">if flags.Server.ReportInterval &lt; minInterval </span><span class="cov8" title="1">{
+                flags.Server.ReportInterval = minInterval
+        }</span>
+        <span class="cov8" title="1">if flags.Server.PollInterval &lt; minInterval </span><span class="cov8" title="1">{
+                flags.Server.PollInterval = minInterval
+        }</span>
+
+        <span class="cov8" title="1">return flags</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Агент (HTTP-клиент) для сбора рантайм-метрик и их последующей отправки на сервер по протоколу HTTP
+package main
+
+import (
+        "log/slog"
+        "os"
+        "time"
+
+        "github.com/maynagashev/go-metrics/internal/agent"
+)
+
+func main() <span class="cov8" title="1">{
+        flags := mustParseFlags()
+        initLogger()
+        slog.Debug("parsed flags and env variables", "flags", flags)
+
+        initPprof(flags)
+
+        serverURL := "http://" + flags.Server.Addr
+        pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
+        reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))
+
+        a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit)
+        a.Run()
+}</span>
+
+func initLogger() <span class="cov8" title="1">{
+        // Создаем переменную для уровня логирования и устанавливаем ее в Debug
+        logLevel := new(slog.LevelVar)
+        logLevel.Set(slog.LevelDebug)
+
+        // Создаем новый обработчик с настроенным уровнем логирования
+        logger := slog.New(slog.NewTextHandler(os.Stderr, &amp;slog.HandlerOptions{
+                Level: logLevel,
+        }))
+
+        // Устанавливаем созданный логгер как логгер по умолчанию
+        slog.SetDefault(logger)
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package main
+
+import (
+        "fmt"
+        "log/slog"
+        "net/http"
+
+        //nolint:gosec // G108: pprof is used intentionally for debugging and profiling
+        _ "net/http/pprof"
+
+        "github.com/maynagashev/go-metrics/internal/config"
+)
+
+// initPprof запускает pprof сервер если включено профилирование.
+func initPprof(flags Flags) <span class="cov8" title="1">{
+        if flags.EnablePprof </span><span class="cov8" title="1">{
+                pprofAddr := fmt.Sprintf("localhost:%s", flags.PprofPort)
+                startPProf(pprofAddr)
+        }</span>
+}
+
+func startPProf(pprofAddr string) <span class="cov8" title="1">{
+        if pprofAddr != "" </span><span class="cov8" title="1">{
+                go func() </span><span class="cov8" title="1">{
+                        srv := &amp;http.Server{
+                                Addr:              pprofAddr,
+                                Handler:           nil, // использует DefaultServeMux
+                                ReadTimeout:       config.DefaultReadTimeout,
+                                WriteTimeout:      config.DefaultWriteTimeout,
+                                ReadHeaderTimeout: config.DefaultHeaderTimeout,
+                                IdleTimeout:       config.DefaultIdleTimeout,
+                        }
+                        if err := srv.ListenAndServe(); err != nil &amp;&amp; err != http.ErrServerClosed </span><span class="cov8" title="1">{
+                                slog.Error("Failed to start pprof server", "error", err)
+                        }</span>
+                }()
+        }
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// Утилита для миграции базы данных, обертка над библиотекой golang-migrate/migrate.
+package main
+
+import (
+        "errors"
+        "flag"
+
+        _ "github.com/golang-migrate/migrate/v4/database/postgres"
+        _ "github.com/golang-migrate/migrate/v4/source/file"
+        "github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
+)
+
+func run(dsn, migrationsPath string) error <span class="cov8" title="1">{
+        if dsn == "" </span><span class="cov8" title="1">{
+                return errors.New(
+                        "не указаны параметры подключения к БД: -d postgres://user:password@localhost:5432/database",
+                )
+        }</span>
+        <span class="cov8" title="1">if migrationsPath == "" </span><span class="cov8" title="1">{
+                return errors.New(
+                        "не указан путь к директории с миграциями: -migrations-path ../../migrations",
+                )
+        }</span>
+
+        <span class="cov0" title="0">if err := migration.Up(migrationsPath, dsn); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func main() <span class="cov8" title="1">{
+        var dsn, migrationsPath string
+        flag.StringVar(
+                &amp;dsn,
+                "d",
+                "",
+                "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database",
+        )
+        flag.StringVar(&amp;migrationsPath, "migrations-path", "", "Путь к директории с миграциями")
+        flag.Parse()
+
+        if err := run(dsn, migrationsPath); err != nil </span><span class="cov8" title="1">{
+                panic(err)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Package main реализует HTTP-сервер для сбора и хранения метрик.
+//
+// Сервер поддерживает хранение метрик в PostgreSQL или в памяти. Выбор хранилища
+// определяется наличием параметров подключения к БД (флаг -d или переменная DATABASE_DSN).
+//
+// # Поддерживаемые типы метрик
+//
+//   - gauge - число с плавающей точкой
+//   - counter - целочисленный счетчик
+//
+// # API Endpoints
+//
+//   - POST /update - обновление одиночной метрики
+//   - POST /updates/ - пакетное обновление метрик
+//   - POST /value - получение значения метрики
+//   - GET /ping - проверка подключения к БД
+//   - GET / - получение всех метрик (текстовый формат)
+//
+// # Конфигурация
+//
+// Сервер поддерживает настройку через флаги командной строки и переменные окружения:
+//   - DATABASE_DSN - строка подключения к PostgreSQL
+//   - STORE_INTERVAL - интервал сохранения метрик (для in-memory хранилища)
+//   - FILE_STORAGE_PATH - путь к файлу для сохранения метрик
+//   - RESTORE - восстанавливать ли метрики из файла при старте
+//
+// # Примеры
+//
+// Примеры использования API представлены в тестах:
+//   - Example - обновление метрики
+//   - Example_getValue - получение значения
+//   - Example_updateBatch - пакетное обновление
+//   - Example_ping - проверка БД
+package main
+
+import (
+        "context"
+        //nolint:gosec // G108: pprof is used intentionally for debugging and profiling
+        _ "net/http/pprof"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "github.com/maynagashev/go-metrics/internal/server/router"
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+        "github.com/maynagashev/go-metrics/internal/server/storage/memory"
+        "github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
+        "go.uber.org/zap"
+)
+
+func main() <span class="cov0" title="0">{
+        flags, err := app.ParseFlags()
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+
+        <span class="cov0" title="0">log := initLogger()
+        defer func() </span><span class="cov0" title="0">{
+                _ = log.Sync()
+        }</span>()
+
+        <span class="cov0" title="0">cfg := app.NewConfig(flags)
+        server := app.New(cfg)
+
+        // Инициализируем хранилище
+        repo, err := initStorage(cfg, log)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Error("failed to init storage", zap.Error(err))
+                panic(err)</span>
+        }
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                err = repo.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Error("failed to close storage", zap.Error(err))
+                }</span>
+        }()
+
+        <span class="cov0" title="0">handlers := router.New(cfg, repo, log)
+
+        server.Start(log, handlers)
+
+        log.Debug("server stopped")</span>
+}
+
+func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) <span class="cov0" title="0">{
+        // Если указан DATABASE_DSN или флаг -d, то используем PostgreSQL.
+        if cfg.IsDatabaseEnabled() </span><span class="cov0" title="0">{
+                pg, err := pgstorage.New(context.Background(), cfg, log)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov0" title="0">return pg, nil</span>
+        }
+
+        <span class="cov0" title="0">return memory.New(cfg, log), nil</span>
+}
+
+func initLogger() *zap.Logger <span class="cov0" title="0">{
+        // Создаем конфигурацию для регистратора в режиме разработки
+        cfg := zap.NewDevelopmentConfig()
+
+        // Указываем путь к файлу для записи логов, для записи в файл добавить в список например: "../../run.log"
+        cfg.OutputPaths = []string{"stderr"}
+
+        // Создаем регистратор с заданной конфигурацией
+        logger, err := cfg.Build()
+        if err != nil </span><span class="cov0" title="0">{
+                // вызываем панику, если ошибка
+                panic(err)</span>
+        }
+        <span class="cov0" title="0">return logger</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// Package example содержит примеры использования API сервера метрик.
+package example
+
+import (
+        "bytes"
+        "context"
+        "encoding/json"
+        "net/http"
+        "time"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// ServerAddr - адрес сервера для тестов.
+const ServerAddr = "http://localhost:8080"
+
+// Время ожидания для сохранения метрики.
+const saveDelay = 100 * time.Millisecond
+
+// SetupTestMetric создает тестовую метрику для примеров.
+func SetupTestMetric() error <span class="cov8" title="1">{
+        metric := metrics.Metric{
+                Name:  "TestGauge",
+                MType: "gauge",
+                Value: new(float64),
+        }
+        *metric.Value = 123.45
+
+        body, _ := json.Marshal(metric)
+        ctx := context.Background()
+        req, err := http.NewRequestWithContext(ctx, http.MethodPost, ServerAddr+"/update", bytes.NewBuffer(body))
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">resp, err := http.DefaultClient.Do(req)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer resp.Body.Close()
+
+        // Даем время на сохранение метрики
+        time.Sleep(saveDelay)
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package agent
+
+import (
+        "log/slog"
+        "sync"
+        "time"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+
+        "github.com/maynagashev/go-metrics/pkg/random"
+
+        "github.com/go-resty/resty/v2"
+)
+
+// Количество попыток отправки запроса на сервер при возникновении ошибок.
+const maxSendRetries = 3
+
+// Agent представляет собой интерфейс для сбора и отправки метрик на сервер.
+// Реализует функционал сбора runtime метрик и дополнительных системных метрик,
+// а также их отправку на сервер с поддержкой подписи данных.
+type Agent interface {
+        // Run запускает процесс сбора и отправки метрик.
+        Run()
+
+        // IsRequestSigningEnabled возвращает true, если включена подпись запросов.
+        IsRequestSigningEnabled() bool
+
+        // ResetMetrics очищает все собранные метрики.
+        ResetMetrics()
+
+        // CollectRuntimeMetrics собирает метрики времени выполнения.
+        CollectRuntimeMetrics()
+
+        // CollectAdditionalMetrics собирает дополнительные системные метрики,
+        // такие как использование памяти и CPU.
+        CollectAdditionalMetrics()
+
+        // GetMetrics возвращает список всех собранных метрик.
+        GetMetrics() []*metrics.Metric
+}
+
+// agent конкретная реализация интерфейса Agent.
+type agent struct {
+        PollInterval       time.Duration
+        ReportInterval     time.Duration
+        ServerURL          string
+        SendCompressedData bool
+        PrivateKey         string
+        RateLimit          int
+
+        gauges       map[string]float64
+        counters     map[string]int64
+        mu           sync.Mutex
+        wg           sync.WaitGroup
+        client       *resty.Client
+        pollTicker   *time.Ticker
+        reportTicker *time.Ticker
+        // Очередь задач на отправку метрик, с буфером в размере RateLimit.
+        sendQueue chan Job
+        // Очередь результатов выполнения задач, для обработки ошибок.
+        resultQueue chan Result
+}
+
+// New создает новый экземпляр агента.
+//
+//nolint:gochecknoglobals // используется для подмены в тестах
+var New = func(
+        url string,
+        pollInterval time.Duration,
+        reportInterval time.Duration,
+        privateKey string,
+        rateLimit int,
+) Agent <span class="cov8" title="1">{
+        return &amp;agent{
+                ServerURL:          url,
+                PollInterval:       pollInterval,
+                ReportInterval:     reportInterval,
+                SendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
+                PrivateKey:         privateKey,
+                RateLimit:          rateLimit,
+                gauges:             make(map[string]float64),
+                counters:           make(map[string]int64),
+                client:             resty.New().SetHeader("Content-Type", "text/plain"),
+                pollTicker:         time.NewTicker(pollInterval),
+                reportTicker:       time.NewTicker(reportInterval),
+                sendQueue:          make(chan Job, rateLimit),
+                resultQueue:        make(chan Result, rateLimit),
+        }
+}</span>
+
+// IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
+func (a *agent) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
+        return a.PrivateKey != ""
+}</span>
+
+// Run запускает агента и его воркеры.
+func (a *agent) Run() <span class="cov0" title="0">{
+        // Запускаем воркеры агента.
+        slog.Info("starting agent...",
+                "server_url", a.ServerURL,
+                "poll_interval", a.PollInterval,
+                "report_interval", a.ReportInterval,
+                "send_compressed_data", a.SendCompressedData,
+                "private_key", a.PrivateKey,
+                "send_hash", a.IsRequestSigningEnabled(),
+                "rate_limit", a.RateLimit,
+        )
+        // Горутина для сбора метрик (с интервалом PollInterval).
+        go a.runPolls()
+        // Горутина для добавления задач в очередь на отправку, с интервалом ReportInterval.
+        go a.runReports()
+
+        // Запуск worker pool для отправки метрик.
+        for i := range a.RateLimit </span><span class="cov0" title="0">{
+                a.wg.Add(1)
+                go a.worker(i)
+        }</span>
+
+        // Запуск коллектора результатов
+        <span class="cov0" title="0">a.wg.Add(1)
+        go a.collector()
+
+        a.wg.Wait()</span>
+}
+
+// runPolls собирает сведения из системы в отдельной горутине.
+func (a *agent) runPolls() <span class="cov0" title="0">{
+        a.wg.Add(1)
+        defer a.wg.Done()
+        for range a.pollTicker.C </span><span class="cov0" title="0">{
+                a.mu.Lock()
+                // Перезаписываем метрики свежими показаниями
+                a.ResetMetrics()
+                a.CollectRuntimeMetrics()
+                a.CollectAdditionalMetrics()
+
+                // Увеличиваем счетчик PollCount на 1.
+                a.counters["PollCount"]++
+                // Добавляем обновляемое рандомное значение по условию.
+                a.gauges["RandomValue"] = random.GenerateRandomFloat64()
+
+                // Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
+                slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
+                a.mu.Unlock()
+        }</span>
+}
+
+// Создает задачи по отправке метрик в очереди задач на отправку.
+func (a *agent) runReports() <span class="cov0" title="0">{
+        a.wg.Add(1)
+        defer a.wg.Done()
+        for range a.reportTicker.C </span><span class="cov0" title="0">{
+                a.sendQueue &lt;- Job{Metrics: a.GetMetrics()}
+        }</span>
+}
+
+// GetMetrics считывает текущие метрики из агента.
+func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
+        items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
+
+        // Делаем копию метрик, чтобы данные не изменились во время отправки.
+        a.mu.Lock()
+        slog.Info("read metrics for job", "poll_count", a.counters["PollCount"])
+        for name, value := range a.gauges </span><span class="cov8" title="1">{
+                items = append(items, metrics.NewGauge(name, value))
+        }</span>
+        <span class="cov8" title="1">for name, value := range a.counters </span><span class="cov0" title="0">{
+                items = append(items, metrics.NewCounter(name, value))
+        }</span>
+        // Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
+        // Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
+        // Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
+        <span class="cov8" title="1">a.counters["PollCount"] = 0
+        slog.Info("reset poll count", "poll_count", 0)
+
+        a.mu.Unlock()
+        return items</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">// Package agent методы агента для сбора метрик.
+package agent
+
+import (
+        "fmt"
+        "runtime"
+
+        "github.com/shirou/gopsutil/cpu"
+        "github.com/shirou/gopsutil/mem"
+)
+
+// ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
+func (a *agent) ResetMetrics() <span class="cov8" title="1">{
+        a.gauges = make(map[string]float64)
+        a.counters = make(map[string]int64)
+}</span>
+
+func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
+        var m runtime.MemStats
+        runtime.ReadMemStats(&amp;m)
+
+        a.gauges["Alloc"] = float64(m.Alloc)
+        a.gauges["BuckHashSys"] = float64(m.BuckHashSys)
+        a.gauges["Frees"] = float64(m.Frees)
+        a.gauges["GCCPUFraction"] = m.GCCPUFraction
+        a.gauges["GCSys"] = float64(m.GCSys)
+        a.gauges["HeapAlloc"] = float64(m.HeapAlloc)
+        a.gauges["HeapIdle"] = float64(m.HeapIdle)
+        a.gauges["HeapInuse"] = float64(m.HeapInuse)
+        a.gauges["HeapObjects"] = float64(m.HeapObjects)
+        a.gauges["HeapReleased"] = float64(m.HeapReleased)
+        a.gauges["HeapSys"] = float64(m.HeapSys)
+        a.gauges["LastGC"] = float64(m.LastGC)
+        a.gauges["Lookups"] = float64(m.Lookups)
+        a.gauges["MCacheInuse"] = float64(m.MCacheInuse)
+        a.gauges["MCacheSys"] = float64(m.MCacheSys)
+        a.gauges["MSpanInuse"] = float64(m.MSpanInuse)
+        a.gauges["MSpanSys"] = float64(m.MSpanSys)
+        a.gauges["Mallocs"] = float64(m.Mallocs)
+        a.gauges["NextGC"] = float64(m.NextGC)
+        a.gauges["NumForcedGC"] = float64(m.NumForcedGC)
+        a.gauges["NumGC"] = float64(m.NumGC)
+        a.gauges["OtherSys"] = float64(m.OtherSys)
+        a.gauges["PauseTotalNs"] = float64(m.PauseTotalNs)
+        a.gauges["StackInuse"] = float64(m.StackInuse)
+        a.gauges["StackSys"] = float64(m.StackSys)
+        a.gauges["Sys"] = float64(m.Sys)
+        a.gauges["TotalAlloc"] = float64(m.TotalAlloc)
+}</span>
+
+// CollectAdditionalMetrics собирает дополнительные метрики системы.
+func (a *agent) CollectAdditionalMetrics() <span class="cov0" title="0">{
+        v, _ := mem.VirtualMemory()
+        a.gauges["TotalMemory"] = float64(v.Total)
+        a.gauges["FreeMemory"] = float64(v.Free)
+
+        c, _ := cpu.Percent(0, true)
+        for i, percent := range c </span><span class="cov0" title="0">{
+                a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package agent
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "log/slog"
+        "net"
+        "net/http"
+        "time"
+
+        "github.com/maynagashev/go-metrics/pkg/sign"
+
+        "github.com/maynagashev/go-metrics/pkg/middleware/gzip"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+const backoffFactor = 2
+
+// Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
+func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
+        // Отправляем все метрики пачкой на новый маршрут /updates
+        // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
+        for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov0" title="0">{
+                // Пауза перед повторной отправкой.
+                if i &gt; 0 </span><span class="cov0" title="0">{
+                        //nolint:gomnd // количество секунд для паузы зависит от номера попытки
+                        sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
+                        slog.Info(
+                                fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", sleepSeconds, i),
+                                "workerID", workerID,
+                        )
+                        time.Sleep(time.Duration(sleepSeconds) * time.Second)
+                }</span>
+
+                <span class="cov0" title="0">err := a.makeUpdatesRequest(items, i, workerID)
+                // Если нет ошибок выходим из цикла и функции.
+                if err == nil </span><span class="cov0" title="0">{
+                        return nil
+                }</span>
+
+                // Логируем ошибку
+                <span class="cov0" title="0">slog.Error(
+                        fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
+                        "workerID",
+                        workerID,
+                        "metrics",
+                        items,
+                )
+
+                // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
+                if !isRetriableSendError(err) </span><span class="cov0" title="0">{
+                        slog.Debug("non-retriable error, stopping retries", "workerID", workerID, "err", err)
+                        return err
+                }</span>
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("failed to send metrics after %d retries", maxSendRetries)</span>
+}
+
+func isRetriableSendError(err error) bool <span class="cov0" title="0">{
+        slog.Debug(fmt.Sprintf("isRetriableSendError: %#v", err))
+
+        // Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом.
+        var netErr net.Error
+        if errors.As(err, &amp;netErr) </span><span class="cov0" title="0">{
+                slog.Debug(fmt.Sprintf("isRetriableSendError =&gt; AS net.Error: %#v", netErr))
+                // Проверяем, является ли ошибка временной
+                if netErr.Timeout() </span><span class="cov0" title="0">{
+                        return true
+                }</span>
+        }
+
+        // Проверяем, является ли ошибка ошибкой сети.
+        <span class="cov0" title="0">var opErr *net.OpError
+        if errors.As(err, &amp;opErr) </span><span class="cov0" title="0">{
+                slog.Debug("isRetriableSendError =&gt; AS net.OpError", "err", err)
+                return true
+        }</span>
+
+        // Если ошибка не является временной, возвращаем false.
+        <span class="cov0" title="0">return false</span>
+}
+
+// Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
+// При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
+func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov0" title="0">{
+        var err error
+        url := fmt.Sprintf("%s/updates", a.ServerURL)
+        slog.Info(
+                fmt.Sprintf("sending metrics batch (try=%d)", try),
+                "workerID",
+                workerID,
+                "url",
+                url,
+                "metrics",
+                items,
+        )
+
+        // Создаем новый запрос.
+        req := a.client.R()
+        req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия.
+        req.SetHeader("Content-Type", "application/json")
+
+        // Преобразуем метрики в JSON.
+        bytesBody, err := json.Marshal(items)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Если задан приватный ключ, добавляем хэш в заголовок запроса.
+        <span class="cov0" title="0">if a.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
+                req.SetHeader(sign.HeaderKey, hash)
+        }</span>
+
+        // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.
+        // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
+        <span class="cov0" title="0">if a.SendCompressedData </span><span class="cov0" title="0">{
+                req.SetHeader("Content-Encoding", "gzip")
+                bytesBody, err = gzip.Compress(bytesBody)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov0" title="0">req.SetBody(bytesBody)
+
+        res, err := req.Post(url)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Обрабатываем ответ сервера.
+        <span class="cov0" title="0">if res.StatusCode() != http.StatusOK </span><span class="cov0" title="0">{
+                return fmt.Errorf("unexpected status code: %d", res.StatusCode())
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package agent
+
+import (
+        "fmt"
+        "log/slog"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// Job структура для задания воркерам.
+type Job struct {
+        Metrics []*metrics.Metric
+}
+
+// Result структура для результата выполнения задания.
+type Result struct {
+        Job   Job
+        Error error
+}
+
+// Worker – один из воркеров пула для отправки метрик (обрабатывает задачи из очереди в отдельной горутине).
+func (a *agent) worker(id int) <span class="cov0" title="0">{
+        defer a.wg.Done()
+        slog.Debug(fmt.Sprintf("worker %d started", id))
+        // По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
+        for job := range a.sendQueue </span><span class="cov0" title="0">{
+                slog.Debug(
+                        fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
+                        "workerID",
+                        id,
+                )
+                err := a.sendMetrics(job.Metrics, id)
+                // Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
+                // которые потом разбирает коллектор.
+                a.resultQueue &lt;- Result{Job: job, Error: err}
+        }</span>
+}
+
+// Общий коллектор обрабатывает результаты выполнения задач.
+func (a *agent) collector() <span class="cov0" title="0">{
+        defer a.wg.Done()
+        for result := range a.resultQueue </span><span class="cov0" title="0">{
+                if result.Error != nil </span><span class="cov0" title="0">{
+                        wrappedError := fmt.Errorf("collector: %w", result.Error)
+                        slog.Error(wrappedError.Error(), "error", wrappedError)
+                }</span> else<span class="cov0" title="0"> {
+                        slog.Info("collector: metrics sent successfully")
+                }</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package metrics
+
+import (
+        "encoding/json"
+        "fmt"
+        "strconv"
+)
+
+type MetricType string
+
+const (
+        TypeCounter MetricType = "counter"
+        TypeGauge   MetricType = "gauge"
+)
+
+type Metric struct {
+        Name  string     `json:"id"`              // Имя метрики
+        MType MetricType `json:"type"`            // Параметр, принимающий значение gauge или counter
+        Delta *int64     `json:"delta,omitempty"` // Значение метрики в случае передачи counter
+        Value *float64   `json:"value,omitempty"` // Значение метрики в случае передачи gauge
+}
+
+func NewMetric(name string, mType MetricType, delta *int64, value *float64) *Metric <span class="cov8" title="1">{
+        return &amp;Metric{
+                Name:  name,
+                MType: mType,
+                Delta: delta,
+                Value: value,
+        }
+}</span>
+
+func NewCounter(id string, delta int64) *Metric <span class="cov8" title="1">{
+        return NewMetric(id, TypeCounter, &amp;delta, nil)
+}</span>
+
+func NewGauge(id string, value float64) *Metric <span class="cov8" title="1">{
+        return NewMetric(id, TypeGauge, nil, &amp;value)
+}</span>
+
+func (m *Metric) String() string <span class="cov8" title="1">{
+        if m == nil </span><span class="cov0" title="0">{
+                return "&lt;nil&gt;"
+        }</span>
+        <span class="cov8" title="1">if m.Delta != nil </span><span class="cov8" title="1">{
+                return fmt.Sprintf("Metric{Name: %s, Type: %s, Delta: %d}", m.Name, m.MType, *m.Delta)
+        }</span>
+        <span class="cov8" title="1">if m.Value != nil </span><span class="cov8" title="1">{
+                return fmt.Sprintf("Metric{Name: %s, Type: %s, Value: %f}", m.Name, m.MType, *m.Value)
+        }</span>
+        // Значение метрики может быть не задано в структуре,
+        // т.к. эта же структура используется для парсинга json в запросе получения значения метрики.
+        <span class="cov0" title="0">return fmt.Sprintf("Metric{Name: %s, Type: %s}", m.Name, m.MType)</span>
+}
+
+func (m *Metric) ValueString() string <span class="cov8" title="1">{
+        if m == nil </span><span class="cov0" title="0">{
+                return "&lt;nil&gt;"
+        }</span>
+        <span class="cov8" title="1">switch m.MType </span>{
+        case TypeCounter:<span class="cov8" title="1">
+                return strconv.FormatInt(*m.Delta, 10)</span>
+        case TypeGauge:<span class="cov8" title="1">
+                return strconv.FormatFloat(*m.Value, 'f', -1, 64)</span>
+        }
+        <span class="cov0" title="0">return ""</span>
+}
+
+func (m *Metric) ToJSON() []byte <span class="cov0" title="0">{
+        encoded, err := json.Marshal(m)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+        <span class="cov0" title="0">return encoded</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package app
+
+import (
+        "net/http"
+        "time"
+
+        "go.uber.org/zap"
+)
+
+const (
+        DefaultReadTimeout  = 5 * time.Second
+        DefaultWriteTimeout = 10 * time.Second
+        DefaultIdleTimeout  = 120 * time.Second
+)
+
+// Server представляет собой HTTP-сервер для сбора метрик.
+// Обрабатывает запросы от агентов и сохраняет метрики в хранилище.
+type Server struct {
+        cfg *Config
+}
+
+// New создает новый экземпляр сервера с указанной конфигурацией.
+func New(cfg *Config) *Server <span class="cov0" title="0">{
+        return &amp;Server{
+                cfg: cfg,
+        }
+}</span>
+
+// Start запускает HTTP-сервер с указанным обработчиком и логгером.
+// Настраивает таймауты и другие параметры сервера.
+func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0" title="0">{
+        log.Info("starting server", zap.Any("config", s.cfg))
+
+        httpServer := &amp;http.Server{
+                Addr:    s.cfg.Addr,
+                Handler: handler,
+                // Настройка таймаутов для сервера по рекомендациям линтера gosec
+                ReadTimeout:  DefaultReadTimeout,
+                WriteTimeout: DefaultWriteTimeout,
+                IdleTimeout:  DefaultIdleTimeout,
+        }
+
+        err := httpServer.ListenAndServe()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal("server failed to start", zap.Error(err))
+        }</span>
+}
+
+// GetStoreInterval возвращает интервал сохранения метрик в секундах.
+func (s *Server) GetStoreInterval() int <span class="cov0" title="0">{
+        return s.cfg.StoreInterval
+}</span>
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package app
+
+// Config содержит конфигурацию сервера метрик.
+type Config struct {
+        // Addr адрес и порт для запуска сервера.
+        Addr string
+        // Интервал сохранения метрик на сервере в секундах.
+        StoreInterval int
+        // Полное имя файла, в который будут сохранены метрики.
+        FileStoragePath string
+        // Загружать или нет ранее сохраненные метрики из файла.
+        Restore bool
+        // Параметры базы данных
+        Database DatabaseConfig
+        // Приватный ключ для подписи метрик.
+        PrivateKey string
+        // Включить профилирование через pprof
+        EnablePprof bool
+}
+
+// DatabaseConfig содержит настройки подключения к базе данных.
+type DatabaseConfig struct {
+        // DSN строка подключения к базе данных.
+        DSN string
+        // MigrationsPath путь к директории с миграциями.
+        MigrationsPath string
+}
+
+func NewConfig(flags *Flags) *Config <span class="cov0" title="0">{
+        return &amp;Config{
+                Addr:            flags.Server.Addr,
+                StoreInterval:   flags.Server.StoreInterval,
+                FileStoragePath: flags.Server.FileStoragePath,
+                Restore:         flags.Server.Restore,
+                Database: DatabaseConfig{
+                        DSN:            flags.Database.DSN,
+                        MigrationsPath: flags.Database.MigrationsPath,
+                },
+                PrivateKey:  flags.PrivateKey,
+                EnablePprof: flags.Server.EnablePprof,
+        }
+}</span>
+
+// IsStoreEnabled возвращает true, если включено сохранение метрик на сервере.
+func (cfg *Config) IsStoreEnabled() bool <span class="cov8" title="1">{
+        return cfg.FileStoragePath != ""
+}</span>
+
+// IsRestoreEnabled надо ли восстанавливать метрики из файла при старте.
+func (cfg *Config) IsRestoreEnabled() bool <span class="cov8" title="1">{
+        return cfg.Restore
+}</span>
+
+// GetStorePath возвращает путь к файлу для сохранения метрик.
+func (cfg *Config) GetStorePath() string <span class="cov0" title="0">{
+        return cfg.FileStoragePath
+}</span>
+
+// IsSyncStore сохранение метрик на сервере синхронно (сразу после изменения, если нулевой интервал).
+func (cfg *Config) IsSyncStore() bool <span class="cov0" title="0">{
+        return cfg.StoreInterval == 0
+}</span>
+
+// GetStoreInterval возвращает интервал сохранения метрик на сервере в секундах.
+func (cfg *Config) GetStoreInterval() int <span class="cov0" title="0">{
+        return cfg.StoreInterval
+}</span>
+
+// IsDatabaseEnabled возвращает true, если переданы параметры подключения к БД.
+func (cfg *Config) IsDatabaseEnabled() bool <span class="cov8" title="1">{
+        return cfg.Database.DSN != ""
+}</span>
+
+// IsRequestSigningEnabled включена ли проверка подписи метрик.
+func (cfg *Config) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
+        return cfg.PrivateKey != ""
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package app
+
+import (
+        "flag"
+        "os"
+        "strconv"
+)
+
+const defaultStoreInterval = 300
+
+// Flags содержит все флаги сервера.
+type Flags struct {
+        Server struct {
+                Addr string
+                // Интервал сохранения метрик на сервере в секундах
+                StoreInterval int
+                // Полное имя файла, в который будут сохранены метрики
+                FileStoragePath string
+                // Загружать или нет ранее сохраненные метрики из файла
+                Restore bool
+                // Включить профилирование через pprof
+                EnablePprof bool
+        }
+
+        Database struct {
+                // Параметры подключения к БД, например postgres://username:password@localhost:5432/database_name
+                DSN string
+                // Путь к директории с миграциями
+                MigrationsPath string
+        }
+
+        PrivateKey string
+}
+
+// ParseFlags обрабатывает аргументы командной строки
+// и сохраняет их значения в соответствующих переменных.
+func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
+        flags := Flags{}
+        var err error
+
+        // Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
+        flag.StringVar(
+                &amp;flags.Server.Addr,
+                "a",
+                "localhost:8080",
+                "IP  адрес и порт на которых следует запустить сервер",
+        )
+        // Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
+        flag.IntVar(
+                &amp;flags.Server.StoreInterval,
+                "i",
+                defaultStoreInterval,
+                "Интервал сохранения метрик на диск, в секундах",
+        )
+        // Регистрируем переменную flagFileStoragePath как аргумент -f со значением metrics.json по умолчанию.
+        flag.StringVar(
+                &amp;flags.Server.FileStoragePath,
+                "f",
+                "/tmp/metrics-db.json",
+                "Путь к файлу для хранения метрик",
+        )
+        // Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
+        flag.BoolVar(&amp;flags.Server.Restore, "r", true, "Восстанавливать метрики из файла при старте?")
+
+        // Добавляем флаг профилирования
+        flag.BoolVar(
+                &amp;flags.Server.EnablePprof,
+                "pprof",
+                false,
+                "enable pprof profiling with /debug/pprof routes",
+        )
+
+        // Адрес подключения к БД PostgresSQL, по умолчанию пустое значение (не подключаемся к БД).
+        flag.StringVar(
+                &amp;flags.Database.DSN,
+                "d",
+                "",
+                "Параметры подключения к базе данных Postgres, формат: postgres://user:password@localhost:5432/database",
+        )
+        // Путь к директории с миграциями относительно корня проекта, по умолчанию "migrations/server".
+        flag.StringVar(&amp;flags.Database.MigrationsPath,
+                "migrations-path",
+                "migrations/server",
+                "Путь к директории с миграциями")
+
+        flag.StringVar(&amp;flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
+
+        // Парсим переданные серверу аргументы в зарегистрированные переменные.
+        flag.Parse()
+
+        // Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
+        // переопределим адрес запуска сервера,
+        // даже если он был передан через аргумент командной строки.
+        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov0" title="0">{
+                flags.Server.Addr = envRunAddr
+        }</span>
+        <span class="cov0" title="0">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov0" title="0">{
+                flags.Server.StoreInterval, err = strconv.Atoi(envStoreInterval)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+        }
+        // Если переменная окружения FILE_STORAGE_PATH присутствует (даже
+        // пустая), переопределим путь к файлу хранения метрик.
+        <span class="cov0" title="0">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov0" title="0">{
+                flags.Server.FileStoragePath = envFileStoragePath
+        }</span>
+        // Если переменная окружения RESTORE присутствует (даже пустая), переопределим флаг восстановления метрик из файла.
+        <span class="cov0" title="0">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov0" title="0">{
+                flags.Server.Restore, err = strconv.ParseBool(envRestore)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+        }
+
+        // Если переданы параметры БД в параметрах окружения, используем их
+        <span class="cov0" title="0">if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov0" title="0">{
+                flags.Database.DSN = envDatabaseDSN
+        }</span>
+
+        // Если передан ключ в параметрах окружения, используем его
+        <span class="cov0" title="0">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov0" title="0">{
+                flags.PrivateKey = envPrivateKey
+        }</span>
+
+        <span class="cov0" title="0">return &amp;flags, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package index
+
+import (
+        "encoding/json"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+)
+
+// New возвращает http.HandlerFunc, который отдает список метрик на сервере.
+func New(st storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                w.Header().Set("Content-Type", "application/json")
+
+                // Возвращаем метрики в формате JSON архива
+                metrics := st.GetMetrics(r.Context())
+                jsonData, err := json.Marshal(metrics)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusInternalServerError)
+                        return
+                }</span>
+                <span class="cov0" title="0">_, err = w.Write(jsonData)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusInternalServerError)
+                        return
+                }</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package ping
+
+import (
+        "context"
+        "errors"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        "github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
+
+        "github.com/maynagashev/go-metrics/pkg/response"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "go.uber.org/zap"
+)
+
+type Response struct {
+        response.Response
+}
+
+type Storage interface {
+        GetMetrics(ctx context.Context) []metrics.Metric
+}
+
+// Handle логика обработчика ping с указанной базой данных, чтобы можно было провести тестирование моком.
+func Handle(storage Storage) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                w.Header().Set("Content-Type", "application/json")
+
+                // Проверяем подключение сделав запрос к базе данных.
+                _ = storage.GetMetrics(r.Context())
+
+                response.OK(w, "pong")
+        }</span>
+}
+
+// New создает подключение к базе данных из конфига и возвращает обработчик запроса.
+func New(config *app.Config, log *zap.Logger) http.HandlerFunc <span class="cov0" title="0">{
+        // Если не используется PostgreSQL, то возвращаем обработчик, который возвращает ошибку.
+        if !config.IsDatabaseEnabled() </span><span class="cov0" title="0">{
+                return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov0" title="0">{
+                        response.Error(w, errors.New("не указана база данных"), http.StatusInternalServerError)
+                }</span>
+        }
+
+        // Создаем экземпляр хранилища на основе PostgreSQL, здесь создается подключение и накатываются миграции.
+        <span class="cov0" title="0">db, err := pgstorage.New(context.Background(), config, log)
+        // Если не удалось создать хранилище, то возвращаем обработчик, который возвращает ошибку.
+        if err != nil </span><span class="cov0" title="0">{
+                return func(w http.ResponseWriter, _ *http.Request) </span><span class="cov0" title="0">{
+                        response.Error(w, err, http.StatusInternalServerError)
+                }</span>
+        }
+
+        // Запускаем обработчик запроса с созданным хранилищем.
+        <span class="cov0" title="0">return Handle(db)</span>
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package update
+
+import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/pkg/sign"
+
+        "github.com/maynagashev/go-metrics/pkg/response"
+
+        "go.uber.org/zap"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+type ResponseWithMessage struct {
+        Message string `json:"message"`
+}
+
+type Metric struct {
+        Name  string             `json:"id"`              // Имя метрики
+        MType metrics.MetricType `json:"type"`            // Параметр, принимающий значение gauge или counter
+        Delta *int64             `json:"delta,omitempty"` // Значение метрики в случае передачи counter
+        Value *float64           `json:"value,omitempty"` // Значение метрики в случае передачи gauge
+}
+
+// New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
+func New(cfg *app.Config, strg storage.Repository, log *zap.Logger) http.HandlerFunc <span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                requestedMetric, err := parseMetricFromRequest(r, log, cfg)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Error("error while parsing metric", zap.Error(err))
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                        return
+                }</span>
+                <span class="cov0" title="0">log.Debug("parsed metric", zap.Any("metric", requestedMetric))
+
+                // Конвертируем локальную структуру в структуру из контракта
+                metric := metrics.Metric(requestedMetric)
+                err = strg.UpdateMetric(r.Context(), metric)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">var resMessage string
+
+                // Получаем значение метрики из хранилища
+                m, ok := strg.GetMetric(r.Context(), metric.MType, metric.Name)
+                if ok </span><span class="cov0" title="0">{
+                        resMessage = fmt.Sprintf("metric %s updated, result: %s", metric.String(), m.String())
+                }</span> else<span class="cov0" title="0"> {
+                        resMessage = fmt.Sprintf("metric %s not found", metric.String())
+                }</span>
+
+                // Логируем ответ для отладки
+                <span class="cov0" title="0">log.Info(resMessage)
+
+                // Отправляем успешный ответ
+                response.OK(w, resMessage)</span>
+        }
+}
+
+// Читаем метрику из json запроса.
+func parseMetricFromRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (Metric, error) <span class="cov0" title="0">{
+        m := Metric{}
+        buf := new(bytes.Buffer)
+        _, err := buf.ReadFrom(r.Body)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return m, err
+        }</span>
+
+        <span class="cov0" title="0">log.Debug("request body", zap.String("body", buf.String()))
+
+        body := buf.Bytes()
+
+        if cfg.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                // Проверяем подпись запроса
+                expectedHash := r.Header.Get(sign.HeaderKey)
+                requestHash, vErr := sign.VerifyHMACSHA256(body, cfg.PrivateKey, expectedHash)
+                if vErr != nil </span><span class="cov0" title="0">{
+                        log.Error("error while verifying request signature", zap.Error(vErr),
+                                zap.String("expected_hash", expectedHash), zap.String("request_hash", requestHash))
+                        return m, vErr
+                }</span>
+        }
+
+        <span class="cov0" title="0">err = json.Unmarshal(body, &amp;m)
+        if err != nil </span><span class="cov0" title="0">{
+                return m, err
+        }</span>
+
+        <span class="cov0" title="0">return m, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package updates
+
+import (
+        "bytes"
+        "encoding/json"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        sign "github.com/maynagashev/go-metrics/pkg/sign"
+
+        "github.com/maynagashev/go-metrics/pkg/response"
+
+        "go.uber.org/zap"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// NewBulkUpdate возвращает http.HandlerFunc, который обновляет множество метрик в хранилище.
+// Метрики передаются в теле запроса в формате JSON.
+func NewBulkUpdate(cfg *app.Config, st storage.Repository, log *zap.Logger) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                var err error
+                w.Header().Set("Content-Type", "application/json")
+
+                // Проверяем запрос на валидность и подпись если требуется.
+                body, err := validateRequest(r, log, cfg)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Debug("validate request failed", zap.Error(err))
+                        response.Error(w, err, http.StatusBadRequest)
+                        return
+                }</span>
+
+                // Парсим тело запроса в слайс метрик.
+                <span class="cov0" title="0">var metricsToUpdate []metrics.Metric
+                err = json.Unmarshal([]byte(body), &amp;metricsToUpdate)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Debug("json decode failed", zap.Error(err))
+                        response.Error(w, err, http.StatusBadRequest)
+                        return
+                }</span>
+
+                // Обновляем метрики в хранилище.
+                <span class="cov0" title="0">err = st.UpdateMetrics(r.Context(), metricsToUpdate)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                        return
+                }</span>
+
+                // Отправляем успешный ответ.
+                <span class="cov0" title="0">w.WriteHeader(http.StatusOK)
+
+                // Логируем ответ для отладки
+                log.Info("Metrics updated successfully")
+
+                // Выводим в тело ответа сообщение о результате
+                response.OK(w, "Metrics updated successfully")</span>
+        }
+}
+
+// validateRequest проверяет запрос на валидность.
+func validateRequest(r *http.Request, log *zap.Logger, cfg *app.Config) (string, error) <span class="cov0" title="0">{
+        buf := new(bytes.Buffer)
+        _, err := buf.ReadFrom(r.Body)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov0" title="0">body := buf.Bytes()
+
+        // Проверяем подпись запроса
+        if cfg.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                hashFromRequest := r.Header.Get(sign.HeaderKey)
+                hash, vErr := sign.VerifyHMACSHA256(body, cfg.PrivateKey, hashFromRequest)
+
+                log.Debug(
+                        "validateRequest =&gt; sign.VerifyHMACSHA256",
+                        zap.String("hash_from_request", hashFromRequest),
+                        zap.Error(
+                                vErr,
+                        ),
+                        zap.String("calc_hash", hash),
+                        zap.Any("headers", r.Header),
+                        zap.String("body", buf.String()),
+                )
+
+                if vErr != nil </span><span class="cov0" title="0">{
+                        return "", vErr
+                }</span>
+        }
+
+        <span class="cov0" title="0">return buf.String(), nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">// Package value provides a handler for the /value endpoint.
+package value
+
+import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "github.com/maynagashev/go-metrics/pkg/sign"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// New хэндлер для получения значения метрики с сервера в ответ на запрос `POST /value`.
+func New(cfg *app.Config, storage storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                w.Header().Set("Content-Type", "application/json")
+                var err error
+
+                requestMetric, err := parseMetricFromRequest(r)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                }</span>
+
+                // Получаем значение метрики из хранилища
+                <span class="cov0" title="0">metric, ok := storage.GetMetric(r.Context(), requestMetric.MType, requestMetric.Name)
+                if !ok </span><span class="cov0" title="0">{
+                        http.Error(w, fmt.Sprintf("%s not found", metric.String()), http.StatusNotFound)
+                        return
+                }</span>
+
+                // Отправляем json ответ с метрикой
+                <span class="cov0" title="0">encodedBody, err := json.Marshal(metric)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusInternalServerError)
+                        return
+                }</span>
+
+                // Если задан приватный ключ, то подписываем ответ
+                <span class="cov0" title="0">if cfg.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                        signature := sign.ComputeHMACSHA256(encodedBody, cfg.PrivateKey)
+                        w.Header().Set(sign.HeaderKey, signature)
+                }</span>
+
+                <span class="cov0" title="0">_, err = w.Write(encodedBody)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusInternalServerError)
+                        return
+                }</span>
+        }
+}
+
+// Читаем метрику из json запроса.
+func parseMetricFromRequest(r *http.Request) (metrics.Metric, error) <span class="cov0" title="0">{
+        m := metrics.Metric{}
+        buf := new(bytes.Buffer)
+        _, err := buf.ReadFrom(r.Body)
+
+        if err != nil </span><span class="cov0" title="0">{
+                return m, err
+        }</span>
+
+        <span class="cov0" title="0">err = json.Unmarshal(buf.Bytes(), &amp;m)
+        if err != nil </span><span class="cov0" title="0">{
+                return m, err
+        }</span>
+
+        <span class="cov0" title="0">return m, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package index
+
+import (
+        "fmt"
+        "net/http"
+        "strconv"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+)
+
+// New возвращает http.HandlerFunc, который отдает список метрик на сервере.
+func New(st storage.Repository) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                w.Header().Set("Content-Type", "text/html")
+
+                // Возвращаем метрики в виде списка строк (первоначальный вариант)
+                ms := st.GetMetrics(r.Context())
+                items := make([]string, 0, st.Count(r.Context()))
+                for _, metric := range ms </span><span class="cov8" title="1">{
+                        switch metric.MType </span>{
+                        case metrics.TypeGauge:<span class="cov8" title="1">
+                                valF := strconv.FormatFloat(*metric.Value, 'f', -1, 64)
+                                items = append(items, fmt.Sprintf("gauge/%s: %s", metric.Name, valF))</span>
+                        case metrics.TypeCounter:<span class="cov8" title="1">
+                                items = append(items, fmt.Sprintf("counter/%s: %d", metric.Name, *metric.Delta))</span>
+                        default:<span class="cov0" title="0">
+                                items = append(items, fmt.Sprintf("unknown/%s", metric.Name))</span>
+                        }
+                }
+
+                <span class="cov8" title="1">for _, metric := range items </span><span class="cov8" title="1">{
+                        _, err := w.Write([]byte(metric + "\n"))
+                        if err != nil </span><span class="cov0" title="0">{
+                                return
+                        }</span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package update
+
+import (
+        "fmt"
+        "net/http"
+        "strconv"
+        "strings"
+
+        "go.uber.org/zap"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// New возвращает http.HandlerFunc, который обновляет значение метрики в хранилище.
+func New(st storage.Repository, log *zap.Logger) http.HandlerFunc <span class="cov8" title="1">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                w.Header().Set("Content-Type", "text/plain")
+
+                // Получаем части пути из URL /update/&lt;ТИП_МЕТРИКИ&gt;/&lt;ИМЯ_МЕТРИКИ&gt;/&lt;ЗНАЧЕНИЕ_МЕТРИКИ&gt;
+                parts := strings.Split(r.URL.Path, "/")
+                expectedPartsLen := 5
+
+                // При попытке передать запрос без имени метрики возвращать http.StatusNotFound.
+                if len(parts) != expectedPartsLen </span><span class="cov8" title="1">{
+                        http.Error(w, "Page not found", http.StatusNotFound)
+                        return
+                }</span>
+
+                <span class="cov8" title="1">metricType := metrics.MetricType(parts[2])
+                metricName := parts[3]
+                metricValue := parts[4]
+
+                var m *metrics.Metric
+                switch metricType </span>{
+                case metrics.TypeCounter:<span class="cov8" title="1">
+                        intValue, err := strconv.ParseInt(metricValue, 10, 64)
+                        if err != nil </span><span class="cov0" title="0">{
+                                http.Error(
+                                        w,
+                                        "Invalid metrics value, must be convertable to int64",
+                                        http.StatusBadRequest,
+                                )
+                                return
+                        }</span>
+                        <span class="cov8" title="1">m = metrics.NewCounter(metricName, intValue)</span>
+                case metrics.TypeGauge:<span class="cov8" title="1">
+                        floatValue, err := strconv.ParseFloat(metricValue, 64)
+                        if err != nil </span><span class="cov0" title="0">{
+                                http.Error(
+                                        w,
+                                        "Invalid metrics value, must be convertable to float64",
+                                        http.StatusBadRequest,
+                                )
+                                return
+                        }</span>
+                        <span class="cov8" title="1">m = metrics.NewGauge(metricName, floatValue)</span>
+                default:<span class="cov8" title="1">
+                        http.Error(w, "Invalid metrics type, must be: counter or gauge", http.StatusBadRequest)
+                        return</span>
+                }
+
+                // Обновляем метрику в хранилище
+                <span class="cov8" title="1">err := st.UpdateMetric(r.Context(), *m)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                }</span>
+
+                <span class="cov8" title="1">var resMessage string
+                // Получаем значение метрики из хранилища
+                v, ok := st.GetMetric(r.Context(), metricType, metricName)
+                if ok </span><span class="cov8" title="1">{
+                        resMessage = fmt.Sprintf("metric %s/%s updated with value %s, result: %s",
+                                metricType, metricName, metricValue, v.String())
+                }</span> else<span class="cov0" title="0"> {
+                        resMessage = fmt.Sprintf("metric %s/%s not found", metricType, metricName)
+                }</span>
+
+                // Отправляем успешный ответ
+                <span class="cov8" title="1">w.WriteHeader(http.StatusOK)
+
+                // Логируем ответ для отладки
+                log.Info(resMessage)
+
+                // Выводим в тело ответа сообщение о результате
+                _, err = fmt.Fprint(w, resMessage)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Error(fmt.Sprintf("error writing response: %s", err))
+                        return
+                }</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">// Package value provides a handler for the /value endpoint.
+package value
+
+import (
+        "fmt"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+
+        "github.com/go-chi/chi/v5"
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// New хэндлер для получения занчения метрики с сервера /value/{type}/{name}.
+func New(storage storage.Repository) http.HandlerFunc <span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                w.Header().Set("Content-Type", "text/plain")
+
+                metricType := metrics.MetricType(chi.URLParam(r, "type"))
+                metricName := chi.URLParam(r, "name")
+
+                metric, ok := storage.GetMetric(r.Context(), metricType, metricName)
+                if !ok </span><span class="cov0" title="0">{
+                        http.Error(
+                                w,
+                                fmt.Sprintf("%s %s not found", metricType, metricName),
+                                http.StatusNotFound,
+                        )
+                        return
+                }</span>
+
+                <span class="cov0" title="0">_, err := w.Write([]byte(metric.ValueString()))
+                if err != nil </span><span class="cov0" title="0">{
+                        return
+                }</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">// Package decompress содержит middleware которое отвечает за обработку сжатых запросов,
+// когда от клиента пришел заголовок Content-Encoding: gzip.
+package decompress
+
+import (
+        "compress/gzip"
+        "net/http"
+
+        "go.uber.org/zap"
+)
+
+func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov0" title="0">{
+        // Возвращаем функцию, которая принимает следующий обработчик
+        return func(next http.Handler) http.Handler </span><span class="cov0" title="0">{
+                log.Info("decompress middleware enabled")
+
+                // Функция-обработчик запроса
+                fn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                        // Проверяем заголовок Content-Encoding: gzip
+                        if r.Header.Get("Content-Encoding") == "gzip" </span><span class="cov0" title="0">{
+                                log.Debug("content encoded with gzip, replacing body with gzip.Reader")
+
+                                gz, err := gzip.NewReader(r.Body)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        log.Error("error while decompressing request body", zap.Error(err))
+                                        http.Error(
+                                                w,
+                                                "Ошибка при декомпрессии содержимого запроса gzip",
+                                                http.StatusBadRequest,
+                                        )
+                                        return
+                                }</span>
+
+                                <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                                        err = gz.Close()
+                                        if err != nil </span><span class="cov0" title="0">{
+                                                log.Error("error while closing decompression stream", zap.Error(err))
+                                                http.Error(
+                                                        w,
+                                                        "Ошибка при закрытии потока декомпрессии",
+                                                        http.StatusInternalServerError,
+                                                )
+                                                return
+                                        }</span>
+                                }()
+
+                                // Заменяем тело запроса на декомпрессированный поток
+                                <span class="cov0" title="0">r.Body = gz</span>
+                        }
+                        <span class="cov0" title="0">next.ServeHTTP(w, r)</span>
+                }
+                <span class="cov0" title="0">return http.HandlerFunc(fn)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file23" style="display: none">// Package decompresspool содержит middleware которое отвечает за обработку сжатых запросов,
+// когда от клиента пришел заголовок Content-Encoding: gzip.
+package decompresspool
+
+import (
+        "compress/gzip"
+        "io"
+        "net/http"
+        "sync"
+
+        "go.uber.org/zap"
+)
+
+// Middleware содержит пулы для переиспользования объектов.
+type Middleware struct {
+        log        *zap.Logger
+        readerPool sync.Pool
+        closerPool sync.Pool
+}
+
+// New создает новый middleware для декомпрессии с пулами объектов.
+func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov8" title="1">{
+        m := &amp;Middleware{
+                log: log,
+                readerPool: sync.Pool{
+                        New: func() interface{} </span><span class="cov0" title="0">{
+                                return new(gzip.Reader)
+                        }</span>,
+                },
+                closerPool: sync.Pool{
+                        New: func() interface{} <span class="cov0" title="0">{
+                                return new(gzipReadCloser)
+                        }</span>,
+                },
+        }
+
+        <span class="cov8" title="1">return m.Handler</span>
+}
+
+// Handler возвращает функцию-обработчик запроса.
+func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" title="1">{
+        m.log.Info("decompress middleware enabled")
+
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                if r.Header.Get("Content-Encoding") != "gzip" </span><span class="cov8" title="1">{
+                        next.ServeHTTP(w, r)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">m.log.Debug("content encoded with gzip, replacing body with gzip.Reader")
+
+                // Получаем Reader из пула
+                reader, ok := m.readerPool.Get().(*gzip.Reader)
+                if !ok </span><span class="cov0" title="0">{
+                        m.log.Error("error getting reader from pool")
+                        http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+                        return
+                }</span>
+
+                // Инициализируем Reader новым источником данных
+                <span class="cov0" title="0">if err := reader.Reset(r.Body); err != nil </span><span class="cov0" title="0">{
+                        m.log.Error("error initializing gzip reader", zap.Error(err))
+                        m.readerPool.Put(reader)
+                        http.Error(w, "Ошибка при декомпрессии содержимого запроса gzip", http.StatusBadRequest)
+                        return
+                }</span>
+
+                // Получаем closer из пула
+                <span class="cov0" title="0">closer, ok := m.closerPool.Get().(*gzipReadCloser)
+                if !ok </span><span class="cov0" title="0">{
+                        m.log.Error("error getting closer from pool")
+                        m.readerPool.Put(reader)
+                        http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+                        return
+                }</span>
+
+                // Инициализируем closer
+                <span class="cov0" title="0">closer.Reader = reader
+                closer.middleware = m
+                closer.log = m.log
+                closer.originalBody = r.Body
+
+                // Заменяем тело запроса
+                r.Body = closer
+
+                next.ServeHTTP(w, r)</span>
+        })
+}
+
+// gzipReadCloser оборачивает gzip.Reader для автоматического возврата в пул при закрытии.
+type gzipReadCloser struct {
+        *gzip.Reader
+        middleware   *Middleware
+        log          *zap.Logger
+        originalBody io.ReadCloser
+}
+
+func (gz *gzipReadCloser) Close() error <span class="cov0" title="0">{
+        // Закрываем gzip reader
+        if err := gz.Reader.Close(); err != nil </span><span class="cov0" title="0">{
+                gz.log.Error("error closing gzip reader", zap.Error(err))
+                return err
+        }</span>
+
+        // Закрываем оригинальное тело
+        <span class="cov0" title="0">if err := gz.originalBody.Close(); err != nil </span><span class="cov0" title="0">{
+                gz.log.Error("error closing original body", zap.Error(err))
+                return err
+        }</span>
+
+        // Возвращаем Reader в его пул
+        <span class="cov0" title="0">gz.middleware.readerPool.Put(gz.Reader)
+
+        // Очищаем поля перед возвратом в пул
+        gz.Reader = nil
+        gz.originalBody = nil
+        gz.log = nil
+        gz.middleware = nil
+
+        // Возвращаем closer в его пул
+        gz.middleware.closerPool.Put(gz)
+
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file24" style="display: none">package logger
+
+import (
+        "bytes"
+        "io"
+        "net/http"
+        "time"
+
+        "go.uber.org/zap"
+
+        "github.com/go-chi/chi/v5/middleware"
+)
+
+func New(log *zap.Logger) func(next http.Handler) http.Handler <span class="cov8" title="1">{
+        return func(next http.Handler) http.Handler </span><span class="cov8" title="1">{
+                log.Info("logger middleware enabled")
+
+                fn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                        entry := log.With(
+                                zap.String("method", r.Method),
+                                zap.String("path", r.URL.Path),
+                                zap.String("remote_addr", r.RemoteAddr),
+                                zap.String("user_agent", r.UserAgent()),
+                                zap.String("request_id", middleware.GetReqID(r.Context())),
+                                // Добавляем логирование заголовков запроса
+                                zap.Any("headers", r.Header),
+                                // Добавляем логирование тела запроса
+                                zap.String("request_body", string(readRequestBody(r, log))),
+                        )
+                        ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+
+                        // Сохраняем тело ответа для записи в лог
+                        body := bytes.NewBuffer(nil)
+                        ww.Tee(body)
+
+                        t1 := time.Now()
+                        defer func() </span><span class="cov8" title="1">{
+                                entry.Info("request completed",
+                                        zap.Int("status", ww.Status()),
+                                        zap.Int("response_bytes", ww.BytesWritten()),
+                                        zap.Any("response_headers", ww.Header()),   // Логирование заголовков ответа
+                                        zap.String("response_body", body.String()), // Логирование тела ответа
+                                        zap.String("duration", time.Since(t1).String()),
+                                )
+                        }</span>()
+
+                        <span class="cov8" title="1">next.ServeHTTP(ww, r)</span>
+                }
+
+                // приводим к нужному типу
+                <span class="cov8" title="1">return http.HandlerFunc(fn)</span>
+        }
+}
+
+func readRequestBody(r *http.Request, log *zap.Logger) []byte <span class="cov8" title="1">{
+        reqBody, err := io.ReadAll(r.Body)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Error("Ошибка при чтении тела запроса", zap.Error(err))
+                return nil
+        }</span>
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
+                _ = r.Body.Close()
+        }</span>()
+
+        // Восстановление r.Body для дальнейшего использования
+        <span class="cov8" title="1">r.Body = io.NopCloser(bytes.NewBuffer(reqBody))
+        return reqBody</span>
+}
+</pre>
+		
+		<pre class="file" id="file25" style="display: none">package router
+
+import (
+        "net/http/pprof"
+
+        "github.com/go-chi/chi/v5"
+        "github.com/go-chi/chi/v5/middleware"
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "github.com/maynagashev/go-metrics/internal/server/handlers/json/ping"
+        jsonUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/json/update"
+        jsonUpdates "github.com/maynagashev/go-metrics/internal/server/handlers/json/updates"
+        jasonValue "github.com/maynagashev/go-metrics/internal/server/handlers/json/value"
+        plainIndex "github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
+        plainUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
+        plainValue "github.com/maynagashev/go-metrics/internal/server/handlers/plain/value"
+        "github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool"
+        "github.com/maynagashev/go-metrics/internal/server/middleware/logger"
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+        "go.uber.org/zap"
+)
+
+// New инстанцирует новый роутер.
+func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Router <span class="cov8" title="1">{
+        compressLevel := 5
+
+        r := chi.NewRouter()
+
+        // Добавляем middleware для генерации ID запроса
+        r.Use(middleware.RequestID)
+        // Восстанавливаем панику, если она произошла внутри обработчика
+        r.Use(middleware.Recoverer)
+        // Удаляем слеши в конце URL
+        r.Use(middleware.StripSlashes)
+        // Добавляем middleware для сжатия ответов
+        r.Use(middleware.Compress(compressLevel, "application/json", "text/html"))
+        // Обработка сжатых запросов, когда от клиента сразу пришел заголовок Content-Encoding: gzip
+        r.Use(decompresspool.New(log))
+        // Используем единый логгер для запросов, вместо встроенного логгера chi
+        r.Use(logger.New(log))
+
+        // Обработчики запросов
+        r.Get("/", plainIndex.New(storage))
+        r.Post("/update", jsonUpdate.New(config, storage, log))
+        r.Post("/updates", jsonUpdates.NewBulkUpdate(config, storage, log))
+        r.Post("/value", jasonValue.New(config, storage))
+        r.Get("/ping", ping.New(config, log))
+
+        // Первые версии обработчиков для работы тестов начальных итераций
+        r.Post("/update/*", plainUpdate.New(storage, log))
+        r.Get("/value/{type}/{name}", plainValue.New(storage))
+
+        // Добавляем pprof хендлеры только если включено профилирование
+        if config.EnablePprof </span><span class="cov0" title="0">{
+                log.Info("Registering pprof handlers at /debug/pprof/")
+                r.Route("/debug/pprof", func(r chi.Router) </span><span class="cov0" title="0">{
+                        r.HandleFunc("/", pprof.Index)
+                        r.HandleFunc("/cmdline", pprof.Cmdline)
+                        r.HandleFunc("/profile", pprof.Profile)
+                        r.HandleFunc("/symbol", pprof.Symbol)
+                        r.HandleFunc("/trace", pprof.Trace)
+
+                        /* Постоянно обновляемые метрики, снимают отчеты в реальном времени */
+                        r.HandleFunc("/goroutine", pprof.Handler("goroutine").ServeHTTP)
+                        r.HandleFunc("/heap", pprof.Handler("heap").ServeHTTP)
+                        r.HandleFunc("/threadcreate", pprof.Handler("threadcreate").ServeHTTP)
+                        r.HandleFunc("/block", pprof.Handler("block").ServeHTTP)
+                        r.HandleFunc("/allocs", pprof.Handler("allocs").ServeHTTP)
+                        r.HandleFunc("/mutex", pprof.Handler("mutex").ServeHTTP)
+                }</span>)
+        }
+
+        <span class="cov8" title="1">return r</span>
+}
+</pre>
+		
+		<pre class="file" id="file26" style="display: none">// Package memory provides an in-memory storage for metrics.
+package memory
+
+import (
+        "context"
+        "encoding/json"
+        "errors"
+        "fmt"
+        "os"
+        "time"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "go.uber.org/zap"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+)
+
+const maxRetries = 3
+
+type MemStorage struct {
+        gauges   storage.Gauges
+        counters storage.Counters
+        cfg      *app.Config
+        log      *zap.Logger
+}
+
+// New создает новый экземпляр хранилища метрик в памяти, на вход
+// можно передать набор gauges или counters для инициализации в тестах.
+func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <span class="cov8" title="1">{
+        memStorage := &amp;MemStorage{
+                gauges:   make(storage.Gauges),
+                counters: make(storage.Counters),
+                cfg:      cfg,
+                log:      log,
+        }
+        log.Debug("memory storage created", zap.Any("storage", memStorage))
+
+        // Если включено восстановление метрик из файла, то пытаемся прочитать метрики из файла.
+        if cfg.IsRestoreEnabled() </span><span class="cov0" title="0">{
+                err := memStorage.restoreMetricsFromFile()
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Error("failed to read metrics from file", zap.Error(err))
+                }</span>
+        }
+
+        // Если переданы метрики для инициализации (для тестов хранилища) то обновляем их в хранилище.
+        <span class="cov8" title="1">for _, option := range options </span><span class="cov8" title="1">{
+                switch opt := option.(type) </span>{
+                case storage.Gauges:<span class="cov8" title="1">
+                        memStorage.gauges = opt</span>
+                case storage.Counters:<span class="cov8" title="1">
+                        memStorage.counters = opt</span>
+                }
+        }
+
+        // Запускаем сохранение метрик в файл с указанным интервалом.
+        <span class="cov8" title="1">if cfg.IsStoreEnabled() &amp;&amp; !cfg.IsSyncStore() </span><span class="cov0" title="0">{
+                interval := time.Duration(cfg.GetStoreInterval()) * time.Second
+                go func() </span><span class="cov0" title="0">{
+                        for </span><span class="cov0" title="0">{
+                                time.Sleep(interval)
+                                log.Info(
+                                        fmt.Sprintf(
+                                                "store %d metrics to file %s",
+                                                memStorage.Count(context.Background()),
+                                                cfg.GetStorePath(),
+                                        ),
+                                )
+                                err := memStorage.storeMetricsToFile()
+                                if err != nil </span><span class="cov0" title="0">{
+                                        log.Error("failed to store metrics to file", zap.Error(err))
+                                }</span>
+                        }
+                }()
+        }
+
+        <span class="cov8" title="1">return memStorage</span>
+}
+
+func (ms *MemStorage) Close() error <span class="cov0" title="0">{
+        if ms.cfg.IsStoreEnabled() &amp;&amp; !ms.cfg.IsSyncStore() </span><span class="cov0" title="0">{
+                return ms.storeMetricsToFile()
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// UpdateGauge перезаписывает значение gauge.
+func (ms *MemStorage) UpdateGauge(metricName string, metricValue storage.Gauge) <span class="cov0" title="0">{
+        ms.gauges[metricName] = metricValue
+}</span>
+
+// IncrementCounter увеличивает значение счетчика на заданное значение.
+func (ms *MemStorage) IncrementCounter(metricName string, metricValue storage.Counter) <span class="cov8" title="1">{
+        ms.counters[metricName] += metricValue
+}</span>
+
+// UpdateMetric универсальный метод обновления метрики в хранилище: gauge, counter.
+func (ms *MemStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error <span class="cov8" title="1">{
+        switch metric.MType </span>{
+        case metrics.TypeGauge:<span class="cov0" title="0">
+                if metric.Value == nil </span><span class="cov0" title="0">{
+                        return errors.New("gauge value is nil")
+                }</span>
+                <span class="cov0" title="0">ms.UpdateGauge(metric.Name, storage.Gauge(*metric.Value))</span>
+        case metrics.TypeCounter:<span class="cov8" title="1">
+                if metric.Delta == nil </span><span class="cov0" title="0">{
+                        return errors.New("counter delta is nil")
+                }</span>
+                <span class="cov8" title="1">ms.IncrementCounter(metric.Name, storage.Counter(*metric.Delta))</span>
+        default:<span class="cov0" title="0">
+                return fmt.Errorf("unsupported metric type: %s", metric.MType)</span>
+        }
+
+        // Сохраняем метрики в файл сразу после изменения, если включено синхронное сохранение.
+        <span class="cov8" title="1">if ms.cfg.IsStoreEnabled() &amp;&amp; ms.cfg.IsSyncStore() </span><span class="cov0" title="0">{
+                err := ms.storeMetricsToFile()
+                if err != nil </span><span class="cov0" title="0">{
+                        // Информация об ошибке синхронной записи для клиента может быть избыточной, поэтому просто логируем ошибку.
+                        ms.log.Error(
+                                fmt.Sprintf("error while trying to syncroniously store metrics to file: %s", err),
+                        )
+                }</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (ms *MemStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov0" title="0">{
+        for _, item := range items </span><span class="cov0" title="0">{
+                err := ms.UpdateMetric(ctx, item)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (ms *MemStorage) GetGauges() storage.Gauges <span class="cov0" title="0">{
+        return ms.gauges
+}</span>
+
+func (ms *MemStorage) GetCounters() storage.Counters <span class="cov0" title="0">{
+        return ms.counters
+}</span>
+
+func (ms *MemStorage) GetGauge(ctx context.Context, name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+        value, ok := ms.gauges[name]
+        return value, ok
+}</span>
+
+func (ms *MemStorage) GetCounter(ctx context.Context, name string) (storage.Counter, bool) <span class="cov8" title="1">{
+        value, ok := ms.counters[name]
+        return value, ok
+}</span>
+
+func (ms *MemStorage) Count(ctx context.Context) int <span class="cov0" title="0">{
+        return len(ms.gauges) + len(ms.counters)
+}</span>
+
+func (ms *MemStorage) GetMetric(ctx context.Context, mType metrics.MetricType, id string) (metrics.Metric, bool) <span class="cov8" title="1">{
+        switch mType </span>{
+        case metrics.TypeCounter:<span class="cov8" title="1">
+                v, ok := ms.GetCounter(ctx, id)
+                return metrics.Metric{
+                        Name:  id,
+                        MType: mType,
+                        Delta: (*int64)(&amp;v),
+                }, ok</span>
+        case metrics.TypeGauge:<span class="cov0" title="0">
+                v, ok := ms.GetGauge(ctx, id)
+                return metrics.Metric{
+                        Name:  id,
+                        MType: mType,
+                        Value: (*float64)(&amp;v),
+                }, ok</span>
+        }
+        <span class="cov0" title="0">return metrics.Metric{}, false</span>
+}
+
+// GetMetrics возвращает отсортированный список метрик в формате слайса структур.
+func (ms *MemStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov0" title="0">{
+        items := make([]metrics.Metric, 0, ms.Count(ctx))
+        for id, value := range ms.GetGauges() </span><span class="cov0" title="0">{
+                items = append(
+                        items,
+                        metrics.Metric{Name: id, MType: metrics.TypeGauge, Value: (*float64)(&amp;value)},
+                )
+        }</span>
+        <span class="cov0" title="0">for id, value := range ms.GetCounters() </span><span class="cov0" title="0">{
+                items = append(
+                        items,
+                        metrics.Metric{Name: id, MType: metrics.TypeCounter, Delta: (*int64)(&amp;value)},
+                )
+        }</span>
+        // slices.Sort(items)
+        <span class="cov0" title="0">return items</span>
+}
+
+// StoreMetricsToFile сохраняет метрики в файл.
+func (ms *MemStorage) storeMetricsToFile() error <span class="cov0" title="0">{
+        path := ms.cfg.GetStorePath()
+        ms.log.Debug("store metrics to file",
+                zap.String("path", path),
+                zap.Any("gauges", ms.GetGauges()),
+                zap.Any("counters", ms.GetCounters()))
+
+        var f *os.File
+        var err error
+
+        for i := 0; i &lt;= maxRetries; i++ </span><span class="cov0" title="0">{
+                // попытка открытия файла для записи
+                f, err = os.Create(path)
+                if err == nil </span><span class="cov0" title="0">{
+                        break</span>
+                }
+                <span class="cov0" title="0">ms.log.Error(fmt.Sprintf("Attempt %d: Error opening file: %v", i+1, err))
+                time.Sleep(time.Duration((i+1)*2-1) * time.Second)</span>
+        }
+
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to open file after %d attempts: %w", maxRetries, err)
+        }</span>
+
+        // отложенное закрытие файла
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                err = f.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        ms.log.Error(fmt.Sprintf("error closing file: %s", err))
+                }</span>
+        }()
+
+        // сериализация метрик metrics.Metric в json и запись сразу в файл
+        <span class="cov0" title="0">encoder := json.NewEncoder(f)
+        encoder.SetIndent("", "    ")
+        err = encoder.Encode(ms.GetMetrics(context.Background()))
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// RestoreMetricsFromFile загружает метрики из файла.
+func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov0" title="0">{
+        path := ms.cfg.GetStorePath()
+        ms.log.Debug("load metrics from file", zap.String("path", path))
+
+        // открытие файла для чтения и парсинг json метрик metrics.Metric
+        f, err := os.Open(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                err = f.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        ms.log.Error(fmt.Sprintf("error closing file: %s", err), zap.Any("file", f))
+                }</span>
+        }()
+
+        // парсинг json метрик metrics.Metric
+        <span class="cov0" title="0">var parsed []metrics.Metric
+        decoder := json.NewDecoder(f)
+        err = decoder.Decode(&amp;parsed)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // обновление метрик в хранилище в памяти
+        <span class="cov0" title="0">for m := range parsed </span><span class="cov0" title="0">{
+                err = ms.UpdateMetric(context.Background(), parsed[m])
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        // Выводим информацию о восстановленных метриках в лог.
+        <span class="cov0" title="0">ms.log.Info(
+                "Metrics restored from file",
+                zap.String("file", ms.cfg.GetStorePath()),
+                zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
+        )
+        return nil</span>
+}
+
+// Dump выводит информацию о хранилище в лог.
+func (ms *MemStorage) Dump() <span class="cov0" title="0">{
+        ms.log.Info(
+                "Memory storage dump",
+                zap.Int("gauges", len(ms.gauges)),
+                zap.Int("counters", len(ms.counters)),
+                zap.Int("total", ms.Count(context.Background())),
+        )
+}</span>
+
+// Restore восстанавливает метрики из файла.
+func (ms *MemStorage) Restore() error <span class="cov0" title="0">{
+        // ... existing code ...
+
+        // Выводим информацию о восстановленных метриках в лог.
+        ms.log.Info(
+                "Metrics restored from file",
+                zap.String("file", ms.cfg.GetStorePath()),
+                zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
+        )
+        return nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file27" style="display: none">package migration
+
+import (
+        "errors"
+        "log/slog"
+
+        "github.com/golang-migrate/migrate/v4"
+        // Подключение драйвера для работы с PostgreSQL.
+        _ "github.com/golang-migrate/migrate/v4/database/postgres"
+        // Подключение драйвера файловой системы, для чтения миграций из файлов.
+        _ "github.com/golang-migrate/migrate/v4/source/file"
+)
+
+// Up выполняет миграции базы данных.
+func Up(migrationsPath string, dsn string) error <span class="cov0" title="0">{
+        var err error
+        slog.Info("Запуск миграций...", "path", migrationsPath)
+        m, err := migrate.New("file://"+migrationsPath, dsn)
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+
+        <span class="cov0" title="0">if err = m.Up(); err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, migrate.ErrNoChange) </span><span class="cov0" title="0">{
+                        slog.Info("Нет новых миграций для применения.")
+                        return nil
+                }</span>
+                <span class="cov0" title="0">panic(err)</span>
+        }
+
+        <span class="cov0" title="0">slog.Info("Миграции применены.")
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file28" style="display: none">package pgstorage
+
+import (
+        "context"
+        "errors"
+        "fmt"
+        "time"
+
+        "github.com/jackc/pgx/v5"
+
+        "github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
+
+        "github.com/jackc/pgerrcode"
+        "github.com/jackc/pgx/v5/pgconn"
+        "github.com/jackc/pgx/v5/pgxpool"
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+        "go.uber.org/zap"
+)
+
+const maxRetries = 3
+
+type PgStorage struct {
+        conn *pgxpool.Pool
+        cfg  *app.Config
+        log  *zap.Logger
+}
+
+// New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
+func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov0" title="0">{
+        conn, err := pgxpool.New(ctx, config.Database.DSN)
+        log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
+
+        if err != nil </span><span class="cov0" title="0">{
+                log.Error(fmt.Sprintf("Unable to connect to database: %v\n", err))
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">p := &amp;PgStorage{
+                conn: conn,
+                cfg:  config,
+                log:  log,
+        }
+
+        // Автоматически накатываем миграции при создании экземпляра хранилища.
+        if migrateErr := migration.Up(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to apply migrations: %w", migrateErr)
+        }</span>
+        <span class="cov0" title="0">return p, nil</span>
+}
+
+func (p *PgStorage) Close() error <span class="cov0" title="0">{
+        p.conn.Close()
+        return nil
+}</span>
+
+func (p *PgStorage) Count(ctx context.Context) int <span class="cov0" title="0">{
+        var count int
+        err := p.conn.QueryRow(ctx, `SELECT count(*) FROM metrics`).Scan(&amp;count)
+        if err != nil </span><span class="cov0" title="0">{
+                p.log.Error(err.Error())
+        }</span>
+        <span class="cov0" title="0">return count</span>
+}
+
+func (p *PgStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov0" title="0">{
+        var items []metrics.Metric
+        rows, err := p.conn.Query(ctx, `SELECT name, type, value, delta FROM metrics ORDER BY name`)
+        if err != nil </span><span class="cov0" title="0">{
+                p.log.Error(err.Error())
+                return nil
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        for rows.Next() </span><span class="cov0" title="0">{
+                var metric metrics.Metric
+                err = rows.Scan(&amp;metric.Name, &amp;metric.MType, &amp;metric.Value, &amp;metric.Delta)
+                if err != nil </span><span class="cov0" title="0">{
+                        p.log.Error(err.Error())
+                        return nil
+                }</span>
+                <span class="cov0" title="0">items = append(items, metric)</span>
+        }
+
+        <span class="cov0" title="0">return items</span>
+}
+
+// GetMetric получение значения метрики указанного типа в виде универсальной структуры.
+func (p *PgStorage) GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov0" title="0">{
+        q := `SELECT name, type, value, delta FROM public.metrics WHERE name = $1 AND type = $2`
+
+        var metric metrics.Metric
+        var err error
+        for i := 0; i &lt;= maxRetries; i++ </span><span class="cov0" title="0">{
+                row := p.conn.QueryRow(ctx, q, name, mType)
+                err = row.Scan(&amp;metric.Name, &amp;metric.MType, &amp;metric.Value, &amp;metric.Delta)
+
+                if err == nil </span><span class="cov0" title="0">{
+                        return metric, true
+                }</span>
+
+                // Проверяем, является ли ошибка retriable
+                <span class="cov0" title="0">var pgErr *pgconn.PgError
+                if errors.As(err, &amp;pgErr) </span><span class="cov0" title="0">{
+                        if isRetriableError(pgErr) </span><span class="cov0" title="0">{
+                                p.log.Error(fmt.Sprintf("Attempt %d: Retriable error getting metric: %v", i+1, err))
+                                time.Sleep(time.Duration((i+1)*2-1) * time.Second)
+                                continue</span>
+                        }
+                }
+
+                // Если ошибка не retriable, выходим из цикла
+                <span class="cov0" title="0">break</span>
+        }
+
+        // Логируем и возвращаем ошибку, если не удалось получить метрику
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                p.log.Error(fmt.Sprintf("Failed to get metric after %d tries: %v", maxRetries+1, err))
+        }</span>
+        <span class="cov0" title="0">return metrics.Metric{}, false</span>
+}
+
+// GetCounter возвращает счетчик по имени.
+func (p *PgStorage) GetCounter(ctx context.Context, name string) (storage.Counter, bool) <span class="cov0" title="0">{
+        m, ok := p.GetMetric(ctx, metrics.TypeCounter, name)
+        if !ok </span><span class="cov0" title="0">{
+                return 0, false
+        }</span>
+        <span class="cov0" title="0">return storage.Counter(*m.Delta), true</span>
+}
+
+// GetGauge возвращает измерение по имени.
+func (p *PgStorage) GetGauge(ctx context.Context, name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+        m, ok := p.GetMetric(ctx, metrics.TypeGauge, name)
+        if !ok </span><span class="cov0" title="0">{
+                return 0, false
+        }</span>
+        <span class="cov0" title="0">return storage.Gauge(*m.Value), true</span>
+}
+
+func (p *PgStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error <span class="cov0" title="0">{
+        var q string
+
+        // Если метрика существует, то обновляем, иначе создаем новую.
+        _, ok := p.GetMetric(ctx, metric.MType, metric.Name)
+        if ok </span><span class="cov0" title="0">{
+                q = `UPDATE metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
+        }</span> else<span class="cov0" title="0"> {
+                q = `INSERT INTO metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
+        }</span>
+
+        // Выполнение запроса
+        <span class="cov0" title="0">_, err := p.conn.Exec(ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
+        if err != nil </span><span class="cov0" title="0">{
+                p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// UpdateMetrics пакетно обновляет метрики в хранилище.
+func (p *PgStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) error <span class="cov0" title="0">{
+        var err error
+        q := `INSERT INTO metrics (name, type, value, delta) 
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (name, type) 
+          DO UPDATE SET value = EXCLUDED.value, delta = metrics.delta + EXCLUDED.delta`
+
+        // Начало транзакции
+        tx, err := p.conn.Begin(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Откатываем транзакцию в случае ошибки
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov0" title="0">{
+                        if rErr := tx.Rollback(ctx); rErr != nil &amp;&amp; !errors.Is(rErr, pgx.ErrTxClosed) </span><span class="cov0" title="0">{
+                                p.log.Error(fmt.Sprintf("Failed to rollback transaction: %v", rErr))
+                        }</span>
+                }
+        }()
+
+        <span class="cov0" title="0">batch := &amp;pgx.Batch{}
+        for _, item := range items </span><span class="cov0" title="0">{
+                batch.Queue(q, item.Name, item.MType, item.Value, item.Delta)
+        }</span>
+
+        // Выполнение батч-запроса
+        <span class="cov0" title="0">br := tx.SendBatch(ctx, batch)
+        _, err = br.Exec()
+        if errClose := br.Close(); errClose != nil </span><span class="cov0" title="0">{
+                p.log.Error(fmt.Sprintf("Failed to close batch: %v", errClose))
+                return errClose
+        }</span>
+
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                p.log.Error(fmt.Sprintf("Failed to update metrics: %v", err))
+                return err
+        }</span>
+
+        // Подтверждаем транзакцию
+        <span class="cov0" title="0">if err = tx.Commit(ctx); err != nil </span><span class="cov0" title="0">{
+                p.log.Error(fmt.Sprintf("Failed to commit transaction: %v", err))
+                return err
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// Проверка, является ли ошибка retriable.
+func isRetriableError(err *pgconn.PgError) bool <span class="cov0" title="0">{
+        switch err.Code </span>{
+        case pgerrcode.ConnectionException,
+                pgerrcode.ConnectionDoesNotExist,
+                pgerrcode.ConnectionFailure,
+                pgerrcode.DiskFull:<span class="cov0" title="0">
+                return true</span>
+        default:<span class="cov0" title="0">
+                return false</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file29" style="display: none">package storage
+
+import (
+        "context"
+        "strconv"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+type Gauge float64
+type Counter int64
+type Gauges map[string]Gauge
+type Counters map[string]Counter
+
+func (v Gauge) String() string <span class="cov0" title="0">{
+        return strconv.FormatFloat(float64(v), 'f', -1, 64)
+}</span>
+func (v Counter) String() string <span class="cov0" title="0">{
+        return strconv.FormatInt(int64(v), 10)
+}</span>
+
+// Repository предоставляет интерфейс для работы с хранилищем метрик.
+type Repository interface {
+        // Close закрывает хранилище метрик.
+        Close() error
+
+        // Count возвращает общее количество метрик в хранилище.
+        Count(ctx context.Context) int
+
+        // GetMetrics возвращает все метрики в виде структур.
+        GetMetrics(ctx context.Context) []metrics.Metric
+
+        // GetMetric получает значение метрики указанного типа.
+        // Возвращает метрику и флаг, указывающий на её наличие в хранилище.
+        GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool)
+
+        // GetCounter возвращает значение счетчика по имени.
+        // Возвращает значение и флаг, указывающий на наличие счетчика.
+        GetCounter(ctx context.Context, name string) (Counter, bool)
+
+        // GetGauge возвращает значение gauge-метрики по имени.
+        // Возвращает значение и флаг, указывающий на наличие метрики.
+        GetGauge(ctx context.Context, name string) (Gauge, bool)
+
+        // UpdateMetric обновляет или создает метрику в хранилище.
+        // Поддерживает типы gauge и counter.
+        UpdateMetric(ctx context.Context, metric metrics.Metric) error
+
+        // UpdateMetrics пакетно обновляет набор метрик в хранилище.
+        UpdateMetrics(ctx context.Context, metrics []metrics.Metric) error
+}
+</pre>
+		
+		<pre class="file" id="file30" style="display: none">// Code generated by mockery v2.43.1. DO NOT EDIT.
+
+package mocks
+
+import (
+        metrics "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        mock "github.com/stretchr/testify/mock"
+
+        storage "github.com/maynagashev/go-metrics/internal/server/storage"
+)
+
+// Repository is an autogenerated mock type for the Repository type
+type Repository struct {
+        mock.Mock
+}
+
+// Close provides a mock function with given fields:
+func (_m *Repository) Close() error <span class="cov0" title="0">{
+        ret := _m.Called()
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for Close")</span>
+        }
+
+        <span class="cov0" title="0">var r0 error
+        if rf, ok := ret.Get(0).(func() error); ok </span><span class="cov0" title="0">{
+                r0 = rf()
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Error(0)
+        }</span>
+
+        <span class="cov0" title="0">return r0</span>
+}
+
+// Count provides a mock function with given fields:
+func (_m *Repository) Count() int <span class="cov0" title="0">{
+        ret := _m.Called()
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for Count")</span>
+        }
+
+        <span class="cov0" title="0">var r0 int
+        if rf, ok := ret.Get(0).(func() int); ok </span><span class="cov0" title="0">{
+                r0 = rf()
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Get(0).(int)
+        }</span>
+
+        <span class="cov0" title="0">return r0</span>
+}
+
+// GetCounter provides a mock function with given fields: name
+func (_m *Repository) GetCounter(name string) (storage.Counter, bool) <span class="cov0" title="0">{
+        ret := _m.Called(name)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for GetCounter")</span>
+        }
+
+        <span class="cov0" title="0">var r0 storage.Counter
+        var r1 bool
+        if rf, ok := ret.Get(0).(func(string) (storage.Counter, bool)); ok </span><span class="cov0" title="0">{
+                return rf(name)
+        }</span>
+        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(string) storage.Counter); ok </span><span class="cov0" title="0">{
+                r0 = rf(name)
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Get(0).(storage.Counter)
+        }</span>
+
+        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
+                r1 = rf(name)
+        }</span> else<span class="cov0" title="0"> {
+                r1 = ret.Get(1).(bool)
+        }</span>
+
+        <span class="cov0" title="0">return r0, r1</span>
+}
+
+// GetGauge provides a mock function with given fields: name
+func (_m *Repository) GetGauge(name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+        ret := _m.Called(name)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for GetGauge")</span>
+        }
+
+        <span class="cov0" title="0">var r0 storage.Gauge
+        var r1 bool
+        if rf, ok := ret.Get(0).(func(string) (storage.Gauge, bool)); ok </span><span class="cov0" title="0">{
+                return rf(name)
+        }</span>
+        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(string) storage.Gauge); ok </span><span class="cov0" title="0">{
+                r0 = rf(name)
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Get(0).(storage.Gauge)
+        }</span>
+
+        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
+                r1 = rf(name)
+        }</span> else<span class="cov0" title="0"> {
+                r1 = ret.Get(1).(bool)
+        }</span>
+
+        <span class="cov0" title="0">return r0, r1</span>
+}
+
+// GetMetric provides a mock function with given fields: mType, name
+func (_m *Repository) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov0" title="0">{
+        ret := _m.Called(mType, name)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for GetMetric")</span>
+        }
+
+        <span class="cov0" title="0">var r0 metrics.Metric
+        var r1 bool
+        if rf, ok := ret.Get(0).(func(metrics.MetricType, string) (metrics.Metric, bool)); ok </span><span class="cov0" title="0">{
+                return rf(mType, name)
+        }</span>
+        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(metrics.MetricType, string) metrics.Metric); ok </span><span class="cov0" title="0">{
+                r0 = rf(mType, name)
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Get(0).(metrics.Metric)
+        }</span>
+
+        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(metrics.MetricType, string) bool); ok </span><span class="cov0" title="0">{
+                r1 = rf(mType, name)
+        }</span> else<span class="cov0" title="0"> {
+                r1 = ret.Get(1).(bool)
+        }</span>
+
+        <span class="cov0" title="0">return r0, r1</span>
+}
+
+// GetMetrics provides a mock function with given fields:
+func (_m *Repository) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
+        ret := _m.Called()
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for GetMetrics")</span>
+        }
+
+        <span class="cov0" title="0">var r0 []metrics.Metric
+        if rf, ok := ret.Get(0).(func() []metrics.Metric); ok </span><span class="cov0" title="0">{
+                r0 = rf()
+        }</span> else<span class="cov0" title="0"> {
+                if ret.Get(0) != nil </span><span class="cov0" title="0">{
+                        r0 = ret.Get(0).([]metrics.Metric)
+                }</span>
+        }
+
+        <span class="cov0" title="0">return r0</span>
+}
+
+// UpdateMetric provides a mock function with given fields: metric
+func (_m *Repository) UpdateMetric(metric metrics.Metric) error <span class="cov0" title="0">{
+        ret := _m.Called(metric)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for UpdateMetric")</span>
+        }
+
+        <span class="cov0" title="0">var r0 error
+        if rf, ok := ret.Get(0).(func(metrics.Metric) error); ok </span><span class="cov0" title="0">{
+                r0 = rf(metric)
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Error(0)
+        }</span>
+
+        <span class="cov0" title="0">return r0</span>
+}
+
+// UpdateMetrics provides a mock function with given fields: _a0
+func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov0" title="0">{
+        ret := _m.Called(_a0)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for UpdateMetrics")</span>
+        }
+
+        <span class="cov0" title="0">var r0 error
+        if rf, ok := ret.Get(0).(func([]metrics.Metric) error); ok </span><span class="cov0" title="0">{
+                r0 = rf(_a0)
+        }</span> else<span class="cov0" title="0"> {
+                r0 = ret.Error(0)
+        }</span>
+
+        <span class="cov0" title="0">return r0</span>
+}
+
+// NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
+func NewRepository(t interface {
+        mock.TestingT
+        Cleanup(func())
+}) *Repository <span class="cov0" title="0">{
+        mock := &amp;Repository{}
+        mock.Mock.Test(t)
+
+        t.Cleanup(func() </span><span class="cov0" title="0">{ mock.AssertExpectations(t) }</span>)
+
+        <span class="cov0" title="0">return mock</span>
+}
+</pre>
+		
+		<pre class="file" id="file31" style="display: none">// Code generated by mockery v2.43.1. DO NOT EDIT.
+
+package mocks
+
+import (
+        context "context"
+        metrics "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        mock "github.com/stretchr/testify/mock"
+)
+
+// Storage is an autogenerated mock type for the Storage type
+type Storage struct {
+        mock.Mock
+}
+
+// GetMetrics provides a mock function with given fields: ctx
+func (_m *Storage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov8" title="1">{
+        ret := _m.Called(ctx)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for GetMetrics")</span>
+        }
+
+        <span class="cov8" title="1">var r0 []metrics.Metric
+        if rf, ok := ret.Get(0).(func(context.Context) []metrics.Metric); ok </span><span class="cov0" title="0">{
+                r0 = rf(ctx)
+        }</span> else<span class="cov8" title="1"> {
+                if ret.Get(0) != nil </span><span class="cov8" title="1">{
+                        r0 = ret.Get(0).([]metrics.Metric)
+                }</span>
+        }
+
+        <span class="cov8" title="1">return r0</span>
+}
+
+// NewStorage creates a new instance of Storage. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
+func NewStorage(t interface {
+        mock.TestingT
+        Cleanup(func())
+}) *Storage <span class="cov0" title="0">{
+        mock := &amp;Storage{}
+        mock.Mock.Test(t)
+
+        t.Cleanup(func() </span><span class="cov0" title="0">{ mock.AssertExpectations(t) }</span>)
+
+        <span class="cov0" title="0">return mock</span>
+}
+</pre>
+		
+		<pre class="file" id="file32" style="display: none">// Package gzip предоставляет функции для сжатия данных методом gzip.
+package gzip
+
+import (
+        "bytes"
+        "compress/gzip"
+        "fmt"
+)
+
+// Compress сжимает данные методом gzip.
+// Использует максимальный уровень сжатия.
+// Возвращает сжатые данные и ошибку в случае неудачи.
+func Compress(data []byte) ([]byte, error) <span class="cov0" title="0">{
+        var b bytes.Buffer
+        // создаём переменную w — в неё будут записываться входящие данные,
+        // которые будут сжиматься и сохраняться в bytes.Buffer
+        w, err := gzip.NewWriterLevel(&amp;b, gzip.BestCompression)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed init compress writer: %w", err)
+        }</span>
+
+        // запись данных
+        <span class="cov0" title="0">_, err = w.Write(data)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed write data to compress temporary buffer: %w", err)
+        }</span>
+
+        // обязательно нужно вызвать метод Close() — в противном случае часть данных
+        // может не записаться в буфер b; если нужно выгрузить все упакованные данные
+        // в какой-то момент сжатия, используйте метод Flush()
+        <span class="cov0" title="0">err = w.Close()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed compress data: %w", err)
+        }</span>
+        // буфер b содержит сжатые данные
+        <span class="cov0" title="0">return b.Bytes(), nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file33" style="display: none">// Package random предоставляет функции для генерации случайных чисел.
+// Использует криптографически стойкий генератор случайных чисел.
+package random
+
+import (
+        "crypto/rand"
+        "math"
+        "math/big"
+)
+
+// GenerateRandomFloat64 генерирует случайное число типа float64 в диапазоне от 0 до 1.
+func GenerateRandomFloat64() float64 <span class="cov0" title="0">{
+        // Генерация случайного int64.
+        randomInt, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt64))
+        if err != nil </span><span class="cov0" title="0">{
+                return 0
+        }</span>
+
+        // Преобразование int64 в float64 в диапазоне от 0 до 1.
+        <span class="cov0" title="0">randomFloat := float64(randomInt.Int64()) / float64(math.MaxInt64)
+
+        return randomFloat</span>
+}
+</pre>
+		
+		<pre class="file" id="file34" style="display: none">// Package response предоставляет функции для формирования стандартизированных HTTP-ответов.
+// Поддерживает ответы в формате JSON с информацией о статусе и сообщением.
+package response
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+)
+
+type Response struct {
+        Status  string `json:"status"`
+        Message string `json:"message,omitempty"`
+        Error   string `json:"error,omitempty"`
+}
+
+const (
+        StatusOK    = "OK"
+        StatusError = "Error"
+)
+
+func OK(w http.ResponseWriter, msg string) <span class="cov8" title="1">{
+        resp := Response{
+                Status:  StatusOK,
+                Message: msg,
+        }
+        writeResponse(w, resp, http.StatusOK)
+}</span>
+
+func Error(w http.ResponseWriter, err error, statusCode int) <span class="cov0" title="0">{
+        resp := Response{
+                Status: StatusError,
+                Error:  err.Error(),
+        }
+        writeResponse(w, resp, statusCode)
+}</span>
+
+// Стандартные ответы в json формате.
+func writeResponse(w http.ResponseWriter, resp Response, statusCode int) <span class="cov8" title="1">{
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(statusCode)
+
+        // Кодируем структуру в json.
+        encoded, err := json.Marshal(resp)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        // Отправляем ответ.
+        <span class="cov8" title="1">_, err = fmt.Fprint(w, string(encoded))
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file35" style="display: none">// Package sign предоставляет функции для создания и проверки цифровых подписей.
+// Реализует подпись данных с использованием алгоритма HMAC-SHA256.
+package sign
+
+import (
+        "crypto/hmac"
+        "crypto/sha256"
+        "encoding/hex"
+        "errors"
+)
+
+const HeaderKey = "HashSHA256"
+
+// ComputeHMACSHA256 вычисляет хеш SHA256 от данных с использованием ключа.
+func ComputeHMACSHA256(data []byte, key string) string <span class="cov0" title="0">{
+        h := hmac.New(sha256.New, []byte(key))
+        h.Write(data)
+        return hex.EncodeToString(h.Sum(nil))
+}</span>
+
+// VerifyHMACSHA256 проверяет, что хеш SHA256 от данных с использованием ключа совпадает с ожидаемым значением.
+func VerifyHMACSHA256(data []byte, key string, expectedMAC string) (string, error) <span class="cov0" title="0">{
+        // Если хэш не задан, то и не проверяем.
+        // Тесты предполагают что с пустым хэшем его не следует проверять, даже если указан приватный ключ -k при старте.
+        // См. обсуждение в чате: https://app.pachca.com/chats/8850763?message=245816301
+        if expectedMAC == "" </span><span class="cov0" title="0">{
+                return "", nil
+        }</span>
+
+        <span class="cov0" title="0">mac := ComputeHMACSHA256(data, key)
+
+        if !hmac.Equal([]byte(mac), []byte(expectedMAC)) </span><span class="cov0" title="0">{
+                return mac, errors.New("invalid hash in request header")
+        }</span>
+
+        <span class="cov0" title="0">return mac, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

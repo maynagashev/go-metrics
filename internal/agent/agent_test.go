@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAgent_collectRuntimeMetrics(t *testing.T) {
@@ -28,4 +30,35 @@ func TestAgent_collectRuntimeMetrics(t *testing.T) {
 			}
 		})
 	}
+}
+
+type MockAgent struct {
+	mock.Mock
+}
+
+func (m *MockAgent) Run() {
+	m.Called()
+}
+
+func (m *MockAgent) IsRequestSigningEnabled() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockAgent) ResetMetrics() {
+	m.Called()
+}
+
+func (m *MockAgent) CollectRuntimeMetrics() {
+	m.Called()
+}
+
+func (m *MockAgent) CollectAdditionalMetrics() {
+	m.Called()
+}
+
+func (m *MockAgent) GetMetrics() []*metrics.Metric {
+	args := m.Called()
+	result, _ := args.Get(0).([]*metrics.Metric)
+	return result
 }

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -18,30 +19,33 @@ func (v Counter) String() string {
 	return strconv.FormatInt(int64(v), 10)
 }
 
-// Repository provides an interface for working with metrics storage.
+// Repository предоставляет интерфейс для работы с хранилищем метрик.
 type Repository interface {
 	// Close закрывает хранилище метрик.
 	Close() error
 
 	// Count возвращает общее количество метрик в хранилище.
-	Count() int
+	Count(ctx context.Context) int
 
 	// GetMetrics возвращает все метрики в виде структур.
-	GetMetrics() []metrics.Metric
+	GetMetrics(ctx context.Context) []metrics.Metric
 
-	// GetMetric получение значения метрики указанного типа в виде универсальной структуры.
-	GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool)
+	// GetMetric получает значение метрики указанного типа.
+	// Возвращает метрику и флаг, указывающий на её наличие в хранилище.
+	GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool)
 
-	// GetCounter возвращает счетчик по имени.
-	GetCounter(name string) (Counter, bool)
+	// GetCounter возвращает значение счетчика по имени.
+	// Возвращает значение и флаг, указывающий на наличие счетчика.
+	GetCounter(ctx context.Context, name string) (Counter, bool)
 
-	// GetGauge возвращает измерение по имени.
-	GetGauge(name string) (Gauge, bool)
+	// GetGauge возвращает значение gauge-метрики по имени.
+	// Возвращает значение и флаг, указывающий на наличие метрики.
+	GetGauge(ctx context.Context, name string) (Gauge, bool)
 
-	// UpdateMetric универсальный метод обновления метрики: gauge, counter.
-	// Если метрика существует, то обновляет, иначе создает новую.
-	UpdateMetric(metric metrics.Metric) error
+	// UpdateMetric обновляет или создает метрику в хранилище.
+	// Поддерживает типы gauge и counter.
+	UpdateMetric(ctx context.Context, metric metrics.Metric) error
 
-	// UpdateMetrics пакетно обновляет метрики в хранилище.
-	UpdateMetrics(metrics []metrics.Metric) error
+	// UpdateMetrics пакетно обновляет набор метрик в хранилище.
+	UpdateMetrics(ctx context.Context, metrics []metrics.Metric) error
 }

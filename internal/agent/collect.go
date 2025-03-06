@@ -10,12 +10,12 @@ import (
 )
 
 // ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
-func (a *Agent) ResetMetrics() {
+func (a *agent) ResetMetrics() {
 	a.gauges = make(map[string]float64)
 	a.counters = make(map[string]int64)
 }
 
-func (a *Agent) CollectRuntimeMetrics() {
+func (a *agent) CollectRuntimeMetrics() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
@@ -49,7 +49,7 @@ func (a *Agent) CollectRuntimeMetrics() {
 }
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
-func (a *Agent) CollectAdditionalMetrics() {
+func (a *agent) CollectAdditionalMetrics() {
 	v, _ := mem.VirtualMemory()
 	a.gauges["TotalMemory"] = float64(v.Total)
 	a.gauges["FreeMemory"] = float64(v.Free)

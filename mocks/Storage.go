@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	metrics "github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -12,17 +14,17 @@ type Storage struct {
 	mock.Mock
 }
 
-// GetMetrics provides a mock function with given fields:
-func (_m *Storage) GetMetrics() []metrics.Metric {
-	ret := _m.Called()
+// GetMetrics provides a mock function with given fields: ctx
+func (_m *Storage) GetMetrics(ctx context.Context) []metrics.Metric {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetMetrics")
 	}
 
 	var r0 []metrics.Metric
-	if rf, ok := ret.Get(0).(func() []metrics.Metric); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(context.Context) []metrics.Metric); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]metrics.Metric)

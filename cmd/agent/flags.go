@@ -21,8 +21,10 @@ type Flags struct {
 		ReportInterval float64
 		PollInterval   float64
 	}
-	PrivateKey string
-	RateLimit  int
+	PrivateKey  string
+	RateLimit   int
+	EnablePprof bool   // добавляем поле для профилирования
+	PprofPort   string // добавляем порт для pprof
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -36,10 +38,27 @@ func mustParseFlags() Flags {
 		"localhost:8080",
 		"address and port of the server send metrics to",
 	)
-	flag.Float64Var(&flags.Server.ReportInterval, "r", defaultReportInterval, "report interval in seconds")
-	flag.Float64Var(&flags.Server.PollInterval, "p", defaultPollInterval, "poll interval in seconds")
+	flag.Float64Var(
+		&flags.Server.ReportInterval,
+		"r",
+		defaultReportInterval,
+		"report interval in seconds",
+	)
+	flag.Float64Var(
+		&flags.Server.PollInterval,
+		"p",
+		defaultPollInterval,
+		"poll interval in seconds",
+	)
 	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
-	flag.IntVar(&flags.RateLimit, "l", defaultRateLimit, "макс. количество одновременно исходящих запросов на сервер")
+	flag.IntVar(
+		&flags.RateLimit,
+		"l",
+		defaultRateLimit,
+		"макс. количество одновременно исходящих запросов на сервер",
+	)
+	flag.BoolVar(&flags.EnablePprof, "pprof", false, "enable pprof profiling")
+	flag.StringVar(&flags.PprofPort, "pprof-port", "6060", "port for pprof server")
 
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()

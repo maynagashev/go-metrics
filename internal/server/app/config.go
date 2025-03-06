@@ -1,6 +1,8 @@
 package app
 
+// Config содержит конфигурацию сервера метрик.
 type Config struct {
+	// Addr адрес и порт для запуска сервера.
 	Addr string
 	// Интервал сохранения метрик на сервере в секундах.
 	StoreInterval int
@@ -12,10 +14,15 @@ type Config struct {
 	Database DatabaseConfig
 	// Приватный ключ для подписи метрик.
 	PrivateKey string
+	// Включить профилирование через pprof
+	EnablePprof bool
 }
 
+// DatabaseConfig содержит настройки подключения к базе данных.
 type DatabaseConfig struct {
-	DSN            string
+	// DSN строка подключения к базе данных.
+	DSN string
+	// MigrationsPath путь к директории с миграциями.
 	MigrationsPath string
 }
 
@@ -29,7 +36,8 @@ func NewConfig(flags *Flags) *Config {
 			DSN:            flags.Database.DSN,
 			MigrationsPath: flags.Database.MigrationsPath,
 		},
-		PrivateKey: flags.PrivateKey,
+		PrivateKey:  flags.PrivateKey,
+		EnablePprof: flags.Server.EnablePprof,
 	}
 }
 

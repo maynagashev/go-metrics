@@ -1,7 +1,42 @@
+// Package main реализует HTTP-сервер для сбора и хранения метрик.
+//
+// Сервер поддерживает хранение метрик в PostgreSQL или в памяти. Выбор хранилища
+// определяется наличием параметров подключения к БД (флаг -d или переменная DATABASE_DSN).
+//
+// # Поддерживаемые типы метрик
+//
+//   - gauge - число с плавающей точкой
+//   - counter - целочисленный счетчик
+//
+// # API Endpoints
+//
+//   - POST /update - обновление одиночной метрики
+//   - POST /updates/ - пакетное обновление метрик
+//   - POST /value - получение значения метрики
+//   - GET /ping - проверка подключения к БД
+//   - GET / - получение всех метрик (текстовый формат)
+//
+// # Конфигурация
+//
+// Сервер поддерживает настройку через флаги командной строки и переменные окружения:
+//   - DATABASE_DSN - строка подключения к PostgreSQL
+//   - STORE_INTERVAL - интервал сохранения метрик (для in-memory хранилища)
+//   - FILE_STORAGE_PATH - путь к файлу для сохранения метрик
+//   - RESTORE - восстанавливать ли метрики из файла при старте
+//
+// # Примеры
+//
+// Примеры использования API представлены в тестах:
+//   - Example - обновление метрики
+//   - Example_getValue - получение значения
+//   - Example_updateBatch - пакетное обновление
+//   - Example_ping - проверка БД
 package main
 
 import (
 	"context"
+	//nolint:gosec // G108: pprof is used intentionally for debugging and profiling
+	_ "net/http/pprof"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
@@ -12,16 +47,15 @@ import (
 )
 
 func main() {
+	flags, err := app.ParseFlags()
+	if err != nil {
+		panic(err)
+	}
+
 	log := initLogger()
 	defer func() {
 		_ = log.Sync()
 	}()
-
-	flags, err := app.ParseFlags()
-	if err != nil {
-		// Если не удалось распарсить флаги запуска, завершаем программу.
-		panic(err)
-	}
 
 	cfg := app.NewConfig(flags)
 	server := app.New(cfg)
