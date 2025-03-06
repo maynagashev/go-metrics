@@ -6,7 +6,17 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint
+
+# Установка версий для сборки
+set-versions:
+	$(eval BUILD_VERSION := $(shell git describe --tags --always))
+	$(eval BUILD_DATE := $(shell date "+%Y-%m-%d_%H:%M:%S"))
+	$(eval BUILD_COMMIT := $(shell git rev-parse HEAD))
+	@echo "Build version: $(BUILD_VERSION)"
+	@echo "Build date: $(BUILD_DATE)"
+	@echo "Build commit: $(BUILD_COMMIT)"
+
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -23,22 +33,40 @@ migrate:
 # Запуск сервера
 server:
 	@echo "Запуск сервера..."
-	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example"
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 2>&1 | tee logs/server.log
 
 # Запуск агента
 agent:
 	@echo "Запуск агента..."
-	@go run ./cmd/agent/. -k="private_key_example"
+	@go run ./cmd/agent/. -k="private_key_example" 2>&1 | tee logs/agent.log
 
 # Запуск агента с коротким интервалом отправки метрик (пример для отладки)
-fast_agent:
+fast-agent:
 	@echo "Запуск агента (быстрый режим отправки метрик)..."
 	@go run ./cmd/agent/. -k="private_key_example" -r 0.0001
 
 # Запуск сервера и агента вместе
-server_with_agent:
+server-with-agent:
 	@echo "Запуск сервера и агента вместе..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
+
+# Запуск сервера с указанием версий
+server-with-version: set-versions
+	@echo "Запуск сервера с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
+
+# Запуск агента с указанием версий
+agent-with-version: set-versions
+	@echo "Запуск агента с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
+
+server-with-encryption:
+	@echo "Запуск сервера с шифрованием..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=private.pem 2>&1 | tee logs/server-with-encryption.log
+
+agent-with-encryption:
+	@echo "Запуск агента с шифрованием..."
+	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=public.pem 2>&1 | tee logs/agent-with-encryption.log
 
 # Запуск всех тестов
 test:
@@ -54,7 +82,7 @@ bench:
 # Запуск линтера
 lint:
 	@echo "Запуск линтера..."
-	golangci-lint run ./...
+	golangci-lint run ./... --fix
 
 # Пример запуска автотеста для итерации 10
 iter10: build
@@ -132,3 +160,15 @@ fmt:
 # Запуск сервера с документацией
 docs:
 	godoc -http=:8888 -play
+
+# Запуск staticcheck
+staticcheck:
+	@echo "Запуск staticcheck..."
+	staticcheck ./... | tee logs/staticcheck.log
+
+# Запуск кастомного мультичекера
+staticlint:
+	@echo "Запуск кастомного мультичекера staticlint..."
+	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
+
+

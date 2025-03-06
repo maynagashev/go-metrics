@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>agent: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/maynagashev/go-metrics/internal/agent/agent.go (32.4%)</option>
+				
+				<option value="file1">github.com/maynagashev/go-metrics/internal/agent/collect.go (90.7%)</option>
+				
+				<option value="file2">github.com/maynagashev/go-metrics/internal/agent/send.go (0.0%)</option>
+				
+				<option value="file3">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package agent
+
+import (
+        "log/slog"
+        "sync"
+        "time"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+
+        "github.com/maynagashev/go-metrics/pkg/random"
+
+        "github.com/go-resty/resty/v2"
+)
+
+// Количество попыток отправки запроса на сервер при возникновении ошибок.
+const maxSendRetries = 3
+
+// Agent представляет собой интерфейс для сбора и отправки метрик на сервер.
+// Реализует функционал сбора runtime метрик и дополнительных системных метрик,
+// а также их отправку на сервер с поддержкой подписи данных.
+type Agent interface {
+        // Run запускает процесс сбора и отправки метрик.
+        Run()
+
+        // IsRequestSigningEnabled возвращает true, если включена подпись запросов.
+        IsRequestSigningEnabled() bool
+
+        // ResetMetrics очищает все собранные метрики.
+        ResetMetrics()
+
+        // CollectRuntimeMetrics собирает метрики времени выполнения.
+        CollectRuntimeMetrics()
+
+        // CollectAdditionalMetrics собирает дополнительные системные метрики,
+        // такие как использование памяти и CPU.
+        CollectAdditionalMetrics()
+
+        // GetMetrics возвращает список всех собранных метрик.
+        GetMetrics() []*metrics.Metric
+}
+
+// agent конкретная реализация интерфейса Agent.
+type agent struct {
+        PollInterval       time.Duration
+        ReportInterval     time.Duration
+        ServerURL          string
+        SendCompressedData bool
+        PrivateKey         string
+        RateLimit          int
+
+        gauges       map[string]float64
+        counters     map[string]int64
+        mu           sync.Mutex
+        wg           sync.WaitGroup
+        client       *resty.Client
+        pollTicker   *time.Ticker
+        reportTicker *time.Ticker
+        // Очередь задач на отправку метрик, с буфером в размере RateLimit.
+        sendQueue chan Job
+        // Очередь результатов выполнения задач, для обработки ошибок.
+        resultQueue chan Result
+}
+
+// New создает новый экземпляр агента.
+//
+//nolint:gochecknoglobals // используется для подмены в тестах
+var New = func(
+        url string,
+        pollInterval time.Duration,
+        reportInterval time.Duration,
+        privateKey string,
+        rateLimit int,
+) Agent <span class="cov8" title="1">{
+        return &amp;agent{
+                ServerURL:          url,
+                PollInterval:       pollInterval,
+                ReportInterval:     reportInterval,
+                SendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
+                PrivateKey:         privateKey,
+                RateLimit:          rateLimit,
+                gauges:             make(map[string]float64),
+                counters:           make(map[string]int64),
+                client:             resty.New().SetHeader("Content-Type", "text/plain"),
+                pollTicker:         time.NewTicker(pollInterval),
+                reportTicker:       time.NewTicker(reportInterval),
+                sendQueue:          make(chan Job, rateLimit),
+                resultQueue:        make(chan Result, rateLimit),
+        }
+}</span>
+
+// IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
+func (a *agent) IsRequestSigningEnabled() bool <span class="cov8" title="1">{
+        return a.PrivateKey != ""
+}</span>
+
+// Run запускает агента и его воркеры.
+func (a *agent) Run() <span class="cov0" title="0">{
+        // Запускаем воркеры агента.
+        slog.Info("starting agent...",
+                "server_url", a.ServerURL,
+                "poll_interval", a.PollInterval,
+                "report_interval", a.ReportInterval,
+                "send_compressed_data", a.SendCompressedData,
+                "private_key", a.PrivateKey,
+                "send_hash", a.IsRequestSigningEnabled(),
+                "rate_limit", a.RateLimit,
+        )
+        // Горутина для сбора метрик (с интервалом PollInterval).
+        go a.runPolls()
+        // Горутина для добавления задач в очередь на отправку, с интервалом ReportInterval.
+        go a.runReports()
+
+        // Запуск worker pool для отправки метрик.
+        for i := range a.RateLimit </span><span class="cov0" title="0">{
+                a.wg.Add(1)
+                go a.worker(i)
+        }</span>
+
+        // Запуск коллектора результатов
+        <span class="cov0" title="0">a.wg.Add(1)
+        go a.collector()
+
+        a.wg.Wait()</span>
+}
+
+// runPolls собирает сведения из системы в отдельной горутине.
+func (a *agent) runPolls() <span class="cov0" title="0">{
+        a.wg.Add(1)
+        defer a.wg.Done()
+        for range a.pollTicker.C </span><span class="cov0" title="0">{
+                a.mu.Lock()
+                // Перезаписываем метрики свежими показаниями
+                a.ResetMetrics()
+                a.CollectRuntimeMetrics()
+                a.CollectAdditionalMetrics()
+
+                // Увеличиваем счетчик PollCount на 1.
+                a.counters["PollCount"]++
+                // Добавляем обновляемое рандомное значение по условию.
+                a.gauges["RandomValue"] = random.GenerateRandomFloat64()
+
+                // Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
+                slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
+                a.mu.Unlock()
+        }</span>
+}
+
+// Создает задачи по отправке метрик в очереди задач на отправку.
+func (a *agent) runReports() <span class="cov0" title="0">{
+        a.wg.Add(1)
+        defer a.wg.Done()
+        for range a.reportTicker.C </span><span class="cov0" title="0">{
+                a.sendQueue &lt;- Job{Metrics: a.GetMetrics()}
+        }</span>
+}
+
+// GetMetrics считывает текущие метрики из агента.
+func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
+        items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
+
+        // Делаем копию метрик, чтобы данные не изменились во время отправки.
+        a.mu.Lock()
+        slog.Info("read metrics for job", "poll_count", a.counters["PollCount"])
+        for name, value := range a.gauges </span><span class="cov8" title="1">{
+                items = append(items, metrics.NewGauge(name, value))
+        }</span>
+        <span class="cov8" title="1">for name, value := range a.counters </span><span class="cov0" title="0">{
+                items = append(items, metrics.NewCounter(name, value))
+        }</span>
+        // Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
+        // Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
+        // Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
+        <span class="cov8" title="1">a.counters["PollCount"] = 0
+        slog.Info("reset poll count", "poll_count", 0)
+
+        a.mu.Unlock()
+        return items</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Package agent методы агента для сбора метрик.
+package agent
+
+import (
+        "fmt"
+        "log/slog"
+        "runtime"
+
+        "github.com/shirou/gopsutil/cpu"
+        "github.com/shirou/gopsutil/mem"
+)
+
+// ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
+func (a *agent) ResetMetrics() <span class="cov8" title="1">{
+        a.gauges = make(map[string]float64)
+        a.counters = make(map[string]int64)
+}</span>
+
+func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
+        var m runtime.MemStats
+        runtime.ReadMemStats(&amp;m)
+
+        a.gauges["Alloc"] = float64(m.Alloc)
+        a.gauges["BuckHashSys"] = float64(m.BuckHashSys)
+        a.gauges["Frees"] = float64(m.Frees)
+        a.gauges["GCCPUFraction"] = m.GCCPUFraction
+        a.gauges["GCSys"] = float64(m.GCSys)
+        a.gauges["HeapAlloc"] = float64(m.HeapAlloc)
+        a.gauges["HeapIdle"] = float64(m.HeapIdle)
+        a.gauges["HeapInuse"] = float64(m.HeapInuse)
+        a.gauges["HeapObjects"] = float64(m.HeapObjects)
+        a.gauges["HeapReleased"] = float64(m.HeapReleased)
+        a.gauges["HeapSys"] = float64(m.HeapSys)
+        a.gauges["LastGC"] = float64(m.LastGC)
+        a.gauges["Lookups"] = float64(m.Lookups)
+        a.gauges["MCacheInuse"] = float64(m.MCacheInuse)
+        a.gauges["MCacheSys"] = float64(m.MCacheSys)
+        a.gauges["MSpanInuse"] = float64(m.MSpanInuse)
+        a.gauges["MSpanSys"] = float64(m.MSpanSys)
+        a.gauges["Mallocs"] = float64(m.Mallocs)
+        a.gauges["NextGC"] = float64(m.NextGC)
+        a.gauges["NumForcedGC"] = float64(m.NumForcedGC)
+        a.gauges["NumGC"] = float64(m.NumGC)
+        a.gauges["OtherSys"] = float64(m.OtherSys)
+        a.gauges["PauseTotalNs"] = float64(m.PauseTotalNs)
+        a.gauges["StackInuse"] = float64(m.StackInuse)
+        a.gauges["StackSys"] = float64(m.StackSys)
+        a.gauges["Sys"] = float64(m.Sys)
+        a.gauges["TotalAlloc"] = float64(m.TotalAlloc)
+}</span>
+
+// CollectAdditionalMetrics собирает дополнительные метрики системы.
+func (a *agent) CollectAdditionalMetrics() <span class="cov8" title="1">{
+        v, err := mem.VirtualMemory()
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error("failed to collect virtual memory metrics", "error", err)
+                return
+        }</span>
+        <span class="cov8" title="1">a.gauges["TotalMemory"] = float64(v.Total)
+        a.gauges["FreeMemory"] = float64(v.Free)
+
+        c, err := cpu.Percent(0, true)
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error("failed to collect CPU metrics", "error", err)
+                return
+        }</span>
+        <span class="cov8" title="1">for i, percent := range c </span><span class="cov8" title="1">{
+                a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package agent
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "log/slog"
+        "net"
+        "net/http"
+        "time"
+
+        "github.com/maynagashev/go-metrics/pkg/sign"
+
+        "github.com/maynagashev/go-metrics/pkg/middleware/gzip"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+const backoffFactor = 2
+
+// Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
+func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
+        // Отправляем все метрики пачкой на новый маршрут /updates
+        // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
+        for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov0" title="0">{
+                // Пауза перед повторной отправкой.
+                if i &gt; 0 </span><span class="cov0" title="0">{
+                        //nolint:gomnd // количество секунд для паузы зависит от номера попытки
+                        sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
+                        slog.Info(
+                                fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", sleepSeconds, i),
+                                "workerID", workerID,
+                        )
+                        time.Sleep(time.Duration(sleepSeconds) * time.Second)
+                }</span>
+
+                <span class="cov0" title="0">err := a.makeUpdatesRequest(items, i, workerID)
+                // Если нет ошибок выходим из цикла и функции.
+                if err == nil </span><span class="cov0" title="0">{
+                        return nil
+                }</span>
+
+                // Логируем ошибку
+                <span class="cov0" title="0">slog.Error(
+                        fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
+                        "workerID",
+                        workerID,
+                        "metrics",
+                        items,
+                )
+
+                // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
+                if !isRetriableSendError(err) </span><span class="cov0" title="0">{
+                        slog.Debug("non-retriable error, stopping retries", "workerID", workerID, "err", err)
+                        return err
+                }</span>
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("failed to send metrics after %d retries", maxSendRetries)</span>
+}
+
+func isRetriableSendError(err error) bool <span class="cov0" title="0">{
+        slog.Debug(fmt.Sprintf("isRetriableSendError: %#v", err))
+
+        // Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом.
+        var netErr net.Error
+        if errors.As(err, &amp;netErr) </span><span class="cov0" title="0">{
+                slog.Debug(fmt.Sprintf("isRetriableSendError =&gt; AS net.Error: %#v", netErr))
+                // Проверяем, является ли ошибка временной
+                if netErr.Timeout() </span><span class="cov0" title="0">{
+                        return true
+                }</span>
+        }
+
+        // Проверяем, является ли ошибка ошибкой сети.
+        <span class="cov0" title="0">var opErr *net.OpError
+        if errors.As(err, &amp;opErr) </span><span class="cov0" title="0">{
+                slog.Debug("isRetriableSendError =&gt; AS net.OpError", "err", err)
+                return true
+        }</span>
+
+        // Если ошибка не является временной, возвращаем false.
+        <span class="cov0" title="0">return false</span>
+}
+
+// Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
+// При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
+func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov0" title="0">{
+        var err error
+        url := fmt.Sprintf("%s/updates", a.ServerURL)
+        slog.Info(
+                fmt.Sprintf("sending metrics batch (try=%d)", try),
+                "workerID",
+                workerID,
+                "url",
+                url,
+                "metrics",
+                items,
+        )
+
+        // Создаем новый запрос.
+        req := a.client.R()
+        req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия.
+        req.SetHeader("Content-Type", "application/json")
+
+        // Преобразуем метрики в JSON.
+        bytesBody, err := json.Marshal(items)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Если задан приватный ключ, добавляем хэш в заголовок запроса.
+        <span class="cov0" title="0">if a.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
+                req.SetHeader(sign.HeaderKey, hash)
+        }</span>
+
+        // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.
+        // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
+        <span class="cov0" title="0">if a.SendCompressedData </span><span class="cov0" title="0">{
+                req.SetHeader("Content-Encoding", "gzip")
+                bytesBody, err = gzip.Compress(bytesBody)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov0" title="0">req.SetBody(bytesBody)
+
+        res, err := req.Post(url)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Обрабатываем ответ сервера.
+        <span class="cov0" title="0">if res.StatusCode() != http.StatusOK </span><span class="cov0" title="0">{
+                return fmt.Errorf("unexpected status code: %d", res.StatusCode())
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package agent
+
+import (
+        "fmt"
+        "log/slog"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// Job структура для задания воркерам.
+type Job struct {
+        Metrics []*metrics.Metric
+}
+
+// Result структура для результата выполнения задания.
+type Result struct {
+        Job   Job
+        Error error
+}
+
+// Worker – один из воркеров пула для отправки метрик (обрабатывает задачи из очереди в отдельной горутине).
+func (a *agent) worker(id int) <span class="cov0" title="0">{
+        defer a.wg.Done()
+        slog.Debug(fmt.Sprintf("worker %d started", id))
+        // По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
+        for job := range a.sendQueue </span><span class="cov0" title="0">{
+                slog.Debug(
+                        fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
+                        "workerID",
+                        id,
+                )
+                err := a.sendMetrics(job.Metrics, id)
+                // Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
+                // которые потом разбирает коллектор.
+                a.resultQueue &lt;- Result{Job: job, Error: err}
+        }</span>
+}
+
+// Общий коллектор обрабатывает результаты выполнения задач.
+func (a *agent) collector() <span class="cov0" title="0">{
+        defer a.wg.Done()
+        for result := range a.resultQueue </span><span class="cov0" title="0">{
+                if result.Error != nil </span><span class="cov0" title="0">{
+                        wrappedError := fmt.Errorf("collector: %w", result.Error)
+                        slog.Error(wrappedError.Error(), "error", wrappedError)
+                }</span> else<span class="cov0" title="0"> {
+                        slog.Info("collector: metrics sent successfully")
+                }</span>
+        }
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

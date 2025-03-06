@@ -1,3 +1,5 @@
+// Package router реализует маршрутизацию HTTP-запросов.
+// Определяет все доступные эндпоинты и связывает их с соответствующими обработчиками.
 package router
 
 import (
@@ -16,6 +18,7 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool"
 	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
+	cryptoMiddleware "github.com/maynagashev/go-metrics/pkg/middleware/crypto"
 	"go.uber.org/zap"
 )
 
@@ -37,6 +40,8 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 	r.Use(decompresspool.New(log))
 	// Используем единый логгер для запросов, вместо встроенного логгера chi
 	r.Use(logger.New(log))
+	// Добавляем middleware для обработки шифрования
+	r.Use(cryptoMiddleware.New(config, log))
 
 	// Обработчики запросов
 	r.Get("/", plainIndex.New(storage))

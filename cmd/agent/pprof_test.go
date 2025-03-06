@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"testing"
 	"time"
@@ -101,7 +103,9 @@ func TestStartPProf_ServerError(_ *testing.T) {
 		Addr: addr,
 	}
 	go func() {
-		_ = srv.ListenAndServe()
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("pprof server error: %v", err)
+		}
 	}()
 	defer srv.Close()
 
