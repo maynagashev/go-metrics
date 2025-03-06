@@ -33,20 +33,20 @@ migrate:
 # Запуск сервера
 server:
 	@echo "Запуск сервера..."
-	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example"
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 2>&1 | tee logs/server.log
 
 # Запуск агента
 agent:
 	@echo "Запуск агента..."
-	@go run ./cmd/agent/. -k="private_key_example"
+	@go run ./cmd/agent/. -k="private_key_example" 2>&1 | tee logs/agent.log
 
 # Запуск агента с коротким интервалом отправки метрик (пример для отладки)
-fast_agent:
+fast-agent:
 	@echo "Запуск агента (быстрый режим отправки метрик)..."
 	@go run ./cmd/agent/. -k="private_key_example" -r 0.0001
 
 # Запуск сервера и агента вместе
-server_with_agent:
+server-with-agent:
 	@echo "Запуск сервера и агента вместе..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
 
@@ -60,6 +60,13 @@ agent-with-version: set-versions
 	@echo "Запуск агента с указанием версий..."
 	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
 
+server-with-encryption:
+	@echo "Запуск сервера с шифрованием..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=private.pem 2>&1 | tee logs/server-with-encryption.log
+
+agent-with-encryption:
+	@echo "Запуск агента с шифрованием..."
+	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=public.pem 2>&1 | tee logs/agent-with-encryption.log
 
 # Запуск всех тестов
 test:
@@ -163,4 +170,5 @@ staticcheck:
 staticlint:
 	@echo "Запуск кастомного мультичекера staticlint..."
 	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
+
 
