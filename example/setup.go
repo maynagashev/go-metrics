@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -26,7 +27,11 @@ func SetupTestMetric() error {
 	}
 	*metric.Value = 123.45
 
-	body, _ := json.Marshal(metric)
+	body, err := json.Marshal(metric)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metric: %w", err)
+	}
+
 	ctx := context.Background()
 	req, err := http.NewRequestWithContext(
 		ctx,

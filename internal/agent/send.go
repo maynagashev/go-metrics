@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/maynagashev/go-metrics/pkg/crypto"
 	"github.com/maynagashev/go-metrics/pkg/sign"
 
 	"github.com/maynagashev/go-metrics/pkg/middleware/gzip"
@@ -113,6 +114,17 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
 	if a.IsRequestSigningEnabled() {
 		hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
 		req.SetHeader(sign.HeaderKey, hash)
+	}
+
+	// Если включено шифрование, шифруем данные перед отправкой
+	if a.IsEncryptionEnabled() {
+		slog.Debug("encrypting data before sending", "workerID", workerID)
+		encryptedData, encryptErr := crypto.EncryptLargeData(a.PublicKey, bytesBody)
+		if encryptErr != nil {
+			return fmt.Errorf("failed to encrypt data: %w", encryptErr)
+		}
+		bytesBody = encryptedData
+		req.SetHeader("Content-Encrypted", "true")
 	}
 
 	// Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.

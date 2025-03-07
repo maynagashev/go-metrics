@@ -2,25 +2,61 @@
 package main
 
 import (
+	"crypto/rsa"
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
 
+	"github.com/maynagashev/go-metrics/pkg/crypto"
+
 	"github.com/maynagashev/go-metrics/internal/agent"
 )
 
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+	BuildVersion = "N/A"
+	BuildDate    = "N/A"
+	BuildCommit  = "N/A"
+)
+
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() {
+	fmt.Println("Build version:", BuildVersion)
+	fmt.Println("Build date:", BuildDate)
+	fmt.Println("Build commit:", BuildCommit)
+}
+
 func main() {
-	flags := mustParseFlags()
 	initLogger()
+	printVersion()
+
+	flags := mustParseFlags()
 	slog.Debug("parsed flags and env variables", "flags", flags)
 
 	initPprof(flags)
+
+	// Загружаем публичный ключ для шифрования, если он указан
+	var publicKey *rsa.PublicKey
+	if flags.CryptoKey != "" {
+		var err error
+		publicKey, err = crypto.LoadPublicKey(flags.CryptoKey)
+		if err != nil {
+			slog.Error("failed to load public key", "error", err, "path", flags.CryptoKey)
+			os.Exit(1)
+		}
+		slog.Info("loaded public key for encryption", "path", flags.CryptoKey)
+	}
 
 	serverURL := "http://" + flags.Server.Addr
 	pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
 	reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))
 
-	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit)
+	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit, publicKey)
 	a.Run()
 }
 
