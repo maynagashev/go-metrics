@@ -42,7 +42,7 @@ func TestLoadJSONConfig(t *testing.T) {
 
 	// Тест 2: Пустой путь к файлу
 	config, err = LoadJSONConfig("")
-	require.NoError(t, err)
+	require.ErrorIs(t, err, ErrConfigFileNotSpecified)
 	assert.Nil(t, config)
 
 	// Тест 3: Некорректный JSON
@@ -63,13 +63,13 @@ func TestLoadJSONConfig(t *testing.T) {
 func TestApplyJSONConfig(t *testing.T) {
 	// Тест 1: Применение конфигурации к флагам по умолчанию
 	flags := &Flags{}
-	flags.Server.Addr = "localhost:8080"
+	flags.Server.Addr = defaultAgentServerAddr
 	flags.Server.ReportInterval = defaultReportInterval
 	flags.Server.PollInterval = defaultPollInterval
 	flags.CryptoKey = ""
 	flags.RateLimit = defaultRateLimit
 	flags.EnablePprof = false
-	flags.PprofPort = "6060"
+	flags.PprofPort = defaultPprofPort
 
 	jsonConfig := &JSONConfig{
 		Address:        "localhost:9090",
@@ -85,8 +85,8 @@ func TestApplyJSONConfig(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "localhost:9090", flags.Server.Addr)
-	assert.Equal(t, 5.0, flags.Server.ReportInterval) // 5s -> 5 секунд
-	assert.Equal(t, 2.0, flags.Server.PollInterval)   // 2s -> 2 секунды
+	assert.InEpsilon(t, 5.0, flags.Server.ReportInterval, 0.001) // 5s -> 5 секунд
+	assert.InEpsilon(t, 2.0, flags.Server.PollInterval, 0.001)   // 2s -> 2 секунды
 	assert.Equal(t, "/tmp/test-key.pem", flags.CryptoKey)
 	assert.Equal(t, 5, flags.RateLimit)
 	assert.True(t, flags.EnablePprof)
@@ -94,10 +94,10 @@ func TestApplyJSONConfig(t *testing.T) {
 
 	// Тест 2: Применение nil конфигурации
 	flags = &Flags{}
-	flags.Server.Addr = "localhost:8080"
+	flags.Server.Addr = defaultAgentServerAddr
 	err = ApplyJSONConfig(flags, nil)
 	require.NoError(t, err)
-	assert.Equal(t, "localhost:8080", flags.Server.Addr) // Значение не должно измениться
+	assert.Equal(t, defaultAgentServerAddr, flags.Server.Addr) // Значение не должно измениться
 
 	// Тест 3: Некорректный формат интервала
 	flags = &Flags{}

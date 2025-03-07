@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -8,10 +9,12 @@ import (
 )
 
 const (
-	defaultReportInterval = 10.0
-	defaultPollInterval   = 2.0
-	defaultRateLimit      = 3
-	minInterval           = 0.000001 // Минимально допустимый интервал в секундах.
+	defaultReportInterval  = 10.0
+	defaultPollInterval    = 2.0
+	defaultRateLimit       = 3
+	minInterval            = 0.000001 // Минимально допустимый интервал в секундах.
+	defaultPprofPort       = "6060"
+	defaultAgentServerAddr = "localhost:8080"
 )
 
 // Flags содержит флаги агента.
@@ -34,10 +37,30 @@ type Flags struct {
 func mustParseFlags() Flags {
 	flags := Flags{}
 
+	// Регистрируем флаги командной строки
+	registerCommandLineFlags(&flags)
+
+	// Парсим переданные серверу аргументы в зарегистрированные переменные
+	flag.Parse()
+
+	// Применяем переменные окружения
+	applyEnvironmentVariables(&flags)
+
+	// Загружаем и применяем JSON-конфигурацию
+	applyJSONConfig(&flags)
+
+	// Проверяем и корректируем значения
+	validateFlags(&flags)
+
+	return flags
+}
+
+// registerCommandLineFlags регистрирует флаги командной строки.
+func registerCommandLineFlags(flags *Flags) {
 	flag.StringVar(
 		&flags.Server.Addr,
 		"a",
-		"localhost:8080",
+		defaultAgentServerAddr,
 		"address and port of the server send metrics to",
 	)
 	flag.Float64Var(
@@ -61,15 +84,15 @@ func mustParseFlags() Flags {
 		"макс. количество одновременно исходящих запросов на сервер",
 	)
 	flag.BoolVar(&flags.EnablePprof, "pprof", false, "enable pprof profiling")
-	flag.StringVar(&flags.PprofPort, "pprof-port", "6060", "port for pprof server")
+	flag.StringVar(&flags.PprofPort, "pprof-port", defaultPprofPort, "port for pprof server")
 
 	// Добавляем флаг для пути к файлу конфигурации
 	flag.StringVar(&flags.ConfigFile, "c", "", "путь к файлу конфигурации в формате JSON")
 	flag.StringVar(&flags.ConfigFile, "config", "", "путь к файлу конфигурации в формате JSON")
+}
 
-	// парсим переданные серверу аргументы в зарегистрированные переменные
-	flag.Parse()
-
+// applyEnvironmentVariables применяет переменные окружения к флагам.
+func applyEnvironmentVariables(flags *Flags) {
 	// если переданы переменные окружения, то они перезаписывают
 	// значения флагов: envServerAddr, envReportInterval, envPollInterval
 	if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" {
@@ -107,18 +130,29 @@ func mustParseFlags() Flags {
 	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
 		flags.ConfigFile = envConfigFile
 	}
+}
 
+// applyJSONConfig загружает и применяет JSON-конфигурацию.
+func applyJSONConfig(flags *Flags) {
 	// Загружаем конфигурацию из JSON-файла, если он указан
-	jsonConfig, err := LoadJSONConfig(flags.ConfigFile)
-	if err != nil {
-		panic(fmt.Sprintf("error loading config file: %s", err))
+	jsonConfig, configErr := LoadJSONConfig(flags.ConfigFile)
+	if configErr != nil {
+		// Если файл конфигурации не указан, это не ошибка
+		if errors.Is(configErr, ErrConfigFileNotSpecified) {
+			return
+		}
+		panic(fmt.Sprintf("error loading config file: %s", configErr))
 	}
 
 	// Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-	if err := ApplyJSONConfig(&flags, jsonConfig); err != nil {
-		panic(fmt.Sprintf("error applying config: %s", err))
+	applyErr := ApplyJSONConfig(flags, jsonConfig)
+	if applyErr != nil {
+		panic(fmt.Sprintf("error applying config: %s", applyErr))
 	}
+}
 
+// validateFlags проверяет и корректирует значения флагов.
+func validateFlags(flags *Flags) {
 	if flags.RateLimit < 1 {
 		panic("RateLimit should be greater than 0")
 	}
@@ -130,6 +164,4 @@ func mustParseFlags() Flags {
 	if flags.Server.PollInterval < minInterval {
 		flags.Server.PollInterval = minInterval
 	}
-
-	return flags
 }

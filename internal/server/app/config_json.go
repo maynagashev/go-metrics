@@ -3,10 +3,34 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"time"
 )
+
+const (
+	defaultServerAddr      = "localhost:8080"
+	defaultFileStoragePath = "/tmp/metrics-db.json"
+)
+
+// ErrConfigFileNotSpecified возвращается, когда путь к файлу конфигурации не указан.
+var ErrConfigFileNotSpecified = errors.New("config file path not specified")
+
+// DefaultServerAddr возвращает адрес сервера по умолчанию.
+func DefaultServerAddr() string {
+	return defaultServerAddr
+}
+
+// DefaultStoreInterval возвращает интервал сохранения метрик по умолчанию.
+func DefaultStoreInterval() int {
+	return defaultStoreInterval
+}
+
+// DefaultFileStoragePath возвращает путь к файлу хранения метрик по умолчанию.
+func DefaultFileStoragePath() string {
+	return defaultFileStoragePath
+}
 
 // JSONConfig представляет структуру конфигурационного файла сервера в формате JSON.
 type JSONConfig struct {
@@ -20,10 +44,10 @@ type JSONConfig struct {
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
-// Возвращает nil, если файл не найден или не указан.
+// Возвращает ErrConfigFileNotSpecified, если файл не указан.
 func LoadJSONConfig(filePath string) (*JSONConfig, error) {
 	if filePath == "" {
-		return nil, nil
+		return nil, ErrConfigFileNotSpecified
 	}
 
 	data, err := os.ReadFile(filePath)
@@ -32,8 +56,9 @@ func LoadJSONConfig(filePath string) (*JSONConfig, error) {
 	}
 
 	var config JSONConfig
-	if err := json.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
+	jsonErr := json.Unmarshal(data, &config)
+	if jsonErr != nil {
+		return nil, fmt.Errorf("failed to parse config file: %w", jsonErr)
 	}
 
 	return &config, nil
@@ -50,21 +75,21 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// через командную строку или переменные окружения
 
 	// Адрес сервера
-	if flags.Server.Addr == "localhost:8080" && jsonConfig.Address != "" {
+	if flags.Server.Addr == defaultServerAddr && jsonConfig.Address != "" {
 		flags.Server.Addr = jsonConfig.Address
 	}
 
 	// Интервал сохранения метрик
 	if flags.Server.StoreInterval == defaultStoreInterval && jsonConfig.StoreInterval != "" {
-		duration, err := time.ParseDuration(jsonConfig.StoreInterval)
-		if err != nil {
-			return fmt.Errorf("invalid store_interval in config: %w", err)
+		duration, durationErr := time.ParseDuration(jsonConfig.StoreInterval)
+		if durationErr != nil {
+			return fmt.Errorf("invalid store_interval in config: %w", durationErr)
 		}
 		flags.Server.StoreInterval = int(duration.Seconds())
 	}
 
 	// Путь к файлу для хранения метрик
-	if flags.Server.FileStoragePath == "/tmp/metrics-db.json" && jsonConfig.StoreFile != "" {
+	if flags.Server.FileStoragePath == defaultFileStoragePath && jsonConfig.StoreFile != "" {
 		flags.Server.FileStoragePath = jsonConfig.StoreFile
 	}
 

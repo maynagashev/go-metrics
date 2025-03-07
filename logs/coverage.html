@@ -55,9 +55,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/config_json.go (96.9%)</option>
+				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/config_json.go (97.0%)</option>
 				
-				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/flags.go (91.5%)</option>
+				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/flags.go (88.9%)</option>
 				
 				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/main.go (76.0%)</option>
 				
@@ -159,10 +159,14 @@
 
 import (
         "encoding/json"
+        "errors"
         "fmt"
         "os"
         "time"
 )
+
+// ErrConfigFileNotSpecified возвращается, когда путь к файлу конфигурации не указан.
+var ErrConfigFileNotSpecified = errors.New("config file path not specified")
 
 // JSONConfig представляет структуру конфигурационного файла агента в формате JSON.
 type JSONConfig struct {
@@ -176,10 +180,10 @@ type JSONConfig struct {
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
-// Возвращает nil, если файл не найден или не указан.
+// Возвращает ErrConfigFileNotSpecified, если файл не указан.
 func LoadJSONConfig(filePath string) (*JSONConfig, error) <span class="cov8" title="1">{
         if filePath == "" </span><span class="cov8" title="1">{
-                return nil, nil
+                return nil, ErrConfigFileNotSpecified
         }</span>
 
         <span class="cov8" title="1">data, err := os.ReadFile(filePath)
@@ -188,8 +192,9 @@ func LoadJSONConfig(filePath string) (*JSONConfig, error) <span class="cov8" tit
         }</span>
 
         <span class="cov8" title="1">var config JSONConfig
-        if err := json.Unmarshal(data, &amp;config); err != nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("failed to parse config file: %w", err)
+        jsonErr := json.Unmarshal(data, &amp;config)
+        if jsonErr != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("failed to parse config file: %w", jsonErr)
         }</span>
 
         <span class="cov8" title="1">return &amp;config, nil</span>
@@ -206,7 +211,7 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
         // через командную строку или переменные окружения
 
         // Адрес сервера
-        <span class="cov8" title="1">if flags.Server.Addr == "localhost:8080" &amp;&amp; jsonConfig.Address != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if flags.Server.Addr == defaultAgentServerAddr &amp;&amp; jsonConfig.Address != "" </span><span class="cov8" title="1">{
                 flags.Server.Addr = jsonConfig.Address
         }</span>
 
@@ -244,7 +249,7 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
         }</span>
 
         // Порт для pprof сервера
-        <span class="cov8" title="1">if flags.PprofPort == "6060" &amp;&amp; jsonConfig.PprofPort != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if flags.PprofPort == defaultPprofPort &amp;&amp; jsonConfig.PprofPort != "" </span><span class="cov8" title="1">{
                 flags.PprofPort = jsonConfig.PprofPort
         }</span>
 
@@ -255,6 +260,7 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
 		<pre class="file" id="file1" style="display: none">package main
 
 import (
+        "errors"
         "flag"
         "fmt"
         "os"
@@ -262,10 +268,12 @@ import (
 )
 
 const (
-        defaultReportInterval = 10.0
-        defaultPollInterval   = 2.0
-        defaultRateLimit      = 3
-        minInterval           = 0.000001 // Минимально допустимый интервал в секундах.
+        defaultReportInterval  = 10.0
+        defaultPollInterval    = 2.0
+        defaultRateLimit       = 3
+        minInterval            = 0.000001 // Минимально допустимый интервал в секундах.
+        defaultPprofPort       = "6060"
+        defaultAgentServerAddr = "localhost:8080"
 )
 
 // Flags содержит флаги агента.
@@ -288,10 +296,30 @@ type Flags struct {
 func mustParseFlags() Flags <span class="cov8" title="1">{
         flags := Flags{}
 
+        // Регистрируем флаги командной строки
+        registerCommandLineFlags(&amp;flags)
+
+        // Парсим переданные серверу аргументы в зарегистрированные переменные
+        flag.Parse()
+
+        // Применяем переменные окружения
+        applyEnvironmentVariables(&amp;flags)
+
+        // Загружаем и применяем JSON-конфигурацию
+        applyJSONConfig(&amp;flags)
+
+        // Проверяем и корректируем значения
+        validateFlags(&amp;flags)
+
+        return flags
+}</span>
+
+// registerCommandLineFlags регистрирует флаги командной строки.
+func registerCommandLineFlags(flags *Flags) <span class="cov8" title="1">{
         flag.StringVar(
                 &amp;flags.Server.Addr,
                 "a",
-                "localhost:8080",
+                defaultAgentServerAddr,
                 "address and port of the server send metrics to",
         )
         flag.Float64Var(
@@ -315,15 +343,15 @@ func mustParseFlags() Flags <span class="cov8" title="1">{
                 "макс. количество одновременно исходящих запросов на сервер",
         )
         flag.BoolVar(&amp;flags.EnablePprof, "pprof", false, "enable pprof profiling")
-        flag.StringVar(&amp;flags.PprofPort, "pprof-port", "6060", "port for pprof server")
+        flag.StringVar(&amp;flags.PprofPort, "pprof-port", defaultPprofPort, "port for pprof server")
 
         // Добавляем флаг для пути к файлу конфигурации
         flag.StringVar(&amp;flags.ConfigFile, "c", "", "путь к файлу конфигурации в формате JSON")
         flag.StringVar(&amp;flags.ConfigFile, "config", "", "путь к файлу конфигурации в формате JSON")
+}</span>
 
-        // парсим переданные серверу аргументы в зарегистрированные переменные
-        flag.Parse()
-
+// applyEnvironmentVariables применяет переменные окружения к флагам.
+func applyEnvironmentVariables(flags *Flags) <span class="cov8" title="1">{
         // если переданы переменные окружения, то они перезаписывают
         // значения флагов: envServerAddr, envReportInterval, envPollInterval
         if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" </span><span class="cov8" title="1">{
@@ -361,19 +389,30 @@ func mustParseFlags() Flags <span class="cov8" title="1">{
         <span class="cov8" title="1">if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov0" title="0">{
                 flags.ConfigFile = envConfigFile
         }</span>
+}
 
+// applyJSONConfig загружает и применяет JSON-конфигурацию.
+func applyJSONConfig(flags *Flags) <span class="cov8" title="1">{
         // Загружаем конфигурацию из JSON-файла, если он указан
-        <span class="cov8" title="1">jsonConfig, err := LoadJSONConfig(flags.ConfigFile)
-        if err != nil </span><span class="cov0" title="0">{
-                panic(fmt.Sprintf("error loading config file: %s", err))</span>
+        jsonConfig, configErr := LoadJSONConfig(flags.ConfigFile)
+        if configErr != nil </span><span class="cov8" title="1">{
+                // Если файл конфигурации не указан, это не ошибка
+                if errors.Is(configErr, ErrConfigFileNotSpecified) </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov0" title="0">panic(fmt.Sprintf("error loading config file: %s", configErr))</span>
         }
 
         // Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-        <span class="cov8" title="1">if err := ApplyJSONConfig(&amp;flags, jsonConfig); err != nil </span><span class="cov0" title="0">{
-                panic(fmt.Sprintf("error applying config: %s", err))</span>
+        <span class="cov0" title="0">applyErr := ApplyJSONConfig(flags, jsonConfig)
+        if applyErr != nil </span><span class="cov0" title="0">{
+                panic(fmt.Sprintf("error applying config: %s", applyErr))</span>
         }
+}
 
-        <span class="cov8" title="1">if flags.RateLimit &lt; 1 </span><span class="cov8" title="1">{
+// validateFlags проверяет и корректирует значения флагов.
+func validateFlags(flags *Flags) <span class="cov8" title="1">{
+        if flags.RateLimit &lt; 1 </span><span class="cov8" title="1">{
                 panic("RateLimit should be greater than 0")</span>
         }
 
@@ -384,8 +423,6 @@ func mustParseFlags() Flags <span class="cov8" title="1">{
         <span class="cov8" title="1">if flags.Server.PollInterval &lt; minInterval </span><span class="cov8" title="1">{
                 flags.Server.PollInterval = minInterval
         }</span>
-
-        <span class="cov8" title="1">return flags</span>
 }
 </pre>
 		
@@ -2254,10 +2291,34 @@ package app
 
 import (
         "encoding/json"
+        "errors"
         "fmt"
         "os"
         "time"
 )
+
+const (
+        defaultServerAddr      = "localhost:8080"
+        defaultFileStoragePath = "/tmp/metrics-db.json"
+)
+
+// ErrConfigFileNotSpecified возвращается, когда путь к файлу конфигурации не указан.
+var ErrConfigFileNotSpecified = errors.New("config file path not specified")
+
+// DefaultServerAddr возвращает адрес сервера по умолчанию.
+func DefaultServerAddr() string <span class="cov8" title="1">{
+        return defaultServerAddr
+}</span>
+
+// DefaultStoreInterval возвращает интервал сохранения метрик по умолчанию.
+func DefaultStoreInterval() int <span class="cov8" title="1">{
+        return defaultStoreInterval
+}</span>
+
+// DefaultFileStoragePath возвращает путь к файлу хранения метрик по умолчанию.
+func DefaultFileStoragePath() string <span class="cov8" title="1">{
+        return defaultFileStoragePath
+}</span>
 
 // JSONConfig представляет структуру конфигурационного файла сервера в формате JSON.
 type JSONConfig struct {
@@ -2271,10 +2332,10 @@ type JSONConfig struct {
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
-// Возвращает nil, если файл не найден или не указан.
+// Возвращает ErrConfigFileNotSpecified, если файл не указан.
 func LoadJSONConfig(filePath string) (*JSONConfig, error) <span class="cov8" title="1">{
         if filePath == "" </span><span class="cov8" title="1">{
-                return nil, nil
+                return nil, ErrConfigFileNotSpecified
         }</span>
 
         <span class="cov8" title="1">data, err := os.ReadFile(filePath)
@@ -2283,8 +2344,9 @@ func LoadJSONConfig(filePath string) (*JSONConfig, error) <span class="cov8" tit
         }</span>
 
         <span class="cov8" title="1">var config JSONConfig
-        if err := json.Unmarshal(data, &amp;config); err != nil </span><span class="cov8" title="1">{
-                return nil, fmt.Errorf("failed to parse config file: %w", err)
+        jsonErr := json.Unmarshal(data, &amp;config)
+        if jsonErr != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("failed to parse config file: %w", jsonErr)
         }</span>
 
         <span class="cov8" title="1">return &amp;config, nil</span>
@@ -2301,26 +2363,26 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
         // через командную строку или переменные окружения
 
         // Адрес сервера
-        <span class="cov8" title="1">if flags.Server.Addr == "localhost:8080" &amp;&amp; jsonConfig.Address != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if flags.Server.Addr == defaultServerAddr &amp;&amp; jsonConfig.Address != "" </span><span class="cov8" title="1">{
                 flags.Server.Addr = jsonConfig.Address
         }</span>
 
         // Интервал сохранения метрик
         <span class="cov8" title="1">if flags.Server.StoreInterval == defaultStoreInterval &amp;&amp; jsonConfig.StoreInterval != "" </span><span class="cov8" title="1">{
-                duration, err := time.ParseDuration(jsonConfig.StoreInterval)
-                if err != nil </span><span class="cov8" title="1">{
-                        return fmt.Errorf("invalid store_interval in config: %w", err)
+                duration, durationErr := time.ParseDuration(jsonConfig.StoreInterval)
+                if durationErr != nil </span><span class="cov8" title="1">{
+                        return fmt.Errorf("invalid store_interval in config: %w", durationErr)
                 }</span>
                 <span class="cov8" title="1">flags.Server.StoreInterval = int(duration.Seconds())</span>
         }
 
         // Путь к файлу для хранения метрик
-        <span class="cov8" title="1">if flags.Server.FileStoragePath == "/tmp/metrics-db.json" &amp;&amp; jsonConfig.StoreFile != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if flags.Server.FileStoragePath == defaultFileStoragePath &amp;&amp; jsonConfig.StoreFile != "" </span><span class="cov8" title="1">{
                 flags.Server.FileStoragePath = jsonConfig.StoreFile
         }</span>
 
         // Восстанавливать метрики из файла при старте
-        <span class="cov8" title="1">if flags.Server.Restore == true &amp;&amp; !jsonConfig.Restore </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if flags.Server.Restore &amp;&amp; !jsonConfig.Restore </span><span class="cov8" title="1">{
                 flags.Server.Restore = jsonConfig.Restore
         }</span>
 
@@ -2346,6 +2408,7 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
 		<pre class="file" id="file19" style="display: none">package app
 
 import (
+        "errors"
         "flag"
         "os"
         "strconv"
@@ -2383,13 +2446,33 @@ type Flags struct {
 // и сохраняет их значения в соответствующих переменных.
 func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
         flags := Flags{}
-        var err error
 
+        // Регистрируем флаги командной строки
+        registerCommandLineFlags(&amp;flags)
+
+        // Парсим переданные серверу аргументы в зарегистрированные переменные.
+        flag.Parse()
+
+        // Применяем переменные окружения
+        if err := applyEnvironmentVariables(&amp;flags); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // Загружаем и применяем JSON-конфигурацию
+        <span class="cov0" title="0">if err := loadAndApplyJSONConfig(&amp;flags); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return &amp;flags, nil</span>
+}
+
+// registerCommandLineFlags регистрирует флаги командной строки.
+func registerCommandLineFlags(flags *Flags) <span class="cov0" title="0">{
         // Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
         flag.StringVar(
                 &amp;flags.Server.Addr,
                 "a",
-                "localhost:8080",
+                defaultServerAddr,
                 "IP  адрес и порт на которых следует запустить сервер",
         )
         // Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
@@ -2403,7 +2486,7 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
         flag.StringVar(
                 &amp;flags.Server.FileStoragePath,
                 "f",
-                "/tmp/metrics-db.json",
+                defaultFileStoragePath,
                 "Путь к файлу для хранения метрик",
         )
         // Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
@@ -2436,10 +2519,10 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
         // Добавляем флаг для пути к файлу конфигурации
         flag.StringVar(&amp;flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
         flag.StringVar(&amp;flags.ConfigFile, "config", "", "Путь к файлу конфигурации в формате JSON")
+}</span>
 
-        // Парсим переданные серверу аргументы в зарегистрированные переменные.
-        flag.Parse()
-
+// applyEnvironmentVariables применяет переменные окружения к флагам.
+func applyEnvironmentVariables(flags *Flags) error <span class="cov0" title="0">{
         // Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
         // переопределим адрес запуска сервера,
         // даже если он был передан через аргумент командной строки.
@@ -2447,10 +2530,11 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
                 flags.Server.Addr = envRunAddr
         }</span>
         <span class="cov0" title="0">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov0" title="0">{
-                flags.Server.StoreInterval, err = strconv.Atoi(envStoreInterval)
+                storeInterval, err := strconv.Atoi(envStoreInterval)
                 if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
+                        return err
                 }</span>
+                <span class="cov0" title="0">flags.Server.StoreInterval = storeInterval</span>
         }
         // Если переменная окружения FILE_STORAGE_PATH присутствует (даже
         // пустая), переопределим путь к файлу хранения метрик.
@@ -2459,10 +2543,11 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
         }</span>
         // Если переменная окружения RESTORE присутствует (даже пустая), переопределим флаг восстановления метрик из файла.
         <span class="cov0" title="0">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov0" title="0">{
-                flags.Server.Restore, err = strconv.ParseBool(envRestore)
+                restore, err := strconv.ParseBool(envRestore)
                 if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
+                        return err
                 }</span>
+                <span class="cov0" title="0">flags.Server.Restore = restore</span>
         }
 
         // Если переданы параметры БД в параметрах окружения, используем их
@@ -2485,18 +2570,23 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
                 flags.ConfigFile = envConfigFile
         }</span>
 
+        <span class="cov0" title="0">return nil</span>
+}
+
+// loadAndApplyJSONConfig загружает и применяет JSON-конфигурацию.
+func loadAndApplyJSONConfig(flags *Flags) error <span class="cov0" title="0">{
         // Загружаем конфигурацию из JSON-файла, если он указан
-        <span class="cov0" title="0">jsonConfig, err := LoadJSONConfig(flags.ConfigFile)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
+        jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
+        if loadErr != nil </span><span class="cov0" title="0">{
+                // Если файл конфигурации не указан, это не ошибка
+                if errors.Is(loadErr, ErrConfigFileNotSpecified) </span><span class="cov0" title="0">{
+                        return nil
+                }</span>
+                <span class="cov0" title="0">return loadErr</span>
+        }
 
         // Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-        <span class="cov0" title="0">if err := ApplyJSONConfig(&amp;flags, jsonConfig); err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        <span class="cov0" title="0">return &amp;flags, nil</span>
+        <span class="cov0" title="0">return ApplyJSONConfig(flags, jsonConfig)</span>
 }
 </pre>
 		

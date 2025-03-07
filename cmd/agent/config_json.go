@@ -2,10 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"time"
 )
+
+// ErrConfigFileNotSpecified возвращается, когда путь к файлу конфигурации не указан.
+var ErrConfigFileNotSpecified = errors.New("config file path not specified")
 
 // JSONConfig представляет структуру конфигурационного файла агента в формате JSON.
 type JSONConfig struct {
@@ -19,10 +23,10 @@ type JSONConfig struct {
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
-// Возвращает nil, если файл не найден или не указан.
+// Возвращает ErrConfigFileNotSpecified, если файл не указан.
 func LoadJSONConfig(filePath string) (*JSONConfig, error) {
 	if filePath == "" {
-		return nil, nil
+		return nil, ErrConfigFileNotSpecified
 	}
 
 	data, err := os.ReadFile(filePath)
@@ -31,8 +35,9 @@ func LoadJSONConfig(filePath string) (*JSONConfig, error) {
 	}
 
 	var config JSONConfig
-	if err := json.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
+	jsonErr := json.Unmarshal(data, &config)
+	if jsonErr != nil {
+		return nil, fmt.Errorf("failed to parse config file: %w", jsonErr)
 	}
 
 	return &config, nil
@@ -49,7 +54,7 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// через командную строку или переменные окружения
 
 	// Адрес сервера
-	if flags.Server.Addr == "localhost:8080" && jsonConfig.Address != "" {
+	if flags.Server.Addr == defaultAgentServerAddr && jsonConfig.Address != "" {
 		flags.Server.Addr = jsonConfig.Address
 	}
 
@@ -87,7 +92,7 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	}
 
 	// Порт для pprof сервера
-	if flags.PprofPort == "6060" && jsonConfig.PprofPort != "" {
+	if flags.PprofPort == defaultPprofPort && jsonConfig.PprofPort != "" {
 		flags.PprofPort = jsonConfig.PprofPort
 	}
 
