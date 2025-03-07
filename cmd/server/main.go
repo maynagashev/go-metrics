@@ -54,22 +54,24 @@ func main() {
 
 	log := initLogger()
 	defer func() {
-		_ = log.Sync()
+		if syncErr := log.Sync(); syncErr != nil {
+			log.Error("failed to sync logger", zap.Error(syncErr))
+		}
 	}()
 
 	cfg := app.NewConfig(flags)
 	server := app.New(cfg)
 
 	// Инициализируем хранилище
-	repo, err := initStorage(cfg, log)
-	if err != nil {
-		log.Error("failed to init storage", zap.Error(err))
-		panic(err)
+	repo, storageErr := initStorage(cfg, log)
+	if storageErr != nil {
+		log.Error("failed to init storage", zap.Error(storageErr))
+		panic(storageErr)
 	}
 	defer func() {
-		err = repo.Close()
-		if err != nil {
-			log.Error("failed to close storage", zap.Error(err))
+		closeErr := repo.Close()
+		if closeErr != nil {
+			log.Error("failed to close storage", zap.Error(closeErr))
 		}
 	}()
 

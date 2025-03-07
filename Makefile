@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -54,7 +54,7 @@ bench:
 # Запуск линтера
 lint:
 	@echo "Запуск линтера..."
-	golangci-lint run ./...
+	golangci-lint run ./... --fix
 
 # Пример запуска автотеста для итерации 10
 iter10: build
@@ -132,3 +132,13 @@ fmt:
 # Запуск сервера с документацией
 docs:
 	godoc -http=:8888 -play
+
+# Запуск staticcheck
+staticcheck:
+	@echo "Запуск staticcheck..."
+	staticcheck ./... | tee logs/staticcheck.log
+
+# Запуск кастомного мультичекера
+staticlint:
+	@echo "Запуск кастомного мультичекера staticlint..."
+	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
