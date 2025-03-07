@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log/slog"
 	"os"
@@ -22,8 +23,8 @@ type MockAgent struct {
 	mock.Mock
 }
 
-func (m *MockAgent) Run() {
-	m.Called()
+func (m *MockAgent) Run(ctx context.Context) {
+	m.Called(ctx)
 }
 
 func (m *MockAgent) IsRequestSigningEnabled() bool {
@@ -54,6 +55,10 @@ func (m *MockAgent) GetMetrics() []*metrics.Metric {
 	return result
 }
 
+func (m *MockAgent) Shutdown() {
+	m.Called()
+}
+
 func TestMain(t *testing.T) {
 	// Сохраняем оригинальные значения
 	originalArgs := os.Args
@@ -75,7 +80,7 @@ func TestMain(t *testing.T) {
 
 	// Создаем мок для агента
 	mockAgent := new(MockAgent)
-	mockAgent.On("Run").Return()
+	mockAgent.On("Run", mock.Anything).Return()
 
 	// Подменяем функцию создания агента
 	agent.New = func(
