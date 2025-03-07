@@ -26,6 +26,8 @@ type Config struct {
 	EnablePprof bool
 	// Приватный ключ для расшифровки данных.
 	PrivateRSAKey *rsa.PrivateKey
+	// Конфигурационный файл
+	ConfigFile string
 }
 
 // DatabaseConfig содержит настройки подключения к базе данных.
@@ -48,6 +50,7 @@ func NewConfig(flags *Flags) *Config {
 		},
 		PrivateKey:  flags.PrivateKey,
 		EnablePprof: flags.Server.EnablePprof,
+		ConfigFile:  flags.ConfigFile,
 	}
 
 	// Load private key for decryption if provided
