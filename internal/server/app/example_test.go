@@ -26,16 +26,16 @@ func Example_jsonConfig() {
 	}`
 
 	// Записываем конфигурацию в файл
-	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
-		fmt.Printf("Ошибка при записи файла конфигурации: %v\n", err)
+	if writeErr := os.WriteFile(configPath, []byte(configContent), 0o600); writeErr != nil {
+		fmt.Printf("Ошибка при записи файла конфигурации: %v\n", writeErr)
 		return
 	}
 	defer os.Remove(configPath)
 
 	// Загружаем конфигурацию из файла
-	jsonConfig, err := app.LoadJSONConfig(configPath)
-	if err != nil {
-		fmt.Printf("Ошибка при загрузке конфигурации: %v\n", err)
+	jsonConfig, loadErr := app.LoadJSONConfig(configPath)
+	if loadErr != nil {
+		fmt.Printf("Ошибка при загрузке конфигурации: %v\n", loadErr)
 		return
 	}
 
@@ -58,8 +58,9 @@ func Example_jsonConfig() {
 	flags.CryptoKey = ""
 	flags.Server.EnablePprof = false
 
-	if err := app.ApplyJSONConfig(flags, jsonConfig); err != nil {
-		fmt.Printf("Ошибка при применении конфигурации: %v\n", err)
+	applyErr := app.ApplyJSONConfig(flags, jsonConfig)
+	if applyErr != nil {
+		fmt.Printf("Ошибка при применении конфигурации: %v\n", applyErr)
 		return
 	}
 
