@@ -153,12 +153,16 @@ func TestMustParseFlags(t *testing.T) {
 
 			// Устанавливаем тестовые переменные окружения
 			for k, v := range tt.env {
-				os.Setenv(k, v)
+				if err := os.Setenv(k, v); err != nil {
+					t.Fatalf("failed to set environment variable %s: %v", k, err)
+				}
 			}
 			defer func() {
 				// Очищаем переменные окружения после теста
 				for k := range tt.env {
-					os.Unsetenv(k)
+					if err := os.Unsetenv(k); err != nil {
+						t.Errorf("failed to unset environment variable %s: %v", k, err)
+					}
 				}
 			}()
 

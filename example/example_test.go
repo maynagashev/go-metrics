@@ -23,7 +23,11 @@ func Example_update() {
 	*metric.Value = 123.45
 
 	// Кодируем метрику в JSON.
-	body, _ := json.Marshal(metric)
+	body, err := json.Marshal(metric)
+	if err != nil {
+		fmt.Printf("Ошибка кодирования метрики: %v\n", err)
+		return
+	}
 
 	// Создаем запрос с контекстом
 	ctx := context.Background()
@@ -64,7 +68,11 @@ func Example_getValue() {
 		MType: "gauge",
 	}
 
-	body, _ := json.Marshal(metric)
+	body, err := json.Marshal(metric)
+	if err != nil {
+		fmt.Printf("Ошибка кодирования метрики: %v\n", err)
+		return
+	}
 	ctx := context.Background()
 	req, err := http.NewRequestWithContext(
 		ctx,
@@ -118,7 +126,11 @@ func Example_updateBatch() {
 	*metrics[0].Value = 123.45
 	*metrics[1].Delta = 42
 
-	body, _ := json.Marshal(metrics)
+	body, err := json.Marshal(metrics)
+	if err != nil {
+		fmt.Printf("Ошибка кодирования метрик: %v\n", err)
+		return
+	}
 	ctx := context.Background()
 	req, err := http.NewRequestWithContext(
 		ctx,

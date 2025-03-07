@@ -6,7 +6,17 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint
+
+# Установка версий для сборки
+set-versions:
+	$(eval BUILD_VERSION := $(shell git describe --tags --always))
+	$(eval BUILD_DATE := $(shell date "+%Y-%m-%d_%H:%M:%S"))
+	$(eval BUILD_COMMIT := $(shell git rev-parse HEAD))
+	@echo "Build version: $(BUILD_VERSION)"
+	@echo "Build date: $(BUILD_DATE)"
+	@echo "Build commit: $(BUILD_COMMIT)"
+
 
 # Сборка всех необходимых бинарных файлов
 build:
@@ -40,6 +50,17 @@ server_with_agent:
 	@echo "Запуск сервера и агента вместе..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
 
+# Запуск сервера с указанием версий
+server-with-version: set-versions
+	@echo "Запуск сервера с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
+
+# Запуск агента с указанием версий
+agent-with-version: set-versions
+	@echo "Запуск агента с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
+
+
 # Запуск всех тестов
 test:
 	@echo "Запуск всех тестов..."
@@ -54,7 +75,7 @@ bench:
 # Запуск линтера
 lint:
 	@echo "Запуск линтера..."
-	golangci-lint run ./...
+	golangci-lint run ./... --fix
 
 # Пример запуска автотеста для итерации 10
 iter10: build
@@ -132,3 +153,14 @@ fmt:
 # Запуск сервера с документацией
 docs:
 	godoc -http=:8888 -play
+
+# Запуск staticcheck
+staticcheck:
+	@echo "Запуск staticcheck..."
+	staticcheck ./... | tee logs/staticcheck.log
+
+# Запуск кастомного мультичекера
+staticlint:
+	@echo "Запуск кастомного мультичекера staticlint..."
+	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
+
