@@ -31,6 +31,7 @@ type Flags struct {
 
 	PrivateKey string
 	CryptoKey  string // Path to the private key file for decryption
+	ConfigFile string // Путь к файлу конфигурации в формате JSON
 }
 
 // ParseFlags обрабатывает аргументы командной строки
@@ -87,6 +88,10 @@ func ParseFlags() (*Flags, error) {
 	flag.StringVar(&flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
 	flag.StringVar(&flags.CryptoKey, "crypto-key", "", "Путь к файлу с приватным ключом для расшифровки")
 
+	// Добавляем флаг для пути к файлу конфигурации
+	flag.StringVar(&flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
+	flag.StringVar(&flags.ConfigFile, "config", "", "Путь к файлу конфигурации в формате JSON")
+
 	// Парсим переданные серверу аргументы в зарегистрированные переменные.
 	flag.Parse()
 
@@ -128,6 +133,22 @@ func ParseFlags() (*Flags, error) {
 	// Если передан путь к файлу с приватным ключом в параметрах окружения, используем его
 	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
 		flags.CryptoKey = envCryptoKey
+	}
+
+	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
+	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
+		flags.ConfigFile = envConfigFile
+	}
+
+	// Загружаем конфигурацию из JSON-файла, если он указан
+	jsonConfig, err := LoadJSONConfig(flags.ConfigFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// Применяем настройки из JSON-конфигурации (с более низким приоритетом)
+	if err := ApplyJSONConfig(&flags, jsonConfig); err != nil {
+		return nil, err
 	}
 
 	return &flags, nil

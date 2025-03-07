@@ -26,6 +26,7 @@ type Flags struct {
 	RateLimit   int
 	EnablePprof bool   // добавляем поле для профилирования
 	PprofPort   string // добавляем порт для pprof
+	ConfigFile  string // путь к файлу конфигурации в формате JSON
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -62,6 +63,10 @@ func mustParseFlags() Flags {
 	flag.BoolVar(&flags.EnablePprof, "pprof", false, "enable pprof profiling")
 	flag.StringVar(&flags.PprofPort, "pprof-port", "6060", "port for pprof server")
 
+	// Добавляем флаг для пути к файлу конфигурации
+	flag.StringVar(&flags.ConfigFile, "c", "", "путь к файлу конфигурации в формате JSON")
+	flag.StringVar(&flags.ConfigFile, "config", "", "путь к файлу конфигурации в формате JSON")
+
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()
 
@@ -96,6 +101,22 @@ func mustParseFlags() Flags {
 			panic(fmt.Sprintf("error parsing env RATE_LIMIT %s", err))
 		}
 		flags.RateLimit = l
+	}
+
+	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
+	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
+		flags.ConfigFile = envConfigFile
+	}
+
+	// Загружаем конфигурацию из JSON-файла, если он указан
+	jsonConfig, err := LoadJSONConfig(flags.ConfigFile)
+	if err != nil {
+		panic(fmt.Sprintf("error loading config file: %s", err))
+	}
+
+	// Применяем настройки из JSON-конфигурации (с более низким приоритетом)
+	if err := ApplyJSONConfig(&flags, jsonConfig); err != nil {
+		panic(fmt.Sprintf("error applying config: %s", err))
 	}
 
 	if flags.RateLimit < 1 {
