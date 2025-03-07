@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/flags.go (88.9%)</option>
 				
-				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/main.go (76.0%)</option>
+				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/main.go (81.8%)</option>
 				
 				<option value="file3">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (100.0%)</option>
 				
@@ -77,13 +77,13 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (34.2%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (59.8%)</option>
 				
-				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (90.7%)</option>
+				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (86.0%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (0.0%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (38.2%)</option>
 				
-				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (0.0%)</option>
+				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (25.8%)</option>
 				
 				<option value="file15">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (90.0%)</option>
 				
@@ -430,10 +430,13 @@ func validateFlags(flags *Flags) <span class="cov8" title="1">{
 package main
 
 import (
+        "context"
         "crypto/rsa"
         "fmt"
         "log/slog"
         "os"
+        "os/signal"
+        "syscall"
         "time"
 
         "github.com/maynagashev/go-metrics/pkg/crypto"
@@ -484,8 +487,26 @@ func main() <span class="cov8" title="1">{
         pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
         reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))
 
+        // Создаем контекст с отменой для graceful shutdown
+        ctx, cancel := context.WithCancel(context.Background())
+        defer cancel()
+
+        // Канал для получения сигналов от ОС
+        sigCh := make(chan os.Signal, 1)
+        signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+        // Запускаем агента
         a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit, publicKey)
-        a.Run()</span>
+
+        // Запускаем горутину для обработки сигналов
+        go func() </span><span class="cov8" title="1">{
+                sig := &lt;-sigCh
+                slog.Info("received signal", "signal", sig)
+                cancel() // Отменяем контекст, что приведет к graceful shutdown
+        }</span>()
+
+        // Запускаем агента с контекстом
+        <span class="cov8" title="1">a.Run(ctx)</span>
 }
 
 func initLogger() <span class="cov8" title="1">{
@@ -1576,13 +1597,13 @@ func SetupTestMetric() error <span class="cov8" title="1">{
 		<pre class="file" id="file11" style="display: none">package agent
 
 import (
+        "context"
         "crypto/rsa"
         "log/slog"
         "sync"
         "time"
 
         "github.com/maynagashev/go-metrics/internal/contracts/metrics"
-
         "github.com/maynagashev/go-metrics/pkg/random"
 
         "github.com/go-resty/resty/v2"
@@ -1596,7 +1617,7 @@ const maxSendRetries = 3
 // а также их отправку на сервер с поддержкой подписи данных.
 type Agent interface {
         // Run запускает процесс сбора и отправки метрик.
-        Run()
+        Run(ctx context.Context)
 
         // IsRequestSigningEnabled возвращает true, если включена подпись запросов.
         IsRequestSigningEnabled() bool
@@ -1616,6 +1637,9 @@ type Agent interface {
 
         // GetMetrics возвращает список всех собранных метрик.
         GetMetrics() []*metrics.Metric
+
+        // Shutdown корректно завершает работу агента, дожидаясь завершения всех задач.
+        Shutdown()
 }
 
 // agent конкретная реализация интерфейса Agent.
@@ -1639,6 +1663,8 @@ type agent struct {
         sendQueue chan Job
         // Очередь результатов выполнения задач, для обработки ошибок.
         resultQueue chan Result
+        // Канал для сигнала остановки
+        stopCh chan struct{}
 }
 
 // New создает новый экземпляр агента.
@@ -1667,6 +1693,7 @@ var New = func(
                 reportTicker:       time.NewTicker(reportInterval),
                 sendQueue:          make(chan Job, rateLimit),
                 resultQueue:        make(chan Result, rateLimit),
+                stopCh:             make(chan struct{}),
         }
 }</span>
 
@@ -1681,9 +1708,9 @@ func (a *agent) IsEncryptionEnabled() bool <span class="cov8" title="1">{
 }</span>
 
 // Run запускает агента и его воркеры.
-func (a *agent) Run() <span class="cov0" title="0">{
+func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
         // Запускаем воркеры агента.
-        slog.Info("starting agent...",
+        slog.Info("======= AGENT STARTING =======",
                 "server_url", a.ServerURL,
                 "poll_interval", a.PollInterval,
                 "report_interval", a.ReportInterval,
@@ -1694,74 +1721,207 @@ func (a *agent) Run() <span class="cov0" title="0">{
                 "rate_limit", a.RateLimit,
         )
         // Горутина для сбора метрик (с интервалом PollInterval).
-        go a.runPolls()
+        go a.runPolls(ctx)
         // Горутина для добавления задач в очередь на отправку, с интервалом ReportInterval.
-        go a.runReports()
+        go a.runReports(ctx)
 
         // Запуск worker pool для отправки метрик.
-        for i := range a.RateLimit </span><span class="cov0" title="0">{
+        for i := 0; i &lt; a.RateLimit; i++ </span><span class="cov0" title="0">{
                 a.wg.Add(1)
                 go a.worker(i)
         }</span>
 
         // Запуск коллектора результатов
-        <span class="cov0" title="0">a.wg.Add(1)
+        <span class="cov8" title="1">a.wg.Add(1)
         go a.collector()
 
-        a.wg.Wait()</span>
+        slog.Info("======= AGENT STARTED =======")
+
+        // Ожидаем завершения контекста
+        &lt;-ctx.Done()
+        slog.Info("Context done, initiating graceful shutdown")
+        a.Shutdown()</span>
+}
+
+// Shutdown корректно завершает работу агента.
+func (a *agent) Shutdown() <span class="cov8" title="1">{
+        slog.Info("======= GRACEFUL SHUTDOWN STARTED =======")
+
+        // Останавливаем тикеры
+        a.pollTicker.Stop()
+        a.reportTicker.Stop()
+        slog.Info("Tickers stopped")
+
+        // Сигнализируем о завершении работы
+        close(a.stopCh)
+        slog.Info("Stop channel closed")
+
+        // Отправляем последние собранные метрики
+        metrics := a.GetMetrics()
+        if len(metrics) &gt; 0 </span><span class="cov8" title="1">{
+                slog.Info("Sending final metrics batch before shutdown", "count", len(metrics))
+
+                // Пытаемся отправить метрики напрямую
+                err := a.sendMetrics(metrics, -1) // -1 означает, что это финальная отправка
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Failed to send final metrics directly", "error", err)
+
+                        // Если не удалось отправить напрямую, пробуем через очередь
+                        select </span>{
+                        case a.sendQueue &lt;- Job{Metrics: metrics}:<span class="cov0" title="0">
+                                slog.Info("Final metrics queued for sending")</span>
+                        default:<span class="cov0" title="0">
+                                slog.Error("Failed to queue final metrics, queue might be full")</span>
+                        }
+                } else<span class="cov0" title="0"> {
+                        slog.Info("Final metrics sent successfully")
+                }</span>
+        } else<span class="cov0" title="0"> {
+                slog.Info("No metrics to send before shutdown")
+        }</span>
+
+        // Закрываем каналы после отправки всех метрик
+        <span class="cov0" title="0">slog.Info("Closing send queue")
+        close(a.sendQueue)
+
+        // Ожидаем завершения всех горутин
+        slog.Info("Waiting for all goroutines to finish")
+        a.wg.Wait()
+        slog.Info("======= GRACEFUL SHUTDOWN COMPLETED =======")</span>
 }
 
 // runPolls собирает сведения из системы в отдельной горутине.
-func (a *agent) runPolls() <span class="cov0" title="0">{
+func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
         a.wg.Add(1)
         defer a.wg.Done()
-        for range a.pollTicker.C </span><span class="cov0" title="0">{
-                a.mu.Lock()
-                // Перезаписываем метрики свежими показаниями
-                a.ResetMetrics()
-                a.CollectRuntimeMetrics()
-                a.CollectAdditionalMetrics()
 
-                // Увеличиваем счетчик PollCount на 1.
-                a.counters["PollCount"]++
-                // Добавляем обновляемое рандомное значение по условию.
-                a.gauges["RandomValue"] = random.GenerateRandomFloat64()
+        slog.Info("Poll routine started",
+                "poll_interval", a.PollInterval,
+                "metrics_storage_size", len(a.gauges)+len(a.counters))
 
-                // Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
-                slog.Info("collected metrics", "poll_count", a.counters["PollCount"])
-                a.mu.Unlock()
-        }</span>
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-a.pollTicker.C:<span class="cov0" title="0">
+                        pollStart := time.Now()
+                        slog.Debug("Starting metrics collection cycle")
+
+                        a.mu.Lock()
+                        // Перезаписываем метрики свежими показаниями
+                        a.ResetMetrics()
+                        a.CollectRuntimeMetrics()
+                        a.CollectAdditionalMetrics()
+
+                        // Увеличиваем счетчик PollCount на 1.
+                        a.counters["PollCount"]++
+                        // Добавляем обновляемое рандомное значение по условию.
+                        a.gauges["RandomValue"] = random.GenerateRandomFloat64()
+
+                        metricsCount := len(a.gauges) + len(a.counters)
+                        pollDuration := time.Since(pollStart)
+
+                        // Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
+                        slog.Info("Metrics collection completed",
+                                "poll_count", a.counters["PollCount"],
+                                "metrics_count", metricsCount,
+                                "duration_ms", pollDuration.Milliseconds())
+                        a.mu.Unlock()</span>
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        slog.Info("Stopping polls due to context cancellation")
+                        return</span>
+                case &lt;-a.stopCh:<span class="cov8" title="1">
+                        slog.Info("Stopping polls due to agent shutdown")
+                        return</span>
+                }
+        }
 }
 
 // Создает задачи по отправке метрик в очереди задач на отправку.
-func (a *agent) runReports() <span class="cov0" title="0">{
+func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
         a.wg.Add(1)
         defer a.wg.Done()
-        for range a.reportTicker.C </span><span class="cov0" title="0">{
-                a.sendQueue &lt;- Job{Metrics: a.GetMetrics()}
-        }</span>
+
+        slog.Info("Report routine started",
+                "report_interval", a.ReportInterval,
+                "server_url", a.ServerURL)
+
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-a.reportTicker.C:<span class="cov0" title="0">
+                        reportStart := time.Now()
+                        slog.Debug("Starting metrics report cycle")
+
+                        metrics := a.GetMetrics()
+                        metricsCount := len(metrics)
+
+                        if metricsCount &gt; 0 </span><span class="cov0" title="0">{
+                                slog.Info("Sending metrics to queue",
+                                        "metrics_count", metricsCount,
+                                        "queue_size", len(a.sendQueue))
+                                a.sendQueue &lt;- Job{Metrics: metrics}
+                        }</span> else<span class="cov0" title="0"> {
+                                slog.Debug("No metrics to send in this report cycle")
+                        }</span>
+
+                        <span class="cov0" title="0">reportDuration := time.Since(reportStart)
+                        slog.Debug("Report cycle completed",
+                                "duration_ms", reportDuration.Milliseconds())</span>
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        slog.Info("Stopping reports due to context cancellation")
+                        return</span>
+                case &lt;-a.stopCh:<span class="cov8" title="1">
+                        slog.Info("Stopping reports due to agent shutdown")
+                        return</span>
+                }
+        }
 }
 
 // GetMetrics считывает текущие метрики из агента.
 func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
+        startTime := time.Now()
+        slog.Debug("Starting metrics preparation for sending")
+
         items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
 
         // Делаем копию метрик, чтобы данные не изменились во время отправки.
         a.mu.Lock()
-        slog.Info("read metrics for job", "poll_count", a.counters["PollCount"])
-        for name, value := range a.gauges </span><span class="cov8" title="1">{
+
+        gaugesCount := len(a.gauges)
+        countersCount := len(a.counters)
+        pollCount := a.counters["PollCount"]
+
+        // Проверяем, получен ли сигнал завершения
+        select </span>{
+        case &lt;-a.stopCh:<span class="cov8" title="1">
+                slog.Info("Shutdown signal received while preparing metrics - ensuring final metrics are sent",
+                        "gauges_count", gaugesCount,
+                        "counters_count", countersCount,
+                        "poll_count", pollCount)</span>
+        default:<span class="cov8" title="1">
+                slog.Info("Preparing metrics for sending",
+                        "gauges_count", gaugesCount,
+                        "counters_count", countersCount,
+                        "poll_count", pollCount)</span>
+        }
+
+        <span class="cov8" title="1">for name, value := range a.gauges </span><span class="cov8" title="1">{
                 items = append(items, metrics.NewGauge(name, value))
         }</span>
-        <span class="cov8" title="1">for name, value := range a.counters </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">for name, value := range a.counters </span><span class="cov8" title="1">{
                 items = append(items, metrics.NewCounter(name, value))
         }</span>
         // Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
         // Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
         // Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
         <span class="cov8" title="1">a.counters["PollCount"] = 0
-        slog.Info("reset poll count", "poll_count", 0)
+        slog.Debug("Reset poll count to zero")
 
         a.mu.Unlock()
+
+        duration := time.Since(startTime)
+        slog.Debug("Metrics preparation completed",
+                "metrics_count", len(items),
+                "duration_ms", duration.Milliseconds())
+
         return items</span>
 }
 </pre>
@@ -1780,11 +1940,22 @@ import (
 
 // ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
 func (a *agent) ResetMetrics() <span class="cov8" title="1">{
+        slog.Debug("Resetting metrics before collection")
         a.gauges = make(map[string]float64)
         a.counters = make(map[string]int64)
 }</span>
 
 func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
+        // Проверяем сигнал остановки перед сбором метрик
+        select </span>{
+        case &lt;-a.stopCh:<span class="cov0" title="0">
+                slog.Info("Shutdown signal received, skipping runtime metrics collection")
+                return</span>
+        default:<span class="cov8" title="1"></span>
+                // Продолжаем выполнение
+        }
+
+        <span class="cov8" title="1">slog.Debug("Starting runtime metrics collection")
         var m runtime.MemStats
         runtime.ReadMemStats(&amp;m)
 
@@ -1815,26 +1986,52 @@ func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
         a.gauges["StackSys"] = float64(m.StackSys)
         a.gauges["Sys"] = float64(m.Sys)
         a.gauges["TotalAlloc"] = float64(m.TotalAlloc)
-}</span>
+
+        slog.Debug("Runtime metrics collection completed",
+                "metrics_count", 27,
+                "heap_alloc_mb", float64(m.HeapAlloc)/(1024*1024),
+                "sys_mb", float64(m.Sys)/(1024*1024))</span>
+}
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
 func (a *agent) CollectAdditionalMetrics() <span class="cov8" title="1">{
+        // Проверяем сигнал остановки перед сбором метрик
+        select </span>{
+        case &lt;-a.stopCh:<span class="cov0" title="0">
+                slog.Info("Shutdown signal received, skipping additional metrics collection")
+                return</span>
+        default:<span class="cov8" title="1"></span>
+                // Продолжаем выполнение
+        }
+
+        <span class="cov8" title="1">slog.Debug("Starting additional system metrics collection")
+
         v, err := mem.VirtualMemory()
         if err != nil </span><span class="cov0" title="0">{
-                slog.Error("failed to collect virtual memory metrics", "error", err)
+                slog.Error("Failed to collect virtual memory metrics", "error", err)
                 return
         }</span>
         <span class="cov8" title="1">a.gauges["TotalMemory"] = float64(v.Total)
         a.gauges["FreeMemory"] = float64(v.Free)
 
+        slog.Debug("Memory metrics collected",
+                "total_memory_gb", float64(v.Total)/(1024*1024*1024),
+                "free_memory_gb", float64(v.Free)/(1024*1024*1024),
+                "used_percent", v.UsedPercent)
+
         c, err := cpu.Percent(0, true)
         if err != nil </span><span class="cov0" title="0">{
-                slog.Error("failed to collect CPU metrics", "error", err)
+                slog.Error("Failed to collect CPU metrics", "error", err)
                 return
         }</span>
-        <span class="cov8" title="1">for i, percent := range c </span><span class="cov8" title="1">{
+
+        <span class="cov8" title="1">cpuCount := 0
+        for i, percent := range c </span><span class="cov8" title="1">{
                 a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
+                cpuCount++
         }</span>
+
+        <span class="cov8" title="1">slog.Debug("CPU metrics collection completed", "cpu_count", cpuCount)</span>
 }
 </pre>
 		
@@ -1860,10 +2057,10 @@ import (
 const backoffFactor = 2
 
 // Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
-func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
+func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov8" title="1">{
         // Отправляем все метрики пачкой на новый маршрут /updates
         // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
-        for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov0" title="0">{
+        for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov8" title="1">{
                 // Пауза перед повторной отправкой.
                 if i &gt; 0 </span><span class="cov0" title="0">{
                         //nolint:gomnd // количество секунд для паузы зависит от номера попытки
@@ -1875,7 +2072,7 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span c
                         time.Sleep(time.Duration(sleepSeconds) * time.Second)
                 }</span>
 
-                <span class="cov0" title="0">err := a.makeUpdatesRequest(items, i, workerID)
+                <span class="cov8" title="1">err := a.makeUpdatesRequest(items, i, workerID)
                 // Если нет ошибок выходим из цикла и функции.
                 if err == nil </span><span class="cov0" title="0">{
                         return nil
@@ -1926,7 +2123,7 @@ func isRetriableSendError(err error) bool <span class="cov0" title="0">{
 
 // Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
 // При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
-func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov0" title="0">{
+func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov8" title="1">{
         var err error
         url := fmt.Sprintf("%s/updates", a.ServerURL)
         slog.Info(
@@ -1951,13 +2148,13 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
         }</span>
 
         // Если задан приватный ключ, добавляем хэш в заголовок запроса.
-        <span class="cov0" title="0">if a.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if a.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
                 hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
                 req.SetHeader(sign.HeaderKey, hash)
         }</span>
 
         // Если включено шифрование, шифруем данные перед отправкой
-        <span class="cov0" title="0">if a.IsEncryptionEnabled() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if a.IsEncryptionEnabled() </span><span class="cov0" title="0">{
                 slog.Debug("encrypting data before sending", "workerID", workerID)
                 encryptedData, encryptErr := crypto.EncryptLargeData(a.PublicKey, bytesBody)
                 if encryptErr != nil </span><span class="cov0" title="0">{
@@ -1969,7 +2166,7 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
 
         // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.
         // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
-        <span class="cov0" title="0">if a.SendCompressedData </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if a.SendCompressedData </span><span class="cov8" title="1">{
                 req.SetHeader("Content-Encoding", "gzip")
                 bytesBody, err = gzip.Compress(bytesBody)
                 if err != nil </span><span class="cov0" title="0">{
@@ -1977,7 +2174,7 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
                 }</span>
         }
 
-        <span class="cov0" title="0">req.SetBody(bytesBody)
+        <span class="cov8" title="1">req.SetBody(bytesBody)
 
         res, err := req.Post(url)
         if err != nil </span><span class="cov0" title="0">{
@@ -2015,32 +2212,67 @@ type Result struct {
 
 // Worker – один из воркеров пула для отправки метрик (обрабатывает задачи из очереди в отдельной горутине).
 func (a *agent) worker(id int) <span class="cov0" title="0">{
-        defer a.wg.Done()
-        slog.Debug(fmt.Sprintf("worker %d started", id))
+        defer func() </span><span class="cov0" title="0">{
+                slog.Info("Worker shutting down", "workerID", id)
+                a.wg.Done()
+        }</span>()
+
+        <span class="cov0" title="0">slog.Debug(fmt.Sprintf("worker %d started", id))
         // По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
-        for job := range a.sendQueue </span><span class="cov0" title="0">{
-                slog.Debug(
-                        fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
-                        "workerID",
-                        id,
-                )
-                err := a.sendMetrics(job.Metrics, id)
-                // Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
-                // которые потом разбирает коллектор.
-                a.resultQueue &lt;- Result{Job: job, Error: err}
-        }</span>
+        for </span><span class="cov0" title="0">{
+                select </span>{
+                case job, ok := &lt;-a.sendQueue:<span class="cov0" title="0">
+                        if !ok </span><span class="cov0" title="0">{
+                                slog.Info("Send queue closed, worker exiting", "workerID", id)
+                                return
+                        }</span>
+                        <span class="cov0" title="0">slog.Debug(
+                                fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
+                                "workerID",
+                                id,
+                        )
+                        err := a.sendMetrics(job.Metrics, id)
+                        // Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
+                        // которые потом разбирает коллектор.
+                        select </span>{
+                        case a.resultQueue &lt;- Result{Job: job, Error: err}:<span class="cov0" title="0"></span>
+                                // Результат успешно отправлен
+                        case &lt;-a.stopCh:<span class="cov0" title="0">
+                                slog.Info("Stop signal received while sending result, worker exiting", "workerID", id)
+                                return</span>
+                        }
+                case &lt;-a.stopCh:<span class="cov0" title="0">
+                        slog.Info("Stop signal received, worker exiting", "workerID", id)
+                        return</span>
+                }
+        }
 }
 
 // Общий коллектор обрабатывает результаты выполнения задач.
-func (a *agent) collector() <span class="cov0" title="0">{
-        defer a.wg.Done()
-        for result := range a.resultQueue </span><span class="cov0" title="0">{
-                if result.Error != nil </span><span class="cov0" title="0">{
-                        wrappedError := fmt.Errorf("collector: %w", result.Error)
-                        slog.Error(wrappedError.Error(), "error", wrappedError)
-                }</span> else<span class="cov0" title="0"> {
-                        slog.Info("collector: metrics sent successfully")
-                }</span>
+func (a *agent) collector() <span class="cov8" title="1">{
+        defer func() </span><span class="cov8" title="1">{
+                slog.Info("Collector shutting down")
+                a.wg.Done()
+        }</span>()
+
+        <span class="cov8" title="1">slog.Info("Collector started")
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case result, ok := &lt;-a.resultQueue:<span class="cov0" title="0">
+                        if !ok </span><span class="cov0" title="0">{
+                                slog.Info("Result queue closed, collector exiting")
+                                return
+                        }</span>
+                        <span class="cov0" title="0">if result.Error != nil </span><span class="cov0" title="0">{
+                                wrappedError := fmt.Errorf("collector: %w", result.Error)
+                                slog.Error(wrappedError.Error(), "error", wrappedError)
+                        }</span> else<span class="cov0" title="0"> {
+                                slog.Info("Metrics sent successfully", "count", len(result.Job.Metrics))
+                        }</span>
+                case &lt;-a.stopCh:<span class="cov8" title="1">
+                        slog.Info("Stop signal received, collector exiting")
+                        return</span>
+                }
         }
 }
 </pre>
@@ -2128,7 +2360,11 @@ func (m *Metric) ToJSON() []byte <span class="cov8" title="1">{
 package app
 
 import (
+        "context"
         "net/http"
+        "os"
+        "os/signal"
+        "syscall"
         "time"
 
         "go.uber.org/zap"
@@ -2138,6 +2374,7 @@ const (
         DefaultReadTimeout  = 5 * time.Second
         DefaultWriteTimeout = 10 * time.Second
         DefaultIdleTimeout  = 120 * time.Second
+        ShutdownTimeout     = 30 * time.Second
 )
 
 // Server представляет собой HTTP-сервер для сбора метрик.
@@ -2155,6 +2392,7 @@ func New(cfg *Config) *Server <span class="cov0" title="0">{
 
 // Start запускает HTTP-сервер с указанным обработчиком и логгером.
 // Настраивает таймауты и другие параметры сервера.
+// Обрабатывает сигналы SIGTERM, SIGINT, SIGQUIT для graceful shutdown.
 func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0" title="0">{
         log.Info("starting server", zap.Any("config", s.cfg))
 
@@ -2167,10 +2405,41 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0"
                 IdleTimeout:  DefaultIdleTimeout,
         }
 
-        err := httpServer.ListenAndServe()
-        if err != nil </span><span class="cov0" title="0">{
-                log.Fatal("server failed to start", zap.Error(err))
-        }</span>
+        // Канал для получения ошибок от запущенного сервера
+        serverErrors := make(chan error, 1)
+
+        // Запускаем сервер в отдельной горутине
+        go func() </span><span class="cov0" title="0">{
+                log.Info("server is listening", zap.String("addr", s.cfg.Addr))
+                serverErrors &lt;- httpServer.ListenAndServe()
+        }</span>()
+
+        // Канал для получения сигналов от ОС
+        <span class="cov0" title="0">shutdown := make(chan os.Signal, 1)
+        signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+        // Блокируемся до получения сигнала или ошибки
+        select </span>{
+        case err := &lt;-serverErrors:<span class="cov0" title="0">
+                log.Fatal("server error", zap.Error(err))</span>
+        case sig := &lt;-shutdown:<span class="cov0" title="0">
+                log.Info("shutdown signal received", zap.String("signal", sig.String()))
+
+                // Создаем контекст с таймаутом для graceful shutdown
+                ctx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
+                defer cancel()
+
+                // Пытаемся корректно завершить работу сервера
+                if err := httpServer.Shutdown(ctx); err != nil </span><span class="cov0" title="0">{
+                        // Если не удалось корректно завершить работу, принудительно закрываем
+                        log.Error("server shutdown failed", zap.Error(err))
+                        if err := httpServer.Close(); err != nil </span><span class="cov0" title="0">{
+                                log.Error("server close failed", zap.Error(err))
+                        }</span>
+                }
+
+                <span class="cov0" title="0">log.Info("server shutdown completed")</span>
+        }
 }
 
 // GetStoreInterval возвращает интервал сохранения метрик в секундах.
@@ -2207,6 +2476,8 @@ type Config struct {
         EnablePprof bool
         // Приватный ключ для расшифровки данных.
         PrivateRSAKey *rsa.PrivateKey
+        // Конфигурационный файл
+        ConfigFile string
 }
 
 // DatabaseConfig содержит настройки подключения к базе данных.
@@ -2229,6 +2500,7 @@ func NewConfig(flags *Flags) *Config <span class="cov0" title="0">{
                 },
                 PrivateKey:  flags.PrivateKey,
                 EnablePprof: flags.Server.EnablePprof,
+                ConfigFile:  flags.ConfigFile,
         }
 
         // Load private key for decryption if provided

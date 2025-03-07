@@ -2,10 +2,13 @@
 package main
 
 import (
+	"context"
 	"crypto/rsa"
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/maynagashev/go-metrics/pkg/crypto"
@@ -56,8 +59,26 @@ func main() {
 	pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
 	reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))
 
+	// Создаем контекст с отменой для graceful shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Канал для получения сигналов от ОС
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	// Запускаем агента
 	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit, publicKey)
-	a.Run()
+
+	// Запускаем горутину для обработки сигналов
+	go func() {
+		sig := <-sigCh
+		slog.Info("received signal", "signal", sig)
+		cancel() // Отменяем контекст, что приведет к graceful shutdown
+	}()
+
+	// Запускаем агента с контекстом
+	a.Run(ctx)
 }
 
 func initLogger() {
