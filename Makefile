@@ -33,12 +33,12 @@ migrate:
 # Запуск сервера
 server:
 	@echo "Запуск сервера..."
-	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 2>&1 | tee logs/server.log
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
 
 # Запуск агента
 agent:
 	@echo "Запуск агента..."
-	@go run ./cmd/agent/. -k="private_key_example" 2>&1 | tee logs/agent.log
+	@go run ./cmd/agent/. -k="private_key_example"
 
 # Запуск агента с коротким интервалом отправки метрик (пример для отладки)
 fast-agent:
@@ -50,36 +50,45 @@ server-with-agent:
 	@echo "Запуск сервера и агента вместе..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
 
-# Запуск сервера с указанием версий
+# Запуск сервера с указанием версий (iter20)
 server-with-version: set-versions
 	@echo "Запуск сервера с указанием версий..."
 	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
 
-# Запуск агента с указанием версий
+# Запуск агента с указанием версий (iter20)
 agent-with-version: set-versions
 	@echo "Запуск агента с указанием версий..."
 	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
 
-# Запуск сервера с шифрованием ()
+# Запуск сервера с шифрованием (iter21)
 server-with-encryption:
 	@echo "Запуск сервера с шифрованием..."
 	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=private.pem 2>&1 | tee logs/server-with-encryption.log
 
-# Запуск агента с шифрованием
+# Запуск агента с шифрованием (iter21)
 agent-with-encryption:
 	@echo "Запуск агента с шифрованием..."
 	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=public.pem 2>&1 | tee logs/agent-with-encryption.log
 
-# Запуск сервера с конфигурационным файлом
+# Запуск сервера с конфигурационным файлом (iter22)
 server-with-config:
 	@echo "Запуск сервера с конфигурационным файлом..."
 	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -config=examples/server-config.json 2>&1 | tee logs/server-with-config.log
 
-# Запуск агента с конфигурационным файлом
+# Запуск агента с конфигурационным файлом (iter22)
 agent-with-config:
 	@echo "Запуск агента с конфигурационным файлом..."
 	@go run ./cmd/agent/. -k="private_key_example" -config=examples/agent-config.json 2>&1 | tee logs/agent-with-config.log
 
+# Запуск сервера с логированием для сохранения graceful shutdown лога (iter23)
+server-with-graceful-shutdown:
+	@echo "Запуск сервера с логированием для сохранения graceful shutdown лога..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" >logs/server-graceful-shutdown.log 2>&1
+
+# Запуск агента с логированием для сохранения graceful shutdown лога (iter23)
+agent-with-graceful-shutdown:
+	@echo "Запуск агента с логированием для сохранения graceful shutdown лога..."
+	@go run ./cmd/agent/. -k="private_key_example" >logs/agent-graceful-shutdown.log 2>&1
 
 # Запуск всех тестов
 test:

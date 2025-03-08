@@ -69,7 +69,8 @@ func printVersion() {
 func main() {
 	log := initLogger()
 	defer func() {
-		if syncErr := log.Sync(); syncErr != nil {
+		// Ignore stderr sync error as it's harmless
+		if syncErr := log.Sync(); syncErr != nil && syncErr.Error() != "sync /dev/stderr: invalid argument" {
 			log.Error("failed to sync logger", zap.Error(syncErr))
 		}
 	}()
