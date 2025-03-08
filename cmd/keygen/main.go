@@ -10,20 +10,23 @@ import (
 	"github.com/maynagashev/go-metrics/pkg/crypto"
 )
 
-// BuildVersion содержит версию сборки
-var BuildVersion string
-
-// BuildDate содержит дату сборки
-var BuildDate string
-
-// BuildCommit содержит коммит сборки
-var BuildCommit string
+// Build information set during compilation
+// These are allowed to be global variables as they are set at build time
+//
+//nolint:gochecknoglobals // These variables are set at build time by the compiler
+var (
+	// BuildVersion contains the version of the build.
+	BuildVersion string
+	// BuildDate contains the date of the build.
+	BuildDate string
+	// BuildCommit contains the commit hash of the build.
+	BuildCommit string
+	// ExitFunc is the function used to exit the program, can be replaced in tests.
+	ExitFunc = os.Exit
+)
 
 // DefaultKeySize - размер ключа RSA по умолчанию.
 const DefaultKeySize = 2048
-
-// ExitFunc - функция для выхода из программы, может быть заменена в тестах
-var ExitFunc = os.Exit
 
 func main() {
 	// Выводим информацию о сборке
@@ -41,8 +44,9 @@ func main() {
 	}
 
 	// Генерируем ключи
-	if err := generateKeys(privateKeyPath, publicKeyPath, keySize); err != nil {
-		fmt.Fprintf(os.Stderr, "Ошибка при генерации пары ключей: %v\n", err)
+	genErr := generateKeys(privateKeyPath, publicKeyPath, keySize)
+	if genErr != nil {
+		fmt.Fprintf(os.Stderr, "Ошибка при генерации пары ключей: %v\n", genErr)
 		ExitFunc(1)
 		return
 	}
@@ -54,14 +58,15 @@ func main() {
 	slog.Warn("ВАЖНО: Храните ваш закрытый ключ в безопасном месте и не передавайте его никому!")
 }
 
-// printVersion выводит информацию о версии сборки
+// printVersion выводит информацию о версии сборки.
 func printVersion() {
-	fmt.Printf("Build version: %s\n", getStringOrDefault(BuildVersion, "N/A"))
-	fmt.Printf("Build date: %s\n", getStringOrDefault(BuildDate, "N/A"))
-	fmt.Printf("Build commit: %s\n", getStringOrDefault(BuildCommit, "N/A"))
+	slog.Info("Build information",
+		"version", getStringOrDefault(BuildVersion, "N/A"),
+		"date", getStringOrDefault(BuildDate, "N/A"),
+		"commit", getStringOrDefault(BuildCommit, "N/A"))
 }
 
-// getStringOrDefault возвращает строку или значение по умолчанию, если строка пуста
+// getStringOrDefault возвращает строку или значение по умолчанию, если строка пуста.
 func getStringOrDefault(value, defaultValue string) string {
 	if value == "" {
 		return defaultValue
@@ -69,8 +74,8 @@ func getStringOrDefault(value, defaultValue string) string {
 	return value
 }
 
-// parseFlags разбирает флаги командной строки
-func parseFlags() (privateKeyPath, publicKeyPath string, keySize int, err error) {
+// parseFlags разбирает флаги командной строки.
+func parseFlags() (string, string, int, error) {
 	// Определяем флаги командной строки
 	privateKeyPathPtr := flag.String("private", "private.pem", "путь для сохранения закрытого ключа")
 	publicKeyPathPtr := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
@@ -88,7 +93,7 @@ func parseFlags() (privateKeyPath, publicKeyPath string, keySize int, err error)
 	return *privateKeyPathPtr, *publicKeyPathPtr, *keySizePtr, nil
 }
 
-// generateKeys генерирует пару ключей RSA
+// generateKeys генерирует пару ключей RSA.
 func generateKeys(privateKeyPath, publicKeyPath string, keySize int) error {
 	slog.Info("Генерация RSA ключей", "bits", keySize)
 	return crypto.GenerateKeyPair(privateKeyPath, publicKeyPath, keySize)

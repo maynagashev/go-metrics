@@ -1,4 +1,4 @@
-package index
+package index_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/index"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -31,22 +32,26 @@ func (m *MockRepository) Count(ctx context.Context) int {
 
 func (m *MockRepository) GetMetrics(ctx context.Context) []metrics.Metric {
 	args := m.Called(ctx)
-	return args.Get(0).([]metrics.Metric)
+	result, _ := args.Get(0).([]metrics.Metric)
+	return result
 }
 
 func (m *MockRepository) GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool) {
 	args := m.Called(ctx, mType, name)
-	return args.Get(0).(metrics.Metric), args.Bool(1)
+	result, _ := args.Get(0).(metrics.Metric)
+	return result, args.Bool(1)
 }
 
 func (m *MockRepository) GetCounter(ctx context.Context, name string) (storage.Counter, bool) {
 	args := m.Called(ctx, name)
-	return args.Get(0).(storage.Counter), args.Bool(1)
+	result, _ := args.Get(0).(storage.Counter)
+	return result, args.Bool(1)
 }
 
 func (m *MockRepository) GetGauge(ctx context.Context, name string) (storage.Gauge, bool) {
 	args := m.Called(ctx, name)
-	return args.Get(0).(storage.Gauge), args.Bool(1)
+	result, _ := args.Get(0).(storage.Gauge)
+	return result, args.Bool(1)
 }
 
 func (m *MockRepository) UpdateMetric(ctx context.Context, metric metrics.Metric) error {
@@ -159,7 +164,7 @@ func TestNew(t *testing.T) {
 			tc.setupMock(mockRepo)
 
 			// Создаем обработчик
-			handler := New(mockRepo)
+			handler := index.New(mockRepo)
 
 			// Создаем тестовый запрос
 			req, err := http.NewRequest(http.MethodGet, "/", nil)

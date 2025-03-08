@@ -79,12 +79,12 @@ func TestInitStorage(t *testing.T) {
 		}
 
 		repo, err := initStorage(cfg, logger)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, repo)
 
 		// Clean up
 		err = repo.Close()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	// We can't easily test the PostgreSQL path without a real database,

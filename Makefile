@@ -95,6 +95,14 @@ test:
 	@echo "Запуск всех тестов..."
 	@go test -v ./... | tee logs/test.log
 
+# Тест с генерацией отчёта о покрытии
+test-coverage:
+	@echo "Запуск тестов с генерацией покрытия..."
+	go test -coverprofile=logs/coverage.out ./...
+	go tool cover -html=logs/coverage.out -o logs/coverage.html
+	go tool cover -func=logs/coverage.out | tee logs/coverage.log
+
+
 # Пример запуска бенчмарков
 bench:
 	@echo "Запуск бенчмарков..."
@@ -126,12 +134,6 @@ iter14: build
 									-key=iter14 \
 									| tee logs/iter14.log
 
-# Тест с генерацией отчёта о покрытии
-test-coverage:
-	@echo "Запуск тестов с генерацией покрытия..."
-	go test -coverprofile=logs/coverage.out ./...
-	go tool cover -html=logs/coverage.out -o logs/coverage.html
-	go tool cover -func=logs/coverage.out | tee logs/coverage.log
 
 # Запуск всех типов профилирования
 save-all-profiles: profile-benchmarks profile-server-memory profile-agent-memory

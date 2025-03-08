@@ -1,4 +1,4 @@
-package router
+package router_test
 
 import (
 	"net/http"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -27,7 +28,7 @@ func TestNew(t *testing.T) {
 	storage := memory.New(config, logger)
 
 	// Create the router
-	router := New(config, storage, logger)
+	router := router.New(config, storage, logger)
 
 	// Verify the router was created
 	assert.NotNil(t, router)
@@ -105,7 +106,7 @@ func TestNew_WithPprof(t *testing.T) {
 	storage := memory.New(config, logger)
 
 	// Create the router
-	router := New(config, storage, logger)
+	router := router.New(config, storage, logger)
 
 	// Verify the router was created
 	assert.NotNil(t, router)

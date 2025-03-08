@@ -17,6 +17,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// contextKey is a custom type for context keys to avoid using basic types.
+type contextKey string
+
 func TestHandle_Success(t *testing.T) {
 	// Создаем новый мок для интерфейса Storage
 	mockStorage := new(mocks.Storage)
@@ -205,11 +208,11 @@ func TestHandle_DifferentMethods(t *testing.T) {
 
 // Добавляем тест для проверки работы с контекстом запроса.
 func TestHandle_WithContext(t *testing.T) {
-	// Создаем новый мок для интерфейса Storage
+	// Создаем мок хранилища
 	mockStorage := new(mocks.Storage)
 
 	// Создаем контекст с значением
-	ctx := context.WithValue(context.Background(), "test-key", "test-value")
+	ctx := context.WithValue(context.Background(), contextKey("test-key"), "test-value")
 
 	// Настраиваем мок, чтобы метод GetMetrics ожидал контекст с нашим значением
 	mockStorage.On("GetMetrics", ctx).Return([]metrics.Metric{
@@ -223,7 +226,7 @@ func TestHandle_WithContext(t *testing.T) {
 	// Создаем ResponseRecorder для записи ответа
 	rr := httptest.NewRecorder()
 
-	// Создаем обработчик с использованием мокированного хранилища
+	// Вызываем обработчик с записанным запросом и ответом
 	handler := ping.Handle(mockStorage)
 
 	// Вызываем обработчик с записанным запросом и ответом

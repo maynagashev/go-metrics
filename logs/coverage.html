@@ -63,7 +63,7 @@
 				
 				<option value="file3">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (100.0%)</option>
 				
-				<option value="file4">github.com/maynagashev/go-metrics/cmd/keygen/main.go (81.8%)</option>
+				<option value="file4">github.com/maynagashev/go-metrics/cmd/keygen/main.go (81.2%)</option>
 				
 				<option value="file5">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
 				
@@ -93,7 +93,7 @@
 				
 				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (100.0%)</option>
 				
-				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/flags.go (85.4%)</option>
+				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/flags.go (62.5%)</option>
 				
 				<option value="file20">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (63.6%)</option>
 				
@@ -119,21 +119,21 @@
 				
 				<option value="file31">github.com/maynagashev/go-metrics/internal/server/router/router.go (100.0%)</option>
 				
-				<option value="file32">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (81.3%)</option>
+				<option value="file32">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (76.0%)</option>
 				
 				<option value="file33">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
 				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
 				
-				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (0.0%)</option>
+				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
 				
-				<option value="file36">github.com/maynagashev/go-metrics/mocks/Repository.go (0.0%)</option>
+				<option value="file36">github.com/maynagashev/go-metrics/mocks/Repository.go (75.0%)</option>
 				
-				<option value="file37">github.com/maynagashev/go-metrics/mocks/Storage.go (50.0%)</option>
+				<option value="file37">github.com/maynagashev/go-metrics/mocks/Storage.go (85.7%)</option>
 				
 				<option value="file38">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
-				<option value="file39">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (87.7%)</option>
+				<option value="file39">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (66.7%)</option>
 				
 				<option value="file40">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
@@ -576,20 +576,23 @@ import (
         "github.com/maynagashev/go-metrics/pkg/crypto"
 )
 
-// BuildVersion содержит версию сборки
-var BuildVersion string
-
-// BuildDate содержит дату сборки
-var BuildDate string
-
-// BuildCommit содержит коммит сборки
-var BuildCommit string
+// Build information set during compilation
+// These are allowed to be global variables as they are set at build time
+//
+//nolint:gochecknoglobals // These variables are set at build time by the compiler
+var (
+        // BuildVersion contains the version of the build.
+        BuildVersion string
+        // BuildDate contains the date of the build.
+        BuildDate string
+        // BuildCommit contains the commit hash of the build.
+        BuildCommit string
+        // ExitFunc is the function used to exit the program, can be replaced in tests.
+        ExitFunc = os.Exit
+)
 
 // DefaultKeySize - размер ключа RSA по умолчанию.
 const DefaultKeySize = 2048
-
-// ExitFunc - функция для выхода из программы, может быть заменена в тестах
-var ExitFunc = os.Exit
 
 func main() <span class="cov8" title="1">{
         // Выводим информацию о сборке
@@ -607,8 +610,9 @@ func main() <span class="cov8" title="1">{
         }</span>
 
         // Генерируем ключи
-        <span class="cov8" title="1">if err := generateKeys(privateKeyPath, publicKeyPath, keySize); err != nil </span><span class="cov0" title="0">{
-                fmt.Fprintf(os.Stderr, "Ошибка при генерации пары ключей: %v\n", err)
+        <span class="cov8" title="1">genErr := generateKeys(privateKeyPath, publicKeyPath, keySize)
+        if genErr != nil </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Ошибка при генерации пары ключей: %v\n", genErr)
                 ExitFunc(1)
                 return
         }</span>
@@ -620,14 +624,15 @@ func main() <span class="cov8" title="1">{
         slog.Warn("ВАЖНО: Храните ваш закрытый ключ в безопасном месте и не передавайте его никому!")</span>
 }
 
-// printVersion выводит информацию о версии сборки
+// printVersion выводит информацию о версии сборки.
 func printVersion() <span class="cov8" title="1">{
-        fmt.Printf("Build version: %s\n", getStringOrDefault(BuildVersion, "N/A"))
-        fmt.Printf("Build date: %s\n", getStringOrDefault(BuildDate, "N/A"))
-        fmt.Printf("Build commit: %s\n", getStringOrDefault(BuildCommit, "N/A"))
+        slog.Info("Build information",
+                "version", getStringOrDefault(BuildVersion, "N/A"),
+                "date", getStringOrDefault(BuildDate, "N/A"),
+                "commit", getStringOrDefault(BuildCommit, "N/A"))
 }</span>
 
-// getStringOrDefault возвращает строку или значение по умолчанию, если строка пуста
+// getStringOrDefault возвращает строку или значение по умолчанию, если строка пуста.
 func getStringOrDefault(value, defaultValue string) string <span class="cov8" title="1">{
         if value == "" </span><span class="cov8" title="1">{
                 return defaultValue
@@ -635,8 +640,8 @@ func getStringOrDefault(value, defaultValue string) string <span class="cov8" ti
         <span class="cov8" title="1">return value</span>
 }
 
-// parseFlags разбирает флаги командной строки
-func parseFlags() (privateKeyPath, publicKeyPath string, keySize int, err error) <span class="cov8" title="1">{
+// parseFlags разбирает флаги командной строки.
+func parseFlags() (string, string, int, error) <span class="cov8" title="1">{
         // Определяем флаги командной строки
         privateKeyPathPtr := flag.String("private", "private.pem", "путь для сохранения закрытого ключа")
         publicKeyPathPtr := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
@@ -654,7 +659,7 @@ func parseFlags() (privateKeyPath, publicKeyPath string, keySize int, err error)
         <span class="cov8" title="1">return *privateKeyPathPtr, *publicKeyPathPtr, *keySizePtr, nil</span>
 }
 
-// generateKeys генерирует пару ключей RSA
+// generateKeys генерирует пару ключей RSA.
 func generateKeys(privateKeyPath, publicKeyPath string, keySize int) error <span class="cov8" title="1">{
         slog.Info("Генерация RSA ключей", "bits", keySize)
         return crypto.GenerateKeyPair(privateKeyPath, publicKeyPath, keySize)
@@ -1872,10 +1877,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -1912,10 +1917,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Debug("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -2860,42 +2865,42 @@ func applyEnvironmentVariables(flags *Flags) error <span class="cov8" title="1">
         // Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
         // переопределим адрес запуска сервера,
         // даже если он был передан через аргумент командной строки.
-        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov8" title="1">{
+        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov0" title="0">{
                 flags.Server.Addr = envRunAddr
         }</span>
-        <span class="cov8" title="1">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov0" title="0">{
                 storeInterval, err := strconv.Atoi(envStoreInterval)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov8" title="1">flags.Server.StoreInterval = storeInterval</span>
+                <span class="cov0" title="0">flags.Server.StoreInterval = storeInterval</span>
         }
         // Если переменная окружения FILE_STORAGE_PATH присутствует (даже
         // пустая), переопределим путь к файлу хранения метрик.
-        <span class="cov8" title="1">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov0" title="0">{
                 flags.Server.FileStoragePath = envFileStoragePath
         }</span>
         // Если переменная окружения RESTORE присутствует (даже пустая), переопределим флаг восстановления метрик из файла.
-        <span class="cov8" title="1">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov0" title="0">{
                 restore, err := strconv.ParseBool(envRestore)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov8" title="1">flags.Server.Restore = restore</span>
+                <span class="cov0" title="0">flags.Server.Restore = restore</span>
         }
 
         // Если переданы параметры БД в параметрах окружения, используем их
-        <span class="cov8" title="1">if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov0" title="0">{
                 flags.Database.DSN = envDatabaseDSN
         }</span>
 
         // Если передан ключ в параметрах окружения, используем его
-        <span class="cov8" title="1">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov0" title="0">{
                 flags.PrivateKey = envPrivateKey
         }</span>
 
         // Если передан путь к файлу с приватным ключом в параметрах окружения, используем его
-        <span class="cov8" title="1">if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok </span><span class="cov0" title="0">{
                 flags.CryptoKey = envCryptoKey
         }</span>
 
@@ -4397,10 +4402,10 @@ type Counter int64
 type Gauges map[string]Gauge
 type Counters map[string]Counter
 
-func (v Gauge) String() string <span class="cov0" title="0">{
+func (v Gauge) String() string <span class="cov8" title="1">{
         return strconv.FormatFloat(float64(v), 'f', -1, 64)
 }</span>
-func (v Counter) String() string <span class="cov0" title="0">{
+func (v Counter) String() string <span class="cov8" title="1">{
         return strconv.FormatInt(int64(v), 10)
 }</span>
 
@@ -4454,179 +4459,179 @@ type Repository struct {
 }
 
 // Close provides a mock function with given fields:
-func (_m *Repository) Close() error <span class="cov0" title="0">{
+func (_m *Repository) Close() error <span class="cov8" title="1">{
         ret := _m.Called()
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for Close")</span>
         }
 
-        <span class="cov0" title="0">var r0 error
+        <span class="cov8" title="1">var r0 error
         if rf, ok := ret.Get(0).(func() error); ok </span><span class="cov0" title="0">{
                 r0 = rf()
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Error(0)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // Count provides a mock function with given fields:
-func (_m *Repository) Count() int <span class="cov0" title="0">{
+func (_m *Repository) Count() int <span class="cov8" title="1">{
         ret := _m.Called()
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for Count")</span>
         }
 
-        <span class="cov0" title="0">var r0 int
+        <span class="cov8" title="1">var r0 int
         if rf, ok := ret.Get(0).(func() int); ok </span><span class="cov0" title="0">{
                 r0 = rf()
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(int)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // GetCounter provides a mock function with given fields: name
-func (_m *Repository) GetCounter(name string) (storage.Counter, bool) <span class="cov0" title="0">{
+func (_m *Repository) GetCounter(name string) (storage.Counter, bool) <span class="cov8" title="1">{
         ret := _m.Called(name)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetCounter")</span>
         }
 
-        <span class="cov0" title="0">var r0 storage.Counter
+        <span class="cov8" title="1">var r0 storage.Counter
         var r1 bool
         if rf, ok := ret.Get(0).(func(string) (storage.Counter, bool)); ok </span><span class="cov0" title="0">{
                 return rf(name)
         }</span>
-        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(string) storage.Counter); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(string) storage.Counter); ok </span><span class="cov0" title="0">{
                 r0 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(storage.Counter)
         }</span>
 
-        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
                 r1 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r1 = ret.Get(1).(bool)
         }</span>
 
-        <span class="cov0" title="0">return r0, r1</span>
+        <span class="cov8" title="1">return r0, r1</span>
 }
 
 // GetGauge provides a mock function with given fields: name
-func (_m *Repository) GetGauge(name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+func (_m *Repository) GetGauge(name string) (storage.Gauge, bool) <span class="cov8" title="1">{
         ret := _m.Called(name)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetGauge")</span>
         }
 
-        <span class="cov0" title="0">var r0 storage.Gauge
+        <span class="cov8" title="1">var r0 storage.Gauge
         var r1 bool
         if rf, ok := ret.Get(0).(func(string) (storage.Gauge, bool)); ok </span><span class="cov0" title="0">{
                 return rf(name)
         }</span>
-        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(string) storage.Gauge); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(string) storage.Gauge); ok </span><span class="cov0" title="0">{
                 r0 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(storage.Gauge)
         }</span>
 
-        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
                 r1 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r1 = ret.Get(1).(bool)
         }</span>
 
-        <span class="cov0" title="0">return r0, r1</span>
+        <span class="cov8" title="1">return r0, r1</span>
 }
 
 // GetMetric provides a mock function with given fields: mType, name
-func (_m *Repository) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov0" title="0">{
+func (_m *Repository) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov8" title="1">{
         ret := _m.Called(mType, name)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetMetric")</span>
         }
 
-        <span class="cov0" title="0">var r0 metrics.Metric
+        <span class="cov8" title="1">var r0 metrics.Metric
         var r1 bool
         if rf, ok := ret.Get(0).(func(metrics.MetricType, string) (metrics.Metric, bool)); ok </span><span class="cov0" title="0">{
                 return rf(mType, name)
         }</span>
-        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(metrics.MetricType, string) metrics.Metric); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(metrics.MetricType, string) metrics.Metric); ok </span><span class="cov0" title="0">{
                 r0 = rf(mType, name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(metrics.Metric)
         }</span>
 
-        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(metrics.MetricType, string) bool); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(metrics.MetricType, string) bool); ok </span><span class="cov0" title="0">{
                 r1 = rf(mType, name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r1 = ret.Get(1).(bool)
         }</span>
 
-        <span class="cov0" title="0">return r0, r1</span>
+        <span class="cov8" title="1">return r0, r1</span>
 }
 
 // GetMetrics provides a mock function with given fields:
-func (_m *Repository) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
+func (_m *Repository) GetMetrics() []metrics.Metric <span class="cov8" title="1">{
         ret := _m.Called()
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetMetrics")</span>
         }
 
-        <span class="cov0" title="0">var r0 []metrics.Metric
+        <span class="cov8" title="1">var r0 []metrics.Metric
         if rf, ok := ret.Get(0).(func() []metrics.Metric); ok </span><span class="cov0" title="0">{
                 r0 = rf()
-        }</span> else<span class="cov0" title="0"> {
-                if ret.Get(0) != nil </span><span class="cov0" title="0">{
+        }</span> else<span class="cov8" title="1"> {
+                if ret.Get(0) != nil </span><span class="cov8" title="1">{
                         r0 = ret.Get(0).([]metrics.Metric)
                 }</span>
         }
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // UpdateMetric provides a mock function with given fields: metric
-func (_m *Repository) UpdateMetric(metric metrics.Metric) error <span class="cov0" title="0">{
+func (_m *Repository) UpdateMetric(metric metrics.Metric) error <span class="cov8" title="1">{
         ret := _m.Called(metric)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for UpdateMetric")</span>
         }
 
-        <span class="cov0" title="0">var r0 error
+        <span class="cov8" title="1">var r0 error
         if rf, ok := ret.Get(0).(func(metrics.Metric) error); ok </span><span class="cov0" title="0">{
                 r0 = rf(metric)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Error(0)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // UpdateMetrics provides a mock function with given fields: _a0
-func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov0" title="0">{
+func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov8" title="1">{
         ret := _m.Called(_a0)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for UpdateMetrics")</span>
         }
 
-        <span class="cov0" title="0">var r0 error
+        <span class="cov8" title="1">var r0 error
         if rf, ok := ret.Get(0).(func([]metrics.Metric) error); ok </span><span class="cov0" title="0">{
                 r0 = rf(_a0)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Error(0)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -4634,13 +4639,13 @@ func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov
 func NewRepository(t interface {
         mock.TestingT
         Cleanup(func())
-}) *Repository <span class="cov0" title="0">{
+}) *Repository <span class="cov8" title="1">{
         mock := &amp;Repository{}
         mock.Mock.Test(t)
 
-        t.Cleanup(func() </span><span class="cov0" title="0">{ mock.AssertExpectations(t) }</span>)
+        t.Cleanup(func() </span><span class="cov8" title="1">{ mock.AssertExpectations(t) }</span>)
 
-        <span class="cov0" title="0">return mock</span>
+        <span class="cov8" title="1">return mock</span>
 }
 </pre>
 		
@@ -4685,13 +4690,13 @@ func (_m *Storage) GetMetrics(ctx context.Context) []metrics.Metric <span class=
 func NewStorage(t interface {
         mock.TestingT
         Cleanup(func())
-}) *Storage <span class="cov0" title="0">{
+}) *Storage <span class="cov8" title="1">{
         mock := &amp;Storage{}
         mock.Mock.Test(t)
 
-        t.Cleanup(func() </span><span class="cov0" title="0">{ mock.AssertExpectations(t) }</span>)
+        t.Cleanup(func() </span><span class="cov8" title="1">{ mock.AssertExpectations(t) }</span>)
 
-        <span class="cov0" title="0">return mock</span>
+        <span class="cov8" title="1">return mock</span>
 }
 </pre>
 		
@@ -5032,7 +5037,7 @@ type ContextKey struct {
 }
 
 // String возвращает строковое представление ключа контекста.
-func (k ContextKey) String() string <span class="cov8" title="1">{
+func (k ContextKey) String() string <span class="cov0" title="0">{
         return "crypto middleware context key: " + k.name
 }</span>
 
@@ -5113,21 +5118,21 @@ func (m *Middleware) handleEncryption(w http.ResponseWriter, r *http.Request, bo
                 return body, true
         }</span>
 
-        <span class="cov8" title="1">if !m.config.IsEncryptionEnabled() </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if !m.config.IsEncryptionEnabled() </span><span class="cov0" title="0">{
                 m.log.Error("received encrypted data but server has no private key configured")
                 http.Error(w, "Server is not configured for encryption", http.StatusBadRequest)
                 return nil, false
         }</span>
 
-        <span class="cov8" title="1">m.log.Debug("decrypting request body")
+        <span class="cov0" title="0">m.log.Debug("decrypting request body")
         decrypted, err := crypto.DecryptLargeData(m.config.PrivateRSAKey, body)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 m.log.Error("failed to decrypt data", zap.Error(err))
                 http.Error(w, "Failed to decrypt request body", http.StatusBadRequest)
                 return nil, false
         }</span>
 
-        <span class="cov8" title="1">return decrypted, true</span>
+        <span class="cov0" title="0">return decrypted, true</span>
 }
 
 // Возвращает флаг успешности операции.

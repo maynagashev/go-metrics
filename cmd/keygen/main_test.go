@@ -1,16 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"log/slog"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-// TestGenerateKeyPair проверяет генерацию пары ключей
+// TestGenerateKeyPair проверяет генерацию пары ключей.
 func TestGenerateKeyPair(t *testing.T) {
 	// Создаем временную директорию для тестовых файлов
 	tempDir, err := os.MkdirTemp("", "keygen-test")
@@ -40,7 +43,7 @@ func TestGenerateKeyPair(t *testing.T) {
 	assert.NotEmpty(t, publicKeyData)
 }
 
-// TestParseFlags проверяет разбор флагов командной строки
+// TestParseFlags проверяет разбор флагов командной строки.
 func TestParseFlags(t *testing.T) {
 	// Сохраняем оригинальные аргументы
 	oldArgs := os.Args
@@ -72,22 +75,31 @@ func TestParseFlags(t *testing.T) {
 	os.Args = []string{"keygen", "-bits", "3000"}
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	_, _, _, err = parseFlags()
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Contains(t, err.Error(), "неверный размер ключа")
 }
 
-// TestGetStringOrDefault проверяет функцию getStringOrDefault
+// TestGetStringOrDefault проверяет функцию getStringOrDefault.
 func TestGetStringOrDefault(t *testing.T) {
 	assert.Equal(t, "default", getStringOrDefault("", "default"))
 	assert.Equal(t, "value", getStringOrDefault("value", "default"))
 }
 
-// TestPrintVersion проверяет вывод версии
+// TestPrintVersion проверяет вывод версии.
 func TestPrintVersion(t *testing.T) {
-	// Временно перенаправляем stdout
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
+	// Since we're now using slog.Info instead of fmt.Printf, we need to capture the log output
+	// Create a buffer to capture log output
+	var buf bytes.Buffer
+
+	// Save the original logger and restore it after the test
+	originalLogger := slog.Default()
+	defer slog.SetDefault(originalLogger)
+
+	// Create a new logger that writes to our buffer
+	logger := slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+	slog.SetDefault(logger)
 
 	// Устанавливаем тестовые значения
 	oldBuildVersion := BuildVersion
@@ -97,45 +109,39 @@ func TestPrintVersion(t *testing.T) {
 		BuildVersion = oldBuildVersion
 		BuildDate = oldBuildDate
 		BuildCommit = oldBuildCommit
-		os.Stdout = oldStdout
 	}()
 
 	// Тест 1: Пустые значения
 	BuildVersion = ""
 	BuildDate = ""
 	BuildCommit = ""
+	buf.Reset()
 	printVersion()
-	w.Close()
-	var buf [1024]byte
-	n, _ := r.Read(buf[:])
-	output := string(buf[:n])
-	assert.Contains(t, output, "Build version: N/A")
-	assert.Contains(t, output, "Build date: N/A")
-	assert.Contains(t, output, "Build commit: N/A")
+	output := buf.String()
+	assert.Contains(t, output, "version=N/A")
+	assert.Contains(t, output, "date=N/A")
+	assert.Contains(t, output, "commit=N/A")
 
 	// Тест 2: Заполненные значения
-	r, w, _ = os.Pipe()
-	os.Stdout = w
 	BuildVersion = "v1.0.0"
 	BuildDate = "2023-01-01"
 	BuildCommit = "abc123"
+	buf.Reset()
 	printVersion()
-	w.Close()
-	n, _ = r.Read(buf[:])
-	output = string(buf[:n])
-	assert.Contains(t, output, "Build version: v1.0.0")
-	assert.Contains(t, output, "Build date: 2023-01-01")
-	assert.Contains(t, output, "Build commit: abc123")
+	output = buf.String()
+	assert.Contains(t, output, "version=v1.0.0")
+	assert.Contains(t, output, "date=2023-01-01")
+	assert.Contains(t, output, "commit=abc123")
 }
 
-// TestInitLogger проверяет инициализацию логгера
-func TestInitLogger(t *testing.T) {
+// TestInitLogger проверяет инициализацию логгера.
+func TestInitLogger(_ *testing.T) {
 	// Вызываем функцию initLogger
 	initLogger()
 	// Здесь мы просто проверяем, что функция не паникует
 }
 
-// TestMain проверяет функцию main
+// TestMain проверяет функцию main.
 func TestMain(t *testing.T) {
 	// Сохраняем оригинальные аргументы и функцию выхода
 	oldArgs := os.Args

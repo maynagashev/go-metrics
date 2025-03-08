@@ -1,17 +1,18 @@
-package app
+package app_test
 
 import (
 	"crypto/rand"
 	"crypto/rsa"
 	"testing"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewConfig(t *testing.T) {
 	// Test with default values
-	flags := &Flags{}
+	flags := &app.Flags{}
 	flags.Server.Addr = "localhost:8080"
 	flags.Server.StoreInterval = 300
 	flags.Server.FileStoragePath = "/tmp/metrics-db.json"
@@ -20,7 +21,7 @@ func TestNewConfig(t *testing.T) {
 	flags.PrivateKey = ""
 	flags.CryptoKey = ""
 
-	config := NewConfig(flags)
+	config := app.NewConfig(flags)
 
 	// Verify the config was created correctly
 	assert.Equal(t, "localhost:8080", config.Addr)
@@ -34,13 +35,13 @@ func TestNewConfig(t *testing.T) {
 
 func TestConfig_IsStoreEnabled(t *testing.T) {
 	// Test with store enabled
-	config := &Config{
+	config := &app.Config{
 		FileStoragePath: "/tmp/metrics-db.json",
 	}
 	assert.True(t, config.IsStoreEnabled())
 
 	// Test with store disabled
-	config = &Config{
+	config = &app.Config{
 		FileStoragePath: "",
 	}
 	assert.False(t, config.IsStoreEnabled())
@@ -48,21 +49,21 @@ func TestConfig_IsStoreEnabled(t *testing.T) {
 
 func TestConfig_IsRestoreEnabled(t *testing.T) {
 	// Test with restore enabled
-	config := &Config{
+	config := &app.Config{
 		Restore:         true,
 		FileStoragePath: "/tmp/metrics-db.json",
 	}
 	assert.True(t, config.IsRestoreEnabled())
 
 	// Test with restore disabled
-	config = &Config{
+	config = &app.Config{
 		Restore: false,
 	}
 	assert.False(t, config.IsRestoreEnabled())
 }
 
 func TestConfig_GetStorePath(t *testing.T) {
-	config := &Config{
+	config := &app.Config{
 		FileStoragePath: "/tmp/metrics-db.json",
 	}
 	assert.Equal(t, "/tmp/metrics-db.json", config.GetStorePath())
@@ -70,20 +71,20 @@ func TestConfig_GetStorePath(t *testing.T) {
 
 func TestConfig_IsSyncStore(t *testing.T) {
 	// Test with sync store
-	config := &Config{
+	config := &app.Config{
 		StoreInterval: 0,
 	}
 	assert.True(t, config.IsSyncStore())
 
 	// Test with async store
-	config = &Config{
+	config = &app.Config{
 		StoreInterval: 300,
 	}
 	assert.False(t, config.IsSyncStore())
 }
 
 func TestConfig_GetStoreInterval(t *testing.T) {
-	config := &Config{
+	config := &app.Config{
 		StoreInterval: 300,
 	}
 	assert.Equal(t, 300, config.GetStoreInterval())
@@ -91,16 +92,16 @@ func TestConfig_GetStoreInterval(t *testing.T) {
 
 func TestConfig_IsDatabaseEnabled(t *testing.T) {
 	// Test with database enabled
-	config := &Config{
-		Database: DatabaseConfig{
+	config := &app.Config{
+		Database: app.DatabaseConfig{
 			DSN: "postgres://user:password@localhost:5432/metrics",
 		},
 	}
 	assert.True(t, config.IsDatabaseEnabled())
 
 	// Test with database disabled
-	config = &Config{
-		Database: DatabaseConfig{
+	config = &app.Config{
+		Database: app.DatabaseConfig{
 			DSN: "",
 		},
 	}
@@ -109,13 +110,13 @@ func TestConfig_IsDatabaseEnabled(t *testing.T) {
 
 func TestConfig_IsRequestSigningEnabled(t *testing.T) {
 	// Test with request signing enabled
-	config := &Config{
+	config := &app.Config{
 		PrivateKey: "test-key",
 	}
 	assert.True(t, config.IsRequestSigningEnabled())
 
 	// Test with request signing disabled
-	config = &Config{
+	config = &app.Config{
 		PrivateKey: "",
 	}
 	assert.False(t, config.IsRequestSigningEnabled())
@@ -127,38 +128,38 @@ func TestConfig_IsEncryptionEnabled(t *testing.T) {
 	require.NoError(t, err)
 
 	// Test with encryption enabled
-	config := &Config{
+	config := &app.Config{
 		PrivateRSAKey: privateKey,
 	}
 	assert.True(t, config.IsEncryptionEnabled())
 
 	// Test with encryption disabled
-	config = &Config{
+	config = &app.Config{
 		PrivateRSAKey: nil,
 	}
 	assert.False(t, config.IsEncryptionEnabled())
 }
 
 func TestNew(t *testing.T) {
-	config := &Config{
+	config := &app.Config{
 		Addr:            "localhost:8080",
 		StoreInterval:   300,
 		FileStoragePath: "/tmp/metrics-db.json",
 		Restore:         true,
 	}
 
-	server := New(config)
+	server := app.New(config)
 
 	assert.NotNil(t, server)
-	assert.Equal(t, config, server.cfg)
+	assert.Equal(t, config.StoreInterval, server.GetStoreInterval())
 }
 
 func TestServer_GetStoreInterval(t *testing.T) {
-	config := &Config{
+	config := &app.Config{
 		StoreInterval: 300,
 	}
 
-	server := New(config)
+	server := app.New(config)
 
 	assert.Equal(t, 300, server.GetStoreInterval())
 }
