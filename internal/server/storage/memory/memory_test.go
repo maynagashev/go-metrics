@@ -337,15 +337,15 @@ func TestMemStorage_FileOperations(t *testing.T) {
 }
 
 func TestMemStorage_Dump(t *testing.T) {
-	// Создаем временный файл для тестирования
+	// Создаем временный файл для теста
 	tmpFile, err := os.CreateTemp("", "metrics_test")
 	require.NoError(t, err)
 	defer os.Remove(tmpFile.Name())
 
-	// Создаем конфигурацию с сохранением в файл
+	// Создаем конфигурацию с файлом хранения
 	cfg := &app.Config{
 		FileStoragePath: tmpFile.Name(),
-		StoreInterval:   1, // Интервал сохранения 1 секунда
+		StoreInterval:   1, // Сохранять каждую секунду
 		Restore:         true,
 	}
 
@@ -366,10 +366,14 @@ func TestMemStorage_Dump(t *testing.T) {
 	err = ms.Close()
 	require.NoError(t, err)
 
-	// Проверяем что файл не пустой
-	fileInfo, err := os.Stat(tmpFile.Name())
+	// Проверяем что файл существует
+	_, err = os.Stat(tmpFile.Name())
 	require.NoError(t, err)
-	assert.Positive(t, fileInfo.Size())
+
+	// Проверяем, что файл содержит данные, прочитав его
+	data, err := os.ReadFile(tmpFile.Name())
+	require.NoError(t, err)
+	assert.NotEmpty(t, data, "Файл должен содержать данные")
 }
 
 func TestMemStorage_Close(t *testing.T) {
