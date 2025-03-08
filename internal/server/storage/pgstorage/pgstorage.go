@@ -23,8 +23,20 @@ import (
 
 const maxRetries = 3
 
+// PgxPoolInterface определяет интерфейс для pgxpool.Pool, чтобы можно было использовать мок в тестах.
+type PgxPoolInterface interface {
+	Close()
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+// Убедимся, что pgxpool.Pool реализует наш интерфейс.
+var _ PgxPoolInterface = (*pgxpool.Pool)(nil)
+
 type PgStorage struct {
-	conn *pgxpool.Pool
+	conn PgxPoolInterface
 	cfg  *app.Config
 	log  *zap.Logger
 }
