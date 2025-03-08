@@ -53,7 +53,9 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
 }
 
 func (p *PgStorage) Close() error {
-	p.conn.Close()
+	if p.conn != nil {
+		p.conn.Close()
+	}
 	return nil
 }
 

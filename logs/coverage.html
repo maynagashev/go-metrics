@@ -67,7 +67,7 @@
 				
 				<option value="file5">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
 				
-				<option value="file6">github.com/maynagashev/go-metrics/cmd/server/main.go (8.3%)</option>
+				<option value="file6">github.com/maynagashev/go-metrics/cmd/server/main.go (27.8%)</option>
 				
 				<option value="file7">github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go (81.9%)</option>
 				
@@ -81,19 +81,19 @@
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (86.0%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (32.7%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (67.3%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (25.8%)</option>
 				
 				<option value="file15">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (90.0%)</option>
 				
-				<option value="file16">github.com/maynagashev/go-metrics/internal/server/app/app.go (0.0%)</option>
+				<option value="file16">github.com/maynagashev/go-metrics/internal/server/app/app.go (8.7%)</option>
 				
-				<option value="file17">github.com/maynagashev/go-metrics/internal/server/app/config.go (0.0%)</option>
+				<option value="file17">github.com/maynagashev/go-metrics/internal/server/app/config.go (64.7%)</option>
 				
 				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (100.0%)</option>
 				
-				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/flags.go (0.0%)</option>
+				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/flags.go (85.4%)</option>
 				
 				<option value="file20">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (63.6%)</option>
 				
@@ -105,7 +105,7 @@
 				
 				<option value="file24">github.com/maynagashev/go-metrics/internal/server/handlers/json/value/json_value.go (83.3%)</option>
 				
-				<option value="file25">github.com/maynagashev/go-metrics/internal/server/handlers/plain/index/index.go (85.7%)</option>
+				<option value="file25">github.com/maynagashev/go-metrics/internal/server/handlers/plain/index/index.go (92.9%)</option>
 				
 				<option value="file26">github.com/maynagashev/go-metrics/internal/server/handlers/plain/update/plain_update.go (78.9%)</option>
 				
@@ -117,13 +117,13 @@
 				
 				<option value="file30">github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go (85.7%)</option>
 				
-				<option value="file31">github.com/maynagashev/go-metrics/internal/server/router/router.go (58.1%)</option>
+				<option value="file31">github.com/maynagashev/go-metrics/internal/server/router/router.go (100.0%)</option>
 				
 				<option value="file32">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (81.3%)</option>
 				
 				<option value="file33">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
-				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (5.4%)</option>
+				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (5.3%)</option>
 				
 				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (0.0%)</option>
 				
@@ -133,7 +133,7 @@
 				
 				<option value="file38">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
-				<option value="file39">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (40.4%)</option>
+				<option value="file39">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (87.7%)</option>
 				
 				<option value="file40">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
@@ -784,7 +784,7 @@ func main() <span class="cov0" title="0">{
         log.Debug("server stopped")</span>
 }
 
-func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) <span class="cov0" title="0">{
+func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) <span class="cov8" title="1">{
         // Если указан DATABASE_DSN или флаг -d, то используем PostgreSQL.
         if cfg.IsDatabaseEnabled() </span><span class="cov0" title="0">{
                 pg, err := pgstorage.New(context.Background(), cfg, log)
@@ -794,10 +794,10 @@ func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) <
                 <span class="cov0" title="0">return pg, nil</span>
         }
 
-        <span class="cov0" title="0">return memory.New(cfg, log), nil</span>
+        <span class="cov8" title="1">return memory.New(cfg, log), nil</span>
 }
 
-func initLogger() *zap.Logger <span class="cov0" title="0">{
+func initLogger() *zap.Logger <span class="cov8" title="1">{
         // Создаем конфигурацию для регистратора в режиме разработки
         cfg := zap.NewDevelopmentConfig()
 
@@ -810,7 +810,7 @@ func initLogger() *zap.Logger <span class="cov0" title="0">{
                 // вызываем панику, если ошибка
                 panic(err)</span>
         }
-        <span class="cov0" title="0">return logger</span>
+        <span class="cov8" title="1">return logger</span>
 }
 </pre>
 		
@@ -1826,10 +1826,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -1866,10 +1866,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Debug("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -2105,28 +2105,28 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span c
         <span class="cov0" title="0">return fmt.Errorf("failed to send metrics after %d retries", maxSendRetries)</span>
 }
 
-func isRetriableSendError(err error) bool <span class="cov0" title="0">{
+func isRetriableSendError(err error) bool <span class="cov8" title="1">{
         slog.Debug(fmt.Sprintf("isRetriableSendError: %#v", err))
 
         // Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом.
         var netErr net.Error
-        if errors.As(err, &amp;netErr) </span><span class="cov0" title="0">{
+        if errors.As(err, &amp;netErr) </span><span class="cov8" title="1">{
                 slog.Debug(fmt.Sprintf("isRetriableSendError =&gt; AS net.Error: %#v", netErr))
                 // Проверяем, является ли ошибка временной
-                if netErr.Timeout() </span><span class="cov0" title="0">{
+                if netErr.Timeout() </span><span class="cov8" title="1">{
                         return true
                 }</span>
         }
 
         // Проверяем, является ли ошибка ошибкой сети.
-        <span class="cov0" title="0">var opErr *net.OpError
-        if errors.As(err, &amp;opErr) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">var opErr *net.OpError
+        if errors.As(err, &amp;opErr) </span><span class="cov8" title="1">{
                 slog.Debug("isRetriableSendError =&gt; AS net.OpError", "err", err)
                 return true
         }</span>
 
         // Если ошибка не является временной, возвращаем false.
-        <span class="cov0" title="0">return false</span>
+        <span class="cov8" title="1">return false</span>
 }
 
 // Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
@@ -2156,7 +2156,7 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
         }</span>
 
         // Если задан приватный ключ, добавляем хэш в заголовок запроса.
-        <span class="cov8" title="1">if a.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if a.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
                 hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
                 req.SetHeader(sign.HeaderKey, hash)
         }</span>
@@ -2182,7 +2182,7 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
                 }</span>
         }
 
-        <span class="cov0" title="0">req.SetBody(bytesBody)
+        <span class="cov8" title="1">req.SetBody(bytesBody)
 
         res, err := req.Post(url)
         if err != nil </span><span class="cov0" title="0">{
@@ -2190,11 +2190,11 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
         }</span>
 
         // Обрабатываем ответ сервера.
-        <span class="cov0" title="0">if res.StatusCode() != http.StatusOK </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if res.StatusCode() != http.StatusOK </span><span class="cov8" title="1">{
                 return fmt.Errorf("unexpected status code: %d", res.StatusCode())
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
@@ -2393,7 +2393,7 @@ type Server struct {
 }
 
 // New создает новый экземпляр сервера с указанной конфигурацией.
-func New(cfg *Config) *Server <span class="cov0" title="0">{
+func New(cfg *Config) *Server <span class="cov8" title="1">{
         return &amp;Server{
                 cfg: cfg,
         }
@@ -2459,7 +2459,7 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0"
 }
 
 // GetStoreInterval возвращает интервал сохранения метрик в секундах.
-func (s *Server) GetStoreInterval() int <span class="cov0" title="0">{
+func (s *Server) GetStoreInterval() int <span class="cov8" title="1">{
         return s.cfg.StoreInterval
 }</span>
 </pre>
@@ -2504,7 +2504,7 @@ type DatabaseConfig struct {
         MigrationsPath string
 }
 
-func NewConfig(flags *Flags) *Config <span class="cov0" title="0">{
+func NewConfig(flags *Flags) *Config <span class="cov8" title="1">{
         cfg := &amp;Config{
                 Addr:            flags.Server.Addr,
                 StoreInterval:   flags.Server.StoreInterval,
@@ -2530,46 +2530,46 @@ func NewConfig(flags *Flags) *Config <span class="cov0" title="0">{
                 <span class="cov0" title="0">slog.Info("loaded private key for decryption", "path", flags.CryptoKey)</span>
         }
 
-        <span class="cov0" title="0">return cfg</span>
+        <span class="cov8" title="1">return cfg</span>
 }
 
 // IsStoreEnabled возвращает true, если включено сохранение метрик на сервере.
-func (cfg *Config) IsStoreEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsStoreEnabled() bool <span class="cov8" title="1">{
         return cfg.FileStoragePath != ""
 }</span>
 
 // IsRestoreEnabled надо ли восстанавливать метрики из файла при старте.
-func (cfg *Config) IsRestoreEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsRestoreEnabled() bool <span class="cov8" title="1">{
         return cfg.Restore &amp;&amp; cfg.IsStoreEnabled()
 }</span>
 
 // GetStorePath возвращает путь к файлу для сохранения метрик.
-func (cfg *Config) GetStorePath() string <span class="cov0" title="0">{
+func (cfg *Config) GetStorePath() string <span class="cov8" title="1">{
         return cfg.FileStoragePath
 }</span>
 
 // IsSyncStore сохранение метрик на сервере синхронно (сразу после изменения, если нулевой интервал).
-func (cfg *Config) IsSyncStore() bool <span class="cov0" title="0">{
+func (cfg *Config) IsSyncStore() bool <span class="cov8" title="1">{
         return cfg.StoreInterval == 0
 }</span>
 
 // GetStoreInterval возвращает интервал сохранения метрик на сервере в секундах.
-func (cfg *Config) GetStoreInterval() int <span class="cov0" title="0">{
+func (cfg *Config) GetStoreInterval() int <span class="cov8" title="1">{
         return cfg.StoreInterval
 }</span>
 
 // IsDatabaseEnabled возвращает true, если переданы параметры подключения к БД.
-func (cfg *Config) IsDatabaseEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsDatabaseEnabled() bool <span class="cov8" title="1">{
         return cfg.Database.DSN != ""
 }</span>
 
 // IsRequestSigningEnabled включена ли проверка подписи метрик.
-func (cfg *Config) IsRequestSigningEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsRequestSigningEnabled() bool <span class="cov8" title="1">{
         return cfg.PrivateKey != ""
 }</span>
 
 // IsEncryptionEnabled возвращает true, если включено шифрование.
-func (cfg *Config) IsEncryptionEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsEncryptionEnabled() bool <span class="cov8" title="1">{
         return cfg.PrivateRSAKey != nil
 }</span>
 </pre>
@@ -2732,7 +2732,7 @@ type Flags struct {
 
 // ParseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных.
-func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
+func ParseFlags() (*Flags, error) <span class="cov8" title="1">{
         flags := Flags{}
 
         // Регистрируем флаги командной строки
@@ -2747,15 +2747,15 @@ func ParseFlags() (*Flags, error) <span class="cov0" title="0">{
         }</span>
 
         // Загружаем и применяем JSON-конфигурацию
-        <span class="cov0" title="0">if err := loadAndApplyJSONConfig(&amp;flags); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := loadAndApplyJSONConfig(&amp;flags); err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">return &amp;flags, nil</span>
+        <span class="cov8" title="1">return &amp;flags, nil</span>
 }
 
 // registerCommandLineFlags регистрирует флаги командной строки.
-func registerCommandLineFlags(flags *Flags) <span class="cov0" title="0">{
+func registerCommandLineFlags(flags *Flags) <span class="cov8" title="1">{
         // Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
         flag.StringVar(
                 &amp;flags.Server.Addr,
@@ -2810,64 +2810,64 @@ func registerCommandLineFlags(flags *Flags) <span class="cov0" title="0">{
 }</span>
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
-func applyEnvironmentVariables(flags *Flags) error <span class="cov0" title="0">{
+func applyEnvironmentVariables(flags *Flags) error <span class="cov8" title="1">{
         // Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
         // переопределим адрес запуска сервера,
         // даже если он был передан через аргумент командной строки.
-        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov0" title="0">{
+        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov8" title="1">{
                 flags.Server.Addr = envRunAddr
         }</span>
-        <span class="cov0" title="0">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov8" title="1">{
                 storeInterval, err := strconv.Atoi(envStoreInterval)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.Server.StoreInterval = storeInterval</span>
+                <span class="cov8" title="1">flags.Server.StoreInterval = storeInterval</span>
         }
         // Если переменная окружения FILE_STORAGE_PATH присутствует (даже
         // пустая), переопределим путь к файлу хранения метрик.
-        <span class="cov0" title="0">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov8" title="1">{
                 flags.Server.FileStoragePath = envFileStoragePath
         }</span>
         // Если переменная окружения RESTORE присутствует (даже пустая), переопределим флаг восстановления метрик из файла.
-        <span class="cov0" title="0">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov8" title="1">{
                 restore, err := strconv.ParseBool(envRestore)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.Server.Restore = restore</span>
+                <span class="cov8" title="1">flags.Server.Restore = restore</span>
         }
 
         // Если переданы параметры БД в параметрах окружения, используем их
-        <span class="cov0" title="0">if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov8" title="1">{
                 flags.Database.DSN = envDatabaseDSN
         }</span>
 
         // Если передан ключ в параметрах окружения, используем его
-        <span class="cov0" title="0">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov8" title="1">{
                 flags.PrivateKey = envPrivateKey
         }</span>
 
         // Если передан путь к файлу с приватным ключом в параметрах окружения, используем его
-        <span class="cov0" title="0">if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok </span><span class="cov8" title="1">{
                 flags.CryptoKey = envCryptoKey
         }</span>
 
         // Если передан путь к файлу конфигурации в параметрах окружения, используем его
-        <span class="cov0" title="0">if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov0" title="0">{
                 flags.ConfigFile = envConfigFile
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // loadAndApplyJSONConfig загружает и применяет JSON-конфигурацию.
-func loadAndApplyJSONConfig(flags *Flags) error <span class="cov0" title="0">{
+func loadAndApplyJSONConfig(flags *Flags) error <span class="cov8" title="1">{
         // Загружаем конфигурацию из JSON-файла, если он указан
         jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
-        if loadErr != nil </span><span class="cov0" title="0">{
+        if loadErr != nil </span><span class="cov8" title="1">{
                 // Если файл конфигурации не указан, это не ошибка
-                if errors.Is(loadErr, ErrConfigFileNotSpecified) </span><span class="cov0" title="0">{
+                if errors.Is(loadErr, ErrConfigFileNotSpecified) </span><span class="cov8" title="1">{
                         return nil
                 }</span>
                 <span class="cov0" title="0">return loadErr</span>
@@ -3276,7 +3276,7 @@ func New(st storage.Repository) http.HandlerFunc <span class="cov8" title="1">{
                                 items = append(items, fmt.Sprintf("gauge/%s: %s", metric.Name, valF))</span>
                         case metrics.TypeCounter:<span class="cov8" title="1">
                                 items = append(items, fmt.Sprintf("counter/%s: %d", metric.Name, *metric.Delta))</span>
-                        default:<span class="cov0" title="0">
+                        default:<span class="cov8" title="1">
                                 items = append(items, fmt.Sprintf("unknown/%s", metric.Name))</span>
                         }
                 }
@@ -3740,9 +3740,9 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
         r.Get("/value/{type}/{name}", plainValue.New(storage))
 
         // Добавляем pprof хендлеры только если включено профилирование
-        if config.EnablePprof </span><span class="cov0" title="0">{
+        if config.EnablePprof </span><span class="cov8" title="1">{
                 log.Info("Registering pprof handlers at /debug/pprof/")
-                r.Route("/debug/pprof", func(r chi.Router) </span><span class="cov0" title="0">{
+                r.Route("/debug/pprof", func(r chi.Router) </span><span class="cov8" title="1">{
                         r.HandleFunc("/", pprof.Index)
                         r.HandleFunc("/cmdline", pprof.Cmdline)
                         r.HandleFunc("/profile", pprof.Profile)
@@ -4122,11 +4122,11 @@ type PgStorage struct {
 }
 
 // New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
-func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov8" title="1">{
+func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov0" title="0">{
         conn, err := pgxpool.New(ctx, config.Database.DSN)
         log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
 
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 log.Error(fmt.Sprintf("Unable to connect to database: %v\n", err))
                 return nil, err
         }</span>
@@ -4144,10 +4144,12 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
         <span class="cov0" title="0">return p, nil</span>
 }
 
-func (p *PgStorage) Close() error <span class="cov0" title="0">{
-        p.conn.Close()
-        return nil
-}</span>
+func (p *PgStorage) Close() error <span class="cov8" title="1">{
+        if p.conn != nil </span><span class="cov0" title="0">{
+                p.conn.Close()
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
 
 func (p *PgStorage) Count(ctx context.Context) int <span class="cov0" title="0">{
         var count int
@@ -4308,14 +4310,14 @@ func (p *PgStorage) UpdateMetrics(ctx context.Context, items []metrics.Metric) e
 }
 
 // Проверка, является ли ошибка retriable.
-func isRetriableError(err *pgconn.PgError) bool <span class="cov0" title="0">{
+func isRetriableError(err *pgconn.PgError) bool <span class="cov8" title="1">{
         switch err.Code </span>{
         case pgerrcode.ConnectionException,
                 pgerrcode.ConnectionDoesNotExist,
                 pgerrcode.ConnectionFailure,
-                pgerrcode.DiskFull:<span class="cov0" title="0">
+                pgerrcode.DiskFull:<span class="cov8" title="1">
                 return true</span>
-        default:<span class="cov0" title="0">
+        default:<span class="cov8" title="1">
                 return false</span>
         }
 }
@@ -4972,7 +4974,7 @@ type ContextKey struct {
 }
 
 // String возвращает строковое представление ключа контекста.
-func (k ContextKey) String() string <span class="cov0" title="0">{
+func (k ContextKey) String() string <span class="cov8" title="1">{
         return "crypto middleware context key: " + k.name
 }</span>
 
@@ -5007,7 +5009,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
 
                 // Обрабатываем шифрование и подпись
                 processedBody, ok := m.processRequestBody(w, r, body)
-                if !ok </span><span class="cov0" title="0">{
+                if !ok </span><span class="cov8" title="1">{
                         return // Ошибка уже обработана в processRequestBody
                 }</span>
 
@@ -5020,7 +5022,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
                 r = r.WithContext(ctx)
 
                 // Создаем обертку для ResponseWriter, чтобы добавить подпись к ответу
-                if m.config.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
+                if m.config.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
                         w = &amp;signedResponseWriter{
                                 ResponseWriter: w,
                                 privateKey:     m.config.PrivateKey,
@@ -5040,7 +5042,7 @@ func (m *Middleware) processRequestBody(w http.ResponseWriter, r *http.Request, 
         }</span>
 
         // Проверяем подпись запроса
-        <span class="cov8" title="1">if isValid := m.verifyRequestSignature(w, r, processedBody); !isValid </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if isValid := m.verifyRequestSignature(w, r, processedBody); !isValid </span><span class="cov8" title="1">{
                 return nil, false
         }</span>
 
@@ -5053,48 +5055,48 @@ func (m *Middleware) handleEncryption(w http.ResponseWriter, r *http.Request, bo
                 return body, true
         }</span>
 
-        <span class="cov0" title="0">if !m.config.IsEncryptionEnabled() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !m.config.IsEncryptionEnabled() </span><span class="cov8" title="1">{
                 m.log.Error("received encrypted data but server has no private key configured")
                 http.Error(w, "Server is not configured for encryption", http.StatusBadRequest)
                 return nil, false
         }</span>
 
-        <span class="cov0" title="0">m.log.Debug("decrypting request body")
+        <span class="cov8" title="1">m.log.Debug("decrypting request body")
         decrypted, err := crypto.DecryptLargeData(m.config.PrivateRSAKey, body)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 m.log.Error("failed to decrypt data", zap.Error(err))
                 http.Error(w, "Failed to decrypt request body", http.StatusBadRequest)
                 return nil, false
         }</span>
 
-        <span class="cov0" title="0">return decrypted, true</span>
+        <span class="cov8" title="1">return decrypted, true</span>
 }
 
 // Возвращает флаг успешности операции.
 func (m *Middleware) verifyRequestSignature(w http.ResponseWriter, r *http.Request, body []byte) bool <span class="cov8" title="1">{
-        if !m.config.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
+        if !m.config.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
                 return true
         }</span>
 
-        <span class="cov0" title="0">hashFromRequest := r.Header.Get(sign.HeaderKey)
-        if hashFromRequest == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">hashFromRequest := r.Header.Get(sign.HeaderKey)
+        if hashFromRequest == "" </span><span class="cov8" title="1">{
                 return true // Нет подписи, пропускаем проверку
         }</span>
 
-        <span class="cov0" title="0">hash, vErr := sign.VerifyHMACSHA256(body, m.config.PrivateKey, hashFromRequest)
+        <span class="cov8" title="1">hash, vErr := sign.VerifyHMACSHA256(body, m.config.PrivateKey, hashFromRequest)
         m.log.Debug(
                 "validateRequest =&gt; sign.VerifyHMACSHA256",
                 zap.String("hash_from_request", hashFromRequest),
                 zap.Error(vErr),
                 zap.String("calc_hash", hash),
         )
-        if vErr != nil </span><span class="cov0" title="0">{
+        if vErr != nil </span><span class="cov8" title="1">{
                 m.log.Error("failed to verify request signature", zap.Error(vErr))
                 http.Error(w, "Invalid request signature", http.StatusBadRequest)
                 return false
         }</span>
 
-        <span class="cov0" title="0">return true</span>
+        <span class="cov8" title="1">return true</span>
 }
 
 // signedResponseWriter - обертка для http.ResponseWriter, которая добавляет подпись к ответу.
@@ -5104,7 +5106,7 @@ type signedResponseWriter struct {
 }
 
 // Write перехватывает запись в ResponseWriter и добавляет подпись.
-func (w *signedResponseWriter) Write(b []byte) (int, error) <span class="cov0" title="0">{
+func (w *signedResponseWriter) Write(b []byte) (int, error) <span class="cov8" title="1">{
         // Вычисляем подпись
         hash := sign.ComputeHMACSHA256(b, w.privateKey)
 

@@ -4,111 +4,89 @@ import (
 	"bytes"
 	"io"
 	"os"
-	"strings"
 	"testing"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPrintVersion(t *testing.T) {
-	// Сохраняем оригинальный stdout
+	// Save the original stdout
 	oldStdout := os.Stdout
 
-	// Создаем буфер для перехвата вывода
-	r, w, _ := os.Pipe()
+	// Create a pipe to capture stdout
+	r, w, err := os.Pipe()
+	require.NoError(t, err)
+
+	// Set stdout to our pipe
 	os.Stdout = w
 
-	// Устанавливаем тестовые значения для версии
-	origBuildVersion := BuildVersion
-	origBuildDate := BuildDate
-	origBuildCommit := BuildCommit
+	// Set test values for the build variables
+	originalBuildVersion := BuildVersion
+	originalBuildDate := BuildDate
+	originalBuildCommit := BuildCommit
 
+	// Restore the original values when the test completes
+	defer func() {
+		BuildVersion = originalBuildVersion
+		BuildDate = originalBuildDate
+		BuildCommit = originalBuildCommit
+		os.Stdout = oldStdout
+	}()
+
+	// Set test values
 	BuildVersion = "v1.0.0"
 	BuildDate = "2023-01-01"
 	BuildCommit = "abc123"
 
-	// Вызываем функцию, которую тестируем
+	// Call the function
 	printVersion()
 
-	// Закрываем writer и восстанавливаем stdout
+	// Close the write end of the pipe to flush the buffer
 	w.Close()
-	os.Stdout = oldStdout
 
-	// Читаем перехваченный вывод
+	// Read the captured output
 	var buf bytes.Buffer
-	_, err := io.Copy(&buf, r)
-	if err != nil {
-		t.Fatalf("Failed to copy output: %v", err)
-	}
+	_, err = io.Copy(&buf, r)
+	require.NoError(t, err)
 
+	// Check the output
 	output := buf.String()
-
-	// Проверяем, что вывод содержит ожидаемые строки
-	expectedLines := []string{
-		"Build version: v1.0.0",
-		"Build date: 2023-01-01",
-		"Build commit: abc123",
-	}
-
-	for _, line := range expectedLines {
-		if !strings.Contains(output, line) {
-			t.Errorf("Expected output to contain %q, but got: %q", line, output)
-		}
-	}
-
-	// Восстанавливаем оригинальные значения
-	BuildVersion = origBuildVersion
-	BuildDate = origBuildDate
-	BuildCommit = origBuildCommit
+	assert.Contains(t, output, "Build version: v1.0.0")
+	assert.Contains(t, output, "Build date: 2023-01-01")
+	assert.Contains(t, output, "Build commit: abc123")
 }
 
-func TestPrintVersionDefaultValues(t *testing.T) {
-	// Сохраняем оригинальный stdout
-	oldStdout := os.Stdout
+func TestInitLogger(t *testing.T) {
+	// Test that the logger is created without panicking
+	assert.NotPanics(t, func() {
+		logger := initLogger()
+		assert.NotNil(t, logger)
+	})
+}
 
-	// Создаем буфер для перехвата вывода
-	r, w, _ := os.Pipe()
-	os.Stdout = w
+func TestInitStorage(t *testing.T) {
+	// Create a minimal config for testing
+	logger := initLogger()
 
-	// Сохраняем оригинальные значения
-	origBuildVersion := BuildVersion
-	origBuildDate := BuildDate
-	origBuildCommit := BuildCommit
-
-	// Устанавливаем значения по умолчанию
-	BuildVersion = "N/A"
-	BuildDate = "N/A"
-	BuildCommit = "N/A"
-
-	// Вызываем функцию, которую тестируем
-	printVersion()
-
-	// Закрываем writer и восстанавливаем stdout
-	w.Close()
-	os.Stdout = oldStdout
-
-	// Читаем перехваченный вывод
-	var buf bytes.Buffer
-	_, err := io.Copy(&buf, r)
-	if err != nil {
-		t.Fatalf("Failed to copy output: %v", err)
-	}
-
-	output := buf.String()
-
-	// Проверяем, что вывод содержит ожидаемые строки
-	expectedLines := []string{
-		"Build version: N/A",
-		"Build date: N/A",
-		"Build commit: N/A",
-	}
-
-	for _, line := range expectedLines {
-		if !strings.Contains(output, line) {
-			t.Errorf("Expected output to contain %q, but got: %q", line, output)
+	// Test with database disabled
+	t.Run("MemoryStorage", func(t *testing.T) {
+		cfg := &app.Config{
+			Database: app.DatabaseConfig{
+				DSN: "",
+			},
 		}
-	}
 
-	// Восстанавливаем оригинальные значения
-	BuildVersion = origBuildVersion
-	BuildDate = origBuildDate
-	BuildCommit = origBuildCommit
+		repo, err := initStorage(cfg, logger)
+		assert.NoError(t, err)
+		assert.NotNil(t, repo)
+
+		// Clean up
+		err = repo.Close()
+		assert.NoError(t, err)
+	})
+
+	// We can't easily test the PostgreSQL path without a real database,
+	// so we'll skip that test case
 }
