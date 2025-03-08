@@ -63,7 +63,7 @@
 				
 				<option value="file3">github.com/maynagashev/go-metrics/cmd/agent/pprof.go (100.0%)</option>
 				
-				<option value="file4">github.com/maynagashev/go-metrics/cmd/keygen/main.go (0.0%)</option>
+				<option value="file4">github.com/maynagashev/go-metrics/cmd/keygen/main.go (81.8%)</option>
 				
 				<option value="file5">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
 				
@@ -123,7 +123,7 @@
 				
 				<option value="file33">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
-				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (5.3%)</option>
+				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
 				
 				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (0.0%)</option>
 				
@@ -576,46 +576,92 @@ import (
         "github.com/maynagashev/go-metrics/pkg/crypto"
 )
 
+// BuildVersion содержит версию сборки
+var BuildVersion string
+
+// BuildDate содержит дату сборки
+var BuildDate string
+
+// BuildCommit содержит коммит сборки
+var BuildCommit string
+
 // DefaultKeySize - размер ключа RSA по умолчанию.
 const DefaultKeySize = 2048
 
-func main() <span class="cov0" title="0">{
+// ExitFunc - функция для выхода из программы, может быть заменена в тестах
+var ExitFunc = os.Exit
+
+func main() <span class="cov8" title="1">{
+        // Выводим информацию о сборке
+        printVersion()
+
         // Инициализируем логгер
         initLogger()
 
+        // Парсим аргументы командной строки
+        privateKeyPath, publicKeyPath, keySize, err := parseFlags()
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Ошибка при разборе аргументов: %v\n", err)
+                ExitFunc(1)
+                return
+        }</span>
+
+        // Генерируем ключи
+        <span class="cov8" title="1">if err := generateKeys(privateKeyPath, publicKeyPath, keySize); err != nil </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Ошибка при генерации пары ключей: %v\n", err)
+                ExitFunc(1)
+                return
+        }</span>
+
+        <span class="cov8" title="1">slog.Info("Пара ключей успешно сгенерирована",
+                "private_key", privateKeyPath,
+                "public_key", publicKeyPath)
+
+        slog.Warn("ВАЖНО: Храните ваш закрытый ключ в безопасном месте и не передавайте его никому!")</span>
+}
+
+// printVersion выводит информацию о версии сборки
+func printVersion() <span class="cov8" title="1">{
+        fmt.Printf("Build version: %s\n", getStringOrDefault(BuildVersion, "N/A"))
+        fmt.Printf("Build date: %s\n", getStringOrDefault(BuildDate, "N/A"))
+        fmt.Printf("Build commit: %s\n", getStringOrDefault(BuildCommit, "N/A"))
+}</span>
+
+// getStringOrDefault возвращает строку или значение по умолчанию, если строка пуста
+func getStringOrDefault(value, defaultValue string) string <span class="cov8" title="1">{
+        if value == "" </span><span class="cov8" title="1">{
+                return defaultValue
+        }</span>
+        <span class="cov8" title="1">return value</span>
+}
+
+// parseFlags разбирает флаги командной строки
+func parseFlags() (privateKeyPath, publicKeyPath string, keySize int, err error) <span class="cov8" title="1">{
         // Определяем флаги командной строки
-        privateKeyPath := flag.String("private", "private.pem", "путь для сохранения закрытого ключа")
-        publicKeyPath := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
-        keySize := flag.Int("bits", DefaultKeySize, "размер ключа RSA в битах (1024, 2048, 4096)")
+        privateKeyPathPtr := flag.String("private", "private.pem", "путь для сохранения закрытого ключа")
+        publicKeyPathPtr := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
+        keySizePtr := flag.Int("bits", DefaultKeySize, "размер ключа RSA в битах (1024, 2048, 4096)")
 
         // Разбираем флаги
         flag.Parse()
 
         // Проверяем размер ключа
         validKeySizes := map[int]bool{1024: true, 2048: true, 4096: true}
-        if !validKeySizes[*keySize] </span><span class="cov0" title="0">{
-                fmt.Fprintf(os.Stderr, "Неверный размер ключа: %d. Допустимые размеры: 1024, 2048, 4096\n", *keySize)
-                os.Exit(1)
+        if !validKeySizes[*keySizePtr] </span><span class="cov8" title="1">{
+                return "", "", 0, fmt.Errorf("неверный размер ключа: %d. Допустимые размеры: 1024, 2048, 4096", *keySizePtr)
         }</span>
 
-        <span class="cov0" title="0">slog.Info("Генерация RSA ключей", "bits", *keySize)
-
-        // Генерируем пару ключей
-        err := crypto.GenerateKeyPair(*privateKeyPath, *publicKeyPath, *keySize)
-        if err != nil </span><span class="cov0" title="0">{
-                fmt.Fprintf(os.Stderr, "Ошибка при генерации пары ключей: %v\n", err)
-                os.Exit(1)
-        }</span>
-
-        <span class="cov0" title="0">slog.Info("Пара ключей успешно сгенерирована",
-                "private_key", *privateKeyPath,
-                "public_key", *publicKeyPath)
-
-        slog.Warn("ВАЖНО: Храните ваш закрытый ключ в безопасном месте и не передавайте его никому!")</span>
+        <span class="cov8" title="1">return *privateKeyPathPtr, *publicKeyPathPtr, *keySizePtr, nil</span>
 }
 
+// generateKeys генерирует пару ключей RSA
+func generateKeys(privateKeyPath, publicKeyPath string, keySize int) error <span class="cov8" title="1">{
+        slog.Info("Генерация RSA ключей", "bits", keySize)
+        return crypto.GenerateKeyPair(privateKeyPath, publicKeyPath, keySize)
+}</span>
+
 // initLogger инициализирует логгер.
-func initLogger() <span class="cov0" title="0">{
+func initLogger() <span class="cov8" title="1">{
         // Создаем переменную для уровня логирования и устанавливаем ее в Info
         logLevel := new(slog.LevelVar)
         logLevel.Set(slog.LevelInfo)
@@ -1866,10 +1912,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Debug("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -4115,8 +4161,20 @@ import (
 
 const maxRetries = 3
 
+// PgxPoolInterface определяет интерфейс для pgxpool.Pool, чтобы можно было использовать мок в тестах.
+type PgxPoolInterface interface {
+        Close()
+        Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+        Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+        QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+        Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+// Убедимся, что pgxpool.Pool реализует наш интерфейс.
+var _ PgxPoolInterface = (*pgxpool.Pool)(nil)
+
 type PgStorage struct {
-        conn *pgxpool.Pool
+        conn PgxPoolInterface
         cfg  *app.Config
         log  *zap.Logger
 }
@@ -4151,13 +4209,13 @@ func (p *PgStorage) Close() error <span class="cov8" title="1">{
         <span class="cov8" title="1">return nil</span>
 }
 
-func (p *PgStorage) Count(ctx context.Context) int <span class="cov0" title="0">{
+func (p *PgStorage) Count(ctx context.Context) int <span class="cov8" title="1">{
         var count int
         err := p.conn.QueryRow(ctx, `SELECT count(*) FROM metrics`).Scan(&amp;count)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 p.log.Error(err.Error())
         }</span>
-        <span class="cov0" title="0">return count</span>
+        <span class="cov8" title="1">return count</span>
 }
 
 func (p *PgStorage) GetMetrics(ctx context.Context) []metrics.Metric <span class="cov0" title="0">{
@@ -4187,21 +4245,21 @@ func (p *PgStorage) GetMetric(
         ctx context.Context,
         mType metrics.MetricType,
         name string,
-) (metrics.Metric, bool) <span class="cov0" title="0">{
+) (metrics.Metric, bool) <span class="cov8" title="1">{
         q := `SELECT name, type, value, delta FROM public.metrics WHERE name = $1 AND type = $2`
 
         var metric metrics.Metric
         var err error
-        for i := 0; i &lt;= maxRetries; i++ </span><span class="cov0" title="0">{
+        for i := 0; i &lt;= maxRetries; i++ </span><span class="cov8" title="1">{
                 row := p.conn.QueryRow(ctx, q, name, mType)
                 err = row.Scan(&amp;metric.Name, &amp;metric.MType, &amp;metric.Value, &amp;metric.Delta)
 
-                if err == nil </span><span class="cov0" title="0">{
+                if err == nil </span><span class="cov8" title="1">{
                         return metric, true
                 }</span>
 
                 // Проверяем, является ли ошибка retriable
-                <span class="cov0" title="0">var pgErr *pgconn.PgError
+                <span class="cov8" title="1">var pgErr *pgconn.PgError
                 if errors.As(err, &amp;pgErr) </span><span class="cov0" title="0">{
                         if isRetriableError(pgErr) </span><span class="cov0" title="0">{
                                 p.log.Error(fmt.Sprintf("Attempt %d: Retriable error getting metric: %v", i+1, err))
@@ -4211,14 +4269,14 @@ func (p *PgStorage) GetMetric(
                 }
 
                 // Если ошибка не retriable, выходим из цикла
-                <span class="cov0" title="0">break</span>
+                <span class="cov8" title="1">break</span>
         }
 
         // Логируем и возвращаем ошибку, если не удалось получить метрику
-        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
                 p.log.Error(fmt.Sprintf("Failed to get metric after %d tries: %v", maxRetries+1, err))
         }</span>
-        <span class="cov0" title="0">return metrics.Metric{}, false</span>
+        <span class="cov8" title="1">return metrics.Metric{}, false</span>
 }
 
 // GetCounter возвращает счетчик по имени.
@@ -4239,24 +4297,24 @@ func (p *PgStorage) GetGauge(ctx context.Context, name string) (storage.Gauge, b
         <span class="cov0" title="0">return storage.Gauge(*m.Value), true</span>
 }
 
-func (p *PgStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error <span class="cov0" title="0">{
+func (p *PgStorage) UpdateMetric(ctx context.Context, metric metrics.Metric) error <span class="cov8" title="1">{
         var q string
 
         // Если метрика существует, то обновляем, иначе создаем новую.
         _, ok := p.GetMetric(ctx, metric.MType, metric.Name)
-        if ok </span><span class="cov0" title="0">{
+        if ok </span><span class="cov8" title="1">{
                 q = `UPDATE metrics SET value = $3, delta = delta + $4 WHERE name = $1 AND type = $2`
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 q = `INSERT INTO metrics (name, type, value, delta) VALUES ($1, $2, $3, $4)`
         }</span>
 
         // Выполнение запроса
-        <span class="cov0" title="0">_, err := p.conn.Exec(ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">_, err := p.conn.Exec(ctx, q, metric.Name, metric.MType, metric.Value, metric.Delta)
+        if err != nil </span><span class="cov8" title="1">{
                 p.log.Error(fmt.Sprintf("Failed to update metric: %v", err))
                 return err
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // UpdateMetrics пакетно обновляет метрики в хранилище.
