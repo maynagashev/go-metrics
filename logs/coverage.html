@@ -125,11 +125,11 @@
 				
 				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
 				
-				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (0.0%)</option>
+				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
 				
-				<option value="file36">github.com/maynagashev/go-metrics/mocks/Repository.go (0.0%)</option>
+				<option value="file36">github.com/maynagashev/go-metrics/mocks/Repository.go (75.0%)</option>
 				
-				<option value="file37">github.com/maynagashev/go-metrics/mocks/Storage.go (50.0%)</option>
+				<option value="file37">github.com/maynagashev/go-metrics/mocks/Storage.go (85.7%)</option>
 				
 				<option value="file38">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
@@ -1865,10 +1865,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -1905,10 +1905,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Debug("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -4413,10 +4413,10 @@ type Counter int64
 type Gauges map[string]Gauge
 type Counters map[string]Counter
 
-func (v Gauge) String() string <span class="cov0" title="0">{
+func (v Gauge) String() string <span class="cov8" title="1">{
         return strconv.FormatFloat(float64(v), 'f', -1, 64)
 }</span>
-func (v Counter) String() string <span class="cov0" title="0">{
+func (v Counter) String() string <span class="cov8" title="1">{
         return strconv.FormatInt(int64(v), 10)
 }</span>
 
@@ -4470,179 +4470,179 @@ type Repository struct {
 }
 
 // Close provides a mock function with given fields:
-func (_m *Repository) Close() error <span class="cov0" title="0">{
+func (_m *Repository) Close() error <span class="cov8" title="1">{
         ret := _m.Called()
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for Close")</span>
         }
 
-        <span class="cov0" title="0">var r0 error
+        <span class="cov8" title="1">var r0 error
         if rf, ok := ret.Get(0).(func() error); ok </span><span class="cov0" title="0">{
                 r0 = rf()
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Error(0)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // Count provides a mock function with given fields:
-func (_m *Repository) Count() int <span class="cov0" title="0">{
+func (_m *Repository) Count() int <span class="cov8" title="1">{
         ret := _m.Called()
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for Count")</span>
         }
 
-        <span class="cov0" title="0">var r0 int
+        <span class="cov8" title="1">var r0 int
         if rf, ok := ret.Get(0).(func() int); ok </span><span class="cov0" title="0">{
                 r0 = rf()
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(int)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // GetCounter provides a mock function with given fields: name
-func (_m *Repository) GetCounter(name string) (storage.Counter, bool) <span class="cov0" title="0">{
+func (_m *Repository) GetCounter(name string) (storage.Counter, bool) <span class="cov8" title="1">{
         ret := _m.Called(name)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetCounter")</span>
         }
 
-        <span class="cov0" title="0">var r0 storage.Counter
+        <span class="cov8" title="1">var r0 storage.Counter
         var r1 bool
         if rf, ok := ret.Get(0).(func(string) (storage.Counter, bool)); ok </span><span class="cov0" title="0">{
                 return rf(name)
         }</span>
-        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(string) storage.Counter); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(string) storage.Counter); ok </span><span class="cov0" title="0">{
                 r0 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(storage.Counter)
         }</span>
 
-        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
                 r1 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r1 = ret.Get(1).(bool)
         }</span>
 
-        <span class="cov0" title="0">return r0, r1</span>
+        <span class="cov8" title="1">return r0, r1</span>
 }
 
 // GetGauge provides a mock function with given fields: name
-func (_m *Repository) GetGauge(name string) (storage.Gauge, bool) <span class="cov0" title="0">{
+func (_m *Repository) GetGauge(name string) (storage.Gauge, bool) <span class="cov8" title="1">{
         ret := _m.Called(name)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetGauge")</span>
         }
 
-        <span class="cov0" title="0">var r0 storage.Gauge
+        <span class="cov8" title="1">var r0 storage.Gauge
         var r1 bool
         if rf, ok := ret.Get(0).(func(string) (storage.Gauge, bool)); ok </span><span class="cov0" title="0">{
                 return rf(name)
         }</span>
-        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(string) storage.Gauge); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(string) storage.Gauge); ok </span><span class="cov0" title="0">{
                 r0 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(storage.Gauge)
         }</span>
 
-        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(string) bool); ok </span><span class="cov0" title="0">{
                 r1 = rf(name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r1 = ret.Get(1).(bool)
         }</span>
 
-        <span class="cov0" title="0">return r0, r1</span>
+        <span class="cov8" title="1">return r0, r1</span>
 }
 
 // GetMetric provides a mock function with given fields: mType, name
-func (_m *Repository) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov0" title="0">{
+func (_m *Repository) GetMetric(mType metrics.MetricType, name string) (metrics.Metric, bool) <span class="cov8" title="1">{
         ret := _m.Called(mType, name)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetMetric")</span>
         }
 
-        <span class="cov0" title="0">var r0 metrics.Metric
+        <span class="cov8" title="1">var r0 metrics.Metric
         var r1 bool
         if rf, ok := ret.Get(0).(func(metrics.MetricType, string) (metrics.Metric, bool)); ok </span><span class="cov0" title="0">{
                 return rf(mType, name)
         }</span>
-        <span class="cov0" title="0">if rf, ok := ret.Get(0).(func(metrics.MetricType, string) metrics.Metric); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(metrics.MetricType, string) metrics.Metric); ok </span><span class="cov0" title="0">{
                 r0 = rf(mType, name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Get(0).(metrics.Metric)
         }</span>
 
-        <span class="cov0" title="0">if rf, ok := ret.Get(1).(func(metrics.MetricType, string) bool); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(metrics.MetricType, string) bool); ok </span><span class="cov0" title="0">{
                 r1 = rf(mType, name)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r1 = ret.Get(1).(bool)
         }</span>
 
-        <span class="cov0" title="0">return r0, r1</span>
+        <span class="cov8" title="1">return r0, r1</span>
 }
 
 // GetMetrics provides a mock function with given fields:
-func (_m *Repository) GetMetrics() []metrics.Metric <span class="cov0" title="0">{
+func (_m *Repository) GetMetrics() []metrics.Metric <span class="cov8" title="1">{
         ret := _m.Called()
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for GetMetrics")</span>
         }
 
-        <span class="cov0" title="0">var r0 []metrics.Metric
+        <span class="cov8" title="1">var r0 []metrics.Metric
         if rf, ok := ret.Get(0).(func() []metrics.Metric); ok </span><span class="cov0" title="0">{
                 r0 = rf()
-        }</span> else<span class="cov0" title="0"> {
-                if ret.Get(0) != nil </span><span class="cov0" title="0">{
+        }</span> else<span class="cov8" title="1"> {
+                if ret.Get(0) != nil </span><span class="cov8" title="1">{
                         r0 = ret.Get(0).([]metrics.Metric)
                 }</span>
         }
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // UpdateMetric provides a mock function with given fields: metric
-func (_m *Repository) UpdateMetric(metric metrics.Metric) error <span class="cov0" title="0">{
+func (_m *Repository) UpdateMetric(metric metrics.Metric) error <span class="cov8" title="1">{
         ret := _m.Called(metric)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for UpdateMetric")</span>
         }
 
-        <span class="cov0" title="0">var r0 error
+        <span class="cov8" title="1">var r0 error
         if rf, ok := ret.Get(0).(func(metrics.Metric) error); ok </span><span class="cov0" title="0">{
                 r0 = rf(metric)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Error(0)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // UpdateMetrics provides a mock function with given fields: _a0
-func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov0" title="0">{
+func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov8" title="1">{
         ret := _m.Called(_a0)
 
         if len(ret) == 0 </span><span class="cov0" title="0">{
                 panic("no return value specified for UpdateMetrics")</span>
         }
 
-        <span class="cov0" title="0">var r0 error
+        <span class="cov8" title="1">var r0 error
         if rf, ok := ret.Get(0).(func([]metrics.Metric) error); ok </span><span class="cov0" title="0">{
                 r0 = rf(_a0)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 r0 = ret.Error(0)
         }</span>
 
-        <span class="cov0" title="0">return r0</span>
+        <span class="cov8" title="1">return r0</span>
 }
 
 // NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -4650,13 +4650,13 @@ func (_m *Repository) UpdateMetrics(_a0 []metrics.Metric) error <span class="cov
 func NewRepository(t interface {
         mock.TestingT
         Cleanup(func())
-}) *Repository <span class="cov0" title="0">{
+}) *Repository <span class="cov8" title="1">{
         mock := &amp;Repository{}
         mock.Mock.Test(t)
 
-        t.Cleanup(func() </span><span class="cov0" title="0">{ mock.AssertExpectations(t) }</span>)
+        t.Cleanup(func() </span><span class="cov8" title="1">{ mock.AssertExpectations(t) }</span>)
 
-        <span class="cov0" title="0">return mock</span>
+        <span class="cov8" title="1">return mock</span>
 }
 </pre>
 		
@@ -4701,13 +4701,13 @@ func (_m *Storage) GetMetrics(ctx context.Context) []metrics.Metric <span class=
 func NewStorage(t interface {
         mock.TestingT
         Cleanup(func())
-}) *Storage <span class="cov0" title="0">{
+}) *Storage <span class="cov8" title="1">{
         mock := &amp;Storage{}
         mock.Mock.Test(t)
 
-        t.Cleanup(func() </span><span class="cov0" title="0">{ mock.AssertExpectations(t) }</span>)
+        t.Cleanup(func() </span><span class="cov8" title="1">{ mock.AssertExpectations(t) }</span>)
 
-        <span class="cov0" title="0">return mock</span>
+        <span class="cov8" title="1">return mock</span>
 }
 </pre>
 		
