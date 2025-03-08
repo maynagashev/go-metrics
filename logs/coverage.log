@@ -16,8 +16,8 @@ github.com/maynagashev/go-metrics/cmd/migrate/main.go:13:						run				57.1%
 github.com/maynagashev/go-metrics/cmd/migrate/main.go:31:						main				100.0%
 github.com/maynagashev/go-metrics/cmd/server/main.go:63:						printVersion			100.0%
 github.com/maynagashev/go-metrics/cmd/server/main.go:69:						main				0.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:107:						initStorage			0.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:120:						initLogger			0.0%
+github.com/maynagashev/go-metrics/cmd/server/main.go:108:						initStorage			0.0%
+github.com/maynagashev/go-metrics/cmd/server/main.go:121:						initLogger			0.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:65:			getErrorType			69.2%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:87:			NewAnalyzer			100.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:101:			isErrorType			100.0%
@@ -48,12 +48,12 @@ github.com/maynagashev/go-metrics/internal/agent/agent.go:151:						Shutdown			5
 github.com/maynagashev/go-metrics/internal/agent/agent.go:198:						runPolls			33.3%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:243:						runReports			36.8%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:283:						GetMetrics			100.0%
-github.com/maynagashev/go-metrics/internal/agent/collect.go:14:						ResetMetrics			100.0%
-github.com/maynagashev/go-metrics/internal/agent/collect.go:20:						CollectRuntimeMetrics		94.1%
-github.com/maynagashev/go-metrics/internal/agent/collect.go:69:						CollectAdditionalMetrics	70.0%
+github.com/maynagashev/go-metrics/internal/agent/collect.go:21:						ResetMetrics			100.0%
+github.com/maynagashev/go-metrics/internal/agent/collect.go:27:						CollectRuntimeMetrics		94.1%
+github.com/maynagashev/go-metrics/internal/agent/collect.go:76:						CollectAdditionalMetrics	70.0%
 github.com/maynagashev/go-metrics/internal/agent/send.go:23:						sendMetrics			30.8%
 github.com/maynagashev/go-metrics/internal/agent/send.go:63:						isRetriableSendError		0.0%
-github.com/maynagashev/go-metrics/internal/agent/send.go:89:						makeUpdatesRequest		54.8%
+github.com/maynagashev/go-metrics/internal/agent/send.go:89:						makeUpdatesRequest		45.2%
 github.com/maynagashev/go-metrics/internal/agent/workerpool.go:22:					worker				0.0%
 github.com/maynagashev/go-metrics/internal/agent/workerpool.go:60:					collector			53.3%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:25:				NewMetric			100.0%
@@ -62,9 +62,9 @@ github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:38:				N
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:42:				String				85.7%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:57:				ValueString			100.0%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:70:				ToJSON				75.0%
-github.com/maynagashev/go-metrics/internal/server/app/app.go:30:					New				0.0%
-github.com/maynagashev/go-metrics/internal/server/app/app.go:39:					Start				0.0%
-github.com/maynagashev/go-metrics/internal/server/app/app.go:89:					GetStoreInterval		0.0%
+github.com/maynagashev/go-metrics/internal/server/app/app.go:31:					New				0.0%
+github.com/maynagashev/go-metrics/internal/server/app/app.go:40:					Start				0.0%
+github.com/maynagashev/go-metrics/internal/server/app/app.go:97:					GetStoreInterval		0.0%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:41:					NewConfig			0.0%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:71:					IsStoreEnabled			0.0%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:76:					IsRestoreEnabled		0.0%
@@ -162,4 +162,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error				100
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse			80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256		75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256		100.0%
-total:													(statements)			57.8%
+total:													(statements)			57.5%

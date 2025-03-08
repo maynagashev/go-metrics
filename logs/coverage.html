@@ -81,7 +81,7 @@
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (86.0%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (38.2%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (32.7%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (25.8%)</option>
 				
@@ -748,7 +748,8 @@ func printVersion() <span class="cov8" title="1">{
 func main() <span class="cov0" title="0">{
         log := initLogger()
         defer func() </span><span class="cov0" title="0">{
-                if syncErr := log.Sync(); syncErr != nil </span><span class="cov0" title="0">{
+                // Ignore stderr sync error as it's harmless
+                if syncErr := log.Sync(); syncErr != nil &amp;&amp; syncErr.Error() != "sync /dev/stderr: invalid argument" </span><span class="cov0" title="0">{
                         log.Error("failed to sync logger", zap.Error(syncErr))
                 }</span>
         }()
@@ -1726,7 +1727,7 @@ func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
         go a.runReports(ctx)
 
         // Запуск worker pool для отправки метрик.
-        for i := 0; i &lt; a.RateLimit; i++ </span><span class="cov0" title="0">{
+        for i := range a.RateLimit </span><span class="cov0" title="0">{
                 a.wg.Add(1)
                 go a.worker(i)
         }</span>
@@ -1825,10 +1826,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -1865,10 +1866,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Debug("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -1938,6 +1939,13 @@ import (
         "github.com/shirou/gopsutil/mem"
 )
 
+// Константы для конвертации единиц измерения.
+const (
+        BytesInKB = 1024
+        BytesInMB = BytesInKB * 1024
+        BytesInGB = BytesInMB * 1024
+)
+
 // ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
 func (a *agent) ResetMetrics() <span class="cov8" title="1">{
         slog.Debug("Resetting metrics before collection")
@@ -1988,9 +1996,9 @@ func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
         a.gauges["TotalAlloc"] = float64(m.TotalAlloc)
 
         slog.Debug("Runtime metrics collection completed",
-                "metrics_count", 27,
-                "heap_alloc_mb", float64(m.HeapAlloc)/(1024*1024),
-                "sys_mb", float64(m.Sys)/(1024*1024))</span>
+                "metrics_count", len(a.gauges),
+                "heap_alloc_mb", float64(m.HeapAlloc)/BytesInMB,
+                "sys_mb", float64(m.Sys)/BytesInMB)</span>
 }
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
@@ -2015,8 +2023,8 @@ func (a *agent) CollectAdditionalMetrics() <span class="cov8" title="1">{
         a.gauges["FreeMemory"] = float64(v.Free)
 
         slog.Debug("Memory metrics collected",
-                "total_memory_gb", float64(v.Total)/(1024*1024*1024),
-                "free_memory_gb", float64(v.Free)/(1024*1024*1024),
+                "total_memory_gb", float64(v.Total)/BytesInGB,
+                "free_memory_gb", float64(v.Free)/BytesInGB,
                 "used_percent", v.UsedPercent)
 
         c, err := cpu.Percent(0, true)
@@ -2174,7 +2182,7 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
                 }</span>
         }
 
-        <span class="cov8" title="1">req.SetBody(bytesBody)
+        <span class="cov0" title="0">req.SetBody(bytesBody)
 
         res, err := req.Post(url)
         if err != nil </span><span class="cov0" title="0">{
@@ -2375,6 +2383,7 @@ const (
         DefaultWriteTimeout = 10 * time.Second
         DefaultIdleTimeout  = 120 * time.Second
         ShutdownTimeout     = 30 * time.Second
+        DataSavingTimeout   = 5 * time.Second // Время ожидания сохранения данных при shutdown
 )
 
 // Server представляет собой HTTP-сервер для сбора метрик.
@@ -2429,16 +2438,23 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0"
                 ctx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
                 defer cancel()
 
-                // Пытаемся корректно завершить работу сервера
+                // Сначала останавливаем прием новых запросов
                 if err := httpServer.Shutdown(ctx); err != nil </span><span class="cov0" title="0">{
-                        // Если не удалось корректно завершить работу, принудительно закрываем
                         log.Error("server shutdown failed", zap.Error(err))
-                        if err := httpServer.Close(); err != nil </span><span class="cov0" title="0">{
-                                log.Error("server close failed", zap.Error(err))
+                        if closeErr := httpServer.Close(); closeErr != nil </span><span class="cov0" title="0">{
+                                log.Error("server close failed", zap.Error(closeErr))
                         }</span>
-                }
+                } else<span class="cov0" title="0"> {
+                        log.Info("server shutdown completed")
+                }</span>
 
-                <span class="cov0" title="0">log.Info("server shutdown completed")</span>
+                // Даем время на завершение текущих операций и сохранение данных
+                <span class="cov0" title="0">select </span>{
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        log.Error("shutdown timeout exceeded")</span>
+                case &lt;-time.After(DataSavingTimeout):<span class="cov0" title="0"> // Дополнительное время для сохранения данных
+                        log.Info("all pending operations completed")</span>
+                }
         }
 }
 

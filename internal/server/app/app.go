@@ -18,6 +18,7 @@ const (
 	DefaultWriteTimeout = 10 * time.Second
 	DefaultIdleTimeout  = 120 * time.Second
 	ShutdownTimeout     = 30 * time.Second
+	DataSavingTimeout   = 5 * time.Second // Время ожидания сохранения данных при shutdown
 )
 
 // Server представляет собой HTTP-сервер для сбора метрик.
@@ -86,7 +87,7 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) {
 		select {
 		case <-ctx.Done():
 			log.Error("shutdown timeout exceeded")
-		case <-time.After(5 * time.Second): // Дополнительное время для сохранения данных
+		case <-time.After(DataSavingTimeout): // Дополнительное время для сохранения данных
 			log.Info("all pending operations completed")
 		}
 	}
