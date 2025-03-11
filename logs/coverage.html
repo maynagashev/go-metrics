@@ -85,7 +85,7 @@
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/server/app/app.go (0.0%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/server/app/config.go (87.5%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/server/app/config.go (75.0%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/server/app/flags.go (0.0%)</option>
 				
@@ -113,7 +113,7 @@
 				
 				<option value="file28">github.com/maynagashev/go-metrics/internal/server/router/router.go (56.7%)</option>
 				
-				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (81.3%)</option>
+				<option value="file29">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (76.0%)</option>
 				
 				<option value="file30">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
@@ -1960,7 +1960,7 @@ func (cfg *Config) IsSyncStore() bool <span class="cov8" title="1">{
 }</span>
 
 // GetStoreInterval возвращает интервал сохранения метрик на сервере в секундах.
-func (cfg *Config) GetStoreInterval() int <span class="cov8" title="1">{
+func (cfg *Config) GetStoreInterval() int <span class="cov0" title="0">{
         return cfg.StoreInterval
 }</span>
 
@@ -3044,10 +3044,10 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
         }
 
         // Запускаем сохранение метрик в файл с указанным интервалом.
-        <span class="cov8" title="1">if cfg.IsStoreEnabled() &amp;&amp; !cfg.IsSyncStore() </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if cfg.IsStoreEnabled() &amp;&amp; !cfg.IsSyncStore() </span><span class="cov0" title="0">{
                 interval := time.Duration(cfg.GetStoreInterval()) * time.Second
-                go func() </span><span class="cov8" title="1">{
-                        for </span><span class="cov8" title="1">{
+                go func() </span><span class="cov0" title="0">{
+                        for </span><span class="cov0" title="0">{
                                 time.Sleep(interval)
                                 log.Info(
                                         fmt.Sprintf(
@@ -3068,7 +3068,7 @@ func New(cfg *app.Config, log *zap.Logger, options ...interface{}) *MemStorage <
 }
 
 func (ms *MemStorage) Close() error <span class="cov8" title="1">{
-        if ms.cfg.IsStoreEnabled() &amp;&amp; !ms.cfg.IsSyncStore() </span><span class="cov8" title="1">{
+        if ms.cfg.IsStoreEnabled() &amp;&amp; !ms.cfg.IsSyncStore() </span><span class="cov0" title="0">{
                 return ms.storeMetricsToFile()
         }</span>
         <span class="cov8" title="1">return nil</span>
@@ -3274,29 +3274,6 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov8" title="1
         )
         return nil</span>
 }
-
-// Dump выводит информацию о хранилище в лог.
-func (ms *MemStorage) Dump() <span class="cov0" title="0">{
-        ms.log.Info(
-                "Memory storage dump",
-                zap.Int("gauges", len(ms.gauges)),
-                zap.Int("counters", len(ms.counters)),
-                zap.Int("total", ms.Count(context.Background())),
-        )
-}</span>
-
-// Restore восстанавливает метрики из файла.
-func (ms *MemStorage) Restore() error <span class="cov0" title="0">{
-        // ... existing code ...
-
-        // Выводим информацию о восстановленных метриках в лог.
-        ms.log.Info(
-                "Metrics restored from file",
-                zap.String("file", ms.cfg.GetStorePath()),
-                zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
-        )
-        return nil
-}</span>
 </pre>
 		
 		<pre class="file" id="file30" style="display: none">// Package migration предоставляет функционал для управления миграциями базы данных.

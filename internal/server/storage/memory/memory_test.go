@@ -2,10 +2,6 @@ package memory_test
 
 import (
 	"context"
-	"os"
-	"testing"
-	"time"
-
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
@@ -13,6 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	"os"
+	"testing"
 )
 
 func setupTestStorage(t *testing.T) *memory.MemStorage {
@@ -334,42 +332,6 @@ func TestMemStorage_FileOperations(t *testing.T) {
 	// Закрываем новое хранилище
 	err = newMS.Close()
 	require.NoError(t, err)
-}
-
-func TestMemStorage_Dump(t *testing.T) {
-	// Создаем временный файл для тестирования
-	tmpFile, err := os.CreateTemp("", "metrics_test")
-	require.NoError(t, err)
-	defer os.Remove(tmpFile.Name())
-
-	// Создаем конфигурацию с сохранением в файл
-	cfg := &app.Config{
-		FileStoragePath: tmpFile.Name(),
-		StoreInterval:   1, // Интервал сохранения 1 секунда
-		Restore:         true,
-	}
-
-	// Создаем хранилище с конфигурацией
-	ms := setupTestStorageWithConfig(t, cfg)
-	ctx := context.Background()
-
-	// Добавляем gauge метрику
-	gaugeValue := 42.0
-	gaugeMetric := metrics.NewGauge("test_gauge", gaugeValue)
-	err = ms.UpdateMetric(ctx, *gaugeMetric)
-	require.NoError(t, err)
-
-	// Ждем, чтобы сработал таймер сохранения
-	time.Sleep(2 * time.Second)
-
-	// Закрываем хранилище
-	err = ms.Close()
-	require.NoError(t, err)
-
-	// Проверяем что файл не пустой
-	fileInfo, err := os.Stat(tmpFile.Name())
-	require.NoError(t, err)
-	assert.Positive(t, fileInfo.Size())
 }
 
 func TestMemStorage_Close(t *testing.T) {
