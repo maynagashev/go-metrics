@@ -70,7 +70,8 @@ func main() {
 	log := initLogger()
 	defer func() {
 		// Ignore stderr sync error as it's harmless
-		if syncErr := log.Sync(); syncErr != nil && syncErr.Error() != "sync /dev/stderr: invalid argument" {
+		if syncErr := log.Sync(); syncErr != nil &&
+			syncErr.Error() != "sync /dev/stderr: invalid argument" {
 			log.Error("failed to sync logger", zap.Error(syncErr))
 		}
 	}()

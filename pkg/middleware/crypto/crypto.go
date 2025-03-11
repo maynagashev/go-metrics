@@ -86,7 +86,11 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 }
 
 // Возвращает обработанное тело и флаг успешности операции.
-func (m *Middleware) processRequestBody(w http.ResponseWriter, r *http.Request, body []byte) ([]byte, bool) {
+func (m *Middleware) processRequestBody(
+	w http.ResponseWriter,
+	r *http.Request,
+	body []byte,
+) ([]byte, bool) {
 	// Обрабатываем шифрование
 	processedBody, ok := m.handleEncryption(w, r, body)
 	if !ok {
@@ -102,7 +106,11 @@ func (m *Middleware) processRequestBody(w http.ResponseWriter, r *http.Request, 
 }
 
 // Возвращает обработанное тело и флаг успешности операции.
-func (m *Middleware) handleEncryption(w http.ResponseWriter, r *http.Request, body []byte) ([]byte, bool) {
+func (m *Middleware) handleEncryption(
+	w http.ResponseWriter,
+	r *http.Request,
+	body []byte,
+) ([]byte, bool) {
 	if r.Header.Get("Content-Encrypted") != "true" {
 		return body, true
 	}
@@ -125,7 +133,11 @@ func (m *Middleware) handleEncryption(w http.ResponseWriter, r *http.Request, bo
 }
 
 // Возвращает флаг успешности операции.
-func (m *Middleware) verifyRequestSignature(w http.ResponseWriter, r *http.Request, body []byte) bool {
+func (m *Middleware) verifyRequestSignature(
+	w http.ResponseWriter,
+	r *http.Request,
+	body []byte,
+) bool {
 	if !m.config.IsRequestSigningEnabled() {
 		return true
 	}

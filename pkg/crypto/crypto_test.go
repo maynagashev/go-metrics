@@ -51,7 +51,11 @@ func TestGenerateAndLoadKeys(t *testing.T) {
 
 	// Проверяем, что расшифрованные данные совпадают с исходными
 	if string(decrypted) != string(testData) {
-		t.Errorf("Расшифрованные данные не совпадают с исходными. Получено: %s, Ожидалось: %s", decrypted, testData)
+		t.Errorf(
+			"Расшифрованные данные не совпадают с исходными. Получено: %s, Ожидалось: %s",
+			decrypted,
+			testData,
+		)
 	}
 }
 

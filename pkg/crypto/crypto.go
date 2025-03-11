@@ -164,7 +164,10 @@ func EncryptLargeData(publicKey *rsa.PublicKey, data []byte) ([]byte, error) {
 
 	// Проверяем, что количество частей не превышает максимальное значение uint32
 	if len(encryptedChunks) > int(^uint32(0)) {
-		return nil, fmt.Errorf("слишком много частей данных для шифрования: %d", len(encryptedChunks))
+		return nil, fmt.Errorf(
+			"слишком много частей данных для шифрования: %d",
+			len(encryptedChunks),
+		)
 	}
 
 	// Записываем количество частей (4 байта)
@@ -265,7 +268,13 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string, bits int) error {
 	}
 
 	// Создаем сертификат
-	certBytes, err := x509.CreateCertificate(rand.Reader, cert, cert, &privateKey.PublicKey, privateKey)
+	certBytes, err := x509.CreateCertificate(
+		rand.Reader,
+		cert,
+		cert,
+		&privateKey.PublicKey,
+		privateKey,
+	)
 	if err != nil {
 		return fmt.Errorf("не удалось создать сертификат: %w", err)
 	}

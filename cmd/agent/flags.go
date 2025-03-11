@@ -76,7 +76,12 @@ func registerCommandLineFlags(flags *Flags) {
 		"poll interval in seconds",
 	)
 	flag.StringVar(&flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
-	flag.StringVar(&flags.CryptoKey, "crypto-key", "", "путь к файлу с публичным ключом для шифрования")
+	flag.StringVar(
+		&flags.CryptoKey,
+		"crypto-key",
+		"",
+		"путь к файлу с публичным ключом для шифрования",
+	)
 	flag.IntVar(
 		&flags.RateLimit,
 		"l",

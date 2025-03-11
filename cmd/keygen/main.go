@@ -77,7 +77,11 @@ func getStringOrDefault(value, defaultValue string) string {
 // parseFlags разбирает флаги командной строки.
 func parseFlags() (string, string, int, error) {
 	// Определяем флаги командной строки
-	privateKeyPathPtr := flag.String("private", "private.pem", "путь для сохранения закрытого ключа")
+	privateKeyPathPtr := flag.String(
+		"private",
+		"private.pem",
+		"путь для сохранения закрытого ключа",
+	)
 	publicKeyPathPtr := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
 	keySizePtr := flag.Int("bits", DefaultKeySize, "размер ключа RSA в битах (1024, 2048, 4096)")
 
@@ -87,7 +91,10 @@ func parseFlags() (string, string, int, error) {
 	// Проверяем размер ключа
 	validKeySizes := map[int]bool{1024: true, 2048: true, 4096: true}
 	if !validKeySizes[*keySizePtr] {
-		return "", "", 0, fmt.Errorf("неверный размер ключа: %d. Допустимые размеры: 1024, 2048, 4096", *keySizePtr)
+		return "", "", 0, fmt.Errorf(
+			"неверный размер ключа: %d. Допустимые размеры: 1024, 2048, 4096",
+			*keySizePtr,
+		)
 	}
 
 	return *privateKeyPathPtr, *publicKeyPathPtr, *keySizePtr, nil

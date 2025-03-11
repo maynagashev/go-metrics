@@ -296,10 +296,15 @@ func (a *agent) GetMetrics() []*metrics.Metric {
 	// Проверяем, получен ли сигнал завершения
 	select {
 	case <-a.stopCh:
-		slog.Info("Shutdown signal received while preparing metrics - ensuring final metrics are sent",
-			"gauges_count", gaugesCount,
-			"counters_count", countersCount,
-			"poll_count", pollCount)
+		slog.Info(
+			"Shutdown signal received while preparing metrics - ensuring final metrics are sent",
+			"gauges_count",
+			gaugesCount,
+			"counters_count",
+			countersCount,
+			"poll_count",
+			pollCount,
+		)
 	default:
 		slog.Info("Preparing metrics for sending",
 			"gauges_count", gaugesCount,

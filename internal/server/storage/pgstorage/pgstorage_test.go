@@ -1,3 +1,4 @@
+//nolint:testpackage // Using same package for testing to access unexported fields
 package pgstorage
 
 import (
@@ -12,6 +13,7 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
@@ -27,24 +29,36 @@ func (m *MockPgxPool) Close() {
 	m.Called()
 }
 
-func (m *MockPgxPool) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
+func (m *MockPgxPool) Exec(
+	ctx context.Context,
+	sql string,
+	arguments ...interface{},
+) (pgconn.CommandTag, error) {
 	args := m.Called(ctx, sql, arguments)
-	return args.Get(0).(pgconn.CommandTag), args.Error(1)
+	val, _ := args.Get(0).(pgconn.CommandTag)
+	return val, args.Error(1)
 }
 
-func (m *MockPgxPool) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
+func (m *MockPgxPool) Query(
+	ctx context.Context,
+	sql string,
+	args ...interface{},
+) (pgx.Rows, error) {
 	mockArgs := m.Called(ctx, sql, args)
-	return mockArgs.Get(0).(pgx.Rows), mockArgs.Error(1)
+	val, _ := mockArgs.Get(0).(pgx.Rows)
+	return val, mockArgs.Error(1)
 }
 
 func (m *MockPgxPool) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
 	mockArgs := m.Called(ctx, sql, args)
-	return mockArgs.Get(0).(pgx.Row)
+	val, _ := mockArgs.Get(0).(pgx.Row)
+	return val
 }
 
 func (m *MockPgxPool) Begin(ctx context.Context) (pgx.Tx, error) {
 	args := m.Called(ctx)
-	return args.Get(0).(pgx.Tx), args.Error(1)
+	val, _ := args.Get(0).(pgx.Tx)
+	return val, args.Error(1)
 }
 
 // Mock for pgx.Rows.
@@ -68,7 +82,8 @@ func (m *MockPgxRows) Close() {
 
 func (m *MockPgxRows) CommandTag() pgconn.CommandTag {
 	args := m.Called()
-	return args.Get(0).(pgconn.CommandTag)
+	val, _ := args.Get(0).(pgconn.CommandTag)
+	return val
 }
 
 func (m *MockPgxRows) Err() error {
@@ -78,22 +93,26 @@ func (m *MockPgxRows) Err() error {
 
 func (m *MockPgxRows) FieldDescriptions() []pgconn.FieldDescription {
 	args := m.Called()
-	return args.Get(0).([]pgconn.FieldDescription)
+	val, _ := args.Get(0).([]pgconn.FieldDescription)
+	return val
 }
 
 func (m *MockPgxRows) Values() ([]interface{}, error) {
 	args := m.Called()
-	return args.Get(0).([]interface{}), args.Error(1)
+	val, _ := args.Get(0).([]interface{})
+	return val, args.Error(1)
 }
 
 func (m *MockPgxRows) RawValues() [][]byte {
 	args := m.Called()
-	return args.Get(0).([][]byte)
+	val, _ := args.Get(0).([][]byte)
+	return val
 }
 
 func (m *MockPgxRows) Conn() *pgx.Conn {
 	args := m.Called()
-	return args.Get(0).(*pgx.Conn)
+	val, _ := args.Get(0).(*pgx.Conn)
+	return val
 }
 
 // Mock for pgx.Row.
@@ -102,7 +121,7 @@ type MockPgxRow struct {
 }
 
 func (m *MockPgxRow) Scan(dest ...interface{}) error {
-	args := m.Called(dest)
+	args := m.Called(any(dest))
 	return args.Error(0)
 }
 
@@ -113,7 +132,8 @@ type MockPgxTx struct {
 
 func (m *MockPgxTx) Begin(ctx context.Context) (pgx.Tx, error) {
 	args := m.Called(ctx)
-	return args.Get(0).(pgx.Tx), args.Error(1)
+	val, _ := args.Get(0).(pgx.Tx)
+	return val, args.Error(1)
 }
 
 func (m *MockPgxTx) Commit(ctx context.Context) error {
@@ -126,39 +146,58 @@ func (m *MockPgxTx) Rollback(ctx context.Context) error {
 	return args.Error(0)
 }
 
-func (m *MockPgxTx) CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error) {
+func (m *MockPgxTx) CopyFrom(
+	ctx context.Context,
+	tableName pgx.Identifier,
+	columnNames []string,
+	rowSrc pgx.CopyFromSource,
+) (int64, error) {
 	args := m.Called(ctx, tableName, columnNames, rowSrc)
-	return args.Get(0).(int64), args.Error(1)
+	val, _ := args.Get(0).(int64)
+	return val, args.Error(1)
 }
 
 func (m *MockPgxTx) SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults {
 	args := m.Called(ctx, b)
-	return args.Get(0).(pgx.BatchResults)
+	val, _ := args.Get(0).(pgx.BatchResults)
+	return val
 }
 
 func (m *MockPgxTx) LargeObjects() pgx.LargeObjects {
 	args := m.Called()
-	return args.Get(0).(pgx.LargeObjects)
+	val, _ := args.Get(0).(pgx.LargeObjects)
+	return val
 }
 
-func (m *MockPgxTx) Prepare(ctx context.Context, name, sql string) (pgconn.StatementDescription, error) {
+func (m *MockPgxTx) Prepare(
+	ctx context.Context,
+	name, sql string,
+) (pgconn.StatementDescription, error) {
 	args := m.Called(ctx, name, sql)
-	return args.Get(0).(pgconn.StatementDescription), args.Error(1)
+	val, _ := args.Get(0).(pgconn.StatementDescription)
+	return val, args.Error(1)
 }
 
-func (m *MockPgxTx) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
+func (m *MockPgxTx) Exec(
+	ctx context.Context,
+	sql string,
+	arguments ...interface{},
+) (pgconn.CommandTag, error) {
 	args := m.Called(ctx, sql, arguments)
-	return args.Get(0).(pgconn.CommandTag), args.Error(1)
+	val, _ := args.Get(0).(pgconn.CommandTag)
+	return val, args.Error(1)
 }
 
 func (m *MockPgxTx) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
 	mockArgs := m.Called(ctx, sql, args)
-	return mockArgs.Get(0).(pgx.Rows), mockArgs.Error(1)
+	val, _ := mockArgs.Get(0).(pgx.Rows)
+	return val, mockArgs.Error(1)
 }
 
 func (m *MockPgxTx) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
 	mockArgs := m.Called(ctx, sql, args)
-	return mockArgs.Get(0).(pgx.Row)
+	val, _ := mockArgs.Get(0).(pgx.Row)
+	return val
 }
 
 // Mock for pgx.BatchResults.
@@ -168,17 +207,20 @@ type MockBatchResults struct {
 
 func (m *MockBatchResults) Exec() (pgconn.CommandTag, error) {
 	args := m.Called()
-	return args.Get(0).(pgconn.CommandTag), args.Error(1)
+	val, _ := args.Get(0).(pgconn.CommandTag)
+	return val, args.Error(1)
 }
 
 func (m *MockBatchResults) Query() (pgx.Rows, error) {
 	args := m.Called()
-	return args.Get(0).(pgx.Rows), args.Error(1)
+	val, _ := args.Get(0).(pgx.Rows)
+	return val, args.Error(1)
 }
 
 func (m *MockBatchResults) QueryRow() pgx.Row {
 	args := m.Called()
-	return args.Get(0).(pgx.Row)
+	val, _ := args.Get(0).(pgx.Row)
+	return val
 }
 
 func (m *MockBatchResults) Close() error {
@@ -242,7 +284,7 @@ func TestPgStorage_Close(t *testing.T) {
 
 	// Проверяем, что Close() не вызывает панику даже с nil conn
 	err := storage.Close()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Теперь проверим с реальным пулом
 	// Но поскольку мы не можем создать реальный пул без подключения к БД,
@@ -265,9 +307,13 @@ func TestPgStorage_Count(t *testing.T) {
 	// Настраиваем ожидаемое поведение для сканирования результата
 	mockRow.On("Scan", mock.Anything).Run(func(args mock.Arguments) {
 		// Получаем слайс аргументов
-		destSlice := args.Get(0).([]interface{})
+		destSlice, _ := args.Get(0).([]interface{})
 		// Устанавливаем значение счетчика
-		*destSlice[0].(*int) = 42
+		if len(destSlice) > 0 && destSlice[0] != nil {
+			if ptr, ok := destSlice[0].(*int); ok {
+				*ptr = 42
+			}
+		}
 	}).Return(nil)
 
 	// Создаем тестовый экземпляр PgStorage с моком
@@ -291,7 +337,8 @@ func TestPgStorage_Count(t *testing.T) {
 	mockRow2 := new(MockPgxRow)
 
 	// Настраиваем ожидаемое поведение для запроса
-	mockPool2.On("QueryRow", ctx, "SELECT count(*) FROM metrics", []interface{}(nil)).Return(mockRow2)
+	mockPool2.On("QueryRow", ctx, "SELECT count(*) FROM metrics", []interface{}(nil)).
+		Return(mockRow2)
 
 	// Настраиваем ожидаемое поведение для сканирования результата с ошибкой
 	mockRow2.On("Scan", mock.Anything).Return(errors.New("database error"))
@@ -341,12 +388,22 @@ func TestPgStorage_GetMetric(t *testing.T) {
 	// Настраиваем ожидаемое поведение для сканирования результата
 	mockRow.On("Scan", mock.Anything).Run(func(args mock.Arguments) {
 		// Получаем слайс аргументов
-		destSlice := args.Get(0).([]interface{})
+		destSlice, _ := args.Get(0).([]interface{})
 		// Устанавливаем значения
-		*destSlice[0].(*string) = name
-		*destSlice[1].(*metrics.MetricType) = mType
-		*destSlice[2].(**float64) = &value
-		*destSlice[3].(**int64) = nil
+		if len(destSlice) > 3 {
+			if ptr, ok := destSlice[0].(*string); ok {
+				*ptr = name
+			}
+			if ptr, ok := destSlice[1].(*metrics.MetricType); ok {
+				*ptr = mType
+			}
+			if ptr, ok := destSlice[2].(**float64); ok {
+				*ptr = &value
+			}
+			if ptr, ok := destSlice[3].(**int64); ok {
+				*ptr = nil
+			}
+		}
 	}).Return(nil)
 
 	// Создаем тестовый экземпляр PgStorage с моком
@@ -425,7 +482,7 @@ func TestPgStorage_UpdateMetric(t *testing.T) {
 	err := storage.UpdateMetric(ctx, metric)
 
 	// Проверяем результат
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Проверяем, что моки были вызваны с ожидаемыми параметрами
 	mockPool.AssertExpectations(t)
@@ -443,12 +500,22 @@ func TestPgStorage_UpdateMetric(t *testing.T) {
 	// Настраиваем ожидаемое поведение для сканирования результата (метрика найдена)
 	mockRow2.On("Scan", mock.Anything).Run(func(args mock.Arguments) {
 		// Получаем слайс аргументов
-		destSlice := args.Get(0).([]interface{})
+		destSlice, _ := args.Get(0).([]interface{})
 		// Устанавливаем значения
-		*destSlice[0].(*string) = name
-		*destSlice[1].(*metrics.MetricType) = mType
-		*destSlice[2].(**float64) = &value
-		*destSlice[3].(**int64) = nil
+		if len(destSlice) > 3 {
+			if ptr, ok := destSlice[0].(*string); ok {
+				*ptr = name
+			}
+			if ptr, ok := destSlice[1].(*metrics.MetricType); ok {
+				*ptr = mType
+			}
+			if ptr, ok := destSlice[2].(**float64); ok {
+				*ptr = &value
+			}
+			if ptr, ok := destSlice[3].(**int64); ok {
+				*ptr = nil
+			}
+		}
 	}).Return(nil)
 
 	// Настраиваем ожидаемое поведение для запроса UPDATE
@@ -466,7 +533,7 @@ func TestPgStorage_UpdateMetric(t *testing.T) {
 	err = storage2.UpdateMetric(ctx, metric)
 
 	// Проверяем результат
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Проверяем, что моки были вызваны с ожидаемыми параметрами
 	mockPool2.AssertExpectations(t)
@@ -499,7 +566,7 @@ func TestPgStorage_UpdateMetric(t *testing.T) {
 	err = storage3.UpdateMetric(ctx, metric)
 
 	// Проверяем результат
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Equal(t, "database error", err.Error())
 
 	// Проверяем, что моки были вызваны с ожидаемыми параметрами
@@ -571,7 +638,7 @@ func TestNew(t *testing.T) {
 	storage, err := New(ctx, mockConfig, mockLogger)
 
 	// Проверяем, что ошибка не возникла
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, storage)
 
 	// Проверяем, что поля инициализированы корректно

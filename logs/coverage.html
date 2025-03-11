@@ -335,7 +335,12 @@ func registerCommandLineFlags(flags *Flags) <span class="cov8" title="1">{
                 "poll interval in seconds",
         )
         flag.StringVar(&amp;flags.PrivateKey, "k", "", "приватный ключ для подписи запросов к серверу")
-        flag.StringVar(&amp;flags.CryptoKey, "crypto-key", "", "путь к файлу с публичным ключом для шифрования")
+        flag.StringVar(
+                &amp;flags.CryptoKey,
+                "crypto-key",
+                "",
+                "путь к файлу с публичным ключом для шифрования",
+        )
         flag.IntVar(
                 &amp;flags.RateLimit,
                 "l",
@@ -496,7 +501,14 @@ func main() <span class="cov8" title="1">{
         signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
         // Запускаем агента
-        a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit, publicKey)
+        a := agent.New(
+                serverURL,
+                pollInterval,
+                reportInterval,
+                flags.PrivateKey,
+                flags.RateLimit,
+                publicKey,
+        )
 
         // Запускаем горутину для обработки сигналов
         go func() </span><span class="cov8" title="1">{
@@ -643,7 +655,11 @@ func getStringOrDefault(value, defaultValue string) string <span class="cov8" ti
 // parseFlags разбирает флаги командной строки.
 func parseFlags() (string, string, int, error) <span class="cov8" title="1">{
         // Определяем флаги командной строки
-        privateKeyPathPtr := flag.String("private", "private.pem", "путь для сохранения закрытого ключа")
+        privateKeyPathPtr := flag.String(
+                "private",
+                "private.pem",
+                "путь для сохранения закрытого ключа",
+        )
         publicKeyPathPtr := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
         keySizePtr := flag.Int("bits", DefaultKeySize, "размер ключа RSA в битах (1024, 2048, 4096)")
 
@@ -653,7 +669,10 @@ func parseFlags() (string, string, int, error) <span class="cov8" title="1">{
         // Проверяем размер ключа
         validKeySizes := map[int]bool{1024: true, 2048: true, 4096: true}
         if !validKeySizes[*keySizePtr] </span><span class="cov8" title="1">{
-                return "", "", 0, fmt.Errorf("неверный размер ключа: %d. Допустимые размеры: 1024, 2048, 4096", *keySizePtr)
+                return "", "", 0, fmt.Errorf(
+                        "неверный размер ключа: %d. Допустимые размеры: 1024, 2048, 4096",
+                        *keySizePtr,
+                )
         }</span>
 
         <span class="cov8" title="1">return *privateKeyPathPtr, *publicKeyPathPtr, *keySizePtr, nil</span>
@@ -800,7 +819,8 @@ func main() <span class="cov0" title="0">{
         log := initLogger()
         defer func() </span><span class="cov0" title="0">{
                 // Ignore stderr sync error as it's harmless
-                if syncErr := log.Sync(); syncErr != nil &amp;&amp; syncErr.Error() != "sync /dev/stderr: invalid argument" </span><span class="cov0" title="0">{
+                if syncErr := log.Sync(); syncErr != nil &amp;&amp;
+                        syncErr.Error() != "sync /dev/stderr: invalid argument" </span><span class="cov0" title="0">{
                         log.Error("failed to sync logger", zap.Error(syncErr))
                 }</span>
         }()
@@ -1877,10 +1897,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -1944,10 +1964,15 @@ func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
         // Проверяем, получен ли сигнал завершения
         select </span>{
         case &lt;-a.stopCh:<span class="cov8" title="1">
-                slog.Info("Shutdown signal received while preparing metrics - ensuring final metrics are sent",
-                        "gauges_count", gaugesCount,
-                        "counters_count", countersCount,
-                        "poll_count", pollCount)</span>
+                slog.Info(
+                        "Shutdown signal received while preparing metrics - ensuring final metrics are sent",
+                        "gauges_count",
+                        gaugesCount,
+                        "counters_count",
+                        countersCount,
+                        "poll_count",
+                        pollCount,
+                )</span>
         default:<span class="cov8" title="1">
                 slog.Info("Preparing metrics for sending",
                         "gauges_count", gaugesCount,
@@ -2314,7 +2339,11 @@ func (a *agent) worker(id int) <span class="cov0" title="0">{
                         case a.resultQueue &lt;- Result{Job: job, Error: err}:<span class="cov0" title="0"></span>
                                 // Результат успешно отправлен
                         case &lt;-a.stopCh:<span class="cov0" title="0">
-                                slog.Info("Stop signal received while sending result, worker exiting", "workerID", id)
+                                slog.Info(
+                                        "Stop signal received while sending result, worker exiting",
+                                        "workerID",
+                                        id,
+                                )
                                 return</span>
                         }
                 case &lt;-a.stopCh:<span class="cov0" title="0">
@@ -2870,7 +2899,12 @@ func registerCommandLineFlags(flags *Flags) <span class="cov8" title="1">{
                 "Путь к директории с миграциями")
 
         flag.StringVar(&amp;flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
-        flag.StringVar(&amp;flags.CryptoKey, "crypto-key", "", "Путь к файлу с приватным ключом для расшифровки")
+        flag.StringVar(
+                &amp;flags.CryptoKey,
+                "crypto-key",
+                "",
+                "Путь к файлу с приватным ключом для расшифровки",
+        )
 
         // Добавляем флаг для пути к файлу конфигурации
         flag.StringVar(&amp;flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
@@ -4883,7 +4917,10 @@ func EncryptLargeData(publicKey *rsa.PublicKey, data []byte) ([]byte, error) <sp
 
         // Проверяем, что количество частей не превышает максимальное значение uint32
         if len(encryptedChunks) &gt; int(^uint32(0)) </span><span class="cov0" title="0">{
-                return nil, fmt.Errorf("слишком много частей данных для шифрования: %d", len(encryptedChunks))
+                return nil, fmt.Errorf(
+                        "слишком много частей данных для шифрования: %d",
+                        len(encryptedChunks),
+                )
         }</span>
 
         // Записываем количество частей (4 байта)
@@ -4984,7 +5021,13 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string, bits int) error <span
         }</span>
 
         // Создаем сертификат
-        <span class="cov8" title="1">certBytes, err := x509.CreateCertificate(rand.Reader, cert, cert, &amp;privateKey.PublicKey, privateKey)
+        <span class="cov8" title="1">certBytes, err := x509.CreateCertificate(
+                rand.Reader,
+                cert,
+                cert,
+                &amp;privateKey.PublicKey,
+                privateKey,
+        )
         if err != nil </span><span class="cov0" title="0">{
                 return fmt.Errorf("не удалось создать сертификат: %w", err)
         }</span>
@@ -5114,7 +5157,11 @@ func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" 
 }
 
 // Возвращает обработанное тело и флаг успешности операции.
-func (m *Middleware) processRequestBody(w http.ResponseWriter, r *http.Request, body []byte) ([]byte, bool) <span class="cov8" title="1">{
+func (m *Middleware) processRequestBody(
+        w http.ResponseWriter,
+        r *http.Request,
+        body []byte,
+) ([]byte, bool) <span class="cov8" title="1">{
         // Обрабатываем шифрование
         processedBody, ok := m.handleEncryption(w, r, body)
         if !ok </span><span class="cov0" title="0">{
@@ -5130,7 +5177,11 @@ func (m *Middleware) processRequestBody(w http.ResponseWriter, r *http.Request, 
 }
 
 // Возвращает обработанное тело и флаг успешности операции.
-func (m *Middleware) handleEncryption(w http.ResponseWriter, r *http.Request, body []byte) ([]byte, bool) <span class="cov8" title="1">{
+func (m *Middleware) handleEncryption(
+        w http.ResponseWriter,
+        r *http.Request,
+        body []byte,
+) ([]byte, bool) <span class="cov8" title="1">{
         if r.Header.Get("Content-Encrypted") != "true" </span><span class="cov8" title="1">{
                 return body, true
         }</span>
@@ -5153,7 +5204,11 @@ func (m *Middleware) handleEncryption(w http.ResponseWriter, r *http.Request, bo
 }
 
 // Возвращает флаг успешности операции.
-func (m *Middleware) verifyRequestSignature(w http.ResponseWriter, r *http.Request, body []byte) bool <span class="cov8" title="1">{
+func (m *Middleware) verifyRequestSignature(
+        w http.ResponseWriter,
+        r *http.Request,
+        body []byte,
+) bool <span class="cov8" title="1">{
         if !m.config.IsRequestSigningEnabled() </span><span class="cov0" title="0">{
                 return true
         }</span>

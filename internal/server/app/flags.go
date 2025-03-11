@@ -107,7 +107,12 @@ func registerCommandLineFlags(flags *Flags) {
 		"Путь к директории с миграциями")
 
 	flag.StringVar(&flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
-	flag.StringVar(&flags.CryptoKey, "crypto-key", "", "Путь к файлу с приватным ключом для расшифровки")
+	flag.StringVar(
+		&flags.CryptoKey,
+		"crypto-key",
+		"",
+		"Путь к файлу с приватным ключом для расшифровки",
+	)
 
 	// Добавляем флаг для пути к файлу конфигурации
 	flag.StringVar(&flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")

@@ -46,7 +46,11 @@ func (a *agent) worker(id int) {
 			case a.resultQueue <- Result{Job: job, Error: err}:
 				// Результат успешно отправлен
 			case <-a.stopCh:
-				slog.Info("Stop signal received while sending result, worker exiting", "workerID", id)
+				slog.Info(
+					"Stop signal received while sending result, worker exiting",
+					"workerID",
+					id,
+				)
 				return
 			}
 		case <-a.stopCh:

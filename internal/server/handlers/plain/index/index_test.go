@@ -36,7 +36,11 @@ func (m *MockRepository) GetMetrics(ctx context.Context) []metrics.Metric {
 	return result
 }
 
-func (m *MockRepository) GetMetric(ctx context.Context, mType metrics.MetricType, name string) (metrics.Metric, bool) {
+func (m *MockRepository) GetMetric(
+	ctx context.Context,
+	mType metrics.MetricType,
+	name string,
+) (metrics.Metric, bool) {
 	args := m.Called(ctx, mType, name)
 	result, _ := args.Get(0).(metrics.Metric)
 	return result, args.Bool(1)

@@ -68,7 +68,14 @@ func main() {
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	// Запускаем агента
-	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit, publicKey)
+	a := agent.New(
+		serverURL,
+		pollInterval,
+		reportInterval,
+		flags.PrivateKey,
+		flags.RateLimit,
+		publicKey,
+	)
 
 	// Запускаем горутину для обработки сигналов
 	go func() {

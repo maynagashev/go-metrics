@@ -63,7 +63,15 @@ func TestParseFlags(t *testing.T) {
 	assert.Equal(t, DefaultKeySize, keySize)
 
 	// Тест 2: Проверка пользовательских значений
-	os.Args = []string{"keygen", "-private", "custom_private.pem", "-public", "custom_public.pem", "-bits", "4096"}
+	os.Args = []string{
+		"keygen",
+		"-private",
+		"custom_private.pem",
+		"-public",
+		"custom_public.pem",
+		"-bits",
+		"4096",
+	}
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	privateKeyPath, publicKeyPath, keySize, err = parseFlags()
 	require.NoError(t, err)
