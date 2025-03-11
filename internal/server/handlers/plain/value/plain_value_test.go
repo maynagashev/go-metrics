@@ -88,7 +88,11 @@ func TestPlainValueHandler(t *testing.T) {
 			r.Get("/value/{type}/{name}", handler)
 
 			// Create request
-			req := httptest.NewRequest(http.MethodGet, "/value/"+tt.metricType+"/"+tt.metricName, nil)
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/value/"+tt.metricType+"/"+tt.metricName,
+				nil,
+			)
 
 			// Create response recorder
 			rr := httptest.NewRecorder()

@@ -36,11 +36,15 @@
 package main
 
 import (
+	// Стандартная библиотека.
 	"encoding/json"
 	"log"
 	"os"
 	"strings"
 
+	// Сторонние пакеты.
+	"github.com/nishanths/exhaustive"
+	"github.com/timakin/bodyclose/passes/bodyclose"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
 	"golang.org/x/tools/go/analysis/passes/printf"
@@ -49,10 +53,9 @@ import (
 	"honnef.co/go/tools/staticcheck"
 	"honnef.co/go/tools/stylecheck"
 
+	// Локальные модули.
 	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck"
 	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit"
-	"github.com/nishanths/exhaustive"
-	"github.com/timakin/bodyclose/passes/bodyclose"
 )
 
 // Config — имя файла конфигурации.
@@ -132,7 +135,11 @@ func addAnalyzers(
 				mychecks = append(mychecks, analyzer)
 			}
 		}
-		log.Printf("Используются анализаторы %s из конфигурационного файла: %v\n", analyzerType, configList)
+		log.Printf(
+			"Используются анализаторы %s из конфигурационного файла: %v\n",
+			analyzerType,
+			configList,
+		)
 	} else {
 		// Добавляем все анализаторы если секция не существует или пустая
 		log.Printf("Используются все анализаторы %s (%s)\n", analyzerType, "секция отсутствует в конфигурации")

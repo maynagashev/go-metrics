@@ -114,7 +114,10 @@ func TestComputeHMACSHA256(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := sign.ComputeHMACSHA256(tt.data, tt.key)
 			if len(result) != 64 { // SHA256 хеш в hex формате имеет длину 64 символа
-				t.Errorf("ComputeHMACSHA256() returned hash of incorrect length: got %v, want 64", len(result))
+				t.Errorf(
+					"ComputeHMACSHA256() returned hash of incorrect length: got %v, want 64",
+					len(result),
+				)
 			}
 		})
 	}

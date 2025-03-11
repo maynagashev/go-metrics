@@ -34,7 +34,8 @@ func TestLoadConfig(t *testing.T) {
 	if !ok {
 		t.Errorf("Expected loadConfig to return true for valid file, got false")
 	}
-	if len(cfg.Staticcheck) != 2 || cfg.Staticcheck[0] != "SA1000" || cfg.Staticcheck[1] != "SA1001" {
+	if len(cfg.Staticcheck) != 2 || cfg.Staticcheck[0] != "SA1000" ||
+		cfg.Staticcheck[1] != "SA1001" {
 		t.Errorf("Unexpected Staticcheck config: %v", cfg.Staticcheck)
 	}
 	if len(cfg.Stylecheck) != 1 || cfg.Stylecheck[0] != "ST1000" {

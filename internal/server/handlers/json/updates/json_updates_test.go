@@ -61,7 +61,11 @@ func TestNewBulkUpdate_Success(t *testing.T) {
 	assert.True(t, ok)
 	assert.InDelta(t, gaugeValue, *savedGaugeMetric.Value, 0.0001)
 
-	savedCounterMetric, ok := repo.GetMetric(context.Background(), metrics.TypeCounter, "test_counter")
+	savedCounterMetric, ok := repo.GetMetric(
+		context.Background(),
+		metrics.TypeCounter,
+		"test_counter",
+	)
 	assert.True(t, ok)
 	assert.Equal(t, counterValue, *savedCounterMetric.Delta)
 }
@@ -141,7 +145,11 @@ func TestNewBulkUpdate_WithSignature(t *testing.T) {
 	assert.True(t, ok)
 	assert.InDelta(t, gaugeValue, *savedGaugeMetric.Value, 0.0001)
 
-	savedCounterMetric, ok := repo.GetMetric(context.Background(), metrics.TypeCounter, "test_counter")
+	savedCounterMetric, ok := repo.GetMetric(
+		context.Background(),
+		metrics.TypeCounter,
+		"test_counter",
+	)
 	assert.True(t, ok)
 	assert.Equal(t, counterValue, *savedCounterMetric.Delta)
 }
