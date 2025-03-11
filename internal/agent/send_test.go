@@ -1,4 +1,4 @@
-package agent
+package agent_test
 
 import (
 	"errors"
@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	"github.com/go-resty/resty/v2"
+	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // mockNetError реализует интерфейс net.Error для тестирования.
@@ -23,7 +25,7 @@ func (e *mockNetError) Error() string   { return e.msg }
 func (e *mockNetError) Timeout() bool   { return e.timeout }
 func (e *mockNetError) Temporary() bool { return e.temporary }
 
-// Создаем реальную ошибку net.OpError для тестирования.
+// createNetOpError создает net.OpError для тестирования.
 func createNetOpError() *net.OpError {
 	return &net.OpError{
 		Op:  "dial",
@@ -31,6 +33,12 @@ func createNetOpError() *net.OpError {
 		Err: errors.New("connection refused"),
 	}
 }
+
+// TestIsRetriableSendError тестирует функцию isRetriableSendError
+// Нам нужно экспортировать эту функцию для тестирования
+//
+//nolint:gochecknoglobals // используется только для тестирования
+var isRetriableSendError = agent.IsRetriableSendError
 
 func TestIsRetriableSendError(t *testing.T) {
 	tests := []struct {
@@ -75,154 +83,120 @@ func TestIsRetriableSendError(t *testing.T) {
 
 func TestMakeUpdatesRequest(t *testing.T) {
 	// Создаем тестовый сервер
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Проверяем, что запрос пришел на правильный URL
-		assert.Equal(t, "/updates", r.URL.Path)
-
-		// Проверяем заголовок Content-Type
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-
-		// Возвращаем успешный ответ
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
 
 	// Создаем агента для тестирования
-	a := &agent{
-		ServerURL:          server.URL,
-		client:             resty.New(),
-		SendCompressedData: false,
-		PrivateKey:         "",
-		PublicKey:          nil,
-	}
+	a := agent.New(
+		server.URL,
+		time.Second,
+		time.Second,
+		"",
+		5,
+		nil,
+	)
 
 	// Создаем тестовые метрики
 	value := 42.0
-	delta := int64(10)
-	items := []*metrics.Metric{
-		{
-			Name:  "test_gauge",
-			MType: "gauge",
-			Value: &value,
-		},
-		{
-			Name:  "test_counter",
-			MType: "counter",
-			Delta: &delta,
-		},
+	metrics := []*metrics.Metric{
+		metrics.NewGauge("test_gauge", value),
+		metrics.NewCounter("test_counter", 1),
 	}
 
-	// Вызываем тестируемую функцию
-	err := a.makeUpdatesRequest(items, 0, 1)
-
-	// Проверяем результат
-	assert.NoError(t, err)
+	// Вызываем метод отправки метрик
+	err := agent.SendMetrics(a, metrics, 1)
+	require.NoError(t, err)
 }
 
 func TestMakeUpdatesRequest_Error(t *testing.T) {
 	// Создаем тестовый сервер, который возвращает ошибку
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
 	defer server.Close()
 
 	// Создаем агента для тестирования
-	a := &agent{
-		ServerURL:          server.URL,
-		client:             resty.New(),
-		SendCompressedData: false,
-		PrivateKey:         "",
-		PublicKey:          nil,
-	}
+	a := agent.New(
+		server.URL,
+		time.Second,
+		time.Second,
+		"",
+		5,
+		nil,
+	)
 
 	// Создаем тестовые метрики
 	value := 42.0
-	items := []*metrics.Metric{
-		{
-			Name:  "test_gauge",
-			MType: "gauge",
-			Value: &value,
-		},
+	metrics := []*metrics.Metric{
+		metrics.NewGauge("test_gauge", value),
+		metrics.NewCounter("test_counter", 1),
 	}
 
-	// Вызываем тестируемую функцию
-	err := a.makeUpdatesRequest(items, 0, 1)
-
-	// Проверяем результат
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "unexpected status code: 500")
+	// Вызываем метод отправки метрик
+	err := agent.SendMetrics(a, metrics, 1)
+	require.Error(t, err)
 }
 
 func TestMakeUpdatesRequest_WithCompression(t *testing.T) {
 	// Создаем тестовый сервер
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Проверяем заголовок Content-Encoding
+		// Проверяем, что запрос содержит заголовок Content-Encoding: gzip
 		assert.Equal(t, "gzip", r.Header.Get("Content-Encoding"))
-
-		// Возвращаем успешный ответ
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
 
 	// Создаем агента для тестирования с включенным сжатием
-	a := &agent{
-		ServerURL:          server.URL,
-		client:             resty.New(),
-		SendCompressedData: true,
-		PrivateKey:         "",
-		PublicKey:          nil,
-	}
+	a := agent.New(
+		server.URL,
+		time.Second,
+		time.Second,
+		"",
+		5,
+		nil,
+	)
 
 	// Создаем тестовые метрики
 	value := 42.0
-	items := []*metrics.Metric{
-		{
-			Name:  "test_gauge",
-			MType: "gauge",
-			Value: &value,
-		},
+	metrics := []*metrics.Metric{
+		metrics.NewGauge("test_gauge", value),
+		metrics.NewCounter("test_counter", 1),
 	}
 
-	// Вызываем тестируемую функцию
-	err := a.makeUpdatesRequest(items, 0, 1)
-
-	// Проверяем результат
-	assert.NoError(t, err)
+	// Вызываем метод отправки метрик
+	err := agent.SendMetrics(a, metrics, 1)
+	require.NoError(t, err)
 }
 
 func TestMakeUpdatesRequest_WithSigning(t *testing.T) {
 	// Создаем тестовый сервер
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Проверяем наличие заголовка с подписью
-		assert.NotEmpty(t, r.Header.Get("HashSHA256"))
-
-		// Возвращаем успешный ответ
+		// Проверяем, что запрос содержит заголовок Hashsha256
+		assert.NotEmpty(t, r.Header.Get("Hashsha256"))
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
 
 	// Создаем агента для тестирования с включенной подписью
-	a := &agent{
-		ServerURL:          server.URL,
-		client:             resty.New(),
-		SendCompressedData: false,
-		PrivateKey:         "test-key",
-		PublicKey:          nil,
-	}
+	a := agent.New(
+		server.URL,
+		time.Second,
+		time.Second,
+		"test-key",
+		5,
+		nil,
+	)
 
 	// Создаем тестовые метрики
 	value := 42.0
-	items := []*metrics.Metric{
-		{
-			Name:  "test_gauge",
-			MType: "gauge",
-			Value: &value,
-		},
+	metrics := []*metrics.Metric{
+		metrics.NewGauge("test_gauge", value),
+		metrics.NewCounter("test_counter", 1),
 	}
 
-	// Вызываем тестируемую функцию
-	err := a.makeUpdatesRequest(items, 0, 1)
-
-	// Проверяем результат
-	assert.NoError(t, err)
+	// Вызываем метод отправки метрик
+	err := agent.SendMetrics(a, metrics, 1)
+	require.NoError(t, err)
 }

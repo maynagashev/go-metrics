@@ -77,11 +77,11 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (59.8%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (68.0%)</option>
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (86.0%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (67.3%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/send.go (75.0%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (25.8%)</option>
 				
@@ -1815,14 +1815,14 @@ func (a *agent) Shutdown() <span class="cov8" title="1">{
 
                 // Пытаемся отправить метрики напрямую
                 err := a.sendMetrics(metrics, -1) // -1 означает, что это финальная отправка
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         slog.Error("Failed to send final metrics directly", "error", err)
 
                         // Если не удалось отправить напрямую, пробуем через очередь
                         select </span>{
                         case a.sendQueue &lt;- Job{Metrics: metrics}:<span class="cov0" title="0">
                                 slog.Info("Final metrics queued for sending")</span>
-                        default:<span class="cov0" title="0">
+                        default:<span class="cov8" title="1">
                                 slog.Error("Failed to queue final metrics, queue might be full")</span>
                         }
                 } else<span class="cov0" title="0"> {
@@ -1833,7 +1833,7 @@ func (a *agent) Shutdown() <span class="cov8" title="1">{
         }</span>
 
         // Закрываем каналы после отправки всех метрик
-        <span class="cov0" title="0">slog.Info("Closing send queue")
+        <span class="cov8" title="1">slog.Info("Closing send queue")
         close(a.sendQueue)
 
         // Ожидаем завершения всех горутин
@@ -1877,10 +1877,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2105,12 +2105,10 @@ import (
         "net/http"
         "time"
 
-        "github.com/maynagashev/go-metrics/pkg/crypto"
-        "github.com/maynagashev/go-metrics/pkg/sign"
-
-        "github.com/maynagashev/go-metrics/pkg/middleware/gzip"
-
         "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        "github.com/maynagashev/go-metrics/pkg/crypto"
+        "github.com/maynagashev/go-metrics/pkg/middleware/gzip"
+        "github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 const backoffFactor = 2
@@ -2118,9 +2116,9 @@ const backoffFactor = 2
 // Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
 func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov8" title="1">{
         // Отправляем все метрики пачкой на новый маршрут /updates
-        // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors).
+        // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors)
         for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov8" title="1">{
-                // Пауза перед повторной отправкой.
+                // Пауза перед повторной отправкой
                 if i &gt; 0 </span><span class="cov0" title="0">{
                         //nolint:gomnd // количество секунд для паузы зависит от номера попытки
                         sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
@@ -2132,13 +2130,13 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span c
                 }</span>
 
                 <span class="cov8" title="1">err := a.makeUpdatesRequest(items, i, workerID)
-                // Если нет ошибок выходим из цикла и функции.
+                // Если нет ошибок выходим из цикла и функции
                 if err == nil </span><span class="cov0" title="0">{
                         return nil
                 }</span>
 
                 // Логируем ошибку
-                <span class="cov0" title="0">slog.Error(
+                <span class="cov8" title="1">slog.Error(
                         fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
                         "workerID",
                         workerID,
@@ -2146,8 +2144,8 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span c
                         items,
                 )
 
-                // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки.
-                if !isRetriableSendError(err) </span><span class="cov0" title="0">{
+                // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки
+                if !a.isRetriableSendError(err) </span><span class="cov8" title="1">{
                         slog.Debug("non-retriable error, stopping retries", "workerID", workerID, "err", err)
                         return err
                 }</span>
@@ -2156,10 +2154,11 @@ func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span c
         <span class="cov0" title="0">return fmt.Errorf("failed to send metrics after %d retries", maxSendRetries)</span>
 }
 
-func isRetriableSendError(err error) bool <span class="cov8" title="1">{
+// Проверяет, является ли ошибка временной и можно ли повторить запрос.
+func (a *agent) isRetriableSendError(err error) bool <span class="cov8" title="1">{
         slog.Debug(fmt.Sprintf("isRetriableSendError: %#v", err))
 
-        // Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом.
+        // Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом
         var netErr net.Error
         if errors.As(err, &amp;netErr) </span><span class="cov8" title="1">{
                 slog.Debug(fmt.Sprintf("isRetriableSendError =&gt; AS net.Error: %#v", netErr))
@@ -2169,18 +2168,17 @@ func isRetriableSendError(err error) bool <span class="cov8" title="1">{
                 }</span>
         }
 
-        // Проверяем, является ли ошибка ошибкой сети.
+        // Проверяем, является ли ошибка ошибкой сети
         <span class="cov8" title="1">var opErr *net.OpError
         if errors.As(err, &amp;opErr) </span><span class="cov8" title="1">{
                 slog.Debug("isRetriableSendError =&gt; AS net.OpError", "err", err)
                 return true
         }</span>
 
-        // Если ошибка не является временной, возвращаем false.
+        // Если ошибка не является временной, возвращаем false
         <span class="cov8" title="1">return false</span>
 }
 
-// Отправка запроса на сервер с пачкой метрик, маршрут: `POST /updates`.
 // При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
 func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov8" title="1">{
         var err error
@@ -2195,18 +2193,18 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
                 items,
         )
 
-        // Создаем новый запрос.
+        // Создаем новый запрос
         req := a.client.R()
-        req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия.
+        req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия
         req.SetHeader("Content-Type", "application/json")
 
-        // Преобразуем метрики в JSON.
+        // Преобразуем метрики в JSON
         bytesBody, err := json.Marshal(items)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
 
-        // Если задан приватный ключ, добавляем хэш в заголовок запроса.
+        // Если задан приватный ключ, добавляем хэш в заголовок запроса
         <span class="cov8" title="1">if a.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
                 hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
                 req.SetHeader(sign.HeaderKey, hash)
@@ -2223,8 +2221,8 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
                 req.SetHeader("Content-Encrypted", "true")</span>
         }
 
-        // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок.
-        // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip".
+        // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок
+        // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip"
         <span class="cov8" title="1">if a.SendCompressedData </span><span class="cov8" title="1">{
                 req.SetHeader("Content-Encoding", "gzip")
                 bytesBody, err = gzip.Compress(bytesBody)
@@ -2240,12 +2238,31 @@ func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID in
                 return err
         }</span>
 
-        // Обрабатываем ответ сервера.
+        // Обрабатываем ответ сервера
         <span class="cov8" title="1">if res.StatusCode() != http.StatusOK </span><span class="cov8" title="1">{
                 return fmt.Errorf("unexpected status code: %d", res.StatusCode())
         }</span>
 
         <span class="cov8" title="1">return nil</span>
+}
+
+// Вспомогательные функции для тестирования
+
+// IsRetriableSendError - вспомогательная функция для тестирования,
+// которая предоставляет доступ к методу isRetriableSendError.
+func IsRetriableSendError(err error) bool <span class="cov8" title="1">{
+        // Создаем минимальный экземпляр агента только для тестирования этой функции
+        a := &amp;agent{}
+        return a.isRetriableSendError(err)
+}</span>
+
+// SendMetrics - вспомогательная функция для тестирования, которая предоставляет доступ к методу makeUpdatesRequest.
+func SendMetrics(a Agent, metrics []*metrics.Metric, workerID int) error <span class="cov8" title="1">{
+        // Мы можем получить доступ к методам конкретного типа только через приведение типа
+        if agentImpl, ok := a.(*agent); ok </span><span class="cov8" title="1">{
+                return agentImpl.makeUpdatesRequest(metrics, 0, workerID)
+        }</span>
+        <span class="cov0" title="0">return errors.New("invalid agent implementation")</span>
 }
 </pre>
 		
