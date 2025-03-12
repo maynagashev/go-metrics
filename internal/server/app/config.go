@@ -28,6 +28,8 @@ type Config struct {
 	PrivateRSAKey *rsa.PrivateKey
 	// Конфигурационный файл
 	ConfigFile string
+	// TrustedSubnet CIDR доверенной подсети для проверки IP-адресов агентов
+	TrustedSubnet string
 }
 
 // DatabaseConfig содержит настройки подключения к базе данных.
@@ -48,9 +50,10 @@ func NewConfig(flags *Flags) *Config {
 			DSN:            flags.Database.DSN,
 			MigrationsPath: flags.Database.MigrationsPath,
 		},
-		PrivateKey:  flags.PrivateKey,
-		EnablePprof: flags.Server.EnablePprof,
-		ConfigFile:  flags.ConfigFile,
+		PrivateKey:    flags.PrivateKey,
+		EnablePprof:   flags.Server.EnablePprof,
+		ConfigFile:    flags.ConfigFile,
+		TrustedSubnet: flags.Server.TrustedSubnet,
 	}
 
 	// Load private key for decryption if provided
@@ -105,4 +108,9 @@ func (cfg *Config) IsRequestSigningEnabled() bool {
 // IsEncryptionEnabled возвращает true, если включено шифрование.
 func (cfg *Config) IsEncryptionEnabled() bool {
 	return cfg.PrivateRSAKey != nil
+}
+
+// IsTrustedSubnetEnabled возвращает true, если указана доверенная подсеть.
+func (cfg *Config) IsTrustedSubnetEnabled() bool {
+	return cfg.TrustedSubnet != ""
 }

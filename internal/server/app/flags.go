@@ -21,6 +21,8 @@ type Flags struct {
 		Restore bool
 		// Включить профилирование через pprof
 		EnablePprof bool
+		// CIDR доверенной подсети для проверки IP-адресов агентов
+		TrustedSubnet string
 	}
 
 	Database struct {
@@ -117,6 +119,14 @@ func registerCommandLineFlags(flags *Flags) {
 	// Добавляем флаг для пути к файлу конфигурации
 	flag.StringVar(&flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
 	flag.StringVar(&flags.ConfigFile, "config", "", "Путь к файлу конфигурации в формате JSON")
+
+	// Добавляем флаг для доверенной подсети
+	flag.StringVar(
+		&flags.Server.TrustedSubnet,
+		"t",
+		"",
+		"CIDR доверенной подсети для проверки IP-адресов агентов",
+	)
 }
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
@@ -166,6 +176,11 @@ func applyEnvironmentVariables(flags *Flags) error {
 	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
 	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
 		flags.ConfigFile = envConfigFile
+	}
+
+	// Если передана доверенная подсеть в параметрах окружения, используем её
+	if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok {
+		flags.Server.TrustedSubnet = envTrustedSubnet
 	}
 
 	return nil

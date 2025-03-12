@@ -89,11 +89,11 @@
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/server/app/app.go (8.7%)</option>
 				
-				<option value="file17">github.com/maynagashev/go-metrics/internal/server/app/config.go (64.7%)</option>
+				<option value="file17">github.com/maynagashev/go-metrics/internal/server/app/config.go (61.1%)</option>
 				
-				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (100.0%)</option>
+				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (97.1%)</option>
 				
-				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/flags.go (62.5%)</option>
+				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/flags.go (62.7%)</option>
 				
 				<option value="file20">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (63.6%)</option>
 				
@@ -115,33 +115,35 @@
 				
 				<option value="file29">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (55.6%)</option>
 				
-				<option value="file30">github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go (85.7%)</option>
+				<option value="file30">github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go (100.0%)</option>
 				
-				<option value="file31">github.com/maynagashev/go-metrics/internal/server/router/router.go (100.0%)</option>
+				<option value="file31">github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go (85.7%)</option>
 				
-				<option value="file32">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (76.0%)</option>
+				<option value="file32">github.com/maynagashev/go-metrics/internal/server/router/router.go (100.0%)</option>
 				
-				<option value="file33">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
+				<option value="file33">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (76.0%)</option>
 				
-				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
+				<option value="file34">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
 				
-				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
+				<option value="file35">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
 				
-				<option value="file36">github.com/maynagashev/go-metrics/mocks/Repository.go (75.0%)</option>
+				<option value="file36">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
 				
-				<option value="file37">github.com/maynagashev/go-metrics/mocks/Storage.go (85.7%)</option>
+				<option value="file37">github.com/maynagashev/go-metrics/mocks/Repository.go (75.0%)</option>
 				
-				<option value="file38">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
+				<option value="file38">github.com/maynagashev/go-metrics/mocks/Storage.go (85.7%)</option>
 				
-				<option value="file39">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (66.7%)</option>
+				<option value="file39">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
-				<option value="file40">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
+				<option value="file40">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (66.7%)</option>
 				
-				<option value="file41">github.com/maynagashev/go-metrics/pkg/random/float.go (80.0%)</option>
+				<option value="file41">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
-				<option value="file42">github.com/maynagashev/go-metrics/pkg/response/response.go (85.7%)</option>
+				<option value="file42">github.com/maynagashev/go-metrics/pkg/random/float.go (80.0%)</option>
 				
-				<option value="file43">github.com/maynagashev/go-metrics/pkg/sign/sign.go (90.0%)</option>
+				<option value="file43">github.com/maynagashev/go-metrics/pkg/response/response.go (85.7%)</option>
+				
+				<option value="file44">github.com/maynagashev/go-metrics/pkg/sign/sign.go (90.0%)</option>
 				
 				</select>
 			</div>
@@ -1936,10 +1938,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Debug("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -2590,6 +2592,8 @@ type Config struct {
         PrivateRSAKey *rsa.PrivateKey
         // Конфигурационный файл
         ConfigFile string
+        // TrustedSubnet CIDR доверенной подсети для проверки IP-адресов агентов
+        TrustedSubnet string
 }
 
 // DatabaseConfig содержит настройки подключения к базе данных.
@@ -2610,9 +2614,10 @@ func NewConfig(flags *Flags) *Config <span class="cov8" title="1">{
                         DSN:            flags.Database.DSN,
                         MigrationsPath: flags.Database.MigrationsPath,
                 },
-                PrivateKey:  flags.PrivateKey,
-                EnablePprof: flags.Server.EnablePprof,
-                ConfigFile:  flags.ConfigFile,
+                PrivateKey:    flags.PrivateKey,
+                EnablePprof:   flags.Server.EnablePprof,
+                ConfigFile:    flags.ConfigFile,
+                TrustedSubnet: flags.Server.TrustedSubnet,
         }
 
         // Load private key for decryption if provided
@@ -2668,6 +2673,11 @@ func (cfg *Config) IsRequestSigningEnabled() bool <span class="cov8" title="1">{
 func (cfg *Config) IsEncryptionEnabled() bool <span class="cov8" title="1">{
         return cfg.PrivateRSAKey != nil
 }</span>
+
+// IsTrustedSubnetEnabled возвращает true, если указана доверенная подсеть.
+func (cfg *Config) IsTrustedSubnetEnabled() bool <span class="cov0" title="0">{
+        return cfg.TrustedSubnet != ""
+}</span>
 </pre>
 		
 		<pre class="file" id="file18" style="display: none">// Package app реализует основную логику работы HTTP-сервера.
@@ -2713,6 +2723,7 @@ type JSONConfig struct {
         DatabaseDSN   string `json:"database_dsn"`   // Строка подключения к базе данных
         CryptoKey     string `json:"crypto_key"`     // Путь к файлу с приватным ключом для расшифровки
         EnablePprof   bool   `json:"enable_pprof"`   // Включить профилирование через pprof
+        TrustedSubnet string `json:"trusted_subnet"` // CIDR доверенной подсети для проверки IP-адресов агентов
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -2785,6 +2796,11 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
                 flags.Server.EnablePprof = jsonConfig.EnablePprof
         }</span>
 
+        // Доверенная подсеть
+        <span class="cov8" title="1">if flags.Server.TrustedSubnet == "" &amp;&amp; jsonConfig.TrustedSubnet != "" </span><span class="cov0" title="0">{
+                flags.Server.TrustedSubnet = jsonConfig.TrustedSubnet
+        }</span>
+
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
@@ -2812,6 +2828,8 @@ type Flags struct {
                 Restore bool
                 // Включить профилирование через pprof
                 EnablePprof bool
+                // CIDR доверенной подсети для проверки IP-адресов агентов
+                TrustedSubnet string
         }
 
         Database struct {
@@ -2908,6 +2926,14 @@ func registerCommandLineFlags(flags *Flags) <span class="cov8" title="1">{
         // Добавляем флаг для пути к файлу конфигурации
         flag.StringVar(&amp;flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
         flag.StringVar(&amp;flags.ConfigFile, "config", "", "Путь к файлу конфигурации в формате JSON")
+
+        // Добавляем флаг для доверенной подсети
+        flag.StringVar(
+                &amp;flags.Server.TrustedSubnet,
+                "t",
+                "",
+                "CIDR доверенной подсети для проверки IP-адресов агентов",
+        )
 }</span>
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
@@ -2957,6 +2983,11 @@ func applyEnvironmentVariables(flags *Flags) error <span class="cov8" title="1">
         // Если передан путь к файлу конфигурации в параметрах окружения, используем его
         <span class="cov8" title="1">if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov0" title="0">{
                 flags.ConfigFile = envConfigFile
+        }</span>
+
+        // Если передана доверенная подсеть в параметрах окружения, используем её
+        <span class="cov8" title="1">if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok </span><span class="cov0" title="0">{
+                flags.Server.TrustedSubnet = envTrustedSubnet
         }</span>
 
         <span class="cov8" title="1">return nil</span>
@@ -3700,7 +3731,95 @@ func (gz *gzipReadCloser) Close() error <span class="cov0" title="0">{
 }
 </pre>
 		
-		<pre class="file" id="file30" style="display: none">// Package logger реализует middleware для логирования HTTP-запросов.
+		<pre class="file" id="file30" style="display: none">// Package ipfilter содержит middleware для фильтрации запросов по IP-адресу.
+// Проверяет, что IP-адрес клиента входит в доверенную подсеть.
+package ipfilter
+
+import (
+        "net"
+        "net/http"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        "go.uber.org/zap"
+)
+
+// Middleware представляет middleware для фильтрации запросов по IP-адресу.
+type Middleware struct {
+        log    *zap.Logger
+        config *app.Config
+        subnet *net.IPNet
+}
+
+// New создает новый middleware для фильтрации запросов по IP-адресу.
+func New(config *app.Config, log *zap.Logger) func(http.Handler) http.Handler <span class="cov8" title="1">{
+        m := &amp;Middleware{
+                log:    log,
+                config: config,
+        }
+
+        // Если указана доверенная подсеть, парсим её
+        if config.IsTrustedSubnetEnabled() </span><span class="cov8" title="1">{
+                _, ipNet, err := net.ParseCIDR(config.TrustedSubnet)
+                if err != nil </span><span class="cov8" title="1">{
+                        log.Error("failed to parse trusted subnet CIDR",
+                                zap.String("cidr", config.TrustedSubnet),
+                                zap.Error(err))
+                }</span> else<span class="cov8" title="1"> {
+                        m.subnet = ipNet
+                        log.Info("trusted subnet enabled",
+                                zap.String("cidr", config.TrustedSubnet))
+                }</span>
+        }
+
+        <span class="cov8" title="1">return m.Handler</span>
+}
+
+// Handler обрабатывает запрос, проверяя IP-адрес клиента.
+func (m *Middleware) Handler(next http.Handler) http.Handler <span class="cov8" title="1">{
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                // Если доверенная подсеть не указана или не удалось её распарсить, пропускаем запрос
+                if m.subnet == nil </span><span class="cov8" title="1">{
+                        next.ServeHTTP(w, r)
+                        return
+                }</span>
+
+                // Получаем IP-адрес из заголовка X-Real-IP
+                <span class="cov8" title="1">ipStr := r.Header.Get("X-Real-IP")
+                if ipStr == "" </span><span class="cov8" title="1">{
+                        m.log.Warn("request without X-Real-IP header",
+                                zap.String("remote_addr", r.RemoteAddr))
+                        next.ServeHTTP(w, r)
+                        return
+                }</span>
+
+                // Парсим IP-адрес
+                <span class="cov8" title="1">ip := net.ParseIP(ipStr)
+                if ip == nil </span><span class="cov8" title="1">{
+                        m.log.Warn("invalid IP address in X-Real-IP header",
+                                zap.String("ip", ipStr))
+                        http.Error(w, "Invalid IP address", http.StatusBadRequest)
+                        return
+                }</span>
+
+                // Проверяем, входит ли IP-адрес в доверенную подсеть
+                <span class="cov8" title="1">if !m.subnet.Contains(ip) </span><span class="cov8" title="1">{
+                        m.log.Warn("IP address not in trusted subnet",
+                                zap.String("ip", ipStr),
+                                zap.String("subnet", m.config.TrustedSubnet))
+                        http.Error(w, "Forbidden", http.StatusForbidden)
+                        return
+                }</span>
+
+                // IP-адрес входит в доверенную подсеть, пропускаем запрос
+                <span class="cov8" title="1">m.log.Debug("IP address in trusted subnet",
+                        zap.String("ip", ipStr),
+                        zap.String("subnet", m.config.TrustedSubnet))
+                next.ServeHTTP(w, r)</span>
+        })
+}
+</pre>
+		
+		<pre class="file" id="file31" style="display: none">// Package logger реализует middleware для логирования HTTP-запросов.
 // Обеспечивает логирование всех входящих запросов и их результатов.
 package logger
 
@@ -3773,7 +3892,7 @@ func readRequestBody(r *http.Request, log *zap.Logger) []byte <span class="cov8"
 }
 </pre>
 		
-		<pre class="file" id="file31" style="display: none">// Package router реализует маршрутизацию HTTP-запросов.
+		<pre class="file" id="file32" style="display: none">// Package router реализует маршрутизацию HTTP-запросов.
 // Определяет все доступные эндпоинты и связывает их с соответствующими обработчиками.
 package router
 
@@ -3793,6 +3912,7 @@ import (
         plainUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
         plainValue "github.com/maynagashev/go-metrics/internal/server/handlers/plain/value"
         "github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool"
+        "github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter"
         "github.com/maynagashev/go-metrics/internal/server/middleware/logger"
         "github.com/maynagashev/go-metrics/internal/server/storage"
         cryptoMiddleware "github.com/maynagashev/go-metrics/pkg/middleware/crypto"
@@ -3816,6 +3936,8 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
         r.Use(decompresspool.New(log))
         // Используем единый логгер для запросов, вместо встроенного логгера chi
         r.Use(logger.New(log))
+        // Добавляем middleware для проверки IP-адреса
+        r.Use(ipfilter.New(config, log))
         // Добавляем middleware для обработки шифрования
         r.Use(cryptoMiddleware.New(config, log))
 
@@ -3854,7 +3976,7 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 }
 </pre>
 		
-		<pre class="file" id="file32" style="display: none">// Package memory provides an in-memory storage for metrics.
+		<pre class="file" id="file33" style="display: none">// Package memory provides an in-memory storage for metrics.
 package memory
 
 import (
@@ -4143,7 +4265,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov8" title="1
 }
 </pre>
 		
-		<pre class="file" id="file33" style="display: none">// Package migration предоставляет функционал для управления миграциями базы данных.
+		<pre class="file" id="file34" style="display: none">// Package migration предоставляет функционал для управления миграциями базы данных.
 // Обеспечивает корректное обновление схемы базы данных при изменениях.
 package migration
 
@@ -4180,7 +4302,7 @@ func Up(migrationsPath string, dsn string) error <span class="cov0" title="0">{
 }
 </pre>
 		
-		<pre class="file" id="file34" style="display: none">// Package pgstorage реализует хранилище метрик на основе PostgreSQL.
+		<pre class="file" id="file35" style="display: none">// Package pgstorage реализует хранилище метрик на основе PostgreSQL.
 // Предоставляет методы для сохранения и получения метрик из базы данных.
 package pgstorage
 
@@ -4427,7 +4549,7 @@ func isRetriableError(err *pgconn.PgError) bool <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file35" style="display: none">// Package storage определяет интерфейсы и базовые типы для хранения метрик.
+		<pre class="file" id="file36" style="display: none">// Package storage определяет интерфейсы и базовые типы для хранения метрик.
 // Предоставляет общий интерфейс для различных реализаций хранилищ.
 package storage
 
@@ -4482,7 +4604,7 @@ type Repository interface {
 }
 </pre>
 		
-		<pre class="file" id="file36" style="display: none">// Package mocks содержит автоматически сгенерированные моки для тестирования.
+		<pre class="file" id="file37" style="display: none">// Package mocks содержит автоматически сгенерированные моки для тестирования.
 // Предоставляет имитации интерфейсов хранилища для модульного тестирования.
 // Code generated by mockery v2.43.1. DO NOT EDIT.
 package mocks
@@ -4690,7 +4812,7 @@ func NewRepository(t interface {
 }
 </pre>
 		
-		<pre class="file" id="file37" style="display: none">// Code generated by mockery v2.43.1. DO NOT EDIT.
+		<pre class="file" id="file38" style="display: none">// Code generated by mockery v2.43.1. DO NOT EDIT.
 
 package mocks
 
@@ -4741,7 +4863,7 @@ func NewStorage(t interface {
 }
 </pre>
 		
-		<pre class="file" id="file38" style="display: none">// Package crypto предоставляет функции для асимметричного шифрования и расшифровки.
+		<pre class="file" id="file39" style="display: none">// Package crypto предоставляет функции для асимметричного шифрования и расшифровки.
 // Он использует RSA шифрование для безопасной связи между агентом и сервером.
 package crypto
 
@@ -5059,7 +5181,7 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string, bits int) error <span
 }
 </pre>
 		
-		<pre class="file" id="file39" style="display: none">// Package crypto предоставляет middleware для обработки зашифрованных запросов.
+		<pre class="file" id="file40" style="display: none">// Package crypto предоставляет middleware для обработки зашифрованных запросов.
 package crypto
 
 import (
@@ -5244,7 +5366,7 @@ func (w *signedResponseWriter) Write(b []byte) (int, error) <span class="cov8" t
 }</span>
 </pre>
 		
-		<pre class="file" id="file40" style="display: none">// Package gzip предоставляет функции для сжатия данных методом gzip.
+		<pre class="file" id="file41" style="display: none">// Package gzip предоставляет функции для сжатия данных методом gzip.
 package gzip
 
 import (
@@ -5283,7 +5405,7 @@ func Compress(data []byte) ([]byte, error) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file41" style="display: none">// Package random предоставляет функции для генерации случайных чисел.
+		<pre class="file" id="file42" style="display: none">// Package random предоставляет функции для генерации случайных чисел.
 // Использует криптографически стойкий генератор случайных чисел.
 package random
 
@@ -5308,7 +5430,7 @@ func GenerateRandomFloat64() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file42" style="display: none">// Package response предоставляет функции для формирования стандартизированных HTTP-ответов.
+		<pre class="file" id="file43" style="display: none">// Package response предоставляет функции для формирования стандартизированных HTTP-ответов.
 // Поддерживает ответы в формате JSON с информацией о статусе и сообщением.
 package response
 
@@ -5366,7 +5488,7 @@ func writeResponse(w http.ResponseWriter, resp Response, statusCode int) <span c
 }
 </pre>
 		
-		<pre class="file" id="file43" style="display: none">// Package sign предоставляет функции для создания и проверки цифровых подписей.
+		<pre class="file" id="file44" style="display: none">// Package sign предоставляет функции для создания и проверки цифровых подписей.
 // Реализует подпись данных с использованием алгоритма HMAC-SHA256.
 package sign
 
