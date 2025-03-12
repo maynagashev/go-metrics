@@ -171,6 +171,40 @@ func TestMakeUpdatesRequest_WithCompression(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestMakeUpdatesRequest_WithRealIP(t *testing.T) {
+	// Создаем тестовый сервер
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Проверяем, что запрос содержит заголовок X-Real-IP
+		assert.NotEmpty(t, r.Header.Get("X-Real-IP"))
+		// Проверяем, что IP-адрес в заголовке X-Real-IP является валидным
+		ip := net.ParseIP(r.Header.Get("X-Real-IP"))
+		assert.NotNil(t, ip)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	// Создаем агента для тестирования
+	a := agent.New(
+		server.URL,
+		time.Second,
+		time.Second,
+		"",
+		5,
+		nil,
+	)
+
+	// Создаем тестовые метрики
+	value := 42.0
+	metrics := []*metrics.Metric{
+		metrics.NewGauge("test_gauge", value),
+		metrics.NewCounter("test_counter", 1),
+	}
+
+	// Вызываем метод отправки метрик
+	err := agent.SendMetrics(a, metrics, 1)
+	require.NoError(t, err)
+}
+
 func TestMakeUpdatesRequest_WithSigning(t *testing.T) {
 	// Создаем тестовый сервер
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
