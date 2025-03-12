@@ -90,6 +90,7 @@ func TestMain(t *testing.T) {
 		privateKey string,
 		rateLimit int,
 		publicKey *rsa.PublicKey,
+		realIP string,
 	) agent.Agent {
 		// Проверяем, что параметры переданы правильно
 		assert.Equal(t, "http://localhost:9090", serverURL)
@@ -98,6 +99,7 @@ func TestMain(t *testing.T) {
 		assert.Equal(t, "test-key", privateKey)
 		assert.Equal(t, 5, rateLimit)
 		assert.Nil(t, publicKey)
+		assert.Equal(t, "", realIP)
 		return mockAgent
 	}
 

@@ -56,11 +56,7 @@ func Example_jsonConfig() {
 	flags.EnablePprof = false
 	flags.PprofPort = "6060"
 
-	applyErr := ApplyJSONConfig(flags, jsonConfig)
-	if applyErr != nil {
-		fmt.Printf("Ошибка при применении конфигурации: %v\n", applyErr)
-		return
-	}
+	ApplyJSONConfig(flags, jsonConfig)
 
 	// Выводим результат применения конфигурации
 	fmt.Printf("Адрес сервера после применения: %s\n", flags.Server.Addr)

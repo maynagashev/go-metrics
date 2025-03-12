@@ -81,8 +81,7 @@ func TestApplyJSONConfig(t *testing.T) {
 		PprofPort:      "7070",
 	}
 
-	err := ApplyJSONConfig(flags, jsonConfig)
-	require.NoError(t, err)
+	ApplyJSONConfig(flags, jsonConfig)
 
 	assert.Equal(t, "localhost:9090", flags.Server.Addr)
 	assert.InEpsilon(t, 5.0, flags.Server.ReportInterval, 0.001) // 5s -> 5 секунд
@@ -95,8 +94,7 @@ func TestApplyJSONConfig(t *testing.T) {
 	// Тест 2: Применение nil конфигурации
 	flags = &Flags{}
 	flags.Server.Addr = defaultAgentServerAddr
-	err = ApplyJSONConfig(flags, nil)
-	require.NoError(t, err)
+	ApplyJSONConfig(flags, nil)
 	assert.Equal(t, defaultAgentServerAddr, flags.Server.Addr) // Значение не должно измениться
 
 	// Тест 3: Некорректный формат интервала
@@ -105,6 +103,7 @@ func TestApplyJSONConfig(t *testing.T) {
 	jsonConfig = &JSONConfig{
 		ReportInterval: "invalid",
 	}
-	err = ApplyJSONConfig(flags, jsonConfig)
-	require.Error(t, err)
+	ApplyJSONConfig(flags, jsonConfig)
+	// Проверяем, что значение не изменилось из-за некорректного формата
+	assert.InEpsilon(t, defaultReportInterval, flags.Server.ReportInterval, 0.001)
 }
