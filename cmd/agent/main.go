@@ -74,6 +74,7 @@ func main() {
 		flags.PrivateKey,
 		flags.RateLimit,
 		publicKey,
+		flags.RealIP,
 	)
 
 	// Запускаем горутину для обработки сигналов
