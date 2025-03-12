@@ -52,9 +52,11 @@ github.com/maynagashev/go-metrics/internal/agent/agent.go:151:						Shutdown			8
 github.com/maynagashev/go-metrics/internal/agent/agent.go:198:						runPolls			33.3%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:243:						runReports			36.8%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:283:						GetMetrics			100.0%
+github.com/maynagashev/go-metrics/internal/agent/agent.go:338:						initHTTPClient			88.9%
 github.com/maynagashev/go-metrics/internal/agent/collect.go:21:						ResetMetrics			100.0%
 github.com/maynagashev/go-metrics/internal/agent/collect.go:27:						CollectRuntimeMetrics		94.1%
 github.com/maynagashev/go-metrics/internal/agent/collect.go:76:						CollectAdditionalMetrics	70.0%
+github.com/maynagashev/go-metrics/internal/agent/ip.go:15:						GetOutboundIP			57.1%
 github.com/maynagashev/go-metrics/internal/agent/send.go:21:						sendMetrics			61.5%
 github.com/maynagashev/go-metrics/internal/agent/send.go:62:						isRetriableSendError		100.0%
 github.com/maynagashev/go-metrics/internal/agent/send.go:87:						makeUpdatesRequest		71.0%

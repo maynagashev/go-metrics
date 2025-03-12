@@ -1,156 +1,95 @@
 Build version: N/A
 Build date: N/A
 Build commit: N/A
-2025-03-12T18:34:30.014+0700	DEBUG	pgstorage/pgstorage.go:47	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
+2025-03-12T19:04:19.525+0700	DEBUG	pgstorage/pgstorage.go:47	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
 
-2025/03/12 18:34:30 INFO Запуск миграций... path=migrations/server
-2025/03/12 18:34:30 INFO Нет новых миграций для применения.
-2025-03-12T18:34:30.044+0700	INFO	ipfilter/ipfilter.go:36	trusted subnet enabled	{"cidr": "192.168.1.0/24"}
-2025-03-12T18:34:30.044+0700	INFO	logger/logger.go:18	logger middleware enabled
-2025-03-12T18:34:30.044+0700	INFO	decompresspool/decompresspool.go:42	decompress middleware enabled
-2025-03-12T18:34:30.044+0700	DEBUG	pgstorage/pgstorage.go:47	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
+2025/03/12 19:04:19 INFO Запуск миграций... path=migrations/server
+2025/03/12 19:04:19 INFO Нет новых миграций для применения.
+2025-03-12T19:04:19.551+0700	INFO	ipfilter/ipfilter.go:36	trusted subnet enabled	{"cidr": "192.168.1.0/24"}
+2025-03-12T19:04:19.551+0700	INFO	logger/logger.go:18	logger middleware enabled
+2025-03-12T19:04:19.551+0700	INFO	decompresspool/decompresspool.go:42	decompress middleware enabled
+2025-03-12T19:04:19.551+0700	DEBUG	pgstorage/pgstorage.go:47	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
 
-2025/03/12 18:34:30 INFO Запуск миграций... path=migrations/server
-2025/03/12 18:34:30 INFO Нет новых миграций для применения.
-2025-03-12T18:34:30.073+0700	INFO	app/app.go:41	starting server	{"config": {"Addr":"localhost:8080","StoreInterval":300,"FileStoragePath":"/tmp/metrics-db.json","Restore":true,"Database":{"DSN":"postgres://metrics:password@localhost:5432/metrics?sslmode=disable","MigrationsPath":"migrations/server"},"PrivateKey":"private_key_example","EnablePprof":false,"PrivateRSAKey":null,"ConfigFile":"","TrustedSubnet":"192.168.1.0/24"}}
-2025-03-12T18:34:30.074+0700	INFO	app/app.go:57	server is listening	{"addr": "localhost:8080"}
-2025-03-12T18:34:41.890+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "192.168.2.1", "subnet": "192.168.1.0/24"}
-github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.StripSlashes.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.Recoverer.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.RequestID.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5.(*Mux).ServeHTTP
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
-net/http.serverHandler.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
-net/http.(*conn).serve
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
-2025-03-12T18:34:41.890+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:57984", "user_agent": "curl/8.9.1", "request_id": "ubuntu/PhtaGe2YFy-000001", "headers": {"Accept":["*/*"],"Content-Length":["40"],"Content-Type":["application/json"],"User-Agent":["curl/8.9.1"],"X-Real-Ip":["192.168.2.1"]}, "request_body": "{\"id\":\"test\",\"type\":\"counter\",\"delta\":1}", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "245.145µs"}
-2025-03-12T18:35:28.775+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
-2025-03-12T18:35:28.775+0700	DEBUG	update/json_update.go:81	request body	{"body": "{\"id\":\"test\",\"type\":\"counter\",\"delta\":1}"}
-2025-03-12T18:35:28.775+0700	DEBUG	update/json_update.go:43	parsed metric	{"metric": {"id":"test","type":"counter","delta":1}}
-2025-03-12T18:35:28.792+0700	ERROR	pgstorage/pgstorage.go:139	Failed to get metric after 4 tries: no rows in result set
-github.com/maynagashev/go-metrics/internal/server/storage/pgstorage.(*PgStorage).GetMetric
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:139
-github.com/maynagashev/go-metrics/internal/server/storage/pgstorage.(*PgStorage).UpdateMetric
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:166
-github.com/maynagashev/go-metrics/internal/server/router.New.New.func6
-	/home/dev/src/maynagashev/go-metrics/internal/server/handlers/json/update/json_update.go:47
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5.(*Mux).routeHTTP
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:459
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:84
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:85
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.StripSlashes.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.Recoverer.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.RequestID.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5.(*Mux).ServeHTTP
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
-net/http.serverHandler.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
-net/http.(*conn).serve
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
-2025-03-12T18:35:28.800+0700	INFO	update/json_update.go:64	metric Metric{Name: test, Type: counter, Delta: 1} updated, result: Metric{Name: test, Type: counter, Delta: 1}
-2025-03-12T18:35:28.800+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:34422", "user_agent": "curl/8.9.1", "request_id": "ubuntu/PhtaGe2YFy-000002", "headers": {"Accept":["*/*"],"Content-Length":["40"],"Content-Type":["application/json"],"User-Agent":["curl/8.9.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"test\",\"type\":\"counter\",\"delta\":1}", "status": 200, "response_bytes": 139, "response_headers": {"Content-Type":["application/json"],"Hashsha256":["e21f77ac951479eff2e282194ceab79420da6c364e6d19481601c8d243f84e5e"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: test, Type: counter, Delta: 1} updated, result: Metric{Name: test, Type: counter, Delta: 1}\"}", "duration": "25.22202ms"}
-2025-03-12T18:35:52.491+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
-2025-03-12T18:35:52.492+0700	DEBUG	update/json_update.go:81	request body	{"body": "{\"id\":\"test\",\"type\":\"counter\",\"delta\":1}"}
-2025-03-12T18:35:52.492+0700	DEBUG	update/json_update.go:43	parsed metric	{"metric": {"id":"test","type":"counter","delta":1}}
-2025-03-12T18:35:52.499+0700	INFO	update/json_update.go:64	metric Metric{Name: test, Type: counter, Delta: 1} updated, result: Metric{Name: test, Type: counter, Delta: 2}
-2025-03-12T18:35:52.499+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:41622", "user_agent": "curl/8.9.1", "request_id": "ubuntu/PhtaGe2YFy-000003", "headers": {"Accept":["*/*"],"Content-Length":["40"],"Content-Type":["application/json"],"User-Agent":["curl/8.9.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"test\",\"type\":\"counter\",\"delta\":1}", "status": 200, "response_bytes": 139, "response_headers": {"Content-Type":["application/json"],"Hashsha256":["879152840b96726172e0359e1602a1de9d087ad5122a0167cf984e484d27b665"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: test, Type: counter, Delta: 1} updated, result: Metric{Name: test, Type: counter, Delta: 2}\"}", "duration": "7.258919ms"}
-2025-03-12T18:35:56.261+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "192.168.2.1", "subnet": "192.168.1.0/24"}
-github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.StripSlashes.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.Recoverer.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.RequestID.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5.(*Mux).ServeHTTP
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
-net/http.serverHandler.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
-net/http.(*conn).serve
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
-2025-03-12T18:35:56.261+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:34942", "user_agent": "curl/8.9.1", "request_id": "ubuntu/PhtaGe2YFy-000004", "headers": {"Accept":["*/*"],"Content-Length":["40"],"Content-Type":["application/json"],"User-Agent":["curl/8.9.1"],"X-Real-Ip":["192.168.2.1"]}, "request_body": "{\"id\":\"test\",\"type\":\"counter\",\"delta\":1}", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "177.791µs"}
-2025-03-12T18:36:37.184+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
-2025-03-12T18:36:37.184+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:52774"}
+2025/03/12 19:04:19 INFO Запуск миграций... path=migrations/server
+2025/03/12 19:04:19 INFO Нет новых миграций для применения.
+2025-03-12T19:04:19.582+0700	INFO	app/app.go:41	starting server	{"config": {"Addr":"localhost:8080","StoreInterval":300,"FileStoragePath":"/tmp/metrics-db.json","Restore":true,"Database":{"DSN":"postgres://metrics:password@localhost:5432/metrics?sslmode=disable","MigrationsPath":"migrations/server"},"PrivateKey":"private_key_example","EnablePprof":false,"PrivateRSAKey":null,"ConfigFile":"","TrustedSubnet":"192.168.1.0/24"}}
+2025-03-12T19:04:19.583+0700	INFO	app/app.go:57	server is listening	{"addr": "localhost:8080"}
+2025-03-12T19:04:27.502+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:54068"}
 github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
 	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:04:27.502+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:54068", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000001", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "325.555µs"}
+2025-03-12T19:04:27.511+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:54084"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:04:27.512+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:54084", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000002", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "907.107µs"}
+2025-03-12T19:04:27.518+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:04:27.519+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
 net/http.HandlerFunc.ServeHTTP
 	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
 github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
@@ -183,11 +122,173 @@ net/http.serverHandler.ServeHTTP
 	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
 net/http.(*conn).serve
 	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
-2025-03-12T18:36:37.185+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52774", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/PhtaGe2YFy-000005", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["658"],"Content-Type":["application/json"],"Hashsha256":["425bd25b37484ef39da4d7c14e6bb655503efdb61091eea4221d1e8b7d4bfe6d"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"]}, "request_body": "[{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":48960},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.9881517886337683},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2416640},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2416640},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":3.517587939620406},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":2.49999999996362},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1795072},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":1613},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":491520},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":655503360},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":1.0101010101325607},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":0.5000000001018634},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":12.12121212159073},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":133},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":2.5125628142283607},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.5151515151515151},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":2.0202020200813853},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":1746},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":515264},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1286144},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3702784},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":827396},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8344840},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":4.102564102442598},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5025125628273909},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.0050251254719689},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1447908},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":34880},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":515264},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":3.571428571481603},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":6.6326530608456915},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":3.5714285713755394},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":1.5075376883466707},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":1.0050251258375948},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":7.1794871797875945},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":515264},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":1.0000000000509317},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":491520},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "175.358µs"}
-2025-03-12T18:36:41.630+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
-2025-03-12T18:36:41.633+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:52774"}
+2025-03-12T19:04:27.519+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/metrics/updates", "remote_addr": "127.0.0.1:54100", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000003", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["360"],"Content-Type":["application/json"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":32640},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":85},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":1220},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2654208},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":24640},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8082696},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1179648},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2654208},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":360448},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":430248},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":1305},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1447709},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3833856},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":600275},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":360448},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1776568},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":430248},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":430248},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":0}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "142.762µs"}
+2025-03-12T19:04:27.617+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:54108"}
 github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
 	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:04:27.617+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/value", "remote_addr": "127.0.0.1:54108", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000004", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["33"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\"}", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "173.749µs"}
+2025-03-12T19:04:27.619+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:54108"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:04:27.619+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates/", "remote_addr": "127.0.0.1:54108", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000005", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "210.904µs"}
+2025-03-12T19:04:27.623+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:54122"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:04:27.624+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/ping", "remote_addr": "127.0.0.1:54122", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000006", "headers": {"Accept-Encoding":["gzip"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "219.576µs"}
+2025-03-12T19:05:32.050+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:32.050+0700	DEBUG	update/json_update.go:81	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
+2025-03-12T19:05:32.050+0700	DEBUG	update/json_update.go:43	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
+2025-03-12T19:05:32.073+0700	INFO	update/json_update.go:64	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
+2025-03-12T19:05:32.078+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:41726", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000007", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "28.423188ms"}
+2025-03-12T19:05:32.083+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:41732"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:05:32.083+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:41732", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000008", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "159.521µs"}
+2025-03-12T19:05:32.186+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:32.190+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/value", "remote_addr": "127.0.0.1:41740", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000009", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["33"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\"}", "status": 200, "response_bytes": 48, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["96d52c185d37514e694874bb5e60f10ce0b5d9cda7a8f5bce1f969cf5288af39"],"Vary":["Accept-Encoding"]}, "response_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "duration": "3.594801ms"}
+2025-03-12T19:05:32.192+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:32.192+0700	DEBUG	updates/json_updates.go:79	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "", "calc_hash": "", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]"}
+2025-03-12T19:05:32.199+0700	INFO	updates/json_updates.go:57	Metrics updated successfully
+2025-03-12T19:05:32.199+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates/", "remote_addr": "127.0.0.1:41740", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000010", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "6.715622ms"}
+2025-03-12T19:05:32.201+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:32.219+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/ping", "remote_addr": "127.0.0.1:41756", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000011", "headers": {"Accept-Encoding":["gzip"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "", "status": 200, "response_bytes": 32, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["73cba2d0e5c3eb152b24388f61573ff57fc51c364394dc282649f988f4b260b2"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"pong\"}", "duration": "17.647351ms"}
+2025-03-12T19:05:38.645+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:38.646+0700	DEBUG	update/json_update.go:81	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
+2025-03-12T19:05:38.646+0700	DEBUG	update/json_update.go:43	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
+2025-03-12T19:05:38.654+0700	INFO	update/json_update.go:64	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
+2025-03-12T19:05:38.654+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:05:38.654+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:35838", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000012", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "9.190122ms"}
+2025-03-12T19:05:38.655+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
 net/http.HandlerFunc.ServeHTTP
 	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
 github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
@@ -220,4 +321,763 @@ net/http.serverHandler.ServeHTTP
 	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
 net/http.(*conn).serve
 	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
-2025-03-12T18:36:41.633+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52774", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/PhtaGe2YFy-000006", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["654"],"Content-Type":["application/json"],"Hashsha256":["671b1fafdbb3155825460cf611c60c4478c222073ea8e5aa17fa6630402d00a1"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"]}, "request_body": "[{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8344840},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":4.615384615177961},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.6391752579214165},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.5125628141548684},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1926976},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":1926976},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":524288},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":647168},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":45120},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.0050251256253848},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.515151515106973},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":2.49999999996362},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.3381336229761932},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3653632},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":10.101010101325608},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":3615},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":48960},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1447908},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":339},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3006464},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":4.040404040411464},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":524288},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":659144704},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":2.5380710657292487},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":3954},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":673196},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":5.050505050479067},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1965656},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1926976},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":614400},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5000000000254659},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":2.5252525252395337},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":2.5252525252395337},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.010050251368358},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.5075376883907663},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":8.673469388573306},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":5.555555556004689},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "111.631µs"}
+2025-03-12T19:05:38.655+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/metrics/updates", "remote_addr": "127.0.0.1:35840", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000013", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["360"],"Content-Type":["application/json"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2850816},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":360448},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8082696},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":983040},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1776568},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":32640},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":1304},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":360448},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":430360},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2850816},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":430360},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":1219},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1447717},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":85},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":24640},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":430360},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":600267},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3833856},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":0}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "716.097µs"}
+2025-03-12T19:05:38.660+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:35848"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:05:38.660+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:35848", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000014", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "144.862µs"}
+2025-03-12T19:05:38.767+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:38.783+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/value", "remote_addr": "127.0.0.1:35864", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000015", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["33"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\"}", "status": 200, "response_bytes": 48, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["96d52c185d37514e694874bb5e60f10ce0b5d9cda7a8f5bce1f969cf5288af39"],"Vary":["Accept-Encoding"]}, "response_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "duration": "16.3353ms"}
+2025-03-12T19:05:38.788+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:38.789+0700	DEBUG	updates/json_updates.go:79	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "", "calc_hash": "", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]"}
+2025-03-12T19:05:38.793+0700	INFO	updates/json_updates.go:57	Metrics updated successfully
+2025-03-12T19:05:38.794+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates/", "remote_addr": "127.0.0.1:35864", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000016", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "5.693617ms"}
+2025-03-12T19:05:38.804+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:05:38.809+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/ping", "remote_addr": "127.0.0.1:35880", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000017", "headers": {"Accept-Encoding":["gzip"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "", "status": 200, "response_bytes": 32, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["73cba2d0e5c3eb152b24388f61573ff57fc51c364394dc282649f988f4b260b2"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"pong\"}", "duration": "5.327099ms"}
+2025-03-12T19:06:14.237+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:06:14.237+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:06:14.237+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000018", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["684"],"Content-Type":["application/json"],"Hashsha256":["e46b42961430cf86ec49904cd7347e70ed36e5982f3f93e9e666ae2c92dc9976"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":168},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":48960},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":561568},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.3049476865453946},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":808851},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.4999999999417923},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":11.167512690572808},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":2.9999999998835847},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":3.0150753769643455},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":561568},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":7.17948717925565},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":2.010050251218157},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":7.106598985002176},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":561568},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1447949},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1335296},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1047650304},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":9.644670050731424},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":34880},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":2067},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":491520},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.5000000001236913},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5025125628273909},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":3.0303030301248617},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.0101010099785193},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":1899},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":4.040404040043991},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":2.9999999998835847},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":2.0100502511855445},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1813576},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2334720},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3702784},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.5050505051433012},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":4.568527918903588},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2367488},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":491520},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8344840},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":5.527638191009894},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":2.0100502513095635},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "72.808µs"}
+2025-03-12T19:06:24.235+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:06:24.236+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:06:24.236+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000019", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["665"],"Content-Type":["application/json"],"Hashsha256":["c80bb097a5263ac25390da9597b92bcce58fe17a25761c8ff22fc710560401dc"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":1.5000000000327418},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5025125627816877},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":5.555555555106422},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.0050251256547817},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":1.5075376885735792},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7847936},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":55360},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1005723648},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":4.123711340790026},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":4.591836734602966},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2013800},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448181},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":524288},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":524288},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":6.598984771708591},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2013800},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":7.6142131981514},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":4595},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":12801288},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":2013800},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":5.612244898095551},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.0000000000218279},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":4.0201005023187255},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4849664},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2998272},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.5239256614521361},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":1.5075376883907663},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":2.500000000145519},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":4849664},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":894075},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":2.020202020205732},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.999999999985448},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":411},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4184},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":1.515151515106973},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":2.5125628142283607},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1990328},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "162.588µs"}
+2025-03-12T19:06:34.238+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:06:34.238+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:06:34.239+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000020", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["655"],"Content-Type":["application/json"],"Hashsha256":["df29ef98d93b00c8120b611e3ae5629b1e0a806424068719e4b82a5bd9f9abed"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":4046848},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.5050505049744123},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":4.040404040530243},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":661},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":868915},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":557056},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":3133704},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":6.842105263319135},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":4.56852791871892},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":6223},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7798784},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":55360},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":3.9800995025559978},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448669},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.568527918534251},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":9.090909090641839},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":5.612244897724328},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":4.568527918903588},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":3133704},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0.505050505051433},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.9999999998835847},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2031384},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":3751936},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":6884},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":557056},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1073807360},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":3.55329949213175},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.5000000000800355},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.013581867310654762},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":2.985074626822449},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":3133704},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3751936},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":12801288},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":11.675126903536427},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":8.585858585851163},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":1.0000000000218279},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "92.551µs"}
+2025-03-12T19:06:44.234+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:06:44.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:06:44.235+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000021", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["732"],"Content-Type":["application/json"],"Hashsha256":["65f7af27e2db0313dd0b73470e63f4276373c75ce4051b489e8a9f13d0618f99"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":655360},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":9.000000000276486},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448669},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1798552},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4792320},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2924544},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":6.532663316656408},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":9.278350515655308},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":655360},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.961682576772743},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":6927},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000005327881500505854},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2682688},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":75886},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":11.167512690572808},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":9.04522613052741},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":8.62944162439923},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":9.045226130710223},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":8.542713567882833},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7716864},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1348235},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1065385984},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":7.035175879583473},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":11.167512689834131},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":10.152284263955641},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2617},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2342912},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781194235564800},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":18.36734693915431},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":7.462686567382992},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":9.595959596167459},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":8.121827411275314},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":9544},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13980936},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":7.537688442319457},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":10.204081632395479},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":28.571428571004315},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":10.050251256365005},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1798552},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":1},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":4415768},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":6.091370558410318},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "161.039µs"}
+2025-03-12T19:06:54.235+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:06:54.236+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:06:54.236+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000022", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["719"],"Content-Type":["application/json"],"Hashsha256":["b1828b2d6d5242314440b628674296c05d5b1fc7bf2bfcd8261760fc5de396fb"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":3.6649214660812732},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.9950248755485025},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781194235564800},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":1},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3891200},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.49751243774341025},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":6.499999999869033},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2915304},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000005327881500505854},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":5.050505050479067},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":4.4776119402850005},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.0050251254425717},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.3795140604917315},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7700480},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":5532520},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":11842},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":75886},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":1.0050251255339782},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":7185},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":11.111111110539488},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13980936},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1086386176},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.123711340291248},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0.5025125628420894},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.499999999996362},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":1.5075376883466707},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2146304},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":1.500000000167347},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2915304},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1279851},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":655360},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":655360},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":5.999999999949068},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":4.10256410262916},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":2.030456852864996},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449205},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2766920},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":5.583756345286404},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":4.5454545456382816},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.005025125501366},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3809280},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4657},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "112.566µs"}
+2025-03-12T19:07:04.234+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:07:04.235+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:07:04.235+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000023", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["699"],"Content-Type":["application/json"],"Hashsha256":["037b96bd33d9a66dfefddef708bdfb721f3f96ffb2ae7fc33edd595d903c2551"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":2.0000000000436557},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":5.076142131977821},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":4.081632652735458},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":1.5075376886176748},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":0.5050505051433012},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2750536},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2785280},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2531328},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":4.545454545554765},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":4.020100502619127},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1680400},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7684096},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":9.04522613107585},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":2.47524752478368},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.015228426432498},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1680400},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1083957248},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":13867},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1279851},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0.5000000000109139},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449205},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000006545596162862894},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2326},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781214234920400},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":0.49999999991996447},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.0023201501966648},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":2.061855670145624},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":11541},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":2},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":168860},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.040404040411464},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.0101010101325607},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13980936},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":6653008},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4898816},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.9999999999308784},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":2.525252525165297},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":1.5075376885735792},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "142.756µs"}
+2025-03-12T19:07:14.235+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:07:14.236+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:07:14.236+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000024", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["695"],"Content-Type":["application/json"],"Hashsha256":["bcdf64a6fa25253f6199c53cb3df3e7e2d1b5a247ec91c7db40e1dea8d4ecc3e"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7667712},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":16164},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":168860},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1044787200},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.799336756430663},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000006545596162862894},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781214234920400},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":6.6666666664925405},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":3.030303030213946},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.507537688434862},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3825664},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":7.2164948455386835},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":4.59183673465221},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2766920},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2146304},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":2},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":3.4999999999745337},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":3.571428571295992},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":4.522613065222824},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":11794},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3842048},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13980936},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.9950248756389994},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449453},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1279603},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":13.333333332985081},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":11.917098446541265},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":6.217616580092108},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":7.070707070536327},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2808048},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4370},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.0202020202651214},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2808048},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":7780656},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":5.181347150358687},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":3.535353535372095},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "113.228µs"}
+2025-03-12T19:07:24.233+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:07:24.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:07:24.234+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000025", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["691"],"Content-Type":["application/json"],"Hashsha256":["4bb4bb2611235da0c4a4823bfa05cee398c73d3d4f6aaa778262faa051f50faa"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.0000000002328306},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":16130},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000008671693146491591},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7700480},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":8883320},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.0050251256253848},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.499999999996362},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2736200},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":0.5050505049595648},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":865448},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781234234665000},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":371709},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1086504960},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":5.02512562794411},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0.5025125629187974},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":865448},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":18459},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":3},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":3.5353535352681633},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":5.1282051280998875},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":1.005025125684179},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":0.5025125629040988},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449453},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2531328},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":4.020100502501539},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":6.185567010061823},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13980936},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":6.666666666691541},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":3.517587939517517},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":1.507537688434862},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":5767168},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2329},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1277555},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":3.6082474226610795},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.2467263261842633},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1933312},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":6.217616580092108},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "104.055µs"}
+2025-03-12T19:07:34.235+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:07:34.235+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:07:34.235+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000026", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["701"],"Content-Type":["application/json"],"Hashsha256":["3d4476c0d864625b0fdd500545158594cc22660c496db4e64ecc45e3b71165b0"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.020202020205732},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1949600},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2957312},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":4.615384615551087},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0.505050505051433},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.5025125628273909},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":2.0000000000436557},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":16383},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2754632},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2531328},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":2.0202020202651214},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":3.0612244897353107},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.515151515106973},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.21549493521687624},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7684096},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":20748},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":9967472},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":9.090909090742057},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":12.12121212159073},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":12.060301507491754},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4726784},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":3},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1537651},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":6.532663316664674},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":8.247422680582496},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":6.091370558410318},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1949600},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4365},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781234234665000},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1065725952},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":6.666666666679104},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0.5050505050811277},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449453},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000008671693146491591},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":5.102040816197739},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":371709},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":13.775510204142241},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "146.128µs"}
+2025-03-12T19:07:44.238+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:07:44.238+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:07:44.238+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000027", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["720"],"Content-Type":["application/json"],"Hashsha256":["31d3638972188465e50a9a29fad2fc573cbcea3c87df39c332b8d769a6e4d885"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":9.278350515655308},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":2.5510204080988697},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5000000000109139},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":3042304},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3678208},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":371709},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":6.0606060606171965},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":3.0769230770637166},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":6.565656565760497},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2260992},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0.49999999990541255},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":15.384615384299662},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":12.307692307520096},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.7416195537093584},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":6397},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":5.670103092806704},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.5075376883907663},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1533307},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":10.30927835066239},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.0000000000509317},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":5.025125628273909},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":4.545454545504655},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3956736},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7634944},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":11060176},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":1.499999999985448},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449701},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":3},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1065181184},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":3042304},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":16637},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000008671693146491591},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2775112},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781234234665000},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":23034},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":18.556701030935567},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":9.743589743650974},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "94.871µs"}
+2025-03-12T19:07:54.234+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:07:54.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:07:54.235+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000028", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["694"],"Content-Type":["application/json"],"Hashsha256":["bd513f21e88f7e53875a3e3ea3a81af6d58c5ab4c96174641cae6de377e21350"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7684096},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":12152400},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.0000000000509317},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":5.050505050479067},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":5.641025641021814},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":8.717948718067353},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1702504},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":22903},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2883584},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1531259},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1042235392},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":5.499999999847205},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.5075376883907663},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1702504},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":25327},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":12.690355330129222},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":5.00000000007276},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.49999999996362},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4800512},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0.5025125628126924},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":3.5532994923164187},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":5.050505050479067},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.0000187958259813976},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2760776},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2498560},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0.9999999999599822},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449701},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2424},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1549194},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":4},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":6.701030927691992},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":4.615384615551087},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":5.500000000189175},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.6153320914221784},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781264235223300},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":4.591836734788577},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":2.525252525349033},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "114.318µs"}
+2025-03-12T19:08:04.235+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:08:04.236+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:08:04.236+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000029", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["686"],"Content-Type":["application/json"],"Hashsha256":["f9f0f67b37cb66f664413e00c901b5d849476df65c86d1258137feab93eae7d9"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7667712},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":4.102564102751622},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.12560697589625133},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2777160},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3842048},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":13265440},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":3.62694300536789},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":3.0612244900156216},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.515151515106973},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3825664},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":4},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":27620},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1531003},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":5.555555555269744},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":7.614213198007039},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.49999999991996447},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2815544},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":6.217616580469101},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":1.4999999998981366},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2815544},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4462},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1549194},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1018159104},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5000000000109139},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":7.614213197557085},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":2.512562813972055},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":2.525252525349033},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":23158},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2498560},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781264235223300},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":3.0150753769643455},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449957},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.0000187958259813976},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.0000000000436557},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.50000000003638},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "225.558µs"}
+2025-03-12T19:08:14.234+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:08:14.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:08:14.234+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000030", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["686"],"Content-Type":["application/json"],"Hashsha256":["71d99dd73cca29fc1cf3d739f788977a1f91ebed27594fbd99cf058e03069967"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":3.5714285710043177},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":930608},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":983597056},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":3.571428571481603},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":5.076142132347158},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.5000000001236913},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.4975124377290027},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1450477},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":27552},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":5627904},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7700480},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.5000000000109139},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.00001721221046332561},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2072576},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2352},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781284234232300},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":29904},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2744392},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":5.076142131827836},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":1.5075376883466707},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":0.999999999992724},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.07911922204147659},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":930608},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2490368},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":86080},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":3.517587939860176},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.500000000167347},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":1.5075376883466707},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":14369664},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":1.0000000000509317},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":5},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1530483},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1655321},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.010050251368358},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":97920},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0.5000000000109139},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":4.10256410262916},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":3.108808290046054},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":2.5125628140455483},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "208.862µs"}
+2025-03-12T19:08:24.233+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:08:24.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:08:24.234+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000031", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["675"],"Content-Type":["application/json"],"Hashsha256":["4e9e0f21f46f7f0200c0cfde8d53dd7c1a819bb5825018e2f3bc757bd7aec5a5"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":27808},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":114240},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.00001721221046332561},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2760776},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":32202},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":4.020100502619127},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":1.5075376883907663},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2057128},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":17.346938775661723},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.8303945660742802},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4620288},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4394},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":15496184},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":0.9999999998399289},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.5075376885735792},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":106560},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":688128},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":1.0000000000509317},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2057128},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3063808},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2490368},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781284234232300},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1655321},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.5075376883466707},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.50000000003638},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1514163},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":1047760896},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":5.025125628456721},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":3.589743589814388},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1450477},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7684096},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":5},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":2.05128205131458},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":4.06091370584998},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":3.6082474230361297},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":3.030303030213946},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "115.218µs"}
+2025-03-12T19:08:34.234+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:08:34.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:08:34.234+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000032", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["705"],"Content-Type":["application/json"],"Hashsha256":["47edf2a146bc5df6ea80b37936d2fc45866c6855750bddb6e0a8badb8ee17889"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7634944},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781284234232300},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.9950248755485025},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":2.5125628140455483},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":6406},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2779208},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":2.487562189260033},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":0.5050505049744123},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":0.49999999990541255},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":28059},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":16562088},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.0000000000218279},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":4.545454545320919},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":3.0456852792075026},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":4038656},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":2.525252525165297},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":10.152284263655671},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.016984862775411284},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1450477},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":7.142857142751079},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":5.1020408165689615},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":3.51758793980322},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":34465},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":3123032},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":114240},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":5},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1512115},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1655321},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":1.0000000000218279},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.00001721221046332561},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0.5000000001018634},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":2.551020408208721},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":0.5050505049744123},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.0609137056100035},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2490368},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":991981568},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3596288},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":106560},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":4.10256410262916},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":3123032},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "72.918µs"}
+2025-03-12T19:08:44.234+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:08:44.234+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:08:44.234+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000033", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["707"],"Content-Type":["application/json"],"Hashsha256":["2920f57a01436674756195578ffe18bb0dbb9a2c91b67ce40eadf5ad6a3b83db"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":7.537688442098979},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":6.091370558045668},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7651328},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781314233161500},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":114240},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":6.217616580469101},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":7.1065989846328375},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":3.0150753767815326},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000015050654090517567},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4767744},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":36766},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":6},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":5.154639175176536},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":7.179487179414467},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1507723},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":0.5050505051581485},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.499999999985448},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":12.755102040679958},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":7.070707070536327},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2370},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2498560},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.11527076875170528},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1450773},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":34396},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1775761},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":0.999999999992724},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.5075376883907663},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1731656},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":17697952},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":919093248},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":21.499999999752617},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2766920},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2883584},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.5252525254232703},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":1.5463917525154558},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1731656},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":106560},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.591836734602966},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "92.684µs"}
+2025-03-12T19:08:51.273+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:08:51.273+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:08:51.273+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:52158", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000034", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["715"],"Content-Type":["application/json"],"Hashsha256":["550c5aa2a59be9b471ea58126bb0b9df151b1f70cb5aef5a5f23919b16e34e79"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":4143},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":4.663212435257577},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":2.999999999974534},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":1.500000000167347},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":10.101010101325608},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":1.0050251256253848},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2807104},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":38757},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":1.5306122448221997},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2807104},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":106560},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1507723},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":14243080},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":907051008},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":13.846153845533882},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":9.137055837338474},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0.5025125628273909},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":3.0150753766933414},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":1.5151515150624308},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1450773},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":114240},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":6},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.5050505050662804},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3825664},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":1775761},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":1.0050251256253848},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":4.08163265310668},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":8.629441624144254},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":6.632653061042666},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":7.5000000002546585},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7634944},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":34614},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000015050654090517567},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2783304},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3809280},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2498560},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1741781314233161500},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.46069649984764405},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":18773400},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.0050251256547817},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":5.583756345286404},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":5.612244897743269},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "90.418µs"}
+2025-03-12T19:09:06.349+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:09:06.349+0700	DEBUG	update/json_update.go:81	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
+2025-03-12T19:09:06.349+0700	DEBUG	update/json_update.go:43	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
+2025-03-12T19:09:06.361+0700	INFO	update/json_update.go:64	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
+2025-03-12T19:09:06.362+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-12T19:09:06.363+0700	WARN	ipfilter/ipfilter.go:74	IP address not in trusted subnet	{"ip": "100.64.19.228", "subnet": "192.168.1.0/24"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:74
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:86
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:09:06.363+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/metrics/updates", "remote_addr": "127.0.0.1:44140", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/2QB4W4557K-000036", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["358"],"Content-Type":["application/json"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":7485},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":48960},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":431592},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2719744},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":1225},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2719744},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":6380560},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":431592},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3833856},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":431592},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":334379},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":360448},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":360448},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":84},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1764232},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":1309},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1114112},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":34880},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":0}]", "status": 403, "response_bytes": 10, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "Forbidden\n", "duration": "150.457µs"}
+2025-03-12T19:09:06.369+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:44128", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000035", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "20.403342ms"}
+2025-03-12T19:09:06.373+0700	WARN	ipfilter/ipfilter.go:56	request without X-Real-IP header	{"remote_addr": "127.0.0.1:44142"}
+github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:56
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
+	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.StripSlashes.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.Recoverer.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5/middleware.RequestID.func1
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
+net/http.HandlerFunc.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
+github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
+net/http.serverHandler.ServeHTTP
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:3142
+net/http.(*conn).serve
+	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2044
+2025-03-12T19:09:06.373+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:44142", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000037", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 403, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "X-Real-IP header is required\n", "duration": "180.991µs"}
+2025-03-12T19:09:06.476+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:09:06.478+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/value", "remote_addr": "127.0.0.1:44154", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000038", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["33"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\"}", "status": 200, "response_bytes": 48, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["96d52c185d37514e694874bb5e60f10ce0b5d9cda7a8f5bce1f969cf5288af39"],"Vary":["Accept-Encoding"]}, "response_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "duration": "2.328695ms"}
+2025-03-12T19:09:06.486+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:09:06.486+0700	DEBUG	updates/json_updates.go:79	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "", "calc_hash": "", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]"}
+2025-03-12T19:09:06.490+0700	INFO	updates/json_updates.go:57	Metrics updated successfully
+2025-03-12T19:09:06.493+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates/", "remote_addr": "127.0.0.1:44154", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000039", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "6.907318ms"}
+2025-03-12T19:09:06.498+0700	DEBUG	ipfilter/ipfilter.go:82	IP address in trusted subnet	{"ip": "192.168.1.1", "subnet": "192.168.1.0/24"}
+2025-03-12T19:09:06.500+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/ping", "remote_addr": "127.0.0.1:44158", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/2QB4W4557K-000040", "headers": {"Accept-Encoding":["gzip"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "", "status": 200, "response_bytes": 32, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["73cba2d0e5c3eb152b24388f61573ff57fc51c364394dc282649f988f4b260b2"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"pong\"}", "duration": "2.234292ms"}
