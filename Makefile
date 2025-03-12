@@ -85,6 +85,16 @@ server-with-trusted-subnet:
 	@echo "Запуск сервера с доверенной подсетью..."
 	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -t="192.168.1.0/24" 2>&1 | tee logs/server-with-trusted-subnet.log
 
+# Запуск агента с заданным IP-адресом из доверенной подсети (iter24)
+agent-with-trusted-ip:
+	@echo "Запуск агента с заданным IP-адресом из доверенной подсети..."
+	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.1.1" 2>&1 | tee logs/agent-with-trusted-subnet.log
+
+# Запуск агента с IP-адресом отличным от доверенного (iter24)
+agent-with-other-ip:
+	@echo "Запуск агента с IP-адресом отличным от доверенного..."
+	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.2.1" 2>&1 | tee logs/agent-with-other-ip.log
+
 # Проверка запросов к серверу с разным X-Real-IP:
 request-from-trusted-subnet:
 	@echo "Проверка запросов к серверу с ip из доверенной подсети 192.168.1.1..."

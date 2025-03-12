@@ -20,6 +20,7 @@ type JSONConfig struct {
 	RateLimit      int    `json:"rate_limit"`      // Максимальное количество одновременно исходящих запросов
 	EnablePprof    bool   `json:"enable_pprof"`    // Включить профилирование через pprof
 	PprofPort      string `json:"pprof_port"`      // Порт для pprof сервера
+	RealIP         string `json:"real_ip"`         // IP-адрес для заголовка X-Real-IP
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -94,6 +95,11 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// Порт для pprof сервера
 	if flags.PprofPort == defaultPprofPort && jsonConfig.PprofPort != "" {
 		flags.PprofPort = jsonConfig.PprofPort
+	}
+
+	// IP-адрес для заголовка X-Real-IP
+	if flags.RealIP == "" && jsonConfig.RealIP != "" {
+		flags.RealIP = jsonConfig.RealIP
 	}
 
 	return nil

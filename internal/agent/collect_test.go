@@ -20,6 +20,7 @@ func TestAgent_CollectRuntimeMetrics(t *testing.T) {
 		"",
 		5,
 		nil,
+		"",
 	)
 
 	// Reset metrics before collection
@@ -63,6 +64,7 @@ func TestAgent_CollectAdditionalMetrics(t *testing.T) {
 		"",
 		5,
 		nil,
+		"",
 	)
 
 	// Reset metrics before collection
@@ -107,6 +109,7 @@ func TestAgent_GetMetrics(t *testing.T) {
 		"",
 		5,
 		nil,
+		"",
 	)
 
 	// Reset metrics before collection
@@ -147,6 +150,7 @@ func TestAgent_ResetMetrics(t *testing.T) {
 		"",
 		5,
 		nil,
+		"",
 	)
 
 	// Collect metrics
@@ -174,6 +178,7 @@ func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 		"",
 		5,
 		nil,
+		"",
 	)
 	assert.False(t, a1.IsRequestSigningEnabled())
 
@@ -185,6 +190,7 @@ func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 		"test-private-key",
 		5,
 		nil,
+		"",
 	)
 	assert.True(t, a2.IsRequestSigningEnabled())
 }
@@ -198,6 +204,7 @@ func TestAgent_IsEncryptionEnabled(t *testing.T) {
 		"",
 		5,
 		nil,
+		"",
 	)
 	assert.False(t, a1.IsEncryptionEnabled())
 
