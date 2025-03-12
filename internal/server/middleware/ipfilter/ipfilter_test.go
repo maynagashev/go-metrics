@@ -51,7 +51,7 @@ func TestIPFilterMiddleware(t *testing.T) {
 			name:           "No X-Real-IP header",
 			trustedSubnet:  "192.168.1.0/24",
 			ipHeader:       "",
-			expectedStatus: http.StatusOK,
+			expectedStatus: http.StatusForbidden,
 		},
 		{
 			name:           "Invalid CIDR",

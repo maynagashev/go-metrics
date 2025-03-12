@@ -55,7 +55,8 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 		if ipStr == "" {
 			m.log.Warn("request without X-Real-IP header",
 				zap.String("remote_addr", r.RemoteAddr))
-			next.ServeHTTP(w, r)
+			// Если доверенная подсеть указана, запрещаем запрос без X-Real-IP
+			http.Error(w, "X-Real-IP header is required", http.StatusForbidden)
 			return
 		}
 

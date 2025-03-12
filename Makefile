@@ -80,6 +80,20 @@ agent-with-config:
 	@echo "Запуск агента с конфигурационным файлом..."
 	@go run ./cmd/agent/. -k="private_key_example" -config=examples/agent-config.json 2>&1 | tee logs/agent-with-config.log
 
+# Запуск сервера с доверенной подсетью (iter24)
+server-with-trusted-subnet:
+	@echo "Запуск сервера с доверенной подсетью..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -t="192.168.1.0/24" 2>&1 | tee logs/server-with-trusted-subnet.log
+
+# Проверка запросов к серверу с разным X-Real-IP:
+request-from-trusted-subnet:
+	@echo "Проверка запросов к серверу с ip из доверенной подсети 192.168.1.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.1.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-trusted-subnet.log
+request-from-other-subnet:
+	@echo "Проверка запросов к серверу с ip из другой подсети 192.168.2.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.2.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-other-subnet.log
+
+
 # Запуск сервера с логированием для сохранения graceful shutdown лога (iter23)
 server-with-graceful-shutdown:
 	@echo "Запуск сервера с логированием для сохранения graceful shutdown лога..."
