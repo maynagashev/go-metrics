@@ -41,6 +41,7 @@ type JSONConfig struct {
 	DatabaseDSN   string `json:"database_dsn"`   // Строка подключения к базе данных
 	CryptoKey     string `json:"crypto_key"`     // Путь к файлу с приватным ключом для расшифровки
 	EnablePprof   bool   `json:"enable_pprof"`   // Включить профилирование через pprof
+	TrustedSubnet string `json:"trusted_subnet"` // CIDR доверенной подсети для проверки IP-адресов агентов
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -111,6 +112,11 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// Включить профилирование через pprof
 	if !flags.Server.EnablePprof && jsonConfig.EnablePprof {
 		flags.Server.EnablePprof = jsonConfig.EnablePprof
+	}
+
+	// Доверенная подсеть
+	if flags.Server.TrustedSubnet == "" && jsonConfig.TrustedSubnet != "" {
+		flags.Server.TrustedSubnet = jsonConfig.TrustedSubnet
 	}
 
 	return nil
