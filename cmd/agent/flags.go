@@ -159,10 +159,7 @@ func applyJSONConfig(flags *Flags) {
 	}
 
 	// Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-	applyErr := ApplyJSONConfig(flags, jsonConfig)
-	if applyErr != nil {
-		panic(fmt.Sprintf("error applying config: %s", applyErr))
-	}
+	ApplyJSONConfig(flags, jsonConfig)
 }
 
 // validateFlags проверяет и корректирует значения флагов.

@@ -55,9 +55,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/config_json.go (97.0%)</option>
+				<option value="file0">github.com/maynagashev/go-metrics/cmd/agent/config_json.go (97.2%)</option>
 				
-				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/flags.go (88.9%)</option>
+				<option value="file1">github.com/maynagashev/go-metrics/cmd/agent/flags.go (90.9%)</option>
 				
 				<option value="file2">github.com/maynagashev/go-metrics/cmd/agent/main.go (81.8%)</option>
 				
@@ -77,7 +77,7 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (69.8%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (70.9%)</option>
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (86.0%)</option>
 				
@@ -181,6 +181,7 @@ type JSONConfig struct {
         RateLimit      int    `json:"rate_limit"`      // Максимальное количество одновременно исходящих запросов
         EnablePprof    bool   `json:"enable_pprof"`    // Включить профилирование через pprof
         PprofPort      string `json:"pprof_port"`      // Порт для pprof сервера
+        RealIP         string `json:"real_ip"`         // IP-адрес для заголовка X-Real-IP
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -206,44 +207,55 @@ func LoadJSONConfig(filePath string) (*JSONConfig, error) <span class="cov8" tit
 
 // ApplyJSONConfig применяет настройки из JSON-конфигурации к флагам.
 // Настройки из JSON имеют более низкий приоритет, чем флаги командной строки и переменные окружения.
-func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="cov8" title="1">{
+func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
         if jsonConfig == nil </span><span class="cov8" title="1">{
-                return nil
+                return
         }</span>
 
         // Применяем настройки только если соответствующие флаги не были установлены
         // через командную строку или переменные окружения
+        <span class="cov8" title="1">applyServerConfig(flags, jsonConfig)
+        applySecurityConfig(flags, jsonConfig)
+        applyPerformanceConfig(flags, jsonConfig)
+        applyNetworkConfig(flags, jsonConfig)</span>
+}
 
+// applyServerConfig применяет настройки сервера из JSON-конфигурации.
+func applyServerConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
         // Адрес сервера
-        <span class="cov8" title="1">if flags.Server.Addr == defaultAgentServerAddr &amp;&amp; jsonConfig.Address != "" </span><span class="cov8" title="1">{
+        if flags.Server.Addr == defaultAgentServerAddr &amp;&amp; jsonConfig.Address != "" </span><span class="cov8" title="1">{
                 flags.Server.Addr = jsonConfig.Address
         }</span>
 
         // Интервал отправки метрик
         <span class="cov8" title="1">if flags.Server.ReportInterval == defaultReportInterval &amp;&amp; jsonConfig.ReportInterval != "" </span><span class="cov8" title="1">{
                 duration, err := time.ParseDuration(jsonConfig.ReportInterval)
-                if err != nil </span><span class="cov8" title="1">{
-                        return fmt.Errorf("invalid report_interval in config: %w", err)
+                if err == nil </span><span class="cov8" title="1">{
+                        flags.Server.ReportInterval = duration.Seconds()
                 }</span>
-                <span class="cov8" title="1">flags.Server.ReportInterval = duration.Seconds()</span>
         }
 
         // Интервал сбора метрик
         <span class="cov8" title="1">if flags.Server.PollInterval == defaultPollInterval &amp;&amp; jsonConfig.PollInterval != "" </span><span class="cov8" title="1">{
                 duration, err := time.ParseDuration(jsonConfig.PollInterval)
-                if err != nil </span><span class="cov0" title="0">{
-                        return fmt.Errorf("invalid poll_interval in config: %w", err)
+                if err == nil </span><span class="cov8" title="1">{
+                        flags.Server.PollInterval = duration.Seconds()
                 }</span>
-                <span class="cov8" title="1">flags.Server.PollInterval = duration.Seconds()</span>
         }
+}
 
+// applySecurityConfig применяет настройки безопасности из JSON-конфигурации.
+func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
         // Путь к файлу с публичным ключом для шифрования
-        <span class="cov8" title="1">if flags.CryptoKey == "" &amp;&amp; jsonConfig.CryptoKey != "" </span><span class="cov8" title="1">{
+        if flags.CryptoKey == "" &amp;&amp; jsonConfig.CryptoKey != "" </span><span class="cov8" title="1">{
                 flags.CryptoKey = jsonConfig.CryptoKey
         }</span>
+}
 
+// applyPerformanceConfig применяет настройки производительности из JSON-конфигурации.
+func applyPerformanceConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
         // Максимальное количество одновременно исходящих запросов
-        <span class="cov8" title="1">if flags.RateLimit == defaultRateLimit &amp;&amp; jsonConfig.RateLimit &gt; 0 </span><span class="cov8" title="1">{
+        if flags.RateLimit == defaultRateLimit &amp;&amp; jsonConfig.RateLimit &gt; 0 </span><span class="cov8" title="1">{
                 flags.RateLimit = jsonConfig.RateLimit
         }</span>
 
@@ -256,8 +268,14 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="co
         <span class="cov8" title="1">if flags.PprofPort == defaultPprofPort &amp;&amp; jsonConfig.PprofPort != "" </span><span class="cov8" title="1">{
                 flags.PprofPort = jsonConfig.PprofPort
         }</span>
+}
 
-        <span class="cov8" title="1">return nil</span>
+// applyNetworkConfig применяет сетевые настройки из JSON-конфигурации.
+func applyNetworkConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
+        // IP-адрес для заголовка X-Real-IP
+        if flags.RealIP == "" &amp;&amp; jsonConfig.RealIP != "" </span><span class="cov0" title="0">{
+                flags.RealIP = jsonConfig.RealIP
+        }</span>
 }
 </pre>
 		
@@ -293,6 +311,7 @@ type Flags struct {
         EnablePprof bool   // добавляем поле для профилирования
         PprofPort   string // добавляем порт для pprof
         ConfigFile  string // путь к файлу конфигурации в формате JSON
+        RealIP      string // явно указанный IP-адрес для заголовка X-Real-IP
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -354,6 +373,9 @@ func registerCommandLineFlags(flags *Flags) <span class="cov8" title="1">{
         flag.BoolVar(&amp;flags.EnablePprof, "pprof", false, "enable pprof profiling")
         flag.StringVar(&amp;flags.PprofPort, "pprof-port", defaultPprofPort, "port for pprof server")
 
+        // Добавляем флаг для явного указания IP-адреса для заголовка X-Real-IP
+        flag.StringVar(&amp;flags.RealIP, "real-ip", "", "IP address to use in X-Real-IP header")
+
         // Добавляем флаг для пути к файлу конфигурации
         flag.StringVar(&amp;flags.ConfigFile, "c", "", "путь к файлу конфигурации в формате JSON")
         flag.StringVar(&amp;flags.ConfigFile, "config", "", "путь к файлу конфигурации в формате JSON")
@@ -394,6 +416,11 @@ func applyEnvironmentVariables(flags *Flags) <span class="cov8" title="1">{
                 <span class="cov8" title="1">flags.RateLimit = l</span>
         }
 
+        // Добавляем обработку переменной окружения для X-Real-IP
+        <span class="cov8" title="1">if envRealIP, ok := os.LookupEnv("REAL_IP"); ok </span><span class="cov0" title="0">{
+                flags.RealIP = envRealIP
+        }</span>
+
         // Если передан путь к файлу конфигурации в параметрах окружения, используем его
         <span class="cov8" title="1">if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov0" title="0">{
                 flags.ConfigFile = envConfigFile
@@ -413,10 +440,7 @@ func applyJSONConfig(flags *Flags) <span class="cov8" title="1">{
         }
 
         // Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-        <span class="cov0" title="0">applyErr := ApplyJSONConfig(flags, jsonConfig)
-        if applyErr != nil </span><span class="cov0" title="0">{
-                panic(fmt.Sprintf("error applying config: %s", applyErr))</span>
-        }
+        <span class="cov0" title="0">ApplyJSONConfig(flags, jsonConfig)</span>
 }
 
 // validateFlags проверяет и корректирует значения флагов.
@@ -511,6 +535,7 @@ func main() <span class="cov8" title="1">{
                 flags.PrivateKey,
                 flags.RateLimit,
                 publicKey,
+                flags.RealIP,
         )
 
         // Запускаем горутину для обработки сигналов
@@ -1752,6 +1777,7 @@ var New = func(
         privateKey string,
         rateLimit int,
         publicKey *rsa.PublicKey,
+        realIP string,
 ) Agent <span class="cov8" title="1">{
         return &amp;agent{
                 ServerURL:          url,
@@ -1763,7 +1789,7 @@ var New = func(
                 PublicKey:          publicKey,
                 gauges:             make(map[string]float64),
                 counters:           make(map[string]int64),
-                client:             initHTTPClient(),
+                client:             initHTTPClient(realIP),
                 pollTicker:         time.NewTicker(pollInterval),
                 reportTicker:       time.NewTicker(reportInterval),
                 sendQueue:          make(chan Job, rateLimit),
@@ -1900,10 +1926,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2006,17 +2032,24 @@ func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
 }
 
 // initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
-func initHTTPClient() *resty.Client <span class="cov8" title="1">{
+func initHTTPClient(realIP string) *resty.Client <span class="cov8" title="1">{
         client := resty.New().SetHeader("Content-Type", "text/plain")
 
         // Добавляем перехватчик для установки заголовка X-Real-IP
         client.OnBeforeRequest(func(_ *resty.Client, req *resty.Request) error </span><span class="cov8" title="1">{
-                // Получаем исходящий IP-адрес
-                hostIP, err := GetOutboundIP()
+                // Если указан явный IP-адрес, используем его
+                if realIP != "" </span><span class="cov8" title="1">{
+                        req.SetHeader("X-Real-IP", realIP)
+                        slog.Debug("set X-Real-IP header (explicit)", "ip", realIP)
+                        return nil
+                }</span>
+
+                // Иначе получаем исходящий IP-адрес автоматически
+                <span class="cov8" title="1">hostIP, err := GetOutboundIP()
                 if err == nil </span><span class="cov8" title="1">{
                         // Устанавливаем заголовок X-Real-IP
                         req.SetHeader("X-Real-IP", hostIP.String())
-                        slog.Debug("set X-Real-IP header", "ip", hostIP.String())
+                        slog.Debug("set X-Real-IP header (auto-detected)", "ip", hostIP.String())
                 }</span> else<span class="cov0" title="0"> {
                         slog.Error("failed to set X-Real-IP header", "error", err)
                 }</span>

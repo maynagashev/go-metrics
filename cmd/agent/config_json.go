@@ -46,14 +46,21 @@ func LoadJSONConfig(filePath string) (*JSONConfig, error) {
 
 // ApplyJSONConfig применяет настройки из JSON-конфигурации к флагам.
 // Настройки из JSON имеют более низкий приоритет, чем флаги командной строки и переменные окружения.
-func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
+func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) {
 	if jsonConfig == nil {
-		return nil
+		return
 	}
 
 	// Применяем настройки только если соответствующие флаги не были установлены
 	// через командную строку или переменные окружения
+	applyServerConfig(flags, jsonConfig)
+	applySecurityConfig(flags, jsonConfig)
+	applyPerformanceConfig(flags, jsonConfig)
+	applyNetworkConfig(flags, jsonConfig)
+}
 
+// applyServerConfig применяет настройки сервера из JSON-конфигурации.
+func applyServerConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// Адрес сервера
 	if flags.Server.Addr == defaultAgentServerAddr && jsonConfig.Address != "" {
 		flags.Server.Addr = jsonConfig.Address
@@ -62,26 +69,30 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// Интервал отправки метрик
 	if flags.Server.ReportInterval == defaultReportInterval && jsonConfig.ReportInterval != "" {
 		duration, err := time.ParseDuration(jsonConfig.ReportInterval)
-		if err != nil {
-			return fmt.Errorf("invalid report_interval in config: %w", err)
+		if err == nil {
+			flags.Server.ReportInterval = duration.Seconds()
 		}
-		flags.Server.ReportInterval = duration.Seconds()
 	}
 
 	// Интервал сбора метрик
 	if flags.Server.PollInterval == defaultPollInterval && jsonConfig.PollInterval != "" {
 		duration, err := time.ParseDuration(jsonConfig.PollInterval)
-		if err != nil {
-			return fmt.Errorf("invalid poll_interval in config: %w", err)
+		if err == nil {
+			flags.Server.PollInterval = duration.Seconds()
 		}
-		flags.Server.PollInterval = duration.Seconds()
 	}
+}
 
+// applySecurityConfig применяет настройки безопасности из JSON-конфигурации.
+func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// Путь к файлу с публичным ключом для шифрования
 	if flags.CryptoKey == "" && jsonConfig.CryptoKey != "" {
 		flags.CryptoKey = jsonConfig.CryptoKey
 	}
+}
 
+// applyPerformanceConfig применяет настройки производительности из JSON-конфигурации.
+func applyPerformanceConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// Максимальное количество одновременно исходящих запросов
 	if flags.RateLimit == defaultRateLimit && jsonConfig.RateLimit > 0 {
 		flags.RateLimit = jsonConfig.RateLimit
@@ -96,11 +107,12 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	if flags.PprofPort == defaultPprofPort && jsonConfig.PprofPort != "" {
 		flags.PprofPort = jsonConfig.PprofPort
 	}
+}
 
+// applyNetworkConfig применяет сетевые настройки из JSON-конфигурации.
+func applyNetworkConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// IP-адрес для заголовка X-Real-IP
 	if flags.RealIP == "" && jsonConfig.RealIP != "" {
 		flags.RealIP = jsonConfig.RealIP
 	}
-
-	return nil
 }
