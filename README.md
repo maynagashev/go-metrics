@@ -71,19 +71,46 @@
   - [x] Добавьте к основным экспортированным методам и переменным (хендлерам, публичным структурам и интерфейсам) в вашем проекте документацию в формате godoc.
   - [x] Добавьте примеры работы с эндпоинтами практического трека в формате example_test.go.
   - [ ] Покрытие вашего кода тестами на данный момент должно быть не менее 40%.
+- **Iter19**. Статический анализ.
+  - [x] Создайте свой **multichecker** (под названием staticlint, в директории `cmd/staticlint`), состоящий из:
+    - [x] стандартных статических анализаторов пакета golang.org/x/tools/go/analysis/passes;
+    - [x] всех анализаторов класса **SA** пакета staticcheck.io;
+    - [x] не менее одного анализатора остальных классов пакета staticcheck.io;
+    - [x] двух или более любых публичных анализаторов на ваш выбор.
+  - [x] Напишите и добавьте в multichecker собственный анализатор, запрещающий использовать прямой вызов os.Exit в функции main пакета main.
+  - [x] Добавьте документацию в формате godoc, подробно опишите в ней механизм запуска multichecker, а также каждый анализатор и его назначение.
+  - [x] Покрытие вашего кода тестами к концу спринта должно быть не менее 55%.
+- **Iter20**. Флаги сборки и компиляции.
+  - [x] Добавьте в пакеты `cmd/agent` и `cmd/server` глобальные переменные:
+
+    ```golang
+    var BuildVersion string
+    var BuildDate string
+    var BuildCommit string
+    ```
+
+  - [x] При старте приложения выводите в stdout сообщение в следующем формате:
+
+    ```bash
+    Build version: <buildVersion> (или "N/A" при отсутствии значения)
+    Build date: <buildDate> (или "N/A" при отсутствии значения)
+    Build commit: <buildCommit> (или "N/A" при отсутствии значения)
+    ```
+
+  - [x] Покрытие вашего кода тестами к концу спринта должно быть не менее 55%.
 
 
 ## Обновление шаблона
 
 Чтобы иметь возможность получать обновления автотестов и других частей шаблона, выполните команду:
 
-```
+```bash
 git remote add -m main template https://github.com/Yandex-Practicum/go-musthave-metrics-tpl.git
 ```
 
 Для обновления кода автотестов выполните команду:
 
-```
+```bash
 git fetch template && git checkout template/main .github
 ```
 
@@ -143,4 +170,13 @@ clear && golangci-lint run
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/segmentio/golines@latest
+go install honnef.co/go/tools/cmd/staticcheck@latest
+```
+
+## Сборка с указанием версий
+
+Пример:
+
+```bash
+go run -ldflags "-X main.BuildVersion=v1.0.1 -X 'main.BuildDate=$(date +'%Y/%m/%d %H:%M:%S')' -X main.BuildCommit=dev
 ```

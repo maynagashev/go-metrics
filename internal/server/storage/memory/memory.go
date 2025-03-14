@@ -286,26 +286,3 @@ func (ms *MemStorage) restoreMetricsFromFile() error {
 	)
 	return nil
 }
-
-// Dump выводит информацию о хранилище в лог.
-func (ms *MemStorage) Dump() {
-	ms.log.Info(
-		"Memory storage dump",
-		zap.Int("gauges", len(ms.gauges)),
-		zap.Int("counters", len(ms.counters)),
-		zap.Int("total", ms.Count(context.Background())),
-	)
-}
-
-// Restore восстанавливает метрики из файла.
-func (ms *MemStorage) Restore() error {
-	// ... existing code ...
-
-	// Выводим информацию о восстановленных метриках в лог.
-	ms.log.Info(
-		"Metrics restored from file",
-		zap.String("file", ms.cfg.GetStorePath()),
-		zap.Int("metrics", len(ms.GetMetrics(context.Background()))),
-	)
-	return nil
-}

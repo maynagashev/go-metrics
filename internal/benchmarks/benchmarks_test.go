@@ -109,7 +109,10 @@ func BenchmarkHashCalculation(b *testing.B) {
 	b.ResetTimer()
 	for range b.N {
 		h := hmac.New(sha256.New, key)
-		h.Write(data)
+		// HMAC Write() на hash.Hash никогда не возвращает ошибку, но линтер требует обработки
+		if _, err := h.Write(data); err != nil {
+			b.Fatal("unexpected error writing to hash:", err)
+		}
 		h.Sum(nil)
 	}
 }

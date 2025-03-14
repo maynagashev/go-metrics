@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
@@ -9,9 +10,29 @@ import (
 	"github.com/maynagashev/go-metrics/internal/agent"
 )
 
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+	BuildVersion = "N/A"
+	BuildDate    = "N/A"
+	BuildCommit  = "N/A"
+)
+
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() {
+	fmt.Println("Build version:", BuildVersion)
+	fmt.Println("Build date:", BuildDate)
+	fmt.Println("Build commit:", BuildCommit)
+}
+
 func main() {
-	flags := mustParseFlags()
 	initLogger()
+	printVersion()
+
+	flags := mustParseFlags()
 	slog.Debug("parsed flags and env variables", "flags", flags)
 
 	initPprof(flags)

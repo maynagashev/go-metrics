@@ -1,26 +1,28 @@
 package update_test
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
-
-	"go.uber.org/zap"
-
+	jsonupdate "github.com/maynagashev/go-metrics/internal/server/handlers/json/update"
+	plainupdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-
-	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
-
-	"github.com/stretchr/testify/require"
+	"github.com/maynagashev/go-metrics/pkg/sign"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 )
 
-// [New]. Тест проверяет корректность обработки запроса на обновление метрики.
+// TestUpdateHandler is testing the plain update handler, not the JSON update handler.
 func TestUpdateHandler(t *testing.T) {
 	type want struct {
 		code        int
@@ -73,7 +75,9 @@ func TestUpdateHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, tt.target, nil)
 			w := httptest.NewRecorder()
-			update.New(tt.storage, zap.NewNop())(w, request)
+			// This is testing the plain update handler, not the JSON update handler
+			plainHandler := plainupdate.New(tt.storage, zap.NewNop())
+			plainHandler(w, request)
 
 			res := w.Result()
 			assert.Equal(t, tt.want.code, res.StatusCode)
@@ -86,4 +90,204 @@ func TestUpdateHandler(t *testing.T) {
 			assert.Equal(t, tt.want.contentType, res.Header.Get("Content-Type"))
 		})
 	}
+}
+
+func TestJSONUpdateHandler_Gauge(t *testing.T) {
+	// Создаем хранилище
+	cfg := &app.Config{}
+	logger := zap.NewNop()
+	repo := memory.New(cfg, logger)
+
+	// Создаем обработчик
+	handler := jsonupdate.New(cfg, repo, logger)
+
+	// Создаем тестовый запрос с метрикой типа gauge
+	value := 42.5
+	metric := jsonupdate.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: &value,
+	}
+
+	body, err := json.Marshal(metric)
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик
+	handler(rr, req)
+
+	// Проверяем код ответа
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+
+	// Проверяем, что метрика была сохранена в хранилище
+	savedMetric, ok := repo.GetMetric(context.Background(), metrics.TypeGauge, "test_gauge")
+	assert.True(t, ok)
+	assert.InDelta(t, value, *savedMetric.Value, 0.0001)
+}
+
+func TestJSONUpdateHandler_Counter(t *testing.T) {
+	// Создаем хранилище
+	cfg := &app.Config{}
+	logger := zap.NewNop()
+	repo := memory.New(cfg, logger)
+
+	// Создаем обработчик
+	handler := jsonupdate.New(cfg, repo, logger)
+
+	// Создаем тестовый запрос с метрикой типа counter
+	delta := int64(10)
+	metric := jsonupdate.Metric{
+		Name:  "test_counter",
+		MType: metrics.TypeCounter,
+		Delta: &delta,
+	}
+
+	body, err := json.Marshal(metric)
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик
+	handler(rr, req)
+
+	// Проверяем код ответа
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+
+	// Проверяем, что метрика была сохранена в хранилище
+	savedMetric, ok := repo.GetMetric(context.Background(), metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, delta, *savedMetric.Delta)
+
+	// Обновляем метрику еще раз
+	req = httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
+	handler(rr, req)
+
+	// Проверяем, что значение метрики увеличилось
+	savedMetric, ok = repo.GetMetric(context.Background(), metrics.TypeCounter, "test_counter")
+	assert.True(t, ok)
+	assert.Equal(t, delta*2, *savedMetric.Delta)
+}
+
+func TestJSONUpdateHandler_InvalidJSON(t *testing.T) {
+	// Создаем хранилище
+	cfg := &app.Config{}
+	logger := zap.NewNop()
+	repo := memory.New(cfg, logger)
+
+	// Создаем обработчик
+	handler := jsonupdate.New(cfg, repo, logger)
+
+	// Создаем тестовый запрос с невалидным JSON
+	invalidJSON := []byte(`{"id": "test", "type": "gauge", "value": invalid}`)
+
+	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(invalidJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик
+	handler(rr, req)
+
+	// Проверяем код ответа
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestJSONUpdateHandler_WithSignature(t *testing.T) {
+	// Создаем хранилище с включенной подписью запросов
+	privateKey := "test-key"
+	cfg := &app.Config{
+		PrivateKey: privateKey,
+	}
+	logger := zap.NewNop()
+	repo := memory.New(cfg, logger)
+
+	// Создаем обработчик
+	handler := jsonupdate.New(cfg, repo, logger)
+
+	// Создаем тестовый запрос с метрикой типа gauge
+	value := 42.5
+	metric := jsonupdate.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: &value,
+	}
+
+	body, err := json.Marshal(metric)
+	require.NoError(t, err)
+
+	// Создаем подпись
+	hash := sign.ComputeHMACSHA256(body, privateKey)
+
+	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(sign.HeaderKey, hash)
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик
+	handler(rr, req)
+
+	// Проверяем код ответа
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+
+	// Проверяем, что метрика была сохранена в хранилище
+	savedMetric, ok := repo.GetMetric(context.Background(), metrics.TypeGauge, "test_gauge")
+	assert.True(t, ok)
+	assert.InDelta(t, value, *savedMetric.Value, 0.0001)
+}
+
+func TestJSONUpdateHandler_InvalidSignature(t *testing.T) {
+	// Создаем хранилище с включенной подписью запросов
+	privateKey := "test-key"
+	cfg := &app.Config{
+		PrivateKey: privateKey,
+	}
+	logger := zap.NewNop()
+	repo := memory.New(cfg, logger)
+
+	// Создаем обработчик
+	handler := jsonupdate.New(cfg, repo, logger)
+
+	// Создаем тестовый запрос с метрикой типа gauge
+	value := 42.5
+	metric := jsonupdate.Metric{
+		Name:  "test_gauge",
+		MType: metrics.TypeGauge,
+		Value: &value,
+	}
+
+	body, err := json.Marshal(metric)
+	require.NoError(t, err)
+
+	// Создаем неверную подпись
+	invalidHash := "invalid-hash"
+
+	req := httptest.NewRequest(http.MethodPost, "/update/", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(sign.HeaderKey, invalidHash)
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик
+	handler(rr, req)
+
+	// Проверяем код ответа
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }

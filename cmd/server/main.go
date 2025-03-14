@@ -38,6 +38,8 @@ import (
 	//nolint:gosec // G108: pprof is used intentionally for debugging and profiling
 	_ "net/http/pprof"
 
+	"fmt"
+
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
@@ -46,30 +48,52 @@ import (
 	"go.uber.org/zap"
 )
 
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+	BuildVersion = "N/A"
+	BuildDate    = "N/A"
+	BuildCommit  = "N/A"
+)
+
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() {
+	fmt.Println("Build version:", BuildVersion)
+	fmt.Println("Build date:", BuildDate)
+	fmt.Println("Build commit:", BuildCommit)
+}
+
 func main() {
+	log := initLogger()
+	defer func() {
+		if syncErr := log.Sync(); syncErr != nil {
+			log.Error("failed to sync logger", zap.Error(syncErr))
+		}
+	}()
+
+	printVersion()
+
 	flags, err := app.ParseFlags()
 	if err != nil {
 		panic(err)
 	}
 
-	log := initLogger()
-	defer func() {
-		_ = log.Sync()
-	}()
-
 	cfg := app.NewConfig(flags)
 	server := app.New(cfg)
 
 	// Инициализируем хранилище
-	repo, err := initStorage(cfg, log)
-	if err != nil {
-		log.Error("failed to init storage", zap.Error(err))
-		panic(err)
+	repo, storageErr := initStorage(cfg, log)
+	if storageErr != nil {
+		log.Error("failed to init storage", zap.Error(storageErr))
+		panic(storageErr)
 	}
 	defer func() {
-		err = repo.Close()
-		if err != nil {
-			log.Error("failed to close storage", zap.Error(err))
+		closeErr := repo.Close()
+		if closeErr != nil {
+			log.Error("failed to close storage", zap.Error(closeErr))
 		}
 	}()
 

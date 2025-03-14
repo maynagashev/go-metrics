@@ -1,3 +1,5 @@
+// Package logger реализует middleware для логирования HTTP-запросов.
+// Обеспечивает логирование всех входящих запросов и их результатов.
 package logger
 
 import (
@@ -59,7 +61,9 @@ func readRequestBody(r *http.Request, log *zap.Logger) []byte {
 		return nil
 	}
 	defer func() {
-		_ = r.Body.Close()
+		if closeErr := r.Body.Close(); closeErr != nil {
+			log.Error("Ошибка при закрытии тела запроса", zap.Error(closeErr))
+		}
 	}()
 
 	// Восстановление r.Body для дальнейшего использования
