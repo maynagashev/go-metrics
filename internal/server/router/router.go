@@ -16,8 +16,10 @@ import (
 	plainUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 	plainValue "github.com/maynagashev/go-metrics/internal/server/handlers/plain/value"
 	"github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool"
+	"github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter"
 	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
+	cryptoMiddleware "github.com/maynagashev/go-metrics/pkg/middleware/crypto"
 	"go.uber.org/zap"
 )
 
@@ -39,6 +41,10 @@ func New(config *app.Config, storage storage.Repository, log *zap.Logger) chi.Ro
 	r.Use(decompresspool.New(log))
 	// Используем единый логгер для запросов, вместо встроенного логгера chi
 	r.Use(logger.New(log))
+	// Добавляем middleware для проверки IP-адреса
+	r.Use(ipfilter.New(config, log))
+	// Добавляем middleware для обработки шифрования
+	r.Use(cryptoMiddleware.New(config, log))
 
 	// Обработчики запросов
 	r.Get("/", plainIndex.New(storage))

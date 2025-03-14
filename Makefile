@@ -33,7 +33,7 @@ migrate:
 # Запуск сервера
 server:
 	@echo "Запуск сервера..."
-	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example"
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
 
 # Запуск агента
 agent:
@@ -41,41 +41,15 @@ agent:
 	@go run ./cmd/agent/. -k="private_key_example"
 
 # Запуск агента с коротким интервалом отправки метрик (пример для отладки)
-fast_agent:
+fast-agent:
 	@echo "Запуск агента (быстрый режим отправки метрик)..."
 	@go run ./cmd/agent/. -k="private_key_example" -r 0.0001
 
 # Запуск сервера и агента вместе
-server_with_agent:
+server-with-agent:
 	@echo "Запуск сервера и агента вместе..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
 
-# Запуск сервера с указанием версий
-server-with-version: set-versions
-	@echo "Запуск сервера с указанием версий..."
-	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
-
-# Запуск агента с указанием версий
-agent-with-version: set-versions
-	@echo "Запуск агента с указанием версий..."
-	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
-
-
-# Запуск всех тестов
-test:
-	@echo "Запуск всех тестов..."
-	@go test -v ./... | tee logs/test.log
-
-# Пример запуска бенчмарков
-bench:
-	@echo "Запуск бенчмарков..."
-	@mkdir -p logs
-	go test -bench=. -benchmem ./internal/benchmarks/... | tee logs/benchmarks.log
-
-# Запуск линтера
-lint:
-	@echo "Запуск линтера..."
-	golangci-lint run ./... --fix
 
 # Пример запуска автотеста для итерации 10
 iter10: build
@@ -97,12 +71,94 @@ iter14: build
 									-key=iter14 \
 									| tee logs/iter14.log
 
+# Запуск сервера с указанием версий (iter20)
+server-with-version: set-versions
+	@echo "Запуск сервера с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/server/. -d $(DB_DSN) -k="private_key_example" 
+
+# Запуск агента с указанием версий (iter20)
+agent-with-version: set-versions
+	@echo "Запуск агента с указанием версий..."
+	@go run -ldflags="-X 'main.BuildVersion=$(BUILD_VERSION)' -X 'main.BuildDate=$(BUILD_DATE)' -X 'main.BuildCommit=$(BUILD_COMMIT)'" ./cmd/agent/. -k="private_key_example"
+
+# Запуск сервера с шифрованием (iter21)
+server-with-encryption:
+	@echo "Запуск сервера с шифрованием..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=private.pem 2>&1 | tee logs/server-with-encryption.log
+
+# Запуск агента с шифрованием (iter21)
+agent-with-encryption:
+	@echo "Запуск агента с шифрованием..."
+	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=public.pem 2>&1 | tee logs/agent-with-encryption.log
+
+# Запуск сервера с конфигурационным файлом (iter22)
+server-with-config:
+	@echo "Запуск сервера с конфигурационным файлом..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -config=examples/server-config.json 2>&1 | tee logs/server-with-config.log
+
+# Запуск агента с конфигурационным файлом (iter22)
+agent-with-config:
+	@echo "Запуск агента с конфигурационным файлом..."
+	@go run ./cmd/agent/. -k="private_key_example" -config=examples/agent-config.json 2>&1 | tee logs/agent-with-config.log
+
+# Запуск сервера с логированием для сохранения graceful shutdown лога (iter23)
+server-with-graceful-shutdown:
+	@echo "Запуск сервера с логированием для сохранения graceful shutdown лога..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" >logs/server-graceful-shutdown.log 2>&1
+
+# Запуск агента с логированием для сохранения graceful shutdown лога (iter23)
+agent-with-graceful-shutdown:
+	@echo "Запуск агента с логированием для сохранения graceful shutdown лога..."
+	@go run ./cmd/agent/. -k="private_key_example" >logs/agent-graceful-shutdown.log 2>&1
+
+# Запуск сервера с доверенной подсетью (iter24)
+server-with-trusted-subnet:
+	@echo "Запуск сервера с доверенной подсетью..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -t="192.168.1.0/24" 2>&1 | tee logs/server-with-trusted-subnet.log
+
+# Запуск агента с заданным IP-адресом из доверенной подсети (iter24)
+agent-with-trusted-ip:
+	@echo "Запуск агента с заданным IP-адресом из доверенной подсети..."
+	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.1.1" 2>&1 | tee logs/agent-with-trusted-subnet.log
+
+# Запуск агента с IP-адресом отличным от доверенного (iter24)
+agent-with-other-ip:
+	@echo "Запуск агента с IP-адресом отличным от доверенного..."
+	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.2.1" 2>&1 | tee logs/agent-with-other-ip.log
+
+# Проверка запросов к серверу с разным X-Real-IP (iter24):
+request-from-trusted-subnet:
+	@echo "Проверка запросов к серверу с ip из доверенной подсети 192.168.1.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.1.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-trusted-subnet.log
+request-from-other-subnet:
+	@echo "Проверка запросов к серверу с ip из другой подсети 192.168.2.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.2.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-other-subnet.log
+
+# Запуск всех тестов
+test:
+	@echo "Запуск всех тестов..."
+	@go test -v ./... | tee logs/test.log
+
 # Тест с генерацией отчёта о покрытии
 test-coverage:
 	@echo "Запуск тестов с генерацией покрытия..."
 	go test -coverprofile=logs/coverage.out ./...
 	go tool cover -html=logs/coverage.out -o logs/coverage.html
 	go tool cover -func=logs/coverage.out | tee logs/coverage.log
+
+
+# Пример запуска бенчмарков
+bench:
+	@echo "Запуск бенчмарков..."
+	@mkdir -p logs
+	go test -bench=. -benchmem ./internal/benchmarks/... | tee logs/benchmarks.log
+
+# Запуск линтера
+lint:
+	@echo "Запуск линтера..."
+	golangci-lint run ./... --fix
+
+
 
 # Запуск всех типов профилирования
 save-all-profiles: profile-benchmarks profile-server-memory profile-agent-memory
@@ -163,4 +219,5 @@ staticcheck:
 staticlint:
 	@echo "Запуск кастомного мультичекера staticlint..."
 	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
+
 

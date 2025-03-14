@@ -10,13 +10,31 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
+// Константы для конвертации единиц измерения.
+const (
+	BytesInKB = 1024
+	BytesInMB = BytesInKB * 1024
+	BytesInGB = BytesInMB * 1024
+)
+
 // ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
 func (a *agent) ResetMetrics() {
+	slog.Debug("Resetting metrics before collection")
 	a.gauges = make(map[string]float64)
 	a.counters = make(map[string]int64)
 }
 
 func (a *agent) CollectRuntimeMetrics() {
+	// Проверяем сигнал остановки перед сбором метрик
+	select {
+	case <-a.stopCh:
+		slog.Info("Shutdown signal received, skipping runtime metrics collection")
+		return
+	default:
+		// Продолжаем выполнение
+	}
+
+	slog.Debug("Starting runtime metrics collection")
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 
@@ -47,24 +65,50 @@ func (a *agent) CollectRuntimeMetrics() {
 	a.gauges["StackSys"] = float64(m.StackSys)
 	a.gauges["Sys"] = float64(m.Sys)
 	a.gauges["TotalAlloc"] = float64(m.TotalAlloc)
+
+	slog.Debug("Runtime metrics collection completed",
+		"metrics_count", len(a.gauges),
+		"heap_alloc_mb", float64(m.HeapAlloc)/BytesInMB,
+		"sys_mb", float64(m.Sys)/BytesInMB)
 }
 
 // CollectAdditionalMetrics собирает дополнительные метрики системы.
 func (a *agent) CollectAdditionalMetrics() {
+	// Проверяем сигнал остановки перед сбором метрик
+	select {
+	case <-a.stopCh:
+		slog.Info("Shutdown signal received, skipping additional metrics collection")
+		return
+	default:
+		// Продолжаем выполнение
+	}
+
+	slog.Debug("Starting additional system metrics collection")
+
 	v, err := mem.VirtualMemory()
 	if err != nil {
-		slog.Error("failed to collect virtual memory metrics", "error", err)
+		slog.Error("Failed to collect virtual memory metrics", "error", err)
 		return
 	}
 	a.gauges["TotalMemory"] = float64(v.Total)
 	a.gauges["FreeMemory"] = float64(v.Free)
 
+	slog.Debug("Memory metrics collected",
+		"total_memory_gb", float64(v.Total)/BytesInGB,
+		"free_memory_gb", float64(v.Free)/BytesInGB,
+		"used_percent", v.UsedPercent)
+
 	c, err := cpu.Percent(0, true)
 	if err != nil {
-		slog.Error("failed to collect CPU metrics", "error", err)
+		slog.Error("Failed to collect CPU metrics", "error", err)
 		return
 	}
+
+	cpuCount := 0
 	for i, percent := range c {
 		a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
+		cpuCount++
 	}
+
+	slog.Debug("CPU metrics collection completed", "cpu_count", cpuCount)
 }
