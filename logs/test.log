@@ -1,0 +1,484 @@
+?   	github.com/maynagashev/go-metrics/cmd/keygen	[no test files]
+?   	github.com/maynagashev/go-metrics/internal/config	[no test files]
+?   	github.com/maynagashev/go-metrics/internal/server/app	[no test files]
+?   	github.com/maynagashev/go-metrics/internal/server/handlers/plain/index	[no test files]
+=== RUN   TestAgentEncryption
+--- PASS: TestAgentEncryption (0.00s)
+=== RUN   TestMustParseFlags
+=== RUN   TestMustParseFlags/default_values
+=== RUN   TestMustParseFlags/command_line_arguments
+=== RUN   TestMustParseFlags/environment_variables_override
+=== RUN   TestMustParseFlags/invalid_report_interval_env
+=== RUN   TestMustParseFlags/invalid_poll_interval_env
+=== RUN   TestMustParseFlags/invalid_rate_limit_env
+=== RUN   TestMustParseFlags/rate_limit_less_than_1
+=== RUN   TestMustParseFlags/minimum_intervals
+--- PASS: TestMustParseFlags (0.00s)
+    --- PASS: TestMustParseFlags/default_values (0.00s)
+    --- PASS: TestMustParseFlags/command_line_arguments (0.00s)
+    --- PASS: TestMustParseFlags/environment_variables_override (0.00s)
+    --- PASS: TestMustParseFlags/invalid_report_interval_env (0.00s)
+    --- PASS: TestMustParseFlags/invalid_poll_interval_env (0.00s)
+    --- PASS: TestMustParseFlags/invalid_rate_limit_env (0.00s)
+    --- PASS: TestMustParseFlags/rate_limit_less_than_1 (0.00s)
+    --- PASS: TestMustParseFlags/minimum_intervals (0.00s)
+=== RUN   TestMain
+Build version: N/A
+Build date: N/A
+Build commit: N/A
+time=2025-03-06T00:24:29.842+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:9090 ReportInterval:5 PollInterval:2} PrivateKey:test-key CryptoKey: RateLimit:5 EnablePprof:false PprofPort:6060}"
+--- PASS: TestMain (0.00s)
+=== RUN   TestInitLogger
+time=2025-03-06T00:24:29.843+07:00 level=DEBUG msg="test message"
+--- PASS: TestInitLogger (0.00s)
+=== RUN   TestPrintVersion
+--- PASS: TestPrintVersion (0.00s)
+=== RUN   TestPrintVersionDefaultValues
+--- PASS: TestPrintVersionDefaultValues (0.00s)
+=== RUN   TestInitPprof
+=== RUN   TestInitPprof/profiling_disabled
+=== RUN   TestInitPprof/profiling_enabled
+--- PASS: TestInitPprof (0.21s)
+    --- PASS: TestInitPprof/profiling_disabled (0.10s)
+    --- PASS: TestInitPprof/profiling_enabled (0.10s)
+=== RUN   TestStartPProf
+=== RUN   TestStartPProf/empty_address
+=== RUN   TestStartPProf/valid_address
+--- PASS: TestStartPProf (0.20s)
+    --- PASS: TestStartPProf/empty_address (0.10s)
+    --- PASS: TestStartPProf/valid_address (0.10s)
+=== RUN   TestStartPProf_ServerError
+time=2025-03-06T00:24:30.356+07:00 level=ERROR msg="Failed to start pprof server" error="listen tcp 127.0.0.1:9996: bind: address already in use"
+--- PASS: TestStartPProf_ServerError (0.20s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/agent	0.627s
+=== RUN   TestRun
+=== RUN   TestRun/empty_dsn
+=== RUN   TestRun/empty_migrations_path
+--- PASS: TestRun (0.00s)
+    --- PASS: TestRun/empty_dsn (0.00s)
+    --- PASS: TestRun/empty_migrations_path (0.00s)
+=== RUN   TestMain_Integration
+=== RUN   TestMain_Integration/no_args
+=== RUN   TestMain_Integration/only_dsn
+/tmp/go-build3395294389/b192/migrate.test flag redefined: d
+=== RUN   TestMain_Integration/only_migrations_path
+/tmp/go-build3395294389/b192/migrate.test flag redefined: d
+--- PASS: TestMain_Integration (0.00s)
+    --- PASS: TestMain_Integration/no_args (0.00s)
+    --- PASS: TestMain_Integration/only_dsn (0.00s)
+    --- PASS: TestMain_Integration/only_migrations_path (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/migrate	(cached)
+=== RUN   TestPrintVersion
+--- PASS: TestPrintVersion (0.00s)
+=== RUN   TestPrintVersionDefaultValues
+--- PASS: TestPrintVersionDefaultValues (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/server	(cached)
+=== RUN   TestLoadConfig
+2025/03/05 23:16:44 Конфигурационный файл не найден
+2025/03/05 23:16:44 Ошибка при чтении конфигурационного файла: invalid character 'i' looking for beginning of object key string
+--- PASS: TestLoadConfig (0.00s)
+=== RUN   TestAddAnalyzers
+2025/03/05 23:16:44 Используются все анализаторы staticcheck (секция отсутствует в конфигурации)
+2025/03/05 23:16:44 Используются анализаторы staticcheck из конфигурационного файла: [SA1000]
+--- PASS: TestAddAnalyzers (0.00s)
+=== RUN   TestGetAllStaticcheckAnalyzers
+--- PASS: TestGetAllStaticcheckAnalyzers (0.00s)
+=== RUN   TestGetAllStylecheckAnalyzers
+--- PASS: TestGetAllStylecheckAnalyzers (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/staticlint	(cached)
+?   	github.com/maynagashev/go-metrics/internal/server/storage/pgstorage	[no test files]
+?   	github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration	[no test files]
+?   	github.com/maynagashev/go-metrics/mocks	[no test files]
+?   	github.com/maynagashev/go-metrics/pkg/middleware/crypto	[no test files]
+=== RUN   TestAnalyzer
+--- PASS: TestAnalyzer (1.34s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck	1.371s
+=== RUN   TestAnalyzer
+--- PASS: TestAnalyzer (1.42s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit	1.448s
+=== RUN   Example_update
+--- PASS: Example_update (0.33s)
+=== RUN   Example_getValue
+--- PASS: Example_getValue (0.12s)
+=== RUN   Example_updateBatch
+--- PASS: Example_updateBatch (0.01s)
+=== RUN   Example_ping
+--- PASS: Example_ping (0.03s)
+PASS
+ok  	github.com/maynagashev/go-metrics/example	(cached)
+=== RUN   TestAgent_collectRuntimeMetrics
+=== RUN   TestAgent_collectRuntimeMetrics/collect_runtime_metrics
+2025/03/06 00:24:29 INFO read metrics for job poll_count=0
+2025/03/06 00:24:29 INFO reset poll count poll_count=0
+--- PASS: TestAgent_collectRuntimeMetrics (0.00s)
+    --- PASS: TestAgent_collectRuntimeMetrics/collect_runtime_metrics (0.00s)
+=== RUN   TestAgent_CollectRuntimeMetrics
+2025/03/06 00:24:29 INFO read metrics for job poll_count=0
+2025/03/06 00:24:29 INFO reset poll count poll_count=0
+--- PASS: TestAgent_CollectRuntimeMetrics (0.00s)
+=== RUN   TestAgent_CollectAdditionalMetrics
+2025/03/06 00:24:29 INFO read metrics for job poll_count=0
+2025/03/06 00:24:29 INFO reset poll count poll_count=0
+--- PASS: TestAgent_CollectAdditionalMetrics (0.00s)
+=== RUN   TestAgent_GetMetrics
+2025/03/06 00:24:29 INFO read metrics for job poll_count=0
+2025/03/06 00:24:29 INFO reset poll count poll_count=0
+--- PASS: TestAgent_GetMetrics (0.00s)
+=== RUN   TestAgent_ResetMetrics
+2025/03/06 00:24:29 INFO read metrics for job poll_count=0
+2025/03/06 00:24:29 INFO reset poll count poll_count=0
+2025/03/06 00:24:29 INFO read metrics for job poll_count=0
+2025/03/06 00:24:29 INFO reset poll count poll_count=0
+--- PASS: TestAgent_ResetMetrics (0.00s)
+=== RUN   TestAgent_IsRequestSigningEnabled
+--- PASS: TestAgent_IsRequestSigningEnabled (0.00s)
+=== RUN   TestAgent_IsEncryptionEnabled
+--- PASS: TestAgent_IsEncryptionEnabled (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/agent	0.014s
+testing: warning: no tests to run
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/benchmarks	(cached) [no tests to run]
+=== RUN   TestNewMetric
+=== RUN   TestNewMetric/Create_counter_metric
+=== RUN   TestNewMetric/Create_gauge_metric
+--- PASS: TestNewMetric (0.00s)
+    --- PASS: TestNewMetric/Create_counter_metric (0.00s)
+    --- PASS: TestNewMetric/Create_gauge_metric (0.00s)
+=== RUN   TestNewCounter
+--- PASS: TestNewCounter (0.00s)
+=== RUN   TestNewGauge
+--- PASS: TestNewGauge (0.00s)
+=== RUN   TestMetric_String
+--- PASS: TestMetric_String (0.00s)
+=== RUN   TestMetric_ValueString
+=== RUN   TestMetric_ValueString/Nil_metric
+=== RUN   TestMetric_ValueString/Counter_metric
+=== RUN   TestMetric_ValueString/Gauge_metric
+=== RUN   TestMetric_ValueString/Unknown_metric_type
+--- PASS: TestMetric_ValueString (0.00s)
+    --- PASS: TestMetric_ValueString/Nil_metric (0.00s)
+    --- PASS: TestMetric_ValueString/Counter_metric (0.00s)
+    --- PASS: TestMetric_ValueString/Gauge_metric (0.00s)
+    --- PASS: TestMetric_ValueString/Unknown_metric_type (0.00s)
+=== RUN   TestMetric_ToJSON
+=== RUN   TestMetric_ToJSON/Counter_metric_to_JSON
+=== RUN   TestMetric_ToJSON/Gauge_metric_to_JSON
+--- PASS: TestMetric_ToJSON (0.00s)
+    --- PASS: TestMetric_ToJSON/Counter_metric_to_JSON (0.00s)
+    --- PASS: TestMetric_ToJSON/Gauge_metric_to_JSON (0.00s)
+=== RUN   TestMetricToString
+--- PASS: TestMetricToString (0.00s)
+=== RUN   TestFloatPtr
+--- PASS: TestFloatPtr (0.00s)
+=== RUN   TestInt64Ptr
+--- PASS: TestInt64Ptr (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/contracts/metrics	(cached)
+=== RUN   TestJSONIndexHandler
+2025-03-05T23:16:44.529+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONIndexHandler (0.00s)
+=== RUN   TestJSONIndexHandler_EmptyStorage
+2025-03-05T23:16:44.530+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONIndexHandler_EmptyStorage (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/index	(cached)
+=== RUN   TestHandle_Success
+--- PASS: TestHandle_Success (0.00s)
+=== RUN   TestNew_DatabaseNotEnabled
+--- PASS: TestNew_DatabaseNotEnabled (0.00s)
+=== RUN   TestNew_InvalidDatabaseConfig
+2025-03-06T00:24:30.116+0700	DEBUG	pgstorage/pgstorage.go:35	Connecting to database: invalid-dsn
+
+2025-03-06T00:24:30.116+0700	ERROR	pgstorage/pgstorage.go:38	Unable to connect to database: cannot parse `invalid-dsn`: failed to parse as DSN (invalid dsn)
+
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage.New
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:38
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping.New
+	/home/dev/src/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:49
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping_test.TestNew_InvalidDatabaseConfig
+	/home/dev/src/maynagashev/go-metrics/internal/server/handlers/json/ping/ping_test.go:93
+testing.tRunner
+	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
+--- PASS: TestNew_InvalidDatabaseConfig (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/ping	0.012s
+=== RUN   TestUpdateHandler
+=== RUN   TestUpdateHandler/update_gauge
+=== RUN   TestUpdateHandler/update_counter
+=== RUN   TestUpdateHandler/invalid_metrics_type
+=== RUN   TestUpdateHandler/invalid_url
+--- PASS: TestUpdateHandler (0.00s)
+    --- PASS: TestUpdateHandler/update_gauge (0.00s)
+    --- PASS: TestUpdateHandler/update_counter (0.00s)
+    --- PASS: TestUpdateHandler/invalid_metrics_type (0.00s)
+    --- PASS: TestUpdateHandler/invalid_url (0.00s)
+=== RUN   TestJSONUpdateHandler_Gauge
+--- PASS: TestJSONUpdateHandler_Gauge (0.00s)
+=== RUN   TestJSONUpdateHandler_Counter
+--- PASS: TestJSONUpdateHandler_Counter (0.00s)
+=== RUN   TestJSONUpdateHandler_InvalidJSON
+--- PASS: TestJSONUpdateHandler_InvalidJSON (0.00s)
+=== RUN   TestJSONUpdateHandler_WithSignature
+--- PASS: TestJSONUpdateHandler_WithSignature (0.00s)
+=== RUN   TestJSONUpdateHandler_InvalidSignature
+--- PASS: TestJSONUpdateHandler_InvalidSignature (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/update	0.010s
+=== RUN   TestNewBulkUpdate_Success
+--- PASS: TestNewBulkUpdate_Success (0.00s)
+=== RUN   TestNewBulkUpdate_InvalidJSON
+--- PASS: TestNewBulkUpdate_InvalidJSON (0.00s)
+=== RUN   TestNewBulkUpdate_WithSignature
+--- PASS: TestNewBulkUpdate_WithSignature (0.00s)
+=== RUN   TestNewBulkUpdate_InvalidSignature
+--- PASS: TestNewBulkUpdate_InvalidSignature (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/updates	0.009s
+=== RUN   TestJSONValueHandler
+=== RUN   TestJSONValueHandler/Get_gauge_metric
+2025-03-06T00:24:30.112+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+=== RUN   TestJSONValueHandler/Get_counter_metric
+2025-03-06T00:24:30.113+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+=== RUN   TestJSONValueHandler/Metric_not_found
+2025-03-06T00:24:30.113+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONValueHandler (0.00s)
+    --- PASS: TestJSONValueHandler/Get_gauge_metric (0.00s)
+    --- PASS: TestJSONValueHandler/Get_counter_metric (0.00s)
+    --- PASS: TestJSONValueHandler/Metric_not_found (0.00s)
+=== RUN   TestJSONValueHandler_InvalidJSON
+2025-03-06T00:24:30.113+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONValueHandler_InvalidJSON (0.00s)
+=== RUN   TestJSONValueHandler_GaugeMetric
+2025-03-06T00:24:30.113+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONValueHandler_GaugeMetric (0.00s)
+=== RUN   TestJSONValueHandler_MetricNotFound
+2025-03-06T00:24:30.114+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONValueHandler_MetricNotFound (0.00s)
+=== RUN   TestJSONValueHandler_WithSignature
+2025-03-06T00:24:30.114+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestJSONValueHandler_WithSignature (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/value	0.010s
+=== RUN   TestUpdateHandler
+=== RUN   TestUpdateHandler/update_gauge
+=== RUN   TestUpdateHandler/update_counter
+=== RUN   TestUpdateHandler/invalid_metrics_type
+=== RUN   TestUpdateHandler/invalid_url
+--- PASS: TestUpdateHandler (0.00s)
+    --- PASS: TestUpdateHandler/update_gauge (0.00s)
+    --- PASS: TestUpdateHandler/update_counter (0.00s)
+    --- PASS: TestUpdateHandler/invalid_metrics_type (0.00s)
+    --- PASS: TestUpdateHandler/invalid_url (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/plain/update	(cached)
+=== RUN   TestPlainValueHandler
+2025-03-05T23:16:44.556+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+=== RUN   TestPlainValueHandler/Get_existing_gauge_metric
+=== RUN   TestPlainValueHandler/Get_existing_counter_metric
+=== RUN   TestPlainValueHandler/Get_non-existent_metric
+--- PASS: TestPlainValueHandler (0.00s)
+    --- PASS: TestPlainValueHandler/Get_existing_gauge_metric (0.00s)
+    --- PASS: TestPlainValueHandler/Get_existing_counter_metric (0.00s)
+    --- PASS: TestPlainValueHandler/Get_non-existent_metric (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/handlers/plain/value	(cached)
+=== RUN   TestDecompressMiddleware_WithGzip
+    logger.go:146: 2025-03-05T23:16:44.557+0700	INFO	decompress middleware enabled
+    logger.go:146: 2025-03-05T23:16:44.560+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
+--- PASS: TestDecompressMiddleware_WithGzip (0.00s)
+=== RUN   TestDecompressMiddleware_WithoutGzip
+    logger.go:146: 2025-03-05T23:16:44.561+0700	INFO	decompress middleware enabled
+--- PASS: TestDecompressMiddleware_WithoutGzip (0.00s)
+=== RUN   TestDecompressMiddleware_InvalidGzip
+    logger.go:146: 2025-03-05T23:16:44.561+0700	INFO	decompress middleware enabled
+    logger.go:146: 2025-03-05T23:16:44.561+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
+    logger.go:146: 2025-03-05T23:16:44.561+0700	ERROR	error while decompressing request body	{"error": "gzip: invalid header"}
+--- PASS: TestDecompressMiddleware_InvalidGzip (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/middleware/decompress	(cached)
+=== RUN   TestDecompressPoolMiddleware_WithGzip
+    logger.go:146: 2025-03-05T23:16:44.691+0700	INFO	decompress middleware enabled
+    logger.go:146: 2025-03-05T23:16:44.691+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
+--- PASS: TestDecompressPoolMiddleware_WithGzip (0.00s)
+=== RUN   TestDecompressPoolMiddleware_WithoutGzip
+    logger.go:146: 2025-03-05T23:16:44.692+0700	INFO	decompress middleware enabled
+--- PASS: TestDecompressPoolMiddleware_WithoutGzip (0.00s)
+=== RUN   TestDecompressPoolMiddleware_InvalidGzip
+    logger.go:146: 2025-03-05T23:16:44.692+0700	INFO	decompress middleware enabled
+    logger.go:146: 2025-03-05T23:16:44.692+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
+    logger.go:146: 2025-03-05T23:16:44.692+0700	ERROR	error initializing gzip reader	{"error": "gzip: invalid header"}
+--- PASS: TestDecompressPoolMiddleware_InvalidGzip (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool	(cached)
+=== RUN   TestLoggerMiddleware
+--- PASS: TestLoggerMiddleware (0.00s)
+=== RUN   TestLoggerMiddleware_WithRequestBody
+    logger.go:146: 2025-03-05T23:16:44.951+0700	INFO	logger middleware enabled
+    logger.go:146: 2025-03-05T23:16:44.951+0700	INFO	request completed	{"method": "POST", "path": "/update", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "", "headers": {"Content-Type":["application/json"]}, "request_body": "{\"test\":\"data\"}", "status": 200, "response_bytes": 0, "response_headers": {}, "response_body": "", "duration": "5.173µs"}
+--- PASS: TestLoggerMiddleware_WithRequestBody (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/middleware/logger	(cached)
+=== RUN   TestNew
+--- PASS: TestNew (0.01s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/router	0.021s
+=== RUN   TestMemoryStorage
+=== RUN   TestMemoryStorage/memory_storage
+--- PASS: TestMemoryStorage (0.00s)
+    --- PASS: TestMemoryStorage/memory_storage (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/internal/server/storage	(cached)
+=== RUN   TestMemStorage_UpdateGauge
+2025-03-05T23:16:45.654+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_UpdateGauge (0.00s)
+=== RUN   TestMemStorage_IncrementCounter
+2025-03-05T23:16:45.655+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_IncrementCounter (0.00s)
+=== RUN   TestMemStorage_UpdateMetric
+2025-03-05T23:16:45.655+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_UpdateMetric (0.00s)
+=== RUN   TestMemStorage_GetMetric
+2025-03-05T23:16:45.655+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_GetMetric (0.00s)
+=== RUN   TestMemStorage_Count
+2025-03-05T23:16:45.655+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_Count (0.00s)
+=== RUN   TestMemStorage_UpdateMetrics
+2025-03-05T23:16:45.655+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_UpdateMetrics (0.00s)
+=== RUN   TestMemStorage_GetMetrics
+2025-03-05T23:16:45.655+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_GetMetrics (0.00s)
+=== RUN   TestMemStorage_FileOperations
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test2451853810"}
+2025-03-05T23:16:45.656+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "EOF"}
+github.com/maynagashev/go-metrics/internal/server/storage/memory.New
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
+github.com/maynagashev/go-metrics/internal/server/storage/memory_test.setupTestStorageWithConfig
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:33
+github.com/maynagashev/go-metrics/internal/server/storage/memory_test.TestMemStorage_FileOperations
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:299
+testing.tRunner
+	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2451853810", "gauges": {"test_gauge":42}, "counters": {}}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2451853810", "gauges": {"test_gauge":42}, "counters": {"test_counter":10}}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test2451853810"}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2451853810", "gauges": {"test_gauge":42}, "counters": {}}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2451853810", "gauges": {"test_gauge":42}, "counters": {"test_counter":10}}
+2025-03-05T23:16:45.656+0700	INFO	memory/memory.go:282	Metrics restored from file	{"file": "/tmp/metrics_test2451853810", "metrics": 2}
+--- PASS: TestMemStorage_FileOperations (0.00s)
+=== RUN   TestMemStorage_Dump
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-05T23:16:45.656+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test2091364551"}
+2025-03-05T23:16:45.656+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "EOF"}
+github.com/maynagashev/go-metrics/internal/server/storage/memory.New
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
+github.com/maynagashev/go-metrics/internal/server/storage/memory_test.setupTestStorageWithConfig
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:33
+github.com/maynagashev/go-metrics/internal/server/storage/memory_test.TestMemStorage_Dump
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:353
+testing.tRunner
+	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
+2025-03-05T23:16:46.657+0700	INFO	memory/memory.go:64	store 1 metrics to file /tmp/metrics_test2091364551
+2025-03-05T23:16:46.657+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2091364551", "gauges": {"test_gauge":42}, "counters": {}}
+2025-03-05T23:16:47.657+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2091364551", "gauges": {"test_gauge":42}, "counters": {}}
+--- PASS: TestMemStorage_Dump (2.00s)
+=== RUN   TestMemStorage_Close
+2025-03-05T23:16:47.657+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test3237168984"}
+2025-03-05T23:16:47.658+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "EOF"}
+github.com/maynagashev/go-metrics/internal/server/storage/memory.New
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
+github.com/maynagashev/go-metrics/internal/server/storage/memory_test.setupTestStorageWithConfig
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:33
+github.com/maynagashev/go-metrics/internal/server/storage/memory_test.TestMemStorage_Close
+	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:394
+testing.tRunner
+	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test3237168984"}
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3237168984", "gauges": {"test_gauge":42}, "counters": {}}
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3237168984", "gauges": {"test_gauge":42}, "counters": {"test_counter":10}}
+2025-03-05T23:16:47.658+0700	INFO	memory/memory.go:282	Metrics restored from file	{"file": "/tmp/metrics_test3237168984", "metrics": 2}
+--- PASS: TestMemStorage_Close (0.00s)
+=== RUN   TestMemStorage_GetAllMetrics
+2025-03-05T23:16:47.658+0700	INFO	memory/memory.go:64	store 1 metrics to file /tmp/metrics_test2091364551
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+--- PASS: TestMemStorage_GetAllMetrics (0.00s)
+PASS
+2025-03-05T23:16:47.658+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test2091364551", "gauges": {"test_gauge":42}, "counters": {}}
+ok  	github.com/maynagashev/go-metrics/internal/server/storage/memory	(cached)
+=== RUN   TestGenerateAndLoadKeys
+--- PASS: TestGenerateAndLoadKeys (0.20s)
+=== RUN   TestEncryptLargeData
+--- PASS: TestEncryptLargeData (0.12s)
+PASS
+ok  	github.com/maynagashev/go-metrics/pkg/crypto	(cached)
+=== RUN   TestCompress
+--- PASS: TestCompress (0.00s)
+=== RUN   TestCompressEmptyData
+--- PASS: TestCompressEmptyData (0.00s)
+=== RUN   TestCompressError
+--- PASS: TestCompressError (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/pkg/middleware/gzip	0.009s
+=== RUN   TestRandomFloat64
+--- PASS: TestRandomFloat64 (0.01s)
+=== RUN   TestRandomFloat64_EqualMinMax
+--- PASS: TestRandomFloat64_EqualMinMax (0.00s)
+=== RUN   TestRandomFloat64_MinGreaterThanMax
+--- PASS: TestRandomFloat64_MinGreaterThanMax (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/pkg/random	(cached)
+=== RUN   TestOK
+--- PASS: TestOK (0.00s)
+=== RUN   TestError
+--- PASS: TestError (0.00s)
+=== RUN   TestWriteResponseError
+--- PASS: TestWriteResponseError (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/pkg/response	0.009s
+=== RUN   TestCalculateHash
+=== RUN   TestCalculateHash/Empty_data_with_empty_key
+=== RUN   TestCalculateHash/Data_with_empty_key
+=== RUN   TestCalculateHash/Data_with_key
+--- PASS: TestCalculateHash (0.00s)
+    --- PASS: TestCalculateHash/Empty_data_with_empty_key (0.00s)
+    --- PASS: TestCalculateHash/Data_with_empty_key (0.00s)
+    --- PASS: TestCalculateHash/Data_with_key (0.00s)
+=== RUN   TestVerifyHash
+=== RUN   TestVerifyHash/Valid_hash
+=== RUN   TestVerifyHash/Invalid_hash
+=== RUN   TestVerifyHash/Empty_data_with_valid_hash
+--- PASS: TestVerifyHash (0.00s)
+    --- PASS: TestVerifyHash/Valid_hash (0.00s)
+    --- PASS: TestVerifyHash/Invalid_hash (0.00s)
+    --- PASS: TestVerifyHash/Empty_data_with_valid_hash (0.00s)
+=== RUN   TestComputeHMACSHA256
+=== RUN   TestComputeHMACSHA256/Empty_data_and_key
+=== RUN   TestComputeHMACSHA256/Simple_data_with_key
+=== RUN   TestComputeHMACSHA256/Complex_data_with_key
+--- PASS: TestComputeHMACSHA256 (0.00s)
+    --- PASS: TestComputeHMACSHA256/Empty_data_and_key (0.00s)
+    --- PASS: TestComputeHMACSHA256/Simple_data_with_key (0.00s)
+    --- PASS: TestComputeHMACSHA256/Complex_data_with_key (0.00s)
+=== RUN   TestVerifyHMACSHA256
+=== RUN   TestVerifyHMACSHA256/Empty_expectedMAC
+=== RUN   TestVerifyHMACSHA256/Valid_MAC
+=== RUN   TestVerifyHMACSHA256/Invalid_MAC
+--- PASS: TestVerifyHMACSHA256 (0.00s)
+    --- PASS: TestVerifyHMACSHA256/Empty_expectedMAC (0.00s)
+    --- PASS: TestVerifyHMACSHA256/Valid_MAC (0.00s)
+    --- PASS: TestVerifyHMACSHA256/Invalid_MAC (0.00s)
+PASS
+ok  	github.com/maynagashev/go-metrics/pkg/sign	(cached)
