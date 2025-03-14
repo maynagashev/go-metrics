@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"flag"
 	"os"
 	"strconv"
@@ -30,19 +31,41 @@ type Flags struct {
 	}
 
 	PrivateKey string
+	CryptoKey  string // Path to the private key file for decryption
+	ConfigFile string // Путь к файлу конфигурации в формате JSON
 }
 
 // ParseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных.
 func ParseFlags() (*Flags, error) {
 	flags := Flags{}
-	var err error
 
+	// Регистрируем флаги командной строки
+	registerCommandLineFlags(&flags)
+
+	// Парсим переданные серверу аргументы в зарегистрированные переменные.
+	flag.Parse()
+
+	// Применяем переменные окружения
+	if err := applyEnvironmentVariables(&flags); err != nil {
+		return nil, err
+	}
+
+	// Загружаем и применяем JSON-конфигурацию
+	if err := loadAndApplyJSONConfig(&flags); err != nil {
+		return nil, err
+	}
+
+	return &flags, nil
+}
+
+// registerCommandLineFlags регистрирует флаги командной строки.
+func registerCommandLineFlags(flags *Flags) {
 	// Регистрируем переменную flagRunAddr как аргумент -a со значением ":8080" по умолчанию.
 	flag.StringVar(
 		&flags.Server.Addr,
 		"a",
-		"localhost:8080",
+		defaultServerAddr,
 		"IP  адрес и порт на которых следует запустить сервер",
 	)
 	// Регистрируем переменную flagStoreInterval как аргумент -i со значением 300 по умолчанию.
@@ -56,7 +79,7 @@ func ParseFlags() (*Flags, error) {
 	flag.StringVar(
 		&flags.Server.FileStoragePath,
 		"f",
-		"/tmp/metrics-db.json",
+		defaultFileStoragePath,
 		"Путь к файлу для хранения метрик",
 	)
 	// Регистрируем переменную flagRestore как аргумент -r со значением false по умолчанию.
@@ -84,10 +107,20 @@ func ParseFlags() (*Flags, error) {
 		"Путь к директории с миграциями")
 
 	flag.StringVar(&flags.PrivateKey, "k", "", "Приватный ключ для подписи запросов к серверу")
+	flag.StringVar(
+		&flags.CryptoKey,
+		"crypto-key",
+		"",
+		"Путь к файлу с приватным ключом для расшифровки",
+	)
 
-	// Парсим переданные серверу аргументы в зарегистрированные переменные.
-	flag.Parse()
+	// Добавляем флаг для пути к файлу конфигурации
+	flag.StringVar(&flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
+	flag.StringVar(&flags.ConfigFile, "config", "", "Путь к файлу конфигурации в формате JSON")
+}
 
+// applyEnvironmentVariables применяет переменные окружения к флагам.
+func applyEnvironmentVariables(flags *Flags) error {
 	// Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
 	// переопределим адрес запуска сервера,
 	// даже если он был передан через аргумент командной строки.
@@ -95,10 +128,11 @@ func ParseFlags() (*Flags, error) {
 		flags.Server.Addr = envRunAddr
 	}
 	if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" {
-		flags.Server.StoreInterval, err = strconv.Atoi(envStoreInterval)
+		storeInterval, err := strconv.Atoi(envStoreInterval)
 		if err != nil {
-			return nil, err
+			return err
 		}
+		flags.Server.StoreInterval = storeInterval
 	}
 	// Если переменная окружения FILE_STORAGE_PATH присутствует (даже
 	// пустая), переопределим путь к файлу хранения метрик.
@@ -107,10 +141,11 @@ func ParseFlags() (*Flags, error) {
 	}
 	// Если переменная окружения RESTORE присутствует (даже пустая), переопределим флаг восстановления метрик из файла.
 	if envRestore, ok := os.LookupEnv("RESTORE"); ok {
-		flags.Server.Restore, err = strconv.ParseBool(envRestore)
+		restore, err := strconv.ParseBool(envRestore)
 		if err != nil {
-			return nil, err
+			return err
 		}
+		flags.Server.Restore = restore
 	}
 
 	// Если переданы параметры БД в параметрах окружения, используем их
@@ -123,5 +158,31 @@ func ParseFlags() (*Flags, error) {
 		flags.PrivateKey = envPrivateKey
 	}
 
-	return &flags, nil
+	// Если передан путь к файлу с приватным ключом в параметрах окружения, используем его
+	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
+		flags.CryptoKey = envCryptoKey
+	}
+
+	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
+	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
+		flags.ConfigFile = envConfigFile
+	}
+
+	return nil
+}
+
+// loadAndApplyJSONConfig загружает и применяет JSON-конфигурацию.
+func loadAndApplyJSONConfig(flags *Flags) error {
+	// Загружаем конфигурацию из JSON-файла, если он указан
+	jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
+	if loadErr != nil {
+		// Если файл конфигурации не указан, это не ошибка
+		if errors.Is(loadErr, ErrConfigFileNotSpecified) {
+			return nil
+		}
+		return loadErr
+	}
+
+	// Применяем настройки из JSON-конфигурации (с более низким приоритетом)
+	return ApplyJSONConfig(flags, jsonConfig)
 }

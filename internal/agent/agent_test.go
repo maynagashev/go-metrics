@@ -1,6 +1,7 @@
 package agent_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -10,7 +11,11 @@ import (
 )
 
 func TestAgent_collectRuntimeMetrics(t *testing.T) {
-	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0)
+	// Создаем контекст для тестирования
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0, nil)
 	tests := []struct {
 		name string
 		want int
@@ -30,17 +35,28 @@ func TestAgent_collectRuntimeMetrics(t *testing.T) {
 			}
 		})
 	}
+
+	// Запускаем агент в отдельной горутине и сразу отменяем контекст
+	go func() {
+		a.Run(ctx)
+	}()
+	cancel()
 }
 
 type MockAgent struct {
 	mock.Mock
 }
 
-func (m *MockAgent) Run() {
-	m.Called()
+func (m *MockAgent) Run(ctx context.Context) {
+	m.Called(ctx)
 }
 
 func (m *MockAgent) IsRequestSigningEnabled() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockAgent) IsEncryptionEnabled() bool {
 	args := m.Called()
 	return args.Bool(0)
 }
@@ -61,4 +77,8 @@ func (m *MockAgent) GetMetrics() []*metrics.Metric {
 	args := m.Called()
 	result, _ := args.Get(0).([]*metrics.Metric)
 	return result
+}
+
+func (m *MockAgent) Shutdown() {
+	m.Called()
 }

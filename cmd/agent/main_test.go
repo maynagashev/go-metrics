@@ -2,12 +2,15 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log/slog"
 	"os"
 	"strings"
 	"testing"
 	"time"
+
+	"crypto/rsa"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -20,11 +23,16 @@ type MockAgent struct {
 	mock.Mock
 }
 
-func (m *MockAgent) Run() {
-	m.Called()
+func (m *MockAgent) Run(ctx context.Context) {
+	m.Called(ctx)
 }
 
 func (m *MockAgent) IsRequestSigningEnabled() bool {
+	args := m.Called()
+	return args.Bool(0)
+}
+
+func (m *MockAgent) IsEncryptionEnabled() bool {
 	args := m.Called()
 	return args.Bool(0)
 }
@@ -45,6 +53,10 @@ func (m *MockAgent) GetMetrics() []*metrics.Metric {
 	args := m.Called()
 	result, _ := args.Get(0).([]*metrics.Metric)
 	return result
+}
+
+func (m *MockAgent) Shutdown() {
+	m.Called()
 }
 
 func TestMain(t *testing.T) {
@@ -68,7 +80,7 @@ func TestMain(t *testing.T) {
 
 	// Создаем мок для агента
 	mockAgent := new(MockAgent)
-	mockAgent.On("Run").Return()
+	mockAgent.On("Run", mock.Anything).Return()
 
 	// Подменяем функцию создания агента
 	agent.New = func(
@@ -77,6 +89,7 @@ func TestMain(t *testing.T) {
 		reportInterval time.Duration,
 		privateKey string,
 		rateLimit int,
+		publicKey *rsa.PublicKey,
 	) agent.Agent {
 		// Проверяем, что параметры переданы правильно
 		assert.Equal(t, "http://localhost:9090", serverURL)
@@ -84,6 +97,7 @@ func TestMain(t *testing.T) {
 		assert.Equal(t, 5*time.Second, reportInterval)
 		assert.Equal(t, "test-key", privateKey)
 		assert.Equal(t, 5, rateLimit)
+		assert.Nil(t, publicKey)
 		return mockAgent
 	}
 

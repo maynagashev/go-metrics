@@ -1,0 +1,9 @@
+{
+    "address": "localhost:8080",
+    "report_interval": "9s",
+    "poll_interval": "2s",
+    "crypto_key": "./public.pem",
+    "rate_limit": 3,
+    "enable_pprof": false,
+    "pprof_port": "6060"
+} 
