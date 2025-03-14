@@ -1,0 +1,132 @@
+Build version: N/A
+Build date: N/A
+Build commit: N/A
+time=2025-03-06T12:00:02.240+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060}"
+time=2025-03-06T12:00:02.241+07:00 level=INFO msg="starting agent..." server_url=http://localhost:8080 poll_interval=2s report_interval=10s send_compressed_data=true private_key=private_key_example send_hash=true encryption_enabled=false rate_limit=3
+time=2025-03-06T12:00:02.241+07:00 level=DEBUG msg="worker 1 started"
+time=2025-03-06T12:00:02.241+07:00 level=DEBUG msg="worker 2 started"
+time=2025-03-06T12:00:02.241+07:00 level=DEBUG msg="worker 0 started"
+time=2025-03-06T12:00:04.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:06.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:08.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:10.242+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:12.242+07:00 level=INFO msg="read metrics for job" poll_count=1
+time=2025-03-06T12:00:12.242+07:00 level=INFO msg="reset poll count" poll_count=0
+time=2025-03-06T12:00:12.242+07:00 level=DEBUG msg="worker 1 received job, calling sendMetrics()..." workerID=1
+time=2025-03-06T12:00:12.243+07:00 level=INFO msg="sending metrics batch (try=0)" workerID=1 url=http://localhost:8080/updates metrics="[Metric{Name: GCSys, Type: gauge, Value: 1782736.000000} Metric{Name: HeapIdle, Type: gauge, Value: 2482176.000000} Metric{Name: HeapReleased, Type: gauge, Value: 2482176.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: MSpanSys, Type: gauge, Value: 65280.000000} Metric{Name: Mallocs, Type: gauge, Value: 1693.000000} Metric{Name: CPUutilization1, Type: gauge, Value: 21.052632} Metric{Name: CPUutilization13, Type: gauge, Value: 20.618557} Metric{Name: CPUutilization19, Type: gauge, Value: 18.274112} Metric{Name: Alloc, Type: gauge, Value: 508160.000000} Metric{Name: Frees, Type: gauge, Value: 126.000000} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 55360.000000} Metric{Name: FreeMemory, Type: gauge, Value: 464318464.000000} Metric{Name: CPUutilization2, Type: gauge, Value: 18.367347} Metric{Name: CPUutilization3, Type: gauge, Value: 21.827411} Metric{Name: CPUutilization9, Type: gauge, Value: 25.773196} Metric{Name: CPUutilization11, Type: gauge, Value: 24.226804} Metric{Name: CPUutilization17, Type: gauge, Value: 19.371728} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 425984.000000} Metric{Name: CPUutilization7, Type: gauge, Value: 40.206186} Metric{Name: CPUutilization14, Type: gauge, Value: 16.243655} Metric{Name: HeapAlloc, Type: gauge, Value: 508160.000000} Metric{Name: HeapInuse, Type: gauge, Value: 1286144.000000} Metric{Name: HeapSys, Type: gauge, Value: 3768320.000000} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: Sys, Type: gauge, Value: 8344840.000000} Metric{Name: CPUutilization4, Type: gauge, Value: 28.643216} Metric{Name: CPUutilization16, Type: gauge, Value: 11.979167} Metric{Name: BuckHashSys, Type: gauge, Value: 1447643.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization12, Type: gauge, Value: 18.686869} Metric{Name: CPUutilization6, Type: gauge, Value: 7.070707} Metric{Name: CPUutilization8, Type: gauge, Value: 18.181818} Metric{Name: CPUutilization20, Type: gauge, Value: 17.948718} Metric{Name: HeapObjects, Type: gauge, Value: 1567.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 508160.000000} Metric{Name: CPUutilization10, Type: gauge, Value: 10.101010} Metric{Name: CPUutilization15, Type: gauge, Value: 14.213198} Metric{Name: RandomValue, Type: gauge, Value: 0.532393} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: OtherSys, Type: gauge, Value: 823677.000000} Metric{Name: StackInuse, Type: gauge, Value: 425984.000000} Metric{Name: TotalMemory, Type: gauge, Value: 16476033024.000000} Metric{Name: CPUutilization5, Type: gauge, Value: 41.836735} Metric{Name: CPUutilization18, Type: gauge, Value: 17.857143} Metric{Name: PollCount, Type: counter, Delta: 1}]"
+time=2025-03-06T12:00:12.243+07:00 level=INFO msg="collected metrics" poll_count=1
+2025/03/06 12:00:12.282653 DEBUG RESTY 
+==============================================================================
+~~~ REQUEST ~~~
+POST  /updates  HTTP/1.1
+HOST   : localhost:8080
+HEADERS:
+	Accept: application/json
+	Content-Encoding: gzip
+	Content-Type: application/json
+	Hashsha256: 9c23cbc7d0c2a3618f4a93cb11809f6029ea46d87bc5effffb5e56d7781e73d2
+	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
+BODY   :
+"H4sIAAAAAAAC/5RVTY8aRxD9L3Neteqru6q5JUi7tmRj5I1ziXLoDC0v2YFBMBNlE/m/R2DsMUjdYekTUr+aqvdevf7t32a9ambNw/zx5dDcNcPLLjez5nMaP+fmrvkrdWNuZqhGyuHL3fn2m5x2b1ddLgJIjFAvAR9zl9Mhr24GvZ+n9im/3Y6H2ocAYEI87tK2NkjwZD9cT13Xt5WxQ+Tvl+fLT+Ow7tb/pGHdb7HcETrwFBi9GhtDsQKXS4ALaN4HBQBTX64Ry72bIxVEDCrMXqcSPx2HLuI8GIaJovt9zhWCaFLrYT5ffrrfp/bYWBEBV+rWxGKka23rZvCer1p/nzf9/qUIkCCMJkEK/FKNXg7KEiJH5hipUIFrPrFvChlrUeOyxOSdKmP0pqqGSKUxsOJWcUTBQJBYMYIWa2iZi+hYUUlV4nEWP42yGDf3/b7Nq4f5DZZ4HFL7XHOEkI9W6rDcoIAj+LpRhmAcQ2lIqWSBI+HgjxlFhGx6EW6vWqpTfFadjGQBRS4Q1VXRYEzTF96lw3Ab5ZWixiImUOCqTBWZC8KEAQw8oXDRU6FMALqoEcPx5xUj2fcaP4/t85t0eKo+WCIaZPLhMo2H/Es/pG5xuIGVqzarMRDsfEANiklSnlQd6LcjgrFQwGo9oH09BGihFEUElffdRTFFjWIAwPHS3B/++DO3Q4VtHybAu75/Hne3sLzIf9dMKhiFYSL0JN+r9uxKxsr84BDOBwVNSxyir1jOETJGjcFMvOLk2I9pu+o3v57uFWlxnokjRUYfyfwPGbUYNzft8ofhKe+rC00cVC/jtp5DV4F7kuB/3lQMogGYofgc+Yrkzs7PqpCF4H1JB6t52byikHkVMMCpjWXfdfN+3A4TuD3+zfvmrlnlbkjNDL/8/l8AAAD//5lUcYEUCwAA"
+
+------------------------------------------------------------------------------
+~~~ RESPONSE ~~~
+STATUS       : 200 OK
+PROTO        : HTTP/1.1
+RECEIVED AT  : 2025-03-06T12:00:12.282527703+07:00
+TIME DURATION: 36.947466ms
+HEADERS      :
+	Content-Type: application/json
+	Date: Thu, 06 Mar 2025 05:00:12 GMT
+	Vary: Accept-Encoding
+BODY         :
+{
+   "status": "OK",
+   "message": "Metrics updated successfully"
+}
+==============================================================================
+time=2025-03-06T12:00:12.282+07:00 level=INFO msg="collector: metrics sent successfully"
+time=2025-03-06T12:00:14.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:16.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:18.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:20.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:22.242+07:00 level=INFO msg="read metrics for job" poll_count=1
+time=2025-03-06T12:00:22.242+07:00 level=INFO msg="reset poll count" poll_count=0
+time=2025-03-06T12:00:22.242+07:00 level=DEBUG msg="worker 2 received job, calling sendMetrics()..." workerID=2
+time=2025-03-06T12:00:22.242+07:00 level=INFO msg="sending metrics batch (try=0)" workerID=2 url=http://localhost:8080/updates metrics="[Metric{Name: HeapReleased, Type: gauge, Value: 794624.000000} Metric{Name: MSpanSys, Type: gauge, Value: 65280.000000} Metric{Name: StackInuse, Type: gauge, Value: 458752.000000} Metric{Name: CPUutilization4, Type: gauge, Value: 12.121212} Metric{Name: CPUutilization9, Type: gauge, Value: 24.352332} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 55360.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 1984992.000000} Metric{Name: CPUutilization1, Type: gauge, Value: 18.947368} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: HeapObjects, Type: gauge, Value: 3902.000000} Metric{Name: HeapSys, Type: gauge, Value: 3719168.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: HeapInuse, Type: gauge, Value: 2875392.000000} Metric{Name: CPUutilization12, Type: gauge, Value: 21.938776} Metric{Name: CPUutilization19, Type: gauge, Value: 16.923077} Metric{Name: GCSys, Type: gauge, Value: 1971824.000000} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 458752.000000} Metric{Name: Sys, Type: gauge, Value: 8606984.000000} Metric{Name: CPUutilization11, Type: gauge, Value: 18.681319} Metric{Name: CPUutilization15, Type: gauge, Value: 12.435233} Metric{Name: CPUutilization18, Type: gauge, Value: 15.463918} Metric{Name: Alloc, Type: gauge, Value: 1984992.000000} Metric{Name: Frees, Type: gauge, Value: 372.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization5, Type: gauge, Value: 28.497409} Metric{Name: CPUutilization7, Type: gauge, Value: 26.153846} Metric{Name: CPUutilization10, Type: gauge, Value: 11.055276} Metric{Name: CPUutilization13, Type: gauge, Value: 18.367347} Metric{Name: CPUutilization17, Type: gauge, Value: 12.698413} Metric{Name: BuckHashSys, Type: gauge, Value: 1448123.000000} Metric{Name: CPUutilization20, Type: gauge, Value: 16.410256} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: OtherSys, Type: gauge, Value: 912637.000000} Metric{Name: CPUutilization14, Type: gauge, Value: 15.544041} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: HeapIdle, Type: gauge, Value: 843776.000000} Metric{Name: Mallocs, Type: gauge, Value: 4274.000000} Metric{Name: TotalMemory, Type: gauge, Value: 16476033024.000000} Metric{Name: FreeMemory, Type: gauge, Value: 513785856.000000} Metric{Name: CPUutilization2, Type: gauge, Value: 20.512821} Metric{Name: CPUutilization3, Type: gauge, Value: 25.641026} Metric{Name: CPUutilization6, Type: gauge, Value: 21.212121} Metric{Name: HeapAlloc, Type: gauge, Value: 1984992.000000} Metric{Name: CPUutilization16, Type: gauge, Value: 14.358974} Metric{Name: RandomValue, Type: gauge, Value: 0.951888} Metric{Name: CPUutilization8, Type: gauge, Value: 18.000000} Metric{Name: PollCount, Type: counter, Delta: 1}]"
+time=2025-03-06T12:00:22.243+07:00 level=INFO msg="collected metrics" poll_count=1
+2025/03/06 12:00:22.254828 DEBUG RESTY 
+==============================================================================
+~~~ REQUEST ~~~
+POST  /updates  HTTP/1.1
+HOST   : localhost:8080
+HEADERS:
+	Accept: application/json
+	Content-Encoding: gzip
+	Content-Type: application/json
+	Hashsha256: cc27d067476ba0b55aa87b65fedb334b71af5005aa9f2d3421c610b351e5ba4d
+	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
+BODY   :
+"H4sIAAAAAAAC/6RWTW/bRhD9LzwbxM7nzvrWCnBSIHaMuOml6GFLLWLXtChIZFG3yH8vKCSiFGA2KiqdCMx7nJl973F//ad5WjfXzduStx9KX/K+rJurZnzdlua6+ZSnT6W5av7M/VSa65hYkT9ffcHcPmzz5uF179aroIVj+cOYu+efNtO+uAAWi4JHxOr+4zQ+9U9/5/Fp2LALA2wBv/6RUKJDkVwK5JYEiUCDEquQHCnerFb3H292uZsZXIJwvpb6nCKkC+DnYcz9D30/dP6EyTglbzPg46xNHEmNEZA44DLWu2F4nrb7CwaatfH+9z9KN/rVlAKeAWq6oAgJ1JaNrXL3WOorQw4hfIOovgPwpP5uenmzunDU7/RhUcg/CfSB0CayGEVCAo5I7HH4KgVtE1KImhBFA5qdqLS2DUgR7MS6d9PLzbDryvqirRycW6P/xre1UtOgydzZq1JWAwJTA5QI0TwOqQUFf7E5EBC6bZhPIS0rJYiCkhKJLVnz3yx8syulZpGl8j5P+3IIibtL7Ho+ilSU3HKKHBJhFDL0QjP6DNqCkLGCENksSm+fwV8LtEEEo5KBkabongnVpEEaiXU2mFEw9ThiTRqzLgE1WUqEAEeOH6fu+W3eP1YNxmyA5LwXQ83SDAFFGYISkS6935W/xoo/GRJTWNb1fnwsu1qPCVDJO2XgmuSFOTCwBAFhWVp8l/fj5cG67v1cNaYYF+LbPJupkjh4IpSDN27Ly7B7reyZowaicGL62YLfgQlQNDHxFFXJ+9AKoGEQoNn7btj4ukZp9as4lGISh0FrH53jxUhDCHz+kf5flw6tmKElsRSZxMyYcYnqD3mzHl5+OdS5qmmTgJkBB5uvnJacFqyWCOH4wwQnNrkf+n41TJtxAXfzY9k1V8269GNuruHzb/8GAAD//9l+PS8ZCwAA"
+
+------------------------------------------------------------------------------
+~~~ RESPONSE ~~~
+STATUS       : 200 OK
+PROTO        : HTTP/1.1
+RECEIVED AT  : 2025-03-06T12:00:22.254666453+07:00
+TIME DURATION: 9.39672ms
+HEADERS      :
+	Content-Type: application/json
+	Date: Thu, 06 Mar 2025 05:00:22 GMT
+	Vary: Accept-Encoding
+BODY         :
+{
+   "status": "OK",
+   "message": "Metrics updated successfully"
+}
+==============================================================================
+time=2025-03-06T12:00:22.254+07:00 level=INFO msg="collector: metrics sent successfully"
+time=2025-03-06T12:00:24.242+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:26.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:28.244+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:30.244+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:32.242+07:00 level=INFO msg="read metrics for job" poll_count=1
+time=2025-03-06T12:00:32.242+07:00 level=INFO msg="reset poll count" poll_count=0
+time=2025-03-06T12:00:32.242+07:00 level=DEBUG msg="worker 0 received job, calling sendMetrics()..." workerID=0
+time=2025-03-06T12:00:32.242+07:00 level=INFO msg="sending metrics batch (try=0)" workerID=0 url=http://localhost:8080/updates metrics="[Metric{Name: Mallocs, Type: gauge, Value: 6302.000000} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 458752.000000} Metric{Name: CPUutilization8, Type: gauge, Value: 8.457711} Metric{Name: CPUutilization13, Type: gauge, Value: 12.690355} Metric{Name: CPUutilization16, Type: gauge, Value: 9.693878} Metric{Name: CPUutilization17, Type: gauge, Value: 12.500000} Metric{Name: HeapAlloc, Type: gauge, Value: 3131760.000000} Metric{Name: HeapInuse, Type: gauge, Value: 3940352.000000} Metric{Name: HeapSys, Type: gauge, Value: 7897088.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization2, Type: gauge, Value: 12.690355} Metric{Name: CPUutilization3, Type: gauge, Value: 15.816327} Metric{Name: CPUutilization7, Type: gauge, Value: 29.949239} Metric{Name: GCSys, Type: gauge, Value: 2012880.000000} Metric{Name: OtherSys, Type: gauge, Value: 871141.000000} Metric{Name: TotalMemory, Type: gauge, Value: 16476033024.000000} Metric{Name: CPUutilization12, Type: gauge, Value: 4.568528} Metric{Name: CPUutilization19, Type: gauge, Value: 16.666667} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: Sys, Type: gauge, Value: 12801288.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 3131760.000000} Metric{Name: CPUutilization4, Type: gauge, Value: 9.000000} Metric{Name: CPUutilization11, Type: gauge, Value: 23.589744} Metric{Name: RandomValue, Type: gauge, Value: 0.926002} Metric{Name: HeapObjects, Type: gauge, Value: 5712.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 65600.000000} Metric{Name: CPUutilization1, Type: gauge, Value: 12.500000} Metric{Name: CPUutilization20, Type: gauge, Value: 14.141414} Metric{Name: Frees, Type: gauge, Value: 590.000000} Metric{Name: CPUutilization6, Type: gauge, Value: 12.626263} Metric{Name: CPUutilization10, Type: gauge, Value: 6.030151} Metric{Name: CPUutilization15, Type: gauge, Value: 7.142857} Metric{Name: CPUutilization9, Type: gauge, Value: 20.408163} Metric{Name: Alloc, Type: gauge, Value: 3131760.000000} Metric{Name: HeapReleased, Type: gauge, Value: 3956736.000000} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: MSpanSys, Type: gauge, Value: 81600.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: StackInuse, Type: gauge, Value: 458752.000000} Metric{Name: CPUutilization5, Type: gauge, Value: 60.606061} Metric{Name: CPUutilization14, Type: gauge, Value: 12.626263} Metric{Name: CPUutilization18, Type: gauge, Value: 11.675127} Metric{Name: BuckHashSys, Type: gauge, Value: 1448627.000000} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: HeapIdle, Type: gauge, Value: 3956736.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: FreeMemory, Type: gauge, Value: 382906368.000000} Metric{Name: PollCount, Type: counter, Delta: 1}]"
+time=2025-03-06T12:00:32.246+07:00 level=INFO msg="collected metrics" poll_count=1
+2025/03/06 12:00:32.257693 DEBUG RESTY 
+==============================================================================
+~~~ REQUEST ~~~
+POST  /updates  HTTP/1.1
+HOST   : localhost:8080
+HEADERS:
+	Accept: application/json
+	Content-Encoding: gzip
+	Content-Type: application/json
+	Hashsha256: e46aa85ca89a0719bf3e95b3cc3f3db0992613a7a6b53fc1e0ef7b6b5f6a1771
+	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
+BODY   :
+"H4sIAAAAAAAC/6xWXW/rNgz9L34ODH6IEpm3LUDvHbDkFrfrXoY9aI7QZnXiILGHdUP/+5C0jZMB0lLsWk8GxCPykDzkL39Xq2U1reaxbbtmX02q/nmbqmn1EIeHVE2qP2I7pGrqGehl8nZ5Maxvul2Tlp9mWQM43b7rY/N095zHdqJBRvTZ7f3Qr9rVX7FfdRvNmmntJARE50iYkC2DgJyFQKq9AYswA5IR5bxAn8Ww2htrCCLIxM5pDiKU3BB4+4IEQz5hfE5x+90hNVljRsbg4cLih82wT3kLc8BnhB8sSvkJagF0jOs2Dvv0U9fHdrG/Iv+XNND/T0Yhn1IreiYvZCrOSwYhnwqy2pwRqwQ1Cj6EE8SnWYkkAiTVMeov/WPalQz0ULp4un/kc57W3e45H553wQMzkMsVWZ5eV4tXoWCoKmzgcxBWeL/27584h2F0Yz6LzWMq1x05gJGgRfqzL+iHQ3MM4wMlKpH0yP4lmR9rm0sSXKHd4dSqBJwVDMzTwLWoBceipmqAY5Bf42bZrX8+3ss2Vm3kAVAoCHhj1ItG/vLb76np81xJwNHn+d02bspJ8+IhxxJepWgc1CRXbQR5DFejez+qPMZ5s0upEKHl/PVF7aG3w4oOsg2W99fXwIACQdhIvWEOQvJKW6MjlYCOxNA054UVZKh28KqBzigwjRL48THyNbUp7tOyMEnEBx5z+2Pc91ftBMfCK6ojnpfdYlhfv2qU67m4bOQz46H2cDwI4MLZhP5Xct03qLH8zoNY+yBIh0GpimxjJN8PzdPnuH8sCqVz6ul8pM1u7292sTk8ewW/x91i2abrC6LrnobtNVvC6wApOc9IZyVx0ID/GJesZODZn20uXdvOumHTjzbN4Tftqkm1TG0fqym+/PpPAAAA//9FbmpLFQsAAA=="
+
+------------------------------------------------------------------------------
+~~~ RESPONSE ~~~
+STATUS       : 200 OK
+PROTO        : HTTP/1.1
+RECEIVED AT  : 2025-03-06T12:00:32.257613371+07:00
+TIME DURATION: 9.480693ms
+HEADERS      :
+	Content-Type: application/json
+	Date: Thu, 06 Mar 2025 05:00:32 GMT
+	Vary: Accept-Encoding
+BODY         :
+{
+   "status": "OK",
+   "message": "Metrics updated successfully"
+}
+==============================================================================
+time=2025-03-06T12:00:32.257+07:00 level=INFO msg="collector: metrics sent successfully"
+time=2025-03-06T12:00:34.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:36.243+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:38.242+07:00 level=INFO msg="collected metrics" poll_count=1
+time=2025-03-06T12:00:40.243+07:00 level=INFO msg="collected metrics" poll_count=1
