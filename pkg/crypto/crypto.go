@@ -150,7 +150,7 @@ func EncryptLargeData(publicKey *rsa.PublicKey, data []byte) ([]byte, error) {
 	}
 
 	// Шифруем каждую часть
-	var encryptedChunks [][]byte
+	encryptedChunks := make([][]byte, 0, len(chunks))
 	for _, chunk := range chunks {
 		encryptedChunk, err := Encrypt(publicKey, chunk)
 		if err != nil {
