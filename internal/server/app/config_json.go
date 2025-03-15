@@ -76,9 +76,19 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 		return nil
 	}
 
-	// Применяем настройки только если соответствующие флаги не были установлены
-	// через командную строку или переменные окружения
+	// Применяем настройки по категориям
+	if err := applyServerConfig(flags, jsonConfig); err != nil {
+		return err
+	}
+	applyDatabaseConfig(flags, jsonConfig)
+	applySecurityConfig(flags, jsonConfig)
+	applyGRPCConfig(flags, jsonConfig)
 
+	return nil
+}
+
+// applyServerConfig применяет настройки сервера из JSON-конфигурации.
+func applyServerConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// Адрес сервера
 	if flags.Server.Addr == defaultServerAddr && jsonConfig.Address != "" {
 		flags.Server.Addr = jsonConfig.Address
@@ -103,16 +113,6 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 		flags.Server.Restore = jsonConfig.Restore
 	}
 
-	// Строка подключения к базе данных
-	if flags.Database.DSN == "" && jsonConfig.DatabaseDSN != "" {
-		flags.Database.DSN = jsonConfig.DatabaseDSN
-	}
-
-	// Путь к файлу с приватным ключом для расшифровки
-	if flags.CryptoKey == "" && jsonConfig.CryptoKey != "" {
-		flags.CryptoKey = jsonConfig.CryptoKey
-	}
-
 	// Включить профилирование через pprof
 	if !flags.Server.EnablePprof && jsonConfig.EnablePprof {
 		flags.Server.EnablePprof = jsonConfig.EnablePprof
@@ -123,6 +123,27 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 		flags.Server.TrustedSubnet = jsonConfig.TrustedSubnet
 	}
 
+	return nil
+}
+
+// applyDatabaseConfig применяет настройки базы данных из JSON-конфигурации.
+func applyDatabaseConfig(flags *Flags, jsonConfig *JSONConfig) {
+	// Строка подключения к базе данных
+	if flags.Database.DSN == "" && jsonConfig.DatabaseDSN != "" {
+		flags.Database.DSN = jsonConfig.DatabaseDSN
+	}
+}
+
+// applySecurityConfig применяет настройки безопасности из JSON-конфигурации.
+func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) {
+	// Путь к файлу с приватным ключом для расшифровки
+	if flags.CryptoKey == "" && jsonConfig.CryptoKey != "" {
+		flags.CryptoKey = jsonConfig.CryptoKey
+	}
+}
+
+// applyGRPCConfig применяет настройки gRPC из JSON-конфигурации.
+func applyGRPCConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// Адрес и порт для gRPC сервера
 	if flags.GRPC.Addr == defaultGRPCAddr && jsonConfig.GRPCAddress != "" {
 		flags.GRPC.Addr = jsonConfig.GRPCAddress
@@ -142,6 +163,4 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	if flags.GRPC.Timeout == defaultGRPCTimeout && jsonConfig.GRPCTimeout > 0 {
 		flags.GRPC.Timeout = jsonConfig.GRPCTimeout
 	}
-
-	return nil
 }

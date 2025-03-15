@@ -173,6 +173,22 @@ func registerCommandLineFlags(flags *Flags) {
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
 func applyEnvironmentVariables(flags *Flags) error {
+	// Применяем переменные окружения по категориям
+	if err := applyServerEnvVars(flags); err != nil {
+		return err
+	}
+	applyDatabaseEnvVars(flags)
+	applySecurityEnvVars(flags)
+	applyConfigEnvVars(flags)
+	if err := applyGRPCEnvVars(flags); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// applyServerEnvVars применяет переменные окружения для настроек сервера.
+func applyServerEnvVars(flags *Flags) error {
 	// Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
 	// переопределим адрес запуска сервера,
 	// даже если он был передан через аргумент командной строки.
@@ -200,11 +216,24 @@ func applyEnvironmentVariables(flags *Flags) error {
 		flags.Server.Restore = restore
 	}
 
+	// Если передана доверенная подсеть в параметрах окружения, используем её
+	if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok {
+		flags.Server.TrustedSubnet = envTrustedSubnet
+	}
+
+	return nil
+}
+
+// applyDatabaseEnvVars применяет переменные окружения для настроек базы данных.
+func applyDatabaseEnvVars(flags *Flags) {
 	// Если переданы параметры БД в параметрах окружения, используем их
 	if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok {
 		flags.Database.DSN = envDatabaseDSN
 	}
+}
 
+// applySecurityEnvVars применяет переменные окружения для настроек безопасности.
+func applySecurityEnvVars(flags *Flags) {
 	// Если передан ключ в параметрах окружения, используем его
 	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
 		flags.PrivateKey = envPrivateKey
@@ -214,17 +243,18 @@ func applyEnvironmentVariables(flags *Flags) error {
 	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
 		flags.CryptoKey = envCryptoKey
 	}
+}
 
+// applyConfigEnvVars применяет переменные окружения для настроек конфигурации.
+func applyConfigEnvVars(flags *Flags) {
 	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
 	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
 		flags.ConfigFile = envConfigFile
 	}
+}
 
-	// Если передана доверенная подсеть в параметрах окружения, используем её
-	if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok {
-		flags.Server.TrustedSubnet = envTrustedSubnet
-	}
-
+// applyGRPCEnvVars применяет переменные окружения для настроек gRPC.
+func applyGRPCEnvVars(flags *Flags) error {
 	// Обработка переменных окружения для gRPC
 	if envGRPCAddr, ok := os.LookupEnv("GRPC_ADDRESS"); ok {
 		flags.GRPC.Addr = envGRPCAddr
