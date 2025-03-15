@@ -64,6 +64,9 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
 	return p, nil
 }
 
+// Close закрывает соединение с базой данных.
+// Метод всегда возвращает nil, так как pgxpool.Close() не возвращает ошибку,
+// но интерфейс Repository требует возврата error.
 func (p *PgStorage) Close() error {
 	if p.conn != nil {
 		p.conn.Close()
