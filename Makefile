@@ -180,6 +180,7 @@ fmt:
 	gofmt -s -w .
 	goimports --local -w .
 	golines -w .
+	./scripts/fix-imports.sh
 
 # Запуск сервера с документацией
 docs:
