@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint proto
 
 # Установка версий для сборки
 set-versions:
@@ -24,6 +24,14 @@ build:
 	@go build -o ./bin/server ./cmd/server/.
 	@go build -o ./bin/agent ./cmd/agent/.
 	@go build -o ./bin/migrate ./cmd/migrate/.
+
+# Генерация кода из proto-файлов
+proto:
+	@echo "Генерация кода из proto-файлов..."
+	@mkdir -p internal/grpc/pb
+	@protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/metrics.proto
+	@mv proto/metrics.pb.go proto/metrics_grpc.pb.go internal/grpc/pb/
+	@echo "Код успешно сгенерирован в директории internal/grpc/pb/"
 
 # Прогон миграций
 migrate:
@@ -125,6 +133,16 @@ agent-with-trusted-ip:
 agent-with-other-ip:
 	@echo "Запуск агента с IP-адресом отличным от доверенного..."
 	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.2.1" 2>&1 | tee logs/agent-with-other-ip.log
+
+# Запуск сервера с поддержкой gRPC (iter25)
+server-with-grpc:
+	@echo "Запуск сервера с поддержкой gRPC..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -grpc-enabled -grpc-address="localhost:9090" 2>&1 | tee logs/server-with-grpc.log
+
+# Запуск агента с использованием gRPC (iter25)
+agent-with-grpc:
+	@echo "Запуск агента с использованием gRPC..."
+	@go run ./cmd/agent/. -k="private_key_example" -grpc-enabled -grpc-address="localhost:9090" 2>&1 | tee logs/agent-with-grpc.log
 
 # Проверка запросов к серверу с разным X-Real-IP (iter24):
 request-from-trusted-subnet:

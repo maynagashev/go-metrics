@@ -19,12 +19,12 @@
 Создадим proto-файлы, описывающие структуру данных и сервисы:
 
 ```proto
-// api/proto/metrics.proto
+// proto/metrics.proto
 syntax = "proto3";
 
 package metrics;
 
-option go_package = "github.com/maynagashev/go-metrics/internal/proto/metrics";
+option go_package = "github.com/maynagashev/go-metrics/internal/grpc/pb";
 
 // Тип метрики
 enum MetricType {
@@ -95,6 +95,17 @@ service MetricsService {
 }
 ```
 
+Для генерации Go-кода из proto-файлов используется команда:
+
+```bash
+make proto
+```
+
+Эта команда выполняет следующие действия:
+1. Создает директорию `internal/grpc/pb` (если она не существует)
+2. Генерирует Go-код из proto-файлов с помощью protoc
+3. Перемещает сгенерированные файлы в директорию `internal/grpc/pb`
+
 ### 2. Параметры конфигурации gRPC
 
 #### Для сервера:
@@ -159,6 +170,7 @@ service MetricsService {
 2. **Интеграция с существующим хранилищем:**
    - Использование существующего интерфейса `storage.Repository` для работы с метриками
    - Адаптация gRPC запросов к существующим методам хранилища
+   - Сгенерированный код размещается в директории `internal/grpc/pb`
 
 3. **Реализация перехватчиков (interceptors):**
    - Логирование запросов и ответов
@@ -224,6 +236,10 @@ service MetricsService {
 3. **Фабрика клиентов:**
    - Создание интерфейса `MetricsClient` с реализациями для HTTP и gRPC
    - Выбор реализации в зависимости от конфигурации
+
+4. **Команды в Makefile:**
+   - `make server-with-grpc` - запуск сервера с поддержкой gRPC
+   - `make agent-with-grpc` - запуск агента с использованием gRPC
 
 ## Преимущества использования gRPC
 
