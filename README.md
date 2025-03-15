@@ -120,7 +120,7 @@
   - [x] При пустом значении переменной `trusted_subnet` метрики должны обрабатываться сервером без дополнительных ограничений.
 - **Iter25**. Обмен данными по протоколу gRPC.
   - [x] Описать в документации добавление поддержки gRPC с сохранением обратной совместимости.
-  - [ ] Создание proto-файлов
+  - [x] Создание proto-файлов
   - [ ] Добавление параметров конфигурации в сервер и агент
   - [ ] Реализация gRPC сервера и клиента
   - [ ] Использование дополнительных возможностей gRPC:
@@ -146,7 +146,11 @@
     "rate_limit": 10, // аналог переменной окружения RATE_LIMIT или флага -l
     "enable_pprof": true, // аналог переменной окружения ENABLE_PPROF или флага -pprof
     "pprof_port": 9090, // аналог переменной окружения PPROF_PORT или флага -pprof-port
-    "real_ip": "192.168.1.1" // аналог переменной окружения REAL_IP или флага -real-ip
+    "real_ip": "192.168.1.1", // аналог переменной окружения REAL_IP или флага -real-ip
+    "grpc_address": "localhost:9090", // аналог переменной окружения GRPC_ADDRESS или флага -grpc-address
+    "grpc_enabled": true, // аналог переменной окружения GRPC_ENABLED или флага -grpc-enabled
+    "grpc_max_conn": 100, // аналог переменной окружения GRPC_MAX_CONN или флага -grpc-max-conn
+    "grpc_timeout": 5 // аналог переменной окружения GRPC_TIMEOUT или флага -grpc-timeout
 }
 ```
 
@@ -163,7 +167,11 @@
     "rate_limit": 10, // аналог переменной окружения RATE_LIMIT или флага -l
     "enable_pprof": true, // аналог переменной окружения ENABLE_PPROF или флага -pprof
     "pprof_port": 9090, // аналог переменной окружения PPROF_PORT или флага -pprof-port
-    "real_ip": "192.168.1.1" // аналог переменной окружения REAL_IP или флага -real-ip
+    "real_ip": "192.168.1.1", // аналог переменной окружения REAL_IP или флага -real-ip
+    "grpc_address": "localhost:9090", // аналог переменной окружения GRPC_ADDRESS или флага -grpc-address
+    "grpc_enabled": true, // аналог переменной окружения GRPC_ENABLED или флага -grpc-enabled
+    "grpc_max_conn": 100, // аналог переменной окружения GRPC_MAX_CONN или флага -grpc-max-conn
+    "grpc_timeout": 5 // аналог переменной окружения GRPC_TIMEOUT или флага -grpc-timeout
 }
 ```
 

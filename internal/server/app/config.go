@@ -20,6 +20,8 @@ type Config struct {
 	Restore bool
 	// Параметры базы данных
 	Database DatabaseConfig
+	// Параметры gRPC сервера
+	GRPC GRPCConfig
 	// Приватный ключ для подписи метрик.
 	PrivateKey string
 	// Включить профилирование через pprof
@@ -40,6 +42,18 @@ type DatabaseConfig struct {
 	MigrationsPath string
 }
 
+// GRPCConfig содержит настройки gRPC сервера.
+type GRPCConfig struct {
+	// Addr адрес и порт для gRPC сервера.
+	Addr string
+	// Enabled включен ли gRPC сервер.
+	Enabled bool
+	// MaxConn максимальное количество одновременных соединений.
+	MaxConn int
+	// Timeout таймаут для gRPC запросов в секундах.
+	Timeout int
+}
+
 func NewConfig(flags *Flags) *Config {
 	cfg := &Config{
 		Addr:            flags.Server.Addr,
@@ -49,6 +63,12 @@ func NewConfig(flags *Flags) *Config {
 		Database: DatabaseConfig{
 			DSN:            flags.Database.DSN,
 			MigrationsPath: flags.Database.MigrationsPath,
+		},
+		GRPC: GRPCConfig{
+			Addr:    flags.GRPC.Addr,
+			Enabled: flags.GRPC.Enabled,
+			MaxConn: flags.GRPC.MaxConn,
+			Timeout: flags.GRPC.Timeout,
 		},
 		PrivateKey:    flags.PrivateKey,
 		EnablePprof:   flags.Server.EnablePprof,
@@ -113,4 +133,9 @@ func (cfg *Config) IsEncryptionEnabled() bool {
 // IsTrustedSubnetEnabled возвращает true, если указана доверенная подсеть.
 func (cfg *Config) IsTrustedSubnetEnabled() bool {
 	return cfg.TrustedSubnet != ""
+}
+
+// IsGRPCEnabled возвращает true, если включен gRPC сервер.
+func (cfg *Config) IsGRPCEnabled() bool {
+	return cfg.GRPC.Enabled
 }

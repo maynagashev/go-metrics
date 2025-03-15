@@ -7,7 +7,12 @@ import (
 	"strconv"
 )
 
-const defaultStoreInterval = 300
+const (
+	defaultStoreInterval = 300
+	defaultGRPCAddr      = "localhost:9090"
+	defaultGRPCMaxConn   = 100
+	defaultGRPCTimeout   = 5
+)
 
 // Flags содержит все флаги сервера.
 type Flags struct {
@@ -30,6 +35,17 @@ type Flags struct {
 		DSN string
 		// Путь к директории с миграциями
 		MigrationsPath string
+	}
+
+	GRPC struct {
+		// Адрес и порт для gRPC сервера
+		Addr string
+		// Включен ли gRPC сервер
+		Enabled bool
+		// Максимальное количество одновременных соединений
+		MaxConn int
+		// Таймаут для gRPC запросов в секундах
+		Timeout int
 	}
 
 	PrivateKey string
@@ -127,6 +143,32 @@ func registerCommandLineFlags(flags *Flags) {
 		"",
 		"CIDR доверенной подсети для проверки IP-адресов агентов",
 	)
+
+	// Добавляем флаги для gRPC
+	flag.StringVar(
+		&flags.GRPC.Addr,
+		"grpc-address",
+		defaultGRPCAddr,
+		"Адрес и порт для gRPC сервера",
+	)
+	flag.BoolVar(
+		&flags.GRPC.Enabled,
+		"grpc-enabled",
+		false,
+		"Включить gRPC сервер",
+	)
+	flag.IntVar(
+		&flags.GRPC.MaxConn,
+		"grpc-max-conn",
+		defaultGRPCMaxConn,
+		"Максимальное количество одновременных соединений для gRPC сервера",
+	)
+	flag.IntVar(
+		&flags.GRPC.Timeout,
+		"grpc-timeout",
+		defaultGRPCTimeout,
+		"Таймаут для gRPC запросов в секундах",
+	)
 }
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
@@ -181,6 +223,32 @@ func applyEnvironmentVariables(flags *Flags) error {
 	// Если передана доверенная подсеть в параметрах окружения, используем её
 	if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok {
 		flags.Server.TrustedSubnet = envTrustedSubnet
+	}
+
+	// Обработка переменных окружения для gRPC
+	if envGRPCAddr, ok := os.LookupEnv("GRPC_ADDRESS"); ok {
+		flags.GRPC.Addr = envGRPCAddr
+	}
+	if envGRPCEnabled, ok := os.LookupEnv("GRPC_ENABLED"); ok {
+		enabled, err := strconv.ParseBool(envGRPCEnabled)
+		if err != nil {
+			return err
+		}
+		flags.GRPC.Enabled = enabled
+	}
+	if envGRPCMaxConn, ok := os.LookupEnv("GRPC_MAX_CONN"); ok {
+		maxConn, err := strconv.Atoi(envGRPCMaxConn)
+		if err != nil {
+			return err
+		}
+		flags.GRPC.MaxConn = maxConn
+	}
+	if envGRPCTimeout, ok := os.LookupEnv("GRPC_TIMEOUT"); ok {
+		timeout, err := strconv.Atoi(envGRPCTimeout)
+		if err != nil {
+			return err
+		}
+		flags.GRPC.Timeout = timeout
 	}
 
 	return nil

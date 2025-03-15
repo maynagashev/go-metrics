@@ -42,6 +42,10 @@ type JSONConfig struct {
 	CryptoKey     string `json:"crypto_key"`     // Путь к файлу с приватным ключом для расшифровки
 	EnablePprof   bool   `json:"enable_pprof"`   // Включить профилирование через pprof
 	TrustedSubnet string `json:"trusted_subnet"` // CIDR доверенной подсети для проверки IP-адресов агентов
+	GRPCAddress   string `json:"grpc_address"`   // Адрес и порт для gRPC сервера
+	GRPCEnabled   bool   `json:"grpc_enabled"`   // Включить gRPC сервер
+	GRPCMaxConn   int    `json:"grpc_max_conn"`  // Максимальное количество одновременных соединений для gRPC сервера
+	GRPCTimeout   int    `json:"grpc_timeout"`   // Таймаут для gRPC запросов в секундах
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -117,6 +121,26 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// Доверенная подсеть
 	if flags.Server.TrustedSubnet == "" && jsonConfig.TrustedSubnet != "" {
 		flags.Server.TrustedSubnet = jsonConfig.TrustedSubnet
+	}
+
+	// Адрес и порт для gRPC сервера
+	if flags.GRPC.Addr == defaultGRPCAddr && jsonConfig.GRPCAddress != "" {
+		flags.GRPC.Addr = jsonConfig.GRPCAddress
+	}
+
+	// Включить gRPC сервер
+	if !flags.GRPC.Enabled && jsonConfig.GRPCEnabled {
+		flags.GRPC.Enabled = jsonConfig.GRPCEnabled
+	}
+
+	// Максимальное количество одновременных соединений для gRPC сервера
+	if flags.GRPC.MaxConn == defaultGRPCMaxConn && jsonConfig.GRPCMaxConn > 0 {
+		flags.GRPC.MaxConn = jsonConfig.GRPCMaxConn
+	}
+
+	// Таймаут для gRPC запросов в секундах
+	if flags.GRPC.Timeout == defaultGRPCTimeout && jsonConfig.GRPCTimeout > 0 {
+		flags.GRPC.Timeout = jsonConfig.GRPCTimeout
 	}
 
 	return nil
