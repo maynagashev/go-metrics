@@ -35,17 +35,18 @@ package main
 
 import (
 	"context"
+	"fmt"
+
 	//nolint:gosec // G108: pprof is used intentionally for debugging and profiling
 	_ "net/http/pprof"
 
-	"fmt"
+	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
-	"go.uber.org/zap"
 )
 
 // Глобальные переменные для информации о сборке.
