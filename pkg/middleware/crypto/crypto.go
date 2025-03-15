@@ -7,10 +7,11 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/pkg/crypto"
 	"github.com/maynagashev/go-metrics/pkg/sign"
-	"go.uber.org/zap"
 )
 
 // Middleware представляет middleware для обработки шифрования и подписи запросов.

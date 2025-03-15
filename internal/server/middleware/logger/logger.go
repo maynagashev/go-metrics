@@ -8,9 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/go-chi/chi/v5/middleware"
+	"go.uber.org/zap"
 )
 
 func New(log *zap.Logger) func(next http.Handler) http.Handler {

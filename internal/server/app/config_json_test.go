@@ -5,9 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
 )
 
 func TestLoadJSONConfig(t *testing.T) {

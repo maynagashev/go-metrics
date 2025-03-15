@@ -8,15 +8,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/json/updates"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 	"github.com/maynagashev/go-metrics/pkg/sign"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 func TestNewBulkUpdate_Success(t *testing.T) {

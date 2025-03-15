@@ -8,10 +8,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/middleware/decompress"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
+
+	"github.com/maynagashev/go-metrics/internal/server/middleware/decompress"
 )
 
 // compressData compresses the input data using gzip.

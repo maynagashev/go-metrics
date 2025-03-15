@@ -5,9 +5,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
 )
 
 func TestParseFlags(t *testing.T) {

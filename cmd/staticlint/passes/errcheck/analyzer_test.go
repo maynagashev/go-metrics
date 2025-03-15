@@ -5,8 +5,9 @@ package errcheck_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck"
 	"golang.org/x/tools/go/analysis/analysistest"
+
+	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck"
 )
 
 // TestAnalyzer запускает анализатор errcheck на тестовых файлах в директории testdata.

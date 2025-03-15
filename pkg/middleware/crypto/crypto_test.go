@@ -6,11 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/pkg/middleware/crypto"
 	"github.com/maynagashev/go-metrics/pkg/sign"
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
 )
 
 // TestMiddleware_Handler tests the middleware's handler functionality.

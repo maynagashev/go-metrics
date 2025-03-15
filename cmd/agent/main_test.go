@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/rsa"
 	"io"
 	"log/slog"
 	"os"
@@ -10,12 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"crypto/rsa"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 // MockAgent - мок для агента.

@@ -4,10 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/maynagashev/go-metrics/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/mocks"
 )
 
 func TestStorage_GetMetrics(t *testing.T) {

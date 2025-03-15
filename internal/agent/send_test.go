@@ -8,10 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/maynagashev/go-metrics/internal/agent"
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/maynagashev/go-metrics/internal/agent"
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 // mockNetError реализует интерфейс net.Error для тестирования.

@@ -3,8 +3,9 @@ package random_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/pkg/random"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/maynagashev/go-metrics/pkg/random"
 )
 
 func TestRandomFloat64(t *testing.T) {

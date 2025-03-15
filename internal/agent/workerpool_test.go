@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 // Тестовые версии типов Job и Result

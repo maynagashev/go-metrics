@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/server/storage"
-
 	"github.com/go-chi/chi/v5"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
 // New хэндлер для получения занчения метрики с сервера /value/{type}/{name}.

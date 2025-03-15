@@ -3,11 +3,10 @@ package main
 import (
 	"bytes"
 	"flag"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"log/slog"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

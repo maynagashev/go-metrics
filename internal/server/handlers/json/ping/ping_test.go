@@ -6,15 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/json/ping"
 	"github.com/maynagashev/go-metrics/mocks"
-
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
 )
 
 // contextKey is a custom type for context keys to avoid using basic types.

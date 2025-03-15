@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAgent_CollectRuntimeMetrics(t *testing.T) {

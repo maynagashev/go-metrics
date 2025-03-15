@@ -3,8 +3,9 @@ package noexit_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit"
 	"golang.org/x/tools/go/analysis/analysistest"
+
+	"github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit"
 )
 
 // TestAnalyzer запускает анализатор noexit на тестовых файлах в директории testdata.

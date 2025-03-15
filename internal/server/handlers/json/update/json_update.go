@@ -8,16 +8,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/pkg/sign"
-
-	"github.com/maynagashev/go-metrics/pkg/response"
-
 	"go.uber.org/zap"
 
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
-
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/pkg/response"
+	"github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 type ResponseWithMessage struct {

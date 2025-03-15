@@ -2,6 +2,7 @@ package benchmarks_test
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
@@ -12,8 +13,6 @@ import (
 	"testing"
 
 	"go.uber.org/zap"
-
-	"compress/gzip"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"

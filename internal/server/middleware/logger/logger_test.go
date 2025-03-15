@@ -7,11 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest"
 	"go.uber.org/zap/zaptest/observer"
+
+	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 )
 
 func TestLoggerMiddleware(t *testing.T) {

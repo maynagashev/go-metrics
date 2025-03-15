@@ -11,9 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/maynagashev/go-metrics/pkg/crypto"
-
 	"github.com/maynagashev/go-metrics/internal/agent"
+	"github.com/maynagashev/go-metrics/pkg/crypto"
 )
 
 // Глобальные переменные для информации о сборке.

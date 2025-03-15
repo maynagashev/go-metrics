@@ -7,6 +7,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/json/ping"
 	jsonUpdate "github.com/maynagashev/go-metrics/internal/server/handlers/json/update"
@@ -19,7 +21,6 @@ import (
 	"github.com/maynagashev/go-metrics/internal/server/middleware/logger"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	cryptoMiddleware "github.com/maynagashev/go-metrics/pkg/middleware/crypto"
-	"go.uber.org/zap"
 )
 
 // New инстанцирует новый роутер.

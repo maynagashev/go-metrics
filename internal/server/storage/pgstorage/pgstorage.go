@@ -8,17 +8,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5"
-
-	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
-
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
-	"go.uber.org/zap"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
 )
 
 const maxRetries = 3

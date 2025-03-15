@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-resty/resty/v2"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/pkg/random"
-
-	"github.com/go-resty/resty/v2"
 )
 
 // Количество попыток отправки запроса на сервер при возникновении ошибок.
