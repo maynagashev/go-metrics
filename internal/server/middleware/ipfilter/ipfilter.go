@@ -6,8 +6,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
 	"go.uber.org/zap"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
 )
 
 // Middleware представляет middleware для фильтрации запросов по IP-адресу.

@@ -3,9 +3,10 @@ package agent_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/maynagashev/go-metrics/internal/agent"
 )
 
 func TestGetOutboundIP(t *testing.T) {

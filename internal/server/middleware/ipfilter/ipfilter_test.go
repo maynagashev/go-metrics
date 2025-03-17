@@ -5,11 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
-	"github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest"
+
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter"
 )
 
 func TestIPFilterMiddleware(t *testing.T) {
