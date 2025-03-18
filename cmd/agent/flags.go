@@ -14,7 +14,10 @@ const (
 	defaultRateLimit       = 3
 	minInterval            = 0.000001 // Минимально допустимый интервал в секундах.
 	defaultPprofPort       = "6060"
-	defaultAgentServerAddr = "localhost:8080"
+	defaultAgentServerAddr = "localhost:8080" // Адрес и порт сервера по умолчанию
+	defaultGRPCAddress     = "localhost:9090" // Адрес и порт gRPC сервера по умолчанию
+	defaultGRPCTimeout     = 5                // Таймаут для gRPC запросов в секундах по умолчанию
+	defaultGRPCRetry       = 3                // Количество повторных попыток при ошибке по умолчанию
 )
 
 // Flags содержит флаги агента.
@@ -31,6 +34,10 @@ type Flags struct {
 	PprofPort   string // добавляем порт для pprof
 	ConfigFile  string // путь к файлу конфигурации в формате JSON
 	RealIP      string // явно указанный IP-адрес для заголовка X-Real-IP
+	GRPCAddress string // адрес и порт gRPC сервера
+	GRPCEnabled bool   // флаг использования gRPC вместо HTTP
+	GRPCTimeout int    // таймаут для gRPC запросов в секундах
+	GRPCRetry   int    // количество повторных попыток при ошибке
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -95,6 +102,27 @@ func registerCommandLineFlags(flags *Flags) {
 	// Добавляем флаг для явного указания IP-адреса для заголовка X-Real-IP
 	flag.StringVar(&flags.RealIP, "real-ip", "", "IP address to use in X-Real-IP header")
 
+	// Добавляем флаги для gRPC
+	flag.StringVar(
+		&flags.GRPCAddress,
+		"grpc-address",
+		defaultGRPCAddress,
+		"адрес и порт gRPC сервера",
+	)
+	flag.BoolVar(&flags.GRPCEnabled, "grpc-enabled", false, "использовать gRPC вместо HTTP")
+	flag.IntVar(
+		&flags.GRPCTimeout,
+		"grpc-timeout",
+		defaultGRPCTimeout,
+		"таймаут для gRPC запросов в секундах",
+	)
+	flag.IntVar(
+		&flags.GRPCRetry,
+		"grpc-retry",
+		defaultGRPCRetry,
+		"количество повторных попыток при ошибке",
+	)
+
 	// Добавляем флаг для пути к файлу конфигурации
 	flag.StringVar(&flags.ConfigFile, "c", "", "путь к файлу конфигурации в формате JSON")
 	flag.StringVar(&flags.ConfigFile, "config", "", "путь к файлу конфигурации в формате JSON")
@@ -102,6 +130,19 @@ func registerCommandLineFlags(flags *Flags) {
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
 func applyEnvironmentVariables(flags *Flags) {
+	applyServerEnvVariables(flags)
+	applySecurityEnvVariables(flags)
+	applyPerformanceEnvVariables(flags)
+	applyNetworkEnvVariables(flags)
+
+	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
+	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
+		flags.ConfigFile = envConfigFile
+	}
+}
+
+// applyServerEnvVariables применяет переменные окружения для настроек сервера.
+func applyServerEnvVariables(flags *Flags) {
 	// если переданы переменные окружения, то они перезаписывают
 	// значения флагов: envServerAddr, envReportInterval, envPollInterval
 	if envServerAddr := os.Getenv("ADDRESS"); envServerAddr != "" {
@@ -121,12 +162,20 @@ func applyEnvironmentVariables(flags *Flags) {
 		}
 		flags.Server.PollInterval = i
 	}
+}
+
+// applySecurityEnvVariables применяет переменные окружения для настроек безопасности.
+func applySecurityEnvVariables(flags *Flags) {
 	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
 		flags.PrivateKey = envPrivateKey
 	}
 	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
 		flags.CryptoKey = envCryptoKey
 	}
+}
+
+// applyPerformanceEnvVariables применяет переменные окружения для настроек производительности.
+func applyPerformanceEnvVariables(flags *Flags) {
 	if envRateLimit, ok := os.LookupEnv("RATE_LIMIT"); ok {
 		l, err := strconv.Atoi(envRateLimit)
 		if err != nil {
@@ -134,15 +183,44 @@ func applyEnvironmentVariables(flags *Flags) {
 		}
 		flags.RateLimit = l
 	}
+}
 
+// applyNetworkEnvVariables применяет переменные окружения для сетевых настроек.
+func applyNetworkEnvVariables(flags *Flags) {
 	// Добавляем обработку переменной окружения для X-Real-IP
 	if envRealIP, ok := os.LookupEnv("REAL_IP"); ok {
 		flags.RealIP = envRealIP
 	}
 
-	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
-	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
-		flags.ConfigFile = envConfigFile
+	// Добавляем обработку переменных окружения для gRPC
+	applyGRPCEnvVariables(flags)
+}
+
+// applyGRPCEnvVariables применяет переменные окружения для настроек gRPC.
+func applyGRPCEnvVariables(flags *Flags) {
+	if envGRPCAddress, ok := os.LookupEnv("GRPC_ADDRESS"); ok {
+		flags.GRPCAddress = envGRPCAddress
+	}
+
+	if envGRPCEnabled, ok := os.LookupEnv("GRPC_ENABLED"); ok {
+		enabled, err := strconv.ParseBool(envGRPCEnabled)
+		if err == nil {
+			flags.GRPCEnabled = enabled
+		}
+	}
+
+	if envGRPCTimeout, ok := os.LookupEnv("GRPC_TIMEOUT"); ok {
+		timeout, err := strconv.Atoi(envGRPCTimeout)
+		if err == nil {
+			flags.GRPCTimeout = timeout
+		}
+	}
+
+	if envGRPCRetry, ok := os.LookupEnv("GRPC_RETRY"); ok {
+		retry, err := strconv.Atoi(envGRPCRetry)
+		if err == nil {
+			flags.GRPCRetry = retry
+		}
 	}
 }
 
@@ -174,5 +252,14 @@ func validateFlags(flags *Flags) {
 	}
 	if flags.Server.PollInterval < minInterval {
 		flags.Server.PollInterval = minInterval
+	}
+
+	// Валидация gRPC параметров
+	if flags.GRPCTimeout < 1 {
+		flags.GRPCTimeout = defaultGRPCTimeout
+	}
+
+	if flags.GRPCRetry < 0 {
+		flags.GRPCRetry = defaultGRPCRetry
 	}
 }

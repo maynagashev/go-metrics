@@ -22,6 +22,10 @@ func TestAgent_CollectRuntimeMetrics(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Reset metrics before collection
@@ -66,6 +70,10 @@ func TestAgent_CollectAdditionalMetrics(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Reset metrics before collection
@@ -111,6 +119,10 @@ func TestAgent_GetMetrics(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Reset metrics before collection
@@ -152,6 +164,10 @@ func TestAgent_ResetMetrics(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Collect metrics
@@ -180,6 +196,10 @@ func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 	assert.False(t, a1.IsRequestSigningEnabled())
 
@@ -192,6 +212,10 @@ func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 	assert.True(t, a2.IsRequestSigningEnabled())
 }
@@ -206,6 +230,10 @@ func TestAgent_IsEncryptionEnabled(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 	assert.False(t, a1.IsEncryptionEnabled())
 

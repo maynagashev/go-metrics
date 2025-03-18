@@ -98,6 +98,10 @@ func TestMakeUpdatesRequest(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Создаем тестовые метрики
@@ -128,6 +132,10 @@ func TestMakeUpdatesRequest_Error(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Создаем тестовые метрики
@@ -160,6 +168,10 @@ func TestMakeUpdatesRequest_WithCompression(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Создаем тестовые метрики
@@ -195,6 +207,10 @@ func TestMakeUpdatesRequest_WithRealIP(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Создаем тестовые метрики
@@ -227,6 +243,10 @@ func TestMakeUpdatesRequest_WithSigning(t *testing.T) {
 		5,
 		nil,
 		"",
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Создаем тестовые метрики
@@ -260,6 +280,10 @@ func TestMakeUpdatesRequest_WithExplicitRealIP(t *testing.T) {
 		5,
 		nil,
 		expectedIP,
+		false,
+		"localhost:9090",
+		5,
+		3,
 	)
 
 	// Создаем тестовые метрики

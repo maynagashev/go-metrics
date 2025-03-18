@@ -21,6 +21,10 @@ type JSONConfig struct {
 	EnablePprof    bool   `json:"enable_pprof"`    // Включить профилирование через pprof
 	PprofPort      string `json:"pprof_port"`      // Порт для pprof сервера
 	RealIP         string `json:"real_ip"`         // IP-адрес для заголовка X-Real-IP
+	GRPCAddress    string `json:"grpc_address"`    // Адрес и порт gRPC сервера
+	GRPCEnabled    bool   `json:"grpc_enabled"`    // Флаг использования gRPC вместо HTTP
+	GRPCTimeout    int    `json:"grpc_timeout"`    // Таймаут для gRPC запросов в секундах
+	GRPCRetry      int    `json:"grpc_retry"`      // Количество повторных попыток при ошибке
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -114,5 +118,22 @@ func applyNetworkConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// IP-адрес для заголовка X-Real-IP
 	if flags.RealIP == "" && jsonConfig.RealIP != "" {
 		flags.RealIP = jsonConfig.RealIP
+	}
+
+	// gRPC настройки
+	if flags.GRPCAddress == defaultGRPCAddress && jsonConfig.GRPCAddress != "" {
+		flags.GRPCAddress = jsonConfig.GRPCAddress
+	}
+
+	if !flags.GRPCEnabled && jsonConfig.GRPCEnabled {
+		flags.GRPCEnabled = jsonConfig.GRPCEnabled
+	}
+
+	if flags.GRPCTimeout == defaultGRPCTimeout && jsonConfig.GRPCTimeout > 0 {
+		flags.GRPCTimeout = jsonConfig.GRPCTimeout
+	}
+
+	if flags.GRPCRetry == defaultGRPCRetry && jsonConfig.GRPCRetry > 0 {
+		flags.GRPCRetry = jsonConfig.GRPCRetry
 	}
 }

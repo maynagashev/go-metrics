@@ -75,6 +75,10 @@ func main() {
 		flags.RateLimit,
 		publicKey,
 		flags.RealIP,
+		flags.GRPCEnabled,
+		flags.GRPCAddress,
+		flags.GRPCTimeout,
+		flags.GRPCRetry,
 	)
 
 	// Запускаем горутину для обработки сигналов

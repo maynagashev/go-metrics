@@ -56,6 +56,12 @@ type agent struct {
 	RateLimit          int
 	PublicKey          *rsa.PublicKey // Public key for encryption
 
+	// Конфигурация gRPC
+	GRPCEnabled bool   // Использовать gRPC вместо HTTP
+	GRPCAddress string // Адрес и порт gRPC сервера
+	GRPCTimeout int    // Таймаут для gRPC запросов в секундах
+	GRPCRetry   int    // Количество повторных попыток при ошибке gRPC запроса
+
 	gauges       map[string]float64
 	counters     map[string]int64
 	mu           sync.Mutex
@@ -82,6 +88,10 @@ var New = func(
 	rateLimit int,
 	publicKey *rsa.PublicKey,
 	realIP string,
+	grpcEnabled bool, // флаг использования gRPC вместо HTTP
+	grpcAddress string, // адрес и порт gRPC сервера
+	grpcTimeout int, // таймаут для gRPC запросов в секундах
+	grpcRetry int, // количество повторных попыток при ошибке gRPC запроса
 ) Agent {
 	return &agent{
 		ServerURL:          url,
@@ -91,6 +101,10 @@ var New = func(
 		PrivateKey:         privateKey,
 		RateLimit:          rateLimit,
 		PublicKey:          publicKey,
+		GRPCEnabled:        grpcEnabled,
+		GRPCAddress:        grpcAddress,
+		GRPCTimeout:        grpcTimeout,
+		GRPCRetry:          grpcRetry,
 		gauges:             make(map[string]float64),
 		counters:           make(map[string]int64),
 		client:             initHTTPClient(realIP),
@@ -124,6 +138,10 @@ func (a *agent) Run(ctx context.Context) {
 		"send_hash", a.IsRequestSigningEnabled(),
 		"encryption_enabled", a.IsEncryptionEnabled(),
 		"rate_limit", a.RateLimit,
+		"grpc_enabled", a.GRPCEnabled, // использовать ли gRPC
+		"grpc_address", a.GRPCAddress, // адрес gRPC сервера
+		"grpc_timeout", a.GRPCTimeout, // таймаут gRPC запросов
+		"grpc_retry", a.GRPCRetry, // число повторных попыток
 	)
 	// Горутина для сбора метрик (с интервалом PollInterval).
 	go a.runPolls(ctx)

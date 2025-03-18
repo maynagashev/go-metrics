@@ -91,6 +91,10 @@ func TestMain(t *testing.T) {
 		rateLimit int,
 		publicKey *rsa.PublicKey,
 		realIP string,
+		grpcEnabled bool,
+		grpcAddress string,
+		grpcTimeout int,
+		grpcRetry int,
 	) agent.Agent {
 		// Проверяем, что параметры переданы правильно
 		assert.Equal(t, "http://localhost:9090", serverURL)
@@ -100,6 +104,10 @@ func TestMain(t *testing.T) {
 		assert.Equal(t, 5, rateLimit)
 		assert.Nil(t, publicKey)
 		assert.Equal(t, "", realIP)
+		assert.False(t, grpcEnabled)
+		assert.Equal(t, "localhost:9090", grpcAddress)
+		assert.Equal(t, 5, grpcTimeout)
+		assert.Equal(t, 3, grpcRetry)
 		return mockAgent
 	}
 
