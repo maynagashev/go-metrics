@@ -48,6 +48,10 @@ agent:
 	@echo "Запуск агента..."
 	@go run ./cmd/agent/. -k="private_key_example"
 
+# Запуск агента с логированием
+agent-with-logging:
+	@echo "Запуск агента с логированием..."
+	@go run ./cmd/agent/. -k="private_key_example" | tee logs/agent-with-logging.log
 # Запуск агента с коротким интервалом отправки метрик (пример для отладки)
 fast-agent:
 	@echo "Запуск агента (быстрый режим отправки метрик)..."
@@ -134,6 +138,15 @@ agent-with-other-ip:
 	@echo "Запуск агента с IP-адресом отличным от доверенного..."
 	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.2.1" 2>&1 | tee logs/agent-with-other-ip.log
 
+# Проверка запросов к серверу с разным X-Real-IP (iter24):
+request-from-trusted-subnet:
+	@echo "Проверка запросов к серверу с ip из доверенной подсети 192.168.1.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.1.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-trusted-subnet.log
+request-from-other-subnet:
+	@echo "Проверка запросов к серверу с ip из другой подсети 192.168.2.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.2.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-other-subnet.log
+
+
 # Запуск сервера с поддержкой gRPC (iter25)
 server-with-grpc:
 	@echo "Запуск сервера с поддержкой gRPC..."
@@ -144,13 +157,6 @@ agent-with-grpc:
 	@echo "Запуск агента с использованием gRPC..."
 	@go run ./cmd/agent/. -k="private_key_example" -grpc-enabled -grpc-address="localhost:9090" 2>&1 | tee logs/agent-with-grpc.log
 
-# Проверка запросов к серверу с разным X-Real-IP (iter24):
-request-from-trusted-subnet:
-	@echo "Проверка запросов к серверу с ip из доверенной подсети 192.168.1.1..."
-	@curl -v -X POST -H "X-Real-IP: 192.168.1.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-trusted-subnet.log
-request-from-other-subnet:
-	@echo "Проверка запросов к серверу с ip из другой подсети 192.168.2.1..."
-	@curl -v -X POST -H "X-Real-IP: 192.168.2.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-other-subnet.log
 
 # Запуск всех тестов
 test:

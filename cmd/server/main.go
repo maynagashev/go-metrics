@@ -16,6 +16,15 @@
 //   - GET /ping - проверка подключения к БД
 //   - GET / - получение всех метрик (текстовый формат)
 //
+// # gRPC API
+//
+// Сервер также поддерживает gRPC-интерфейс для работы с метриками:
+//   - Update - обновление одиночной метрики
+//   - UpdateBatch - пакетное обновление метрик
+//   - GetValue - получение значения метрики
+//   - Ping - проверка подключения к БД
+//   - StreamMetrics - потоковая отправка метрик
+//
 // # Конфигурация
 //
 // Сервер поддерживает настройку через флаги командной строки и переменные окружения:
@@ -23,6 +32,8 @@
 //   - STORE_INTERVAL - интервал сохранения метрик (для in-memory хранилища)
 //   - FILE_STORAGE_PATH - путь к файлу для сохранения метрик
 //   - RESTORE - восстанавливать ли метрики из файла при старте
+//   - GRPC_ENABLED - включить gRPC сервер
+//   - GRPC_ADDRESS - адрес для gRPC сервера
 //
 // # Примеры
 //
@@ -36,6 +47,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	//nolint:gosec // G108: pprof is used intentionally for debugging and profiling
 	_ "net/http/pprof"
@@ -43,6 +57,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
+	grpcserver "github.com/maynagashev/go-metrics/internal/server/grpc"
 	"github.com/maynagashev/go-metrics/internal/server/router"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
@@ -100,9 +115,34 @@ func main() {
 		}
 	}()
 
+	// Создаем контекст для graceful shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Инициализируем gRPC сервер
+	grpcSrv := grpcserver.NewServer(log, cfg, repo)
+	startErr := grpcSrv.Start(ctx)
+	if startErr != nil {
+		log.Error("failed to start gRPC server", zap.Error(startErr))
+		panic(startErr)
+	}
+
+	// Инициализируем HTTP router
 	handlers := router.New(cfg, repo, log)
 
-	server.Start(log, handlers)
+	// Запускаем HTTP сервер
+	go server.Start(log, handlers)
+
+	// Канал для получения сигналов от ОС
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	// Ожидаем сигнал для graceful shutdown
+	sig := <-sigCh
+	log.Info("received signal, initiating graceful shutdown", zap.String("signal", sig.String()))
+
+	// Отменяем контекст, что приведет к graceful shutdown gRPC сервера
+	cancel()
 
 	log.Debug("server stopped")
 }
