@@ -6,7 +6,7 @@ MIGRATIONS_DIR = "migrations/server"
 all: migrate server_with_agent
 
 # Объединённая директива .PHONY
-.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint proto
+.PHONY: migrate test bench lint test-coverage fmt docs staticcheck staticlint proto agent
 
 # Установка версий для сборки
 set-versions:

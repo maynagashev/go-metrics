@@ -85,7 +85,7 @@ type agent struct {
 	ServerURL          string
 	SendCompressedData bool
 	PrivateKey         string
-	RateLimit          int
+	RateLimit          int            // Количество воркеров для сбора и отправки метрик
 	PublicKey          *rsa.PublicKey // Public key for encryption
 
 	// Конфигурация gRPC
@@ -198,8 +198,15 @@ func (a *agent) Run(ctx context.Context) {
 		a.runWorker(i)
 	}
 	a.runCollector()
-	a.runPolls(ctx)
-	a.runReports(ctx)
+
+	// Запускаем горутины для сбора метрик и их отправки
+	go a.runPolls(ctx)
+	go a.runReports(ctx)
+
+	// Ждем сигнала завершения из контекста
+	<-ctx.Done()
+
+	// После получения сигнала завершения, корректно завершаем работу агента
 	a.Shutdown()
 }
 
@@ -447,13 +454,22 @@ func (a *agent) runReports(ctx context.Context) {
 
 	slog.Info("Report routine started",
 		"report_interval", a.ReportInterval,
-		"server_url", a.ServerURL)
+		"server_url", a.ServerURL,
+		"grpc_enabled", a.GRPCEnabled,
+		"grpc_address", a.GRPCAddress)
+
+	// Добавляем отладочную информацию о клиенте
+	if a.client != nil {
+		slog.Info("Client initialized", "client_type", fmt.Sprintf("%T", a.client))
+	} else {
+		slog.Error("Client is nil")
+	}
 
 	for {
 		select {
 		case <-a.reportTicker.C:
 			reportStart := time.Now()
-			slog.Debug("Starting metrics report cycle")
+			slog.Info("Starting metrics report cycle")
 
 			metrics := a.GetMetrics()
 			metricsCount := len(metrics)
@@ -468,7 +484,7 @@ func (a *agent) runReports(ctx context.Context) {
 			}
 
 			reportDuration := time.Since(reportStart)
-			slog.Debug("Report cycle completed",
+			slog.Info("Report cycle completed",
 				"duration_ms", reportDuration.Milliseconds())
 		case <-ctx.Done():
 			slog.Info("Stopping reports due to context cancellation")
