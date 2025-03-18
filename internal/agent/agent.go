@@ -3,18 +3,50 @@ package agent
 import (
 	"context"
 	"crypto/rsa"
+	"fmt"
 	"log/slog"
+	"runtime"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/go-resty/resty/v2"
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/mem"
 
+	"github.com/maynagashev/go-metrics/internal/agent/client"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/pkg/random"
 )
 
-// Количество попыток отправки запроса на сервер при возникновении ошибок.
-const maxSendRetries = 3
+// Константы для конвертации единиц измерения.
+const (
+	BytesInKB = 1024
+	BytesInMB = BytesInKB * 1024
+	BytesInGB = BytesInMB * 1024
+)
+
+// Константы для работы агента.
+const (
+	// Минимальная длина строки для маскирования.
+	minMaskLength = 6
+	// Таймаут для запросов по умолчанию.
+	defaultRequestTimeout = 10 * time.Second
+	// Количество видимых символов в начале и конце маскированной строки.
+	visibleCharsCount = 2
+	// Количество концов строки (начало и конец) для отображения видимых символов.
+	stringEndsCount = 2
+)
+
+// Job структура для задания воркерам.
+type Job struct {
+	Metrics []*metrics.Metric
+}
+
+// Result структура для результата выполнения задания.
+type Result struct {
+	Job   Job
+	Error error
+}
 
 // Agent представляет собой интерфейс для сбора и отправки метрик на сервер.
 // Реализует функционал сбора runtime метрик и дополнительных системных метрик,
@@ -66,7 +98,7 @@ type agent struct {
 	counters     map[string]int64
 	mu           sync.Mutex
 	wg           sync.WaitGroup
-	client       *resty.Client
+	client       client.Client // Клиент для отправки метрик
 	pollTicker   *time.Ticker
 	reportTicker *time.Ticker
 	// Очередь задач на отправку метрик, с буфером в размере RateLimit.
@@ -93,6 +125,30 @@ var New = func(
 	grpcTimeout int, // таймаут для gRPC запросов в секундах
 	grpcRetry int, // количество повторных попыток при ошибке gRPC запроса
 ) Agent {
+	// Создаем фабрику клиентов
+	factory := client.NewFactory(
+		url,
+		grpcAddress,
+		grpcEnabled,
+		grpcTimeout,
+		grpcRetry,
+		realIP,
+		privateKey,
+		publicKey,
+	)
+
+	// Создаем клиент через фабрику
+	client, err := factory.CreateClient()
+	if err != nil {
+		slog.Error("Failed to create client", "error", err)
+		// В случае ошибки создания gRPC клиента, будем использовать HTTP клиент
+		if grpcEnabled {
+			slog.Warn("Falling back to HTTP client")
+			grpcEnabled = false
+			client, _ = factory.CreateClient() // Должно быть успешно, т.к. HTTP клиент не требует соединения при создании
+		}
+	}
+
 	return &agent{
 		ServerURL:          url,
 		PollInterval:       pollInterval,
@@ -107,7 +163,7 @@ var New = func(
 		GRPCRetry:          grpcRetry,
 		gauges:             make(map[string]float64),
 		counters:           make(map[string]int64),
-		client:             initHTTPClient(realIP),
+		client:             client,
 		pollTicker:         time.NewTicker(pollInterval),
 		reportTicker:       time.NewTicker(reportInterval),
 		sendQueue:          make(chan Job, rateLimit),
@@ -128,51 +184,165 @@ func (a *agent) IsEncryptionEnabled() bool {
 
 // Run запускает агента и его воркеры.
 func (a *agent) Run(ctx context.Context) {
-	// Запускаем воркеры агента.
-	slog.Info("======= AGENT STARTING =======",
+	slog.Info("Starting agent",
 		"server_url", a.ServerURL,
 		"poll_interval", a.PollInterval,
 		"report_interval", a.ReportInterval,
-		"send_compressed_data", a.SendCompressedData,
-		"private_key", a.PrivateKey,
-		"send_hash", a.IsRequestSigningEnabled(),
-		"encryption_enabled", a.IsEncryptionEnabled(),
+		"private_key", maskString(a.PrivateKey),
 		"rate_limit", a.RateLimit,
-		"grpc_enabled", a.GRPCEnabled, // использовать ли gRPC
-		"grpc_address", a.GRPCAddress, // адрес gRPC сервера
-		"grpc_timeout", a.GRPCTimeout, // таймаут gRPC запросов
-		"grpc_retry", a.GRPCRetry, // число повторных попыток
-	)
-	// Горутина для сбора метрик (с интервалом PollInterval).
-	go a.runPolls(ctx)
-	// Горутина для добавления задач в очередь на отправку, с интервалом ReportInterval.
-	go a.runReports(ctx)
+		"grpc_enabled", a.GRPCEnabled,
+		"grpc_address", a.GRPCAddress)
 
-	// Запуск worker pool для отправки метрик.
+	// Запускаем воркеры для сбора и отправки метрик
 	for i := range a.RateLimit {
-		a.wg.Add(1)
-		go a.worker(i)
+		a.runWorker(i)
 	}
-
-	// Запуск коллектора результатов
-	a.wg.Add(1)
-	go a.collector()
-
-	slog.Info("======= AGENT STARTED =======")
-
-	// Ожидаем завершения контекста
-	<-ctx.Done()
-	slog.Info("Context done, initiating graceful shutdown")
+	a.runCollector()
+	a.runPolls(ctx)
+	a.runReports(ctx)
 	a.Shutdown()
 }
 
-// Shutdown корректно завершает работу агента.
+// maskString маскирует строку, заменяя все символы кроме первых и последних на '*'.
+func maskString(s string) string {
+	if len(s) < minMaskLength {
+		return "<empty>"
+	}
+	// Оставляем по visibleCharsCount символов в начале и конце, остальное заменяем звездочками
+	maskLen := len(s) - (visibleCharsCount * stringEndsCount)
+	return s[:visibleCharsCount] + strings.Repeat("*", maskLen) + s[len(s)-visibleCharsCount:]
+}
+
+// runWorker запускает обработчик задач на отправку метрик.
+func (a *agent) runWorker(id int) {
+	a.wg.Add(1)
+	go func() {
+		defer a.wg.Done()
+		slog.Info("Starting worker", "workerID", id)
+		defer slog.Info("Worker shutting down", "workerID", id)
+
+		for {
+			select {
+			case <-a.stopCh:
+				return
+			case job, ok := <-a.sendQueue:
+				if !ok {
+					// Канал закрыт, завершаем работу
+					return
+				}
+
+				// Контекст с таймаутом для отправки метрик
+				ctx, cancel := context.WithTimeout(context.Background(), defaultRequestTimeout)
+				err := a.sendMetrics(ctx, job.Metrics, id)
+				cancel()
+
+				// Отправляем результат в канал для обработки
+				a.resultQueue <- Result{Job: job, Error: err}
+			}
+		}
+	}()
+}
+
+// sendMetrics отправляет метрики на сервер.
+func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, workerID int) error {
+	slog.Info("Sending metrics batch", "workerID", workerID, "metrics_count", len(items))
+
+	// Используем клиент для отправки метрик
+	return a.client.UpdateBatch(ctx, items)
+}
+
+// runCollector запускает сборщик результатов.
+func (a *agent) runCollector() {
+	a.wg.Add(1)
+	go func() {
+		defer a.wg.Done()
+		slog.Info("Collector started")
+		for {
+			select {
+			case result, ok := <-a.resultQueue:
+				if !ok {
+					slog.Info("Result queue closed, collector exiting")
+					return
+				}
+				if result.Error != nil {
+					slog.Error("Failed to send metrics", "error", result.Error)
+				} else {
+					slog.Info("Metrics sent successfully", "count", len(result.Job.Metrics))
+				}
+			case <-a.stopCh:
+				slog.Info("Stop signal received, collector exiting")
+				return
+			}
+		}
+	}()
+}
+
+// GetMetrics возвращает список всех собранных метрик.
+func (a *agent) GetMetrics() []*metrics.Metric {
+	startTime := time.Now()
+	slog.Debug("Starting metrics preparation for sending")
+
+	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
+
+	// Делаем копию метрик, чтобы данные не изменились во время отправки.
+	a.mu.Lock()
+
+	gaugesCount := len(a.gauges)
+	countersCount := len(a.counters)
+	pollCount := a.counters["PollCount"]
+
+	// Проверяем, получен ли сигнал завершения
+	select {
+	case <-a.stopCh:
+		slog.Info(
+			"Shutdown signal received while preparing metrics - ensuring final metrics are sent",
+			"gauges_count",
+			gaugesCount,
+			"counters_count",
+			countersCount,
+			"poll_count",
+			pollCount,
+		)
+	default:
+		slog.Info("Preparing metrics for sending",
+			"gauges_count", gaugesCount,
+			"counters_count", countersCount,
+			"poll_count", pollCount)
+	}
+
+	for name, value := range a.gauges {
+		items = append(items, metrics.NewGauge(name, value))
+	}
+	for name, value := range a.counters {
+		items = append(items, metrics.NewCounter(name, value))
+	}
+	// Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
+	// Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
+	// Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
+	a.counters["PollCount"] = 0
+	slog.Debug("Reset poll count to zero")
+
+	a.mu.Unlock()
+
+	duration := time.Since(startTime)
+	slog.Debug("Metrics preparation completed",
+		"metrics_count", len(items),
+		"duration_ms", duration.Milliseconds())
+
+	return items
+}
+
+// Shutdown корректно завершает работу агента, дожидаясь завершения всех задач.
 func (a *agent) Shutdown() {
 	slog.Info("======= GRACEFUL SHUTDOWN STARTED =======")
 
 	// Останавливаем тикеры
-	a.pollTicker.Stop()
-	a.reportTicker.Stop()
+	if a.pollTicker != nil {
+		a.pollTicker.Stop()
+	}
+	if a.reportTicker != nil {
+		a.reportTicker.Stop()
+	}
 	slog.Info("Tickers stopped")
 
 	// Сигнализируем о завершении работы
@@ -181,11 +351,14 @@ func (a *agent) Shutdown() {
 
 	// Отправляем последние собранные метрики
 	metrics := a.GetMetrics()
-	if len(metrics) > 0 {
+	if len(metrics) > 0 && a.client != nil {
 		slog.Info("Sending final metrics batch before shutdown", "count", len(metrics))
 
 		// Пытаемся отправить метрики напрямую
-		err := a.sendMetrics(metrics, -1) // -1 означает, что это финальная отправка
+		ctx, cancel := context.WithTimeout(context.Background(), defaultRequestTimeout)
+		err := a.client.UpdateBatch(ctx, metrics)
+		cancel()
+
 		if err != nil {
 			slog.Error("Failed to send final metrics directly", "error", err)
 
@@ -203,9 +376,18 @@ func (a *agent) Shutdown() {
 		slog.Info("No metrics to send before shutdown")
 	}
 
+	// Закрываем клиент
+	if a.client != nil {
+		if err := a.client.Close(); err != nil {
+			slog.Error("Failed to close client", "error", err)
+		}
+	}
+
 	// Закрываем каналы после отправки всех метрик
-	slog.Info("Closing send queue")
-	close(a.sendQueue)
+	if a.sendQueue != nil {
+		slog.Info("Closing send queue")
+		close(a.sendQueue)
+	}
 
 	// Ожидаем завершения всех горутин
 	slog.Info("Waiting for all goroutines to finish")
@@ -298,85 +480,99 @@ func (a *agent) runReports(ctx context.Context) {
 	}
 }
 
-// GetMetrics считывает текущие метрики из агента.
-func (a *agent) GetMetrics() []*metrics.Metric {
-	startTime := time.Now()
-	slog.Debug("Starting metrics preparation for sending")
-
-	items := make([]*metrics.Metric, 0, len(a.gauges)+len(a.counters))
-
-	// Делаем копию метрик, чтобы данные не изменились во время отправки.
-	a.mu.Lock()
-
-	gaugesCount := len(a.gauges)
-	countersCount := len(a.counters)
-	pollCount := a.counters["PollCount"]
-
-	// Проверяем, получен ли сигнал завершения
-	select {
-	case <-a.stopCh:
-		slog.Info(
-			"Shutdown signal received while preparing metrics - ensuring final metrics are sent",
-			"gauges_count",
-			gaugesCount,
-			"counters_count",
-			countersCount,
-			"poll_count",
-			pollCount,
-		)
-	default:
-		slog.Info("Preparing metrics for sending",
-			"gauges_count", gaugesCount,
-			"counters_count", countersCount,
-			"poll_count", pollCount)
-	}
-
-	for name, value := range a.gauges {
-		items = append(items, metrics.NewGauge(name, value))
-	}
-	for name, value := range a.counters {
-		items = append(items, metrics.NewCounter(name, value))
-	}
-	// Обнуляем счетчик PollCount сразу как только подготовили его к отправке.
-	// Из минусов: счетчик PollCount будет обнулен, даже если отправка метрик не удалась.
-	// Другой вариант: обнулять счетчик PollCount только после успешной отправки метрик.
-	a.counters["PollCount"] = 0
-	slog.Debug("Reset poll count to zero")
-
-	a.mu.Unlock()
-
-	duration := time.Since(startTime)
-	slog.Debug("Metrics preparation completed",
-		"metrics_count", len(items),
-		"duration_ms", duration.Milliseconds())
-
-	return items
+// ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
+func (a *agent) ResetMetrics() {
+	slog.Debug("Resetting metrics before collection")
+	a.gauges = make(map[string]float64)
+	a.counters = make(map[string]int64)
 }
 
-// initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
-func initHTTPClient(realIP string) *resty.Client {
-	client := resty.New().SetHeader("Content-Type", "text/plain")
+// CollectRuntimeMetrics собирает метрики времени выполнения.
+func (a *agent) CollectRuntimeMetrics() {
+	// Проверяем сигнал остановки перед сбором метрик
+	select {
+	case <-a.stopCh:
+		slog.Info("Shutdown signal received, skipping runtime metrics collection")
+		return
+	default:
+		// Продолжаем выполнение
+	}
 
-	// Добавляем перехватчик для установки заголовка X-Real-IP
-	client.OnBeforeRequest(func(_ *resty.Client, req *resty.Request) error {
-		// Если указан явный IP-адрес, используем его
-		if realIP != "" {
-			req.SetHeader("X-Real-IP", realIP)
-			slog.Debug("set X-Real-IP header (explicit)", "ip", realIP)
-			return nil
-		}
+	slog.Debug("Starting runtime metrics collection")
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
 
-		// Иначе получаем исходящий IP-адрес автоматически
-		hostIP, err := GetOutboundIP()
-		if err == nil {
-			// Устанавливаем заголовок X-Real-IP
-			req.SetHeader("X-Real-IP", hostIP.String())
-			slog.Debug("set X-Real-IP header (auto-detected)", "ip", hostIP.String())
-		} else {
-			slog.Error("failed to set X-Real-IP header", "error", err)
-		}
-		return nil
-	})
+	a.gauges["Alloc"] = float64(m.Alloc)
+	a.gauges["BuckHashSys"] = float64(m.BuckHashSys)
+	a.gauges["Frees"] = float64(m.Frees)
+	a.gauges["GCCPUFraction"] = m.GCCPUFraction
+	a.gauges["GCSys"] = float64(m.GCSys)
+	a.gauges["HeapAlloc"] = float64(m.HeapAlloc)
+	a.gauges["HeapIdle"] = float64(m.HeapIdle)
+	a.gauges["HeapInuse"] = float64(m.HeapInuse)
+	a.gauges["HeapObjects"] = float64(m.HeapObjects)
+	a.gauges["HeapReleased"] = float64(m.HeapReleased)
+	a.gauges["HeapSys"] = float64(m.HeapSys)
+	a.gauges["LastGC"] = float64(m.LastGC)
+	a.gauges["Lookups"] = float64(m.Lookups)
+	a.gauges["MCacheInuse"] = float64(m.MCacheInuse)
+	a.gauges["MCacheSys"] = float64(m.MCacheSys)
+	a.gauges["MSpanInuse"] = float64(m.MSpanInuse)
+	a.gauges["MSpanSys"] = float64(m.MSpanSys)
+	a.gauges["Mallocs"] = float64(m.Mallocs)
+	a.gauges["NextGC"] = float64(m.NextGC)
+	a.gauges["NumForcedGC"] = float64(m.NumForcedGC)
+	a.gauges["NumGC"] = float64(m.NumGC)
+	a.gauges["OtherSys"] = float64(m.OtherSys)
+	a.gauges["PauseTotalNs"] = float64(m.PauseTotalNs)
+	a.gauges["StackInuse"] = float64(m.StackInuse)
+	a.gauges["StackSys"] = float64(m.StackSys)
+	a.gauges["Sys"] = float64(m.Sys)
+	a.gauges["TotalAlloc"] = float64(m.TotalAlloc)
 
-	return client
+	slog.Debug("Runtime metrics collection completed",
+		"metrics_count", len(a.gauges),
+		"heap_alloc_mb", float64(m.HeapAlloc)/BytesInMB,
+		"sys_mb", float64(m.Sys)/BytesInMB)
+}
+
+// CollectAdditionalMetrics собирает дополнительные метрики системы.
+func (a *agent) CollectAdditionalMetrics() {
+	// Проверяем сигнал остановки перед сбором метрик
+	select {
+	case <-a.stopCh:
+		slog.Info("Shutdown signal received, skipping additional metrics collection")
+		return
+	default:
+		// Продолжаем выполнение
+	}
+
+	slog.Debug("Starting additional system metrics collection")
+
+	v, err := mem.VirtualMemory()
+	if err != nil {
+		slog.Error("Failed to collect virtual memory metrics", "error", err)
+		return
+	}
+	a.gauges["TotalMemory"] = float64(v.Total)
+	a.gauges["FreeMemory"] = float64(v.Free)
+
+	slog.Debug("Memory metrics collected",
+		"total_memory_gb", float64(v.Total)/BytesInGB,
+		"free_memory_gb", float64(v.Free)/BytesInGB,
+		"used_percent", v.UsedPercent)
+
+	c, err := cpu.Percent(0, true)
+	if err != nil {
+		slog.Error("Failed to collect CPU metrics", "error", err)
+		return
+	}
+
+	cpuCount := 0
+	for i, percent := range c {
+		a.gauges[fmt.Sprintf("CPUutilization%d", i+1)] = percent
+		cpuCount++
+	}
+
+	slog.Debug("CPU metrics collection completed", "cpu_count", cpuCount)
 }

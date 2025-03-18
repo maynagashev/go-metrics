@@ -77,15 +77,15 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (73.6%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (73.4%)</option>
 				
-				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/collect.go (86.0%)</option>
+				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (91.7%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/ip.go (57.1%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (6.0%)</option>
 				
-				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/send.go (75.0%)</option>
+				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/http/client.go (59.0%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/workerpool.go (61.3%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/ip.go (57.1%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (90.0%)</option>
 				
@@ -1863,18 +1863,50 @@ func SetupTestMetric() error <span class="cov8" title="1">{
 import (
         "context"
         "crypto/rsa"
+        "fmt"
         "log/slog"
+        "runtime"
+        "strings"
         "sync"
         "time"
 
-        "github.com/go-resty/resty/v2"
+        "github.com/shirou/gopsutil/cpu"
+        "github.com/shirou/gopsutil/mem"
 
+        "github.com/maynagashev/go-metrics/internal/agent/client"
         "github.com/maynagashev/go-metrics/internal/contracts/metrics"
         "github.com/maynagashev/go-metrics/pkg/random"
 )
 
-// Количество попыток отправки запроса на сервер при возникновении ошибок.
-const maxSendRetries = 3
+// Константы для конвертации единиц измерения.
+const (
+        BytesInKB = 1024
+        BytesInMB = BytesInKB * 1024
+        BytesInGB = BytesInMB * 1024
+)
+
+// Константы для работы агента.
+const (
+        // Минимальная длина строки для маскирования.
+        minMaskLength = 6
+        // Таймаут для запросов по умолчанию.
+        defaultRequestTimeout = 10 * time.Second
+        // Количество видимых символов в начале и конце маскированной строки.
+        visibleCharsCount = 2
+        // Количество концов строки (начало и конец) для отображения видимых символов.
+        stringEndsCount = 2
+)
+
+// Job структура для задания воркерам.
+type Job struct {
+        Metrics []*metrics.Metric
+}
+
+// Result структура для результата выполнения задания.
+type Result struct {
+        Job   Job
+        Error error
+}
 
 // Agent представляет собой интерфейс для сбора и отправки метрик на сервер.
 // Реализует функционал сбора runtime метрик и дополнительных системных метрик,
@@ -1926,7 +1958,7 @@ type agent struct {
         counters     map[string]int64
         mu           sync.Mutex
         wg           sync.WaitGroup
-        client       *resty.Client
+        client       client.Client // Клиент для отправки метрик
         pollTicker   *time.Ticker
         reportTicker *time.Ticker
         // Очередь задач на отправку метрик, с буфером в размере RateLimit.
@@ -1953,7 +1985,31 @@ var New = func(
         grpcTimeout int, // таймаут для gRPC запросов в секундах
         grpcRetry int, // количество повторных попыток при ошибке gRPC запроса
 ) Agent <span class="cov8" title="1">{
-        return &amp;agent{
+        // Создаем фабрику клиентов
+        factory := client.NewFactory(
+                url,
+                grpcAddress,
+                grpcEnabled,
+                grpcTimeout,
+                grpcRetry,
+                realIP,
+                privateKey,
+                publicKey,
+        )
+
+        // Создаем клиент через фабрику
+        client, err := factory.CreateClient()
+        if err != nil </span><span class="cov8" title="1">{
+                slog.Error("Failed to create client", "error", err)
+                // В случае ошибки создания gRPC клиента, будем использовать HTTP клиент
+                if grpcEnabled </span><span class="cov8" title="1">{
+                        slog.Warn("Falling back to HTTP client")
+                        grpcEnabled = false
+                        client, _ = factory.CreateClient() // Должно быть успешно, т.к. HTTP клиент не требует соединения при создании
+                }</span>
+        }
+
+        <span class="cov8" title="1">return &amp;agent{
                 ServerURL:          url,
                 PollInterval:       pollInterval,
                 ReportInterval:     reportInterval,
@@ -1967,14 +2023,14 @@ var New = func(
                 GRPCRetry:          grpcRetry,
                 gauges:             make(map[string]float64),
                 counters:           make(map[string]int64),
-                client:             initHTTPClient(realIP),
+                client:             client,
                 pollTicker:         time.NewTicker(pollInterval),
                 reportTicker:       time.NewTicker(reportInterval),
                 sendQueue:          make(chan Job, rateLimit),
                 resultQueue:        make(chan Result, rateLimit),
                 stopCh:             make(chan struct{}),
-        }
-}</span>
+        }</span>
+}
 
 // IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
 func (a *agent) IsRequestSigningEnabled() bool <span class="cov8" title="1">{
@@ -1988,177 +2044,100 @@ func (a *agent) IsEncryptionEnabled() bool <span class="cov8" title="1">{
 
 // Run запускает агента и его воркеры.
 func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
-        // Запускаем воркеры агента.
-        slog.Info("======= AGENT STARTING =======",
+        slog.Info("Starting agent",
                 "server_url", a.ServerURL,
                 "poll_interval", a.PollInterval,
                 "report_interval", a.ReportInterval,
-                "send_compressed_data", a.SendCompressedData,
-                "private_key", a.PrivateKey,
-                "send_hash", a.IsRequestSigningEnabled(),
-                "encryption_enabled", a.IsEncryptionEnabled(),
+                "private_key", maskString(a.PrivateKey),
                 "rate_limit", a.RateLimit,
-                "grpc_enabled", a.GRPCEnabled, // использовать ли gRPC
-                "grpc_address", a.GRPCAddress, // адрес gRPC сервера
-                "grpc_timeout", a.GRPCTimeout, // таймаут gRPC запросов
-                "grpc_retry", a.GRPCRetry, // число повторных попыток
-        )
-        // Горутина для сбора метрик (с интервалом PollInterval).
-        go a.runPolls(ctx)
-        // Горутина для добавления задач в очередь на отправку, с интервалом ReportInterval.
-        go a.runReports(ctx)
+                "grpc_enabled", a.GRPCEnabled,
+                "grpc_address", a.GRPCAddress)
 
-        // Запуск worker pool для отправки метрик.
+        // Запускаем воркеры для сбора и отправки метрик
         for i := range a.RateLimit </span><span class="cov8" title="1">{
-                a.wg.Add(1)
-                go a.worker(i)
+                a.runWorker(i)
         }</span>
-
-        // Запуск коллектора результатов
-        <span class="cov8" title="1">a.wg.Add(1)
-        go a.collector()
-
-        slog.Info("======= AGENT STARTED =======")
-
-        // Ожидаем завершения контекста
-        &lt;-ctx.Done()
-        slog.Info("Context done, initiating graceful shutdown")
+        <span class="cov8" title="1">a.runCollector()
+        a.runPolls(ctx)
+        a.runReports(ctx)
         a.Shutdown()</span>
 }
 
-// Shutdown корректно завершает работу агента.
-func (a *agent) Shutdown() <span class="cov8" title="1">{
-        slog.Info("======= GRACEFUL SHUTDOWN STARTED =======")
-
-        // Останавливаем тикеры
-        a.pollTicker.Stop()
-        a.reportTicker.Stop()
-        slog.Info("Tickers stopped")
-
-        // Сигнализируем о завершении работы
-        close(a.stopCh)
-        slog.Info("Stop channel closed")
-
-        // Отправляем последние собранные метрики
-        metrics := a.GetMetrics()
-        if len(metrics) &gt; 0 </span><span class="cov8" title="1">{
-                slog.Info("Sending final metrics batch before shutdown", "count", len(metrics))
-
-                // Пытаемся отправить метрики напрямую
-                err := a.sendMetrics(metrics, -1) // -1 означает, что это финальная отправка
-                if err != nil </span><span class="cov8" title="1">{
-                        slog.Error("Failed to send final metrics directly", "error", err)
-
-                        // Если не удалось отправить напрямую, пробуем через очередь
-                        select </span>{
-                        case a.sendQueue &lt;- Job{Metrics: metrics}:<span class="cov0" title="0">
-                                slog.Info("Final metrics queued for sending")</span>
-                        default:<span class="cov8" title="1">
-                                slog.Error("Failed to queue final metrics, queue might be full")</span>
-                        }
-                } else<span class="cov0" title="0"> {
-                        slog.Info("Final metrics sent successfully")
-                }</span>
-        } else<span class="cov8" title="1"> {
-                slog.Info("No metrics to send before shutdown")
+// maskString маскирует строку, заменяя все символы кроме первых и последних на '*'.
+func maskString(s string) string <span class="cov8" title="1">{
+        if len(s) &lt; minMaskLength </span><span class="cov8" title="1">{
+                return "&lt;empty&gt;"
         }</span>
-
-        // Закрываем каналы после отправки всех метрик
-        <span class="cov8" title="1">slog.Info("Closing send queue")
-        close(a.sendQueue)
-
-        // Ожидаем завершения всех горутин
-        slog.Info("Waiting for all goroutines to finish")
-        a.wg.Wait()
-        slog.Info("======= GRACEFUL SHUTDOWN COMPLETED =======")</span>
+        // Оставляем по visibleCharsCount символов в начале и конце, остальное заменяем звездочками
+        <span class="cov0" title="0">maskLen := len(s) - (visibleCharsCount * stringEndsCount)
+        return s[:visibleCharsCount] + strings.Repeat("*", maskLen) + s[len(s)-visibleCharsCount:]</span>
 }
 
-// runPolls собирает сведения из системы в отдельной горутине.
-func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
+// runWorker запускает обработчик задач на отправку метрик.
+func (a *agent) runWorker(id int) <span class="cov8" title="1">{
         a.wg.Add(1)
-        defer a.wg.Done()
+        go func() </span><span class="cov8" title="1">{
+                defer a.wg.Done()
+                slog.Info("Starting worker", "workerID", id)
+                defer slog.Info("Worker shutting down", "workerID", id)
 
-        slog.Info("Poll routine started",
-                "poll_interval", a.PollInterval,
-                "metrics_storage_size", len(a.gauges)+len(a.counters))
+                for </span><span class="cov8" title="1">{
+                        select </span>{
+                        case &lt;-a.stopCh:<span class="cov8" title="1">
+                                return</span>
+                        case job, ok := &lt;-a.sendQueue:<span class="cov0" title="0">
+                                if !ok </span><span class="cov0" title="0">{
+                                        // Канал закрыт, завершаем работу
+                                        return
+                                }</span>
 
-        for </span><span class="cov8" title="1">{
-                select </span>{
-                case &lt;-a.pollTicker.C:<span class="cov0" title="0">
-                        pollStart := time.Now()
-                        slog.Debug("Starting metrics collection cycle")
+                                // Контекст с таймаутом для отправки метрик
+                                <span class="cov0" title="0">ctx, cancel := context.WithTimeout(context.Background(), defaultRequestTimeout)
+                                err := a.sendMetrics(ctx, job.Metrics, id)
+                                cancel()
 
-                        a.mu.Lock()
-                        // Перезаписываем метрики свежими показаниями
-                        a.ResetMetrics()
-                        a.CollectRuntimeMetrics()
-                        a.CollectAdditionalMetrics()
-
-                        // Увеличиваем счетчик PollCount на 1.
-                        a.counters["PollCount"]++
-                        // Добавляем обновляемое рандомное значение по условию.
-                        a.gauges["RandomValue"] = random.GenerateRandomFloat64()
-
-                        metricsCount := len(a.gauges) + len(a.counters)
-                        pollDuration := time.Since(pollStart)
-
-                        // Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
-                        slog.Info("Metrics collection completed",
-                                "poll_count", a.counters["PollCount"],
-                                "metrics_count", metricsCount,
-                                "duration_ms", pollDuration.Milliseconds())
-                        a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
-                        slog.Info("Stopping polls due to context cancellation")
-                        return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
-                        slog.Info("Stopping polls due to agent shutdown")
-                        return</span>
+                                // Отправляем результат в канал для обработки
+                                a.resultQueue &lt;- Result{Job: job, Error: err}</span>
+                        }
                 }
-        }
+        }()
 }
 
-// Создает задачи по отправке метрик в очереди задач на отправку.
-func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
+// sendMetrics отправляет метрики на сервер.
+func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
+        slog.Info("Sending metrics batch", "workerID", workerID, "metrics_count", len(items))
+
+        // Используем клиент для отправки метрик
+        return a.client.UpdateBatch(ctx, items)
+}</span>
+
+// runCollector запускает сборщик результатов.
+func (a *agent) runCollector() <span class="cov8" title="1">{
         a.wg.Add(1)
-        defer a.wg.Done()
-
-        slog.Info("Report routine started",
-                "report_interval", a.ReportInterval,
-                "server_url", a.ServerURL)
-
-        for </span><span class="cov8" title="1">{
-                select </span>{
-                case &lt;-a.reportTicker.C:<span class="cov0" title="0">
-                        reportStart := time.Now()
-                        slog.Debug("Starting metrics report cycle")
-
-                        metrics := a.GetMetrics()
-                        metricsCount := len(metrics)
-
-                        if metricsCount &gt; 0 </span><span class="cov0" title="0">{
-                                slog.Info("Sending metrics to queue",
-                                        "metrics_count", metricsCount,
-                                        "queue_size", len(a.sendQueue))
-                                a.sendQueue &lt;- Job{Metrics: metrics}
-                        }</span> else<span class="cov0" title="0"> {
-                                slog.Debug("No metrics to send in this report cycle")
-                        }</span>
-
-                        <span class="cov0" title="0">reportDuration := time.Since(reportStart)
-                        slog.Debug("Report cycle completed",
-                                "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
-                        slog.Info("Stopping reports due to context cancellation")
-                        return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
-                        slog.Info("Stopping reports due to agent shutdown")
-                        return</span>
+        go func() </span><span class="cov8" title="1">{
+                defer a.wg.Done()
+                slog.Info("Collector started")
+                for </span><span class="cov8" title="1">{
+                        select </span>{
+                        case result, ok := &lt;-a.resultQueue:<span class="cov0" title="0">
+                                if !ok </span><span class="cov0" title="0">{
+                                        slog.Info("Result queue closed, collector exiting")
+                                        return
+                                }</span>
+                                <span class="cov0" title="0">if result.Error != nil </span><span class="cov0" title="0">{
+                                        slog.Error("Failed to send metrics", "error", result.Error)
+                                }</span> else<span class="cov0" title="0"> {
+                                        slog.Info("Metrics sent successfully", "count", len(result.Job.Metrics))
+                                }</span>
+                        case &lt;-a.stopCh:<span class="cov8" title="1">
+                                slog.Info("Stop signal received, collector exiting")
+                                return</span>
+                        }
                 }
-        }
+        }()
 }
 
-// GetMetrics считывает текущие метрики из агента.
+// GetMetrics возвращает список всех собранных метрик.
 func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
         startTime := time.Now()
         slog.Debug("Starting metrics preparation for sending")
@@ -2213,53 +2192,153 @@ func (a *agent) GetMetrics() []*metrics.Metric <span class="cov8" title="1">{
         return items</span>
 }
 
-// initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
-func initHTTPClient(realIP string) *resty.Client <span class="cov8" title="1">{
-        client := resty.New().SetHeader("Content-Type", "text/plain")
+// Shutdown корректно завершает работу агента, дожидаясь завершения всех задач.
+func (a *agent) Shutdown() <span class="cov8" title="1">{
+        slog.Info("======= GRACEFUL SHUTDOWN STARTED =======")
 
-        // Добавляем перехватчик для установки заголовка X-Real-IP
-        client.OnBeforeRequest(func(_ *resty.Client, req *resty.Request) error </span><span class="cov8" title="1">{
-                // Если указан явный IP-адрес, используем его
-                if realIP != "" </span><span class="cov8" title="1">{
-                        req.SetHeader("X-Real-IP", realIP)
-                        slog.Debug("set X-Real-IP header (explicit)", "ip", realIP)
-                        return nil
+        // Останавливаем тикеры
+        if a.pollTicker != nil </span><span class="cov8" title="1">{
+                a.pollTicker.Stop()
+        }</span>
+        <span class="cov8" title="1">if a.reportTicker != nil </span><span class="cov8" title="1">{
+                a.reportTicker.Stop()
+        }</span>
+        <span class="cov8" title="1">slog.Info("Tickers stopped")
+
+        // Сигнализируем о завершении работы
+        close(a.stopCh)
+        slog.Info("Stop channel closed")
+
+        // Отправляем последние собранные метрики
+        metrics := a.GetMetrics()
+        if len(metrics) &gt; 0 &amp;&amp; a.client != nil </span><span class="cov8" title="1">{
+                slog.Info("Sending final metrics batch before shutdown", "count", len(metrics))
+
+                // Пытаемся отправить метрики напрямую
+                ctx, cancel := context.WithTimeout(context.Background(), defaultRequestTimeout)
+                err := a.client.UpdateBatch(ctx, metrics)
+                cancel()
+
+                if err != nil </span><span class="cov8" title="1">{
+                        slog.Error("Failed to send final metrics directly", "error", err)
+
+                        // Если не удалось отправить напрямую, пробуем через очередь
+                        select </span>{
+                        case a.sendQueue &lt;- Job{Metrics: metrics}:<span class="cov0" title="0">
+                                slog.Info("Final metrics queued for sending")</span>
+                        default:<span class="cov8" title="1">
+                                slog.Error("Failed to queue final metrics, queue might be full")</span>
+                        }
+                } else<span class="cov0" title="0"> {
+                        slog.Info("Final metrics sent successfully")
                 }</span>
+        } else<span class="cov8" title="1"> {
+                slog.Info("No metrics to send before shutdown")
+        }</span>
 
-                // Иначе получаем исходящий IP-адрес автоматически
-                <span class="cov8" title="1">hostIP, err := GetOutboundIP()
-                if err == nil </span><span class="cov8" title="1">{
-                        // Устанавливаем заголовок X-Real-IP
-                        req.SetHeader("X-Real-IP", hostIP.String())
-                        slog.Debug("set X-Real-IP header (auto-detected)", "ip", hostIP.String())
-                }</span> else<span class="cov0" title="0"> {
-                        slog.Error("failed to set X-Real-IP header", "error", err)
+        // Закрываем клиент
+        <span class="cov8" title="1">if a.client != nil </span><span class="cov8" title="1">{
+                if err := a.client.Close(); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Failed to close client", "error", err)
                 }</span>
-                <span class="cov8" title="1">return nil</span>
-        })
+        }
 
-        <span class="cov8" title="1">return client</span>
+        // Закрываем каналы после отправки всех метрик
+        <span class="cov8" title="1">if a.sendQueue != nil </span><span class="cov8" title="1">{
+                slog.Info("Closing send queue")
+                close(a.sendQueue)
+        }</span>
+
+        // Ожидаем завершения всех горутин
+        <span class="cov8" title="1">slog.Info("Waiting for all goroutines to finish")
+        a.wg.Wait()
+        slog.Info("======= GRACEFUL SHUTDOWN COMPLETED =======")</span>
 }
-</pre>
-		
-		<pre class="file" id="file12" style="display: none">// Package agent методы агента для сбора метрик.
-package agent
 
-import (
-        "fmt"
-        "log/slog"
-        "runtime"
+// runPolls собирает сведения из системы в отдельной горутине.
+func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
+        a.wg.Add(1)
+        defer a.wg.Done()
 
-        "github.com/shirou/gopsutil/cpu"
-        "github.com/shirou/gopsutil/mem"
-)
+        slog.Info("Poll routine started",
+                "poll_interval", a.PollInterval,
+                "metrics_storage_size", len(a.gauges)+len(a.counters))
 
-// Константы для конвертации единиц измерения.
-const (
-        BytesInKB = 1024
-        BytesInMB = BytesInKB * 1024
-        BytesInGB = BytesInMB * 1024
-)
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-a.pollTicker.C:<span class="cov0" title="0">
+                        pollStart := time.Now()
+                        slog.Debug("Starting metrics collection cycle")
+
+                        a.mu.Lock()
+                        // Перезаписываем метрики свежими показаниями
+                        a.ResetMetrics()
+                        a.CollectRuntimeMetrics()
+                        a.CollectAdditionalMetrics()
+
+                        // Увеличиваем счетчик PollCount на 1.
+                        a.counters["PollCount"]++
+                        // Добавляем обновляемое рандомное значение по условию.
+                        a.gauges["RandomValue"] = random.GenerateRandomFloat64()
+
+                        metricsCount := len(a.gauges) + len(a.counters)
+                        pollDuration := time.Since(pollStart)
+
+                        // Логируем текущее значение счетчика PollCount в консоль для наглядности работы.
+                        slog.Info("Metrics collection completed",
+                                "poll_count", a.counters["PollCount"],
+                                "metrics_count", metricsCount,
+                                "duration_ms", pollDuration.Milliseconds())
+                        a.mu.Unlock()</span>
+                case &lt;-ctx.Done():<span class="cov8" title="1">
+                        slog.Info("Stopping polls due to context cancellation")
+                        return</span>
+                case &lt;-a.stopCh:<span class="cov0" title="0">
+                        slog.Info("Stopping polls due to agent shutdown")
+                        return</span>
+                }
+        }
+}
+
+// Создает задачи по отправке метрик в очереди задач на отправку.
+func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
+        a.wg.Add(1)
+        defer a.wg.Done()
+
+        slog.Info("Report routine started",
+                "report_interval", a.ReportInterval,
+                "server_url", a.ServerURL)
+
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-a.reportTicker.C:<span class="cov0" title="0">
+                        reportStart := time.Now()
+                        slog.Debug("Starting metrics report cycle")
+
+                        metrics := a.GetMetrics()
+                        metricsCount := len(metrics)
+
+                        if metricsCount &gt; 0 </span><span class="cov0" title="0">{
+                                slog.Info("Sending metrics to queue",
+                                        "metrics_count", metricsCount,
+                                        "queue_size", len(a.sendQueue))
+                                a.sendQueue &lt;- Job{Metrics: metrics}
+                        }</span> else<span class="cov0" title="0"> {
+                                slog.Debug("No metrics to send in this report cycle")
+                        }</span>
+
+                        <span class="cov0" title="0">reportDuration := time.Since(reportStart)
+                        slog.Debug("Report cycle completed",
+                                "duration_ms", reportDuration.Milliseconds())</span>
+                case &lt;-ctx.Done():<span class="cov8" title="1">
+                        slog.Info("Stopping reports due to context cancellation")
+                        return</span>
+                case &lt;-a.stopCh:<span class="cov0" title="0">
+                        slog.Info("Stopping reports due to agent shutdown")
+                        return</span>
+                }
+        }
+}
 
 // ResetMetrics очищает все метрики агента, вызываем перед сбором новых метрик.
 func (a *agent) ResetMetrics() <span class="cov8" title="1">{
@@ -2268,6 +2347,7 @@ func (a *agent) ResetMetrics() <span class="cov8" title="1">{
         a.counters = make(map[string]int64)
 }</span>
 
+// CollectRuntimeMetrics собирает метрики времени выполнения.
 func (a *agent) CollectRuntimeMetrics() <span class="cov8" title="1">{
         // Проверяем сигнал остановки перед сбором метрик
         select </span>{
@@ -2358,7 +2438,665 @@ func (a *agent) CollectAdditionalMetrics() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file13" style="display: none">package agent
+		<pre class="file" id="file12" style="display: none">package client
+
+import (
+        "context"
+        "crypto/rsa"
+        "fmt"
+        "log/slog"
+
+        "github.com/maynagashev/go-metrics/internal/agent/grpc"
+        "github.com/maynagashev/go-metrics/internal/agent/http"
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+)
+
+// Client интерфейс для клиента метрик.
+type Client interface {
+        // UpdateMetric отправляет метрику на сервер.
+        UpdateMetric(ctx context.Context, metric *metrics.Metric) error
+
+        // UpdateBatch отправляет пакет метрик на сервер.
+        UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error
+
+        // Ping проверяет соединение с сервером.
+        Ping(ctx context.Context) error
+
+        // Close закрывает клиент.
+        Close() error
+}
+
+// Factory фабрика для создания клиентов.
+type Factory struct {
+        httpServerAddr string
+        grpcServerAddr string
+        grpcEnabled    bool
+        grpcTimeout    int
+        grpcRetry      int
+        realIP         string
+        privateKey     string
+        publicKey      *rsa.PublicKey
+}
+
+// NewFactory создает новую фабрику клиентов.
+func NewFactory(
+        httpServerAddr, grpcServerAddr string,
+        grpcEnabled bool,
+        grpcTimeout, grpcRetry int,
+        realIP, privateKey string,
+        publicKey *rsa.PublicKey,
+) *Factory <span class="cov8" title="1">{
+        return &amp;Factory{
+                httpServerAddr: httpServerAddr,
+                grpcServerAddr: grpcServerAddr,
+                grpcEnabled:    grpcEnabled,
+                grpcTimeout:    grpcTimeout,
+                grpcRetry:      grpcRetry,
+                realIP:         realIP,
+                privateKey:     privateKey,
+                publicKey:      publicKey,
+        }
+}</span>
+
+// CreateClient создает клиент в зависимости от конфигурации.
+func (f *Factory) CreateClient() (Client, error) <span class="cov8" title="1">{
+        if f.grpcEnabled </span><span class="cov8" title="1">{
+                slog.Info("using gRPC client", "address", f.grpcServerAddr)
+                return f.createGRPCClient()
+        }</span>
+
+        <span class="cov8" title="1">slog.Info("using HTTP client", "address", f.httpServerAddr)
+        return f.createHTTPClient()</span>
+}
+
+// createGRPCClient создает gRPC клиент.
+func (f *Factory) createGRPCClient() (Client, error) <span class="cov8" title="1">{
+        client, err := grpc.New(
+                f.grpcServerAddr,
+                f.grpcTimeout,
+                f.grpcRetry,
+                f.realIP,
+                f.privateKey,
+        )
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("failed to create gRPC client: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return client, nil</span>
+}
+
+// createHTTPClient создает HTTP клиент.
+func (f *Factory) createHTTPClient() (Client, error) <span class="cov8" title="1">{
+        client := http.New(
+                f.httpServerAddr,
+                f.privateKey,
+                f.publicKey,
+                f.realIP,
+        )
+
+        return client, nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package grpc
+
+import (
+        "context"
+        "fmt"
+        "log/slog"
+        "time"
+
+        "google.golang.org/grpc"
+        "google.golang.org/grpc/credentials/insecure"
+        "google.golang.org/grpc/metadata"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        "github.com/maynagashev/go-metrics/internal/grpc/pb"
+)
+
+// Client представляет gRPC клиент для отправки метрик.
+type Client struct {
+        address    string        // адрес gRPC сервера
+        timeout    time.Duration // таймаут для запросов
+        maxRetries int           // максимальное количество повторных попыток
+        conn       *grpc.ClientConn
+        client     pb.MetricsServiceClient
+        realIP     string // IP-адрес для заголовка X-Real-IP
+        privateKey string // приватный ключ для подписи запросов
+}
+
+// New создает новый gRPC клиент.
+func New(address string, timeout int, maxRetries int, realIP, privateKey string) (*Client, error) <span class="cov8" title="1">{
+        // Создаем соединение с сервером
+        ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+        defer cancel()
+
+        // Устанавливаем соединение без TLS (в будущем можно добавить TLS)
+        conn, err := grpc.DialContext(
+                ctx,
+                address,
+                grpc.WithTransportCredentials(insecure.NewCredentials()),
+                grpc.WithBlock(),
+        )
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("failed to connect to gRPC server: %w", err)
+        }</span>
+
+        // Создаем клиент
+        <span class="cov0" title="0">client := pb.NewMetricsServiceClient(conn)
+
+        return &amp;Client{
+                address:    address,
+                timeout:    time.Duration(timeout) * time.Second,
+                maxRetries: maxRetries,
+                conn:       conn,
+                client:     client,
+                realIP:     realIP,
+                privateKey: privateKey,
+        }, nil</span>
+}
+
+// Close закрывает соединение с сервером.
+func (c *Client) Close() error <span class="cov0" title="0">{
+        if c.conn != nil </span><span class="cov0" title="0">{
+                return c.conn.Close()
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// createContext создает контекст с метаданными и таймаутом.
+func (c *Client) createContext(parent context.Context) (context.Context, context.CancelFunc) <span class="cov0" title="0">{
+        // Создаем контекст с таймаутом
+        ctx, cancel := context.WithTimeout(parent, c.timeout)
+
+        // Добавляем метаданные (X-Real-IP)
+        if c.realIP != "" </span><span class="cov0" title="0">{
+                md := metadata.New(map[string]string{
+                        "X-Real-IP": c.realIP,
+                })
+                ctx = metadata.NewOutgoingContext(ctx, md)
+        }</span>
+
+        // TODO: добавить подпись запроса (HMAC-SHA256) если указан privateKey
+
+        <span class="cov0" title="0">return ctx, cancel</span>
+}
+
+// withRetry выполняет операцию с повторными попытками при ошибке.
+func (c *Client) withRetry(ctx context.Context, operation func(context.Context) error) error <span class="cov0" title="0">{
+        var err error
+        retryIntervals := []time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second}
+
+        // Выполняем операцию с учетом повторных попыток
+        for attempt := 0; attempt &lt;= c.maxRetries; attempt++ </span><span class="cov0" title="0">{
+                // Создаем контекст для текущей попытки
+                opCtx, cancel := c.createContext(ctx)
+
+                // Выполняем операцию
+                err = operation(opCtx)
+                cancel()
+
+                // Если операция успешна или контекст завершен, выходим из цикла
+                if err == nil || ctx.Err() != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // Если это последняя попытка, возвращаем ошибку
+                <span class="cov0" title="0">if attempt == c.maxRetries </span><span class="cov0" title="0">{
+                        break</span>
+                }
+
+                // Определяем интервал для следующей попытки
+                <span class="cov0" title="0">retryInterval := time.Second
+                if attempt &lt; len(retryIntervals) </span><span class="cov0" title="0">{
+                        retryInterval = retryIntervals[attempt]
+                }</span>
+
+                <span class="cov0" title="0">slog.Warn("gRPC request failed, retrying",
+                        "error", err,
+                        "attempt", attempt+1,
+                        "maxRetries", c.maxRetries,
+                        "retryIn", retryInterval)
+
+                // Ждем перед следующей попыткой
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        return ctx.Err()</span>
+                case &lt;-time.After(retryInterval):<span class="cov0" title="0"></span>
+                        // Продолжаем выполнение
+                }
+        }
+
+        <span class="cov0" title="0">return fmt.Errorf("operation failed after %d attempts: %w", c.maxRetries+1, err)</span>
+}
+
+// UpdateMetric отправляет метрику на сервер.
+func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error <span class="cov0" title="0">{
+        // Преобразуем метрику из доменной модели в protobuf
+        protoMetric := metricToProto(metric)
+
+        // Создаем запрос
+        request := &amp;pb.UpdateRequest{
+                Metric: protoMetric,
+        }
+
+        // Отправляем запрос с повторными попытками
+        return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
+                _, err := c.client.Update(opCtx, request)
+                return err
+        }</span>)
+}
+
+// UpdateBatch отправляет пакет метрик на сервер.
+func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error <span class="cov0" title="0">{
+        // Если метрик нет, ничего не делаем
+        if len(metrics) == 0 </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        // Преобразуем метрики из доменной модели в protobuf
+        <span class="cov0" title="0">protoMetrics := make([]*pb.Metric, 0, len(metrics))
+        for _, m := range metrics </span><span class="cov0" title="0">{
+                protoMetrics = append(protoMetrics, metricToProto(m))
+        }</span>
+
+        // Создаем запрос
+        <span class="cov0" title="0">request := &amp;pb.UpdateBatchRequest{
+                Metrics: protoMetrics,
+        }
+
+        // Отправляем запрос с повторными попытками
+        return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
+                response, err := c.client.UpdateBatch(opCtx, request)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // Проверяем успешность операции
+                <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
+                        return fmt.Errorf("server returned error: %s", response.GetError())
+                }</span>
+
+                <span class="cov0" title="0">return nil</span>
+        })
+}
+
+// StreamMetrics отправляет метрики потоком на сервер.
+func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) error <span class="cov0" title="0">{
+        // Если метрик нет, ничего не делаем
+        if len(metrics) == 0 </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        // Отправляем запрос с повторными попытками
+        <span class="cov0" title="0">return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
+                // Открываем поток
+                stream, err := c.client.StreamMetrics(opCtx)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("failed to open stream: %w", err)
+                }</span>
+
+                // Отправляем метрики в поток
+                <span class="cov0" title="0">for _, m := range metrics </span><span class="cov0" title="0">{
+                        protoMetric := metricToProto(m)
+                        if sendErr := stream.Send(protoMetric); sendErr != nil </span><span class="cov0" title="0">{
+                                return fmt.Errorf("failed to send metric: %w", sendErr)
+                        }</span>
+                }
+
+                // Закрываем поток и получаем ответ
+                <span class="cov0" title="0">response, err := stream.CloseAndRecv()
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("failed to close stream: %w", err)
+                }</span>
+
+                // Проверяем успешность операции
+                <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
+                        return fmt.Errorf("server returned error: %s", response.GetError())
+                }</span>
+
+                <span class="cov0" title="0">return nil</span>
+        })
+}
+
+// Ping проверяет соединение с сервером.
+func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
+        return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
+                response, err := c.client.Ping(opCtx, &amp;pb.PingRequest{})
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // Проверяем успешность операции
+                <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
+                        return fmt.Errorf("server returned error: %s", response.GetError())
+                }</span>
+
+                <span class="cov0" title="0">return nil</span>
+        })
+}
+
+// metricToProto преобразует метрику из доменной модели в protobuf.
+func metricToProto(metric *metrics.Metric) *pb.Metric <span class="cov0" title="0">{
+        protoMetric := &amp;pb.Metric{
+                Name: metric.Name,
+        }
+
+        // Устанавливаем тип метрики
+        switch metric.MType </span>{
+        case metrics.TypeGauge:<span class="cov0" title="0">
+                protoMetric.Type = pb.MetricType_GAUGE
+                if metric.Value != nil </span><span class="cov0" title="0">{
+                        value := *metric.Value
+                        protoMetric.Value = &amp;value
+                }</span>
+        case metrics.TypeCounter:<span class="cov0" title="0">
+                protoMetric.Type = pb.MetricType_COUNTER
+                if metric.Delta != nil </span><span class="cov0" title="0">{
+                        delta := *metric.Delta
+                        protoMetric.Delta = &amp;delta
+                }</span>
+        }
+
+        <span class="cov0" title="0">return protoMetric</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package http
+
+import (
+        "context"
+        "crypto/rsa"
+        "encoding/json"
+        "errors"
+        "fmt"
+        "log/slog"
+        "net"
+        "net/http"
+        "time"
+
+        "github.com/go-resty/resty/v2"
+
+        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
+        "github.com/maynagashev/go-metrics/pkg/crypto"
+        "github.com/maynagashev/go-metrics/pkg/middleware/gzip"
+        "github.com/maynagashev/go-metrics/pkg/sign"
+)
+
+const (
+        maxSendRetries = 3
+        backoffFactor  = 2
+)
+
+// Client представляет HTTP клиент для отправки метрик.
+type Client struct {
+        serverURL          string
+        client             *resty.Client
+        privateKey         string
+        publicKey          *rsa.PublicKey
+        sendCompressedData bool
+}
+
+// New создает новый HTTP клиент.
+func New(serverURL, privateKey string, publicKey *rsa.PublicKey, realIP string) *Client <span class="cov8" title="1">{
+        return &amp;Client{
+                serverURL:          serverURL,
+                client:             initHTTPClient(realIP),
+                privateKey:         privateKey,
+                publicKey:          publicKey,
+                sendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
+        }
+}</span>
+
+// Close ничего не делает, т.к. HTTP клиент не требует закрытия.
+func (c *Client) Close() error <span class="cov8" title="1">{
+        return nil
+}</span>
+
+// UpdateMetric отправляет метрику на сервер.
+func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error <span class="cov0" title="0">{
+        return c.UpdateBatch(ctx, []*metrics.Metric{metric})
+}</span>
+
+// UpdateBatch отправляет пакет метрик на сервер.
+func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error <span class="cov8" title="1">{
+        // Если метрик нет, ничего не делаем
+        if len(metrics) == 0 </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        // Отправляем все метрики пачкой на маршрут /updates
+        // Ошибки подключения при отправке метрик можно повторить, но не более maxSendRetries раз
+        <span class="cov8" title="1">for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov8" title="1">{
+                // Проверяем, не отменен ли контекст
+                if err := ctx.Err(); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // Пауза перед повторной отправкой
+                <span class="cov8" title="1">if i &gt; 0 </span><span class="cov0" title="0">{
+                        sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
+                        slog.Info(
+                                fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", i, sleepSeconds),
+                        )
+
+                        select </span>{
+                        case &lt;-ctx.Done():<span class="cov0" title="0">
+                                return ctx.Err()</span>
+                        case &lt;-time.After(time.Duration(sleepSeconds) * time.Second):<span class="cov0" title="0"></span>
+                                // Продолжаем выполнение
+                        }
+                }
+
+                <span class="cov8" title="1">err := c.makeUpdatesRequest(ctx, metrics, i)
+                // Если нет ошибок выходим из цикла и функции
+                if err == nil </span><span class="cov0" title="0">{
+                        return nil
+                }</span>
+
+                // Логируем ошибку
+                <span class="cov8" title="1">slog.Error(
+                        fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
+                        "metrics", metrics,
+                )
+
+                // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки
+                if !isRetriableSendError(err) </span><span class="cov8" title="1">{
+                        slog.Debug("non-retriable error, stopping retries", "err", err)
+                        return err
+                }</span>
+        }
+
+        <span class="cov0" title="0">return errors.New("failed to send metrics after all retries")</span>
+}
+
+// Ping проверяет соединение с сервером.
+func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
+        req := c.client.R()
+        url := fmt.Sprintf("%s/ping", c.serverURL)
+
+        // Устанавливаем таймаут из контекста
+        req.SetContext(ctx)
+
+        res, err := req.Get(url)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">if res.StatusCode() != http.StatusOK </span><span class="cov0" title="0">{
+                return fmt.Errorf("ping failed with status code: %d", res.StatusCode())
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// isRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
+func (c *Client) isRequestSigningEnabled() bool <span class="cov8" title="1">{
+        return c.privateKey != ""
+}</span>
+
+// isEncryptionEnabled возвращает true, если задан публичный ключ и агент должен шифровать данные.
+func (c *Client) isEncryptionEnabled() bool <span class="cov8" title="1">{
+        return c.publicKey != nil
+}</span>
+
+// makeUpdatesRequest отправляет запрос на сервер для обновления метрик.
+func (c *Client) makeUpdatesRequest(ctx context.Context, items []*metrics.Metric, try int) error <span class="cov8" title="1">{
+        var err error
+        url := fmt.Sprintf("%s/updates", c.serverURL)
+        slog.Info(
+                fmt.Sprintf("sending metrics batch (try=%d)", try),
+                "url", url,
+                "metrics", items,
+        )
+
+        // Создаем новый запрос
+        req := c.client.R()
+        req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия
+        req.SetHeader("Content-Type", "application/json")
+        req.SetContext(ctx)
+
+        // Преобразуем метрики в JSON
+        bytesBody, err := json.Marshal(items)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Если задан приватный ключ, добавляем хэш в заголовок запроса
+        <span class="cov8" title="1">if c.isRequestSigningEnabled() </span><span class="cov0" title="0">{
+                hash := sign.ComputeHMACSHA256(bytesBody, c.privateKey)
+                req.SetHeader(sign.HeaderKey, hash)
+        }</span>
+
+        // Если включено шифрование, шифруем данные перед отправкой
+        <span class="cov8" title="1">if c.isEncryptionEnabled() </span><span class="cov0" title="0">{
+                slog.Debug("encrypting data before sending")
+                encryptedData, encryptErr := crypto.EncryptLargeData(c.publicKey, bytesBody)
+                if encryptErr != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("failed to encrypt data: %w", encryptErr)
+                }</span>
+                <span class="cov0" title="0">bytesBody = encryptedData
+                req.SetHeader("Content-Encrypted", "true")</span>
+        }
+
+        // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок
+        // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip"
+        <span class="cov8" title="1">if c.sendCompressedData </span><span class="cov8" title="1">{
+                req.SetHeader("Content-Encoding", "gzip")
+                bytesBody, err = gzip.Compress(bytesBody)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov8" title="1">req.SetBody(bytesBody)
+
+        res, err := req.Post(url)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // Обрабатываем ответ сервера
+        <span class="cov8" title="1">statusCode := res.StatusCode()
+        slog.Debug("received server response",
+                "status_code", statusCode,
+                "response_body", string(res.Body()))
+
+        if statusCode != http.StatusOK </span><span class="cov8" title="1">{
+                return fmt.Errorf("server returned non-OK response: %d", statusCode)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// isRetriableSendError проверяет, является ли ошибка возможной для повторной отправки.
+func isRetriableSendError(err error) bool <span class="cov8" title="1">{
+        if err == nil </span><span class="cov0" title="0">{
+                return false
+        }</span>
+
+        // Добавляем основные сетевые ошибки, которые можно повторить
+        <span class="cov8" title="1">var netErr net.Error
+        if errors.As(err, &amp;netErr) &amp;&amp; netErr.Timeout() </span><span class="cov0" title="0">{
+                return true
+        }</span>
+
+        // Добавляем конкретные ошибки, для которых можно делать повторную отправку
+        <span class="cov8" title="1">var netOpErr *net.OpError
+        if errors.As(err, &amp;netOpErr) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+
+        // Проверяем на различные DNS ошибки
+        <span class="cov8" title="1">var dnsErr *net.DNSError
+        if errors.As(err, &amp;dnsErr) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+
+        // Добавляем проверку на конкретные коды ошибок HTTP
+        <span class="cov8" title="1">if errors.Is(err, net.ErrClosed) || errors.Is(err, context.DeadlineExceeded) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+
+        // Для любой Connection refused ошибки повторяем тоже
+        <span class="cov8" title="1">if errors.Is(err, errors.New("connection refused")) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+
+        // Добавляем ошибки TLS, которые могут быть временными
+        <span class="cov8" title="1">if errors.Is(err, errors.New("TLS handshake timeout")) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+
+        // По умолчанию считаем, что ошибку нельзя повторить
+        <span class="cov8" title="1">return false</span>
+}
+
+// initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
+func initHTTPClient(realIP string) *resty.Client <span class="cov8" title="1">{
+        client := resty.New().SetHeader("Content-Type", "text/plain")
+
+        // Добавляем перехватчик для установки заголовка X-Real-IP
+        client.OnBeforeRequest(func(_ *resty.Client, req *resty.Request) error </span><span class="cov8" title="1">{
+                // Если указан явный IP-адрес, используем его
+                if realIP != "" </span><span class="cov0" title="0">{
+                        req.SetHeader("X-Real-IP", realIP)
+                        slog.Debug("set X-Real-IP header (explicit)", "ip", realIP)
+                        return nil
+                }</span>
+
+                // Иначе получаем исходящий IP-адрес автоматически
+                <span class="cov8" title="1">hostIP, err := getOutboundIP()
+                if err == nil </span><span class="cov8" title="1">{
+                        // Устанавливаем заголовок X-Real-IP
+                        req.SetHeader("X-Real-IP", hostIP.String())
+                        slog.Debug("set X-Real-IP header (auto-detected)", "ip", hostIP.String())
+                }</span> else<span class="cov0" title="0"> {
+                        slog.Error("failed to set X-Real-IP header", "error", err)
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        })
+
+        <span class="cov8" title="1">return client</span>
+}
+
+// getOutboundIP получает исходящий IP-адрес для текущего хоста.
+func getOutboundIP() (net.IP, error) <span class="cov8" title="1">{
+        conn, err := net.Dial("udp", "8.8.8.8:80")
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">defer conn.Close()
+
+        localAddr, ok := conn.LocalAddr().(*net.UDPAddr)
+        if !ok </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("unexpected address type: %T", conn.LocalAddr())
+        }</span>
+        <span class="cov8" title="1">return localAddr.IP, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package agent
 
 import (
         "errors"
@@ -2397,269 +3135,6 @@ func GetOutboundIP() (net.IP, error) <span class="cov8" title="1">{
 
         <span class="cov8" title="1">slog.Debug("determined outbound IP", "ip", localAddr.IP.String())
         return localAddr.IP, nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file14" style="display: none">package agent
-
-import (
-        "encoding/json"
-        "errors"
-        "fmt"
-        "log/slog"
-        "net"
-        "net/http"
-        "time"
-
-        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
-        "github.com/maynagashev/go-metrics/pkg/crypto"
-        "github.com/maynagashev/go-metrics/pkg/middleware/gzip"
-        "github.com/maynagashev/go-metrics/pkg/sign"
-)
-
-const backoffFactor = 2
-
-// Отправка очередного списка метрик из очереди на отправку, с помощью воркеров.
-func (a *agent) sendMetrics(items []*metrics.Metric, workerID int) error <span class="cov8" title="1">{
-        // Отправляем все метрики пачкой на новый маршрут /updates
-        // Ошибки подключения при отправке метрик можно повторить, но не более 3-х раз (retriable errors)
-        for i := 0; i &lt;= maxSendRetries; i++ </span><span class="cov8" title="1">{
-                // Пауза перед повторной отправкой
-                if i &gt; 0 </span><span class="cov0" title="0">{
-                        //nolint:gomnd // количество секунд для паузы зависит от номера попытки
-                        sleepSeconds := i*backoffFactor - 1 // 1, 3, 5, 7, 9, 11, ...
-                        slog.Info(
-                                fmt.Sprintf("retrying to send metrics (try=%d) in %d seconds", sleepSeconds, i),
-                                "workerID", workerID,
-                        )
-                        time.Sleep(time.Duration(sleepSeconds) * time.Second)
-                }</span>
-
-                <span class="cov8" title="1">err := a.makeUpdatesRequest(items, i, workerID)
-                // Если нет ошибок выходим из цикла и функции
-                if err == nil </span><span class="cov0" title="0">{
-                        return nil
-                }</span>
-
-                // Логируем ошибку
-                <span class="cov8" title="1">slog.Error(
-                        fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
-                        "workerID",
-                        workerID,
-                        "metrics",
-                        items,
-                )
-
-                // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки
-                if !a.isRetriableSendError(err) </span><span class="cov8" title="1">{
-                        slog.Debug("non-retriable error, stopping retries", "workerID", workerID, "err", err)
-                        return err
-                }</span>
-        }
-
-        <span class="cov0" title="0">return fmt.Errorf("failed to send metrics after %d retries", maxSendRetries)</span>
-}
-
-// Проверяет, является ли ошибка временной и можно ли повторить запрос.
-func (a *agent) isRetriableSendError(err error) bool <span class="cov8" title="1">{
-        slog.Debug(fmt.Sprintf("isRetriableSendError: %#v", err))
-
-        // Проверяем, является ли ошибка общей ошибкой сети, временной или таймаутом
-        var netErr net.Error
-        if errors.As(err, &amp;netErr) </span><span class="cov8" title="1">{
-                slog.Debug(fmt.Sprintf("isRetriableSendError =&gt; AS net.Error: %#v", netErr))
-                // Проверяем, является ли ошибка временной
-                if netErr.Timeout() </span><span class="cov8" title="1">{
-                        return true
-                }</span>
-        }
-
-        // Проверяем, является ли ошибка ошибкой сети
-        <span class="cov8" title="1">var opErr *net.OpError
-        if errors.As(err, &amp;opErr) </span><span class="cov8" title="1">{
-                slog.Debug("isRetriableSendError =&gt; AS net.OpError", "err", err)
-                return true
-        }</span>
-
-        // Если ошибка не является временной, возвращаем false
-        <span class="cov8" title="1">return false</span>
-}
-
-// При ошибках подключения запрос можно повторить, но не более 3-х раз (retriable errors).
-func (a *agent) makeUpdatesRequest(items []*metrics.Metric, try int, workerID int) error <span class="cov8" title="1">{
-        var err error
-        url := fmt.Sprintf("%s/updates", a.ServerURL)
-        slog.Info(
-                fmt.Sprintf("sending metrics batch (try=%d)", try),
-                "workerID",
-                workerID,
-                "url",
-                url,
-                "metrics",
-                items,
-        )
-
-        // Создаем новый запрос
-        req := a.client.R()
-        req.Debug = true // Включаем отладочный режим, чтобы видеть все детали запроса, в частности, использование сжатия
-        req.SetHeader("Content-Type", "application/json")
-
-        // Преобразуем метрики в JSON
-        bytesBody, err := json.Marshal(items)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        // Если задан приватный ключ, добавляем хэш в заголовок запроса
-        <span class="cov8" title="1">if a.IsRequestSigningEnabled() </span><span class="cov8" title="1">{
-                hash := sign.ComputeHMACSHA256(bytesBody, a.PrivateKey)
-                req.SetHeader(sign.HeaderKey, hash)
-        }</span>
-
-        // Если включено шифрование, шифруем данные перед отправкой
-        <span class="cov8" title="1">if a.IsEncryptionEnabled() </span><span class="cov0" title="0">{
-                slog.Debug("encrypting data before sending", "workerID", workerID)
-                encryptedData, encryptErr := crypto.EncryptLargeData(a.PublicKey, bytesBody)
-                if encryptErr != nil </span><span class="cov0" title="0">{
-                        return fmt.Errorf("failed to encrypt data: %w", encryptErr)
-                }</span>
-                <span class="cov0" title="0">bytesBody = encryptedData
-                req.SetHeader("Content-Encrypted", "true")</span>
-        }
-
-        // Если включена сразу отправка сжатых данных, добавляем соответствующий заголовок
-        // Go клиент автоматом также добавляет заголовок "Accept-Encoding: gzip"
-        <span class="cov8" title="1">if a.SendCompressedData </span><span class="cov8" title="1">{
-                req.SetHeader("Content-Encoding", "gzip")
-                bytesBody, err = gzip.Compress(bytesBody)
-                if err != nil </span><span class="cov0" title="0">{
-                        return err
-                }</span>
-        }
-
-        <span class="cov8" title="1">req.SetBody(bytesBody)
-
-        res, err := req.Post(url)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-
-        // Обрабатываем ответ сервера
-        <span class="cov8" title="1">if res.StatusCode() != http.StatusOK </span><span class="cov8" title="1">{
-                return fmt.Errorf("unexpected status code: %d", res.StatusCode())
-        }</span>
-
-        <span class="cov8" title="1">return nil</span>
-}
-
-// Вспомогательные функции для тестирования
-
-// IsRetriableSendError - вспомогательная функция для тестирования,
-// которая предоставляет доступ к методу isRetriableSendError.
-func IsRetriableSendError(err error) bool <span class="cov8" title="1">{
-        // Создаем минимальный экземпляр агента только для тестирования этой функции
-        a := &amp;agent{}
-        return a.isRetriableSendError(err)
-}</span>
-
-// SendMetrics - вспомогательная функция для тестирования, которая предоставляет доступ к методу makeUpdatesRequest.
-func SendMetrics(a Agent, metrics []*metrics.Metric, workerID int) error <span class="cov8" title="1">{
-        // Мы можем получить доступ к методам конкретного типа только через приведение типа
-        if agentImpl, ok := a.(*agent); ok </span><span class="cov8" title="1">{
-                return agentImpl.makeUpdatesRequest(metrics, 0, workerID)
-        }</span>
-        <span class="cov0" title="0">return errors.New("invalid agent implementation")</span>
-}
-</pre>
-		
-		<pre class="file" id="file15" style="display: none">package agent
-
-import (
-        "fmt"
-        "log/slog"
-
-        "github.com/maynagashev/go-metrics/internal/contracts/metrics"
-)
-
-// Job структура для задания воркерам.
-type Job struct {
-        Metrics []*metrics.Metric
-}
-
-// Result структура для результата выполнения задания.
-type Result struct {
-        Job   Job
-        Error error
-}
-
-// Worker – один из воркеров пула для отправки метрик (обрабатывает задачи из очереди в отдельной горутине).
-func (a *agent) worker(id int) <span class="cov8" title="1">{
-        defer func() </span><span class="cov8" title="1">{
-                slog.Info("Worker shutting down", "workerID", id)
-                a.wg.Done()
-        }</span>()
-
-        <span class="cov8" title="1">slog.Debug(fmt.Sprintf("worker %d started", id))
-        // По мере поступления задач в очередь отправляем их на сервер (читаем из канала очередную запись текущим воркером).
-        for </span><span class="cov8" title="1">{
-                select </span>{
-                case job, ok := &lt;-a.sendQueue:<span class="cov8" title="1">
-                        if !ok </span><span class="cov8" title="1">{
-                                slog.Info("Send queue closed, worker exiting", "workerID", id)
-                                return
-                        }</span>
-                        <span class="cov0" title="0">slog.Debug(
-                                fmt.Sprintf("worker %d received job, calling sendMetrics()...", id),
-                                "workerID",
-                                id,
-                        )
-                        err := a.sendMetrics(job.Metrics, id)
-                        // Отправляем результат выполнения задачи (ошибку, если была) в очередь результатов,
-                        // которые потом разбирает коллектор.
-                        select </span>{
-                        case a.resultQueue &lt;- Result{Job: job, Error: err}:<span class="cov0" title="0"></span>
-                                // Результат успешно отправлен
-                        case &lt;-a.stopCh:<span class="cov0" title="0">
-                                slog.Info(
-                                        "Stop signal received while sending result, worker exiting",
-                                        "workerID",
-                                        id,
-                                )
-                                return</span>
-                        }
-                case &lt;-a.stopCh:<span class="cov8" title="1">
-                        slog.Info("Stop signal received, worker exiting", "workerID", id)
-                        return</span>
-                }
-        }
-}
-
-// Общий коллектор обрабатывает результаты выполнения задач.
-func (a *agent) collector() <span class="cov8" title="1">{
-        defer func() </span><span class="cov8" title="1">{
-                slog.Info("Collector shutting down")
-                a.wg.Done()
-        }</span>()
-
-        <span class="cov8" title="1">slog.Info("Collector started")
-        for </span><span class="cov8" title="1">{
-                select </span>{
-                case result, ok := &lt;-a.resultQueue:<span class="cov0" title="0">
-                        if !ok </span><span class="cov0" title="0">{
-                                slog.Info("Result queue closed, collector exiting")
-                                return
-                        }</span>
-                        <span class="cov0" title="0">if result.Error != nil </span><span class="cov0" title="0">{
-                                wrappedError := fmt.Errorf("collector: %w", result.Error)
-                                slog.Error(wrappedError.Error(), "error", wrappedError)
-                        }</span> else<span class="cov0" title="0"> {
-                                slog.Info("Metrics sent successfully", "count", len(result.Job.Metrics))
-                        }</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
-                        slog.Info("Stop signal received, collector exiting")
-                        return</span>
-                }
-        }
 }
 </pre>
 		
@@ -4749,10 +5224,9 @@ func (s *Server) Start() error <span class="cov0" title="0">{
 
         // Безопасное использование значения из конфигурации, если оно положительное и в пределах uint32
         if s.cfg.GRPC.MaxConn &gt; 0 &amp;&amp; s.cfg.GRPC.MaxConn &lt;= int(DefaultMaxConcurrentStreams) </span><span class="cov0" title="0">{
-                // Просто копируем значение
-                maxConnections = uint32(
-                        s.cfg.GRPC.MaxConn,
-                ) //nolint:gosec // G115: Проверка на переполнение выполнена выше
+                // Просто копируем значение - безопасно, т.к. уже проверили, что значение в допустимых пределах
+                //nolint:gosec // G115: проверка на допустимые значения выполнена выше
+                maxConnections = uint32(s.cfg.GRPC.MaxConn)
         }</span> else<span class="cov0" title="0"> if s.cfg.GRPC.MaxConn &gt; int(DefaultMaxConcurrentStreams) </span><span class="cov0" title="0">{
                 s.log.Warn("MaxConn value exceeds safe limit, using default",
                         zap.Int("configured", s.cfg.GRPC.MaxConn),
