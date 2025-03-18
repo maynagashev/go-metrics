@@ -88,10 +88,9 @@ func (s *Server) Start() error {
 
 	// Безопасное использование значения из конфигурации, если оно положительное и в пределах uint32
 	if s.cfg.GRPC.MaxConn > 0 && s.cfg.GRPC.MaxConn <= int(DefaultMaxConcurrentStreams) {
-		// Просто копируем значение
-		maxConnections = uint32(
-			s.cfg.GRPC.MaxConn,
-		) //nolint:gosec // G115: Проверка на переполнение выполнена выше
+		// Просто копируем значение - безопасно, т.к. уже проверили, что значение в допустимых пределах
+		//nolint:gosec // G115: проверка на допустимые значения выполнена выше
+		maxConnections = uint32(s.cfg.GRPC.MaxConn)
 	} else if s.cfg.GRPC.MaxConn > int(DefaultMaxConcurrentStreams) {
 		s.log.Warn("MaxConn value exceeds safe limit, using default",
 			zap.Int("configured", s.cfg.GRPC.MaxConn),
