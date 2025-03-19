@@ -163,17 +163,15 @@
 ```json
 {
     "address": "localhost:8080", // аналог переменной окружения ADDRESS или флага -a
-    "report_interval": "1s", // аналог переменной окружения REPORT_INTERVAL или флага -r
-    "poll_interval": "1s", // аналог переменной окружения POLL_INTERVAL или флага -p
-    "crypto_key": "/path/to/key.pem", // аналог переменной окружения CRYPTO_KEY или флага -crypto-key
-    "rate_limit": 10, // аналог переменной окружения RATE_LIMIT или флага -l
-    "enable_pprof": true, // аналог переменной окружения ENABLE_PPROF или флага -pprof
-    "pprof_port": 9090, // аналог переменной окружения PPROF_PORT или флага -pprof-port
-    "real_ip": "192.168.1.1", // аналог переменной окружения REAL_IP или флага -real-ip
+    "report_interval": "10s", // аналог переменной окружения REPORT_INTERVAL или флага -r
+    "poll_interval": "2s", // аналог переменной окружения POLL_INTERVAL или флага -p
+    "crypto_key": "/path/to/server_public.pem", // аналог переменной окружения CRYPTO_KEY или флага -k
+    "rate_limit": 3, // аналог переменной окружения RATE_LIMIT или флага -l
+    "real_ip": "127.0.0.1", // аналог переменной окружения REAL_IP или флага -real-ip
     "grpc_address": "localhost:9090", // аналог переменной окружения GRPC_ADDRESS или флага -grpc-address
     "grpc_enabled": true, // аналог переменной окружения GRPC_ENABLED или флага -grpc-enabled
-    "grpc_max_conn": 100, // аналог переменной окружения GRPC_MAX_CONN или флага -grpc-max-conn
-    "grpc_timeout": 5 // аналог переменной окружения GRPC_TIMEOUT или флага -grpc-timeout
+    "grpc_timeout": 5, // аналог переменной окружения GRPC_TIMEOUT или флага -grpc-timeout
+    "grpc_retry": 3 // аналог переменной окружения GRPC_RETRY или флага -grpc-retry
 }
 ```
 

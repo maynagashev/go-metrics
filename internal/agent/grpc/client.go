@@ -8,6 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -26,7 +27,13 @@ type Client struct {
 }
 
 // New создает новый gRPC клиент.
-func New(address string, timeout int, maxRetries int, realIP, privateKey string) (*Client, error) {
+func New(
+	address string,
+	timeout int,
+	maxRetries int,
+	realIP,
+	privateKey string,
+) (*Client, error) {
 	// Создаем соединение с сервером
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
@@ -44,6 +51,9 @@ func New(address string, timeout int, maxRetries int, realIP, privateKey string)
 
 	// Создаем клиент
 	client := pb.NewMetricsServiceClient(conn)
+
+	// Логируем, что сжатие gRPC включено по умолчанию
+	slog.Info("gRPC compression enabled by default")
 
 	return &Client{
 		address:    address,
@@ -82,18 +92,32 @@ func (c *Client) createContext(parent context.Context) (context.Context, context
 	return ctx, cancel
 }
 
+// Возвращает опции вызова, всегда используем сжатие.
+func (c *Client) getCallOptions() []grpc.CallOption {
+	// Всегда используем сжатие gzip для gRPC запросов
+	return []grpc.CallOption{
+		grpc.UseCompressor(gzip.Name),
+	}
+}
+
 // withRetry выполняет операцию с повторными попытками при ошибке.
-func (c *Client) withRetry(ctx context.Context, operation func(context.Context) error) error {
+func (c *Client) withRetry(
+	ctx context.Context,
+	operation func(context.Context, []grpc.CallOption) error,
+) error {
 	var err error
 	retryIntervals := []time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second}
+
+	// Получаем опции вызова
+	callOpts := c.getCallOptions()
 
 	// Выполняем операцию с учетом повторных попыток
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		// Создаем контекст для текущей попытки
 		opCtx, cancel := c.createContext(ctx)
 
-		// Выполняем операцию
-		err = operation(opCtx)
+		// Выполняем операцию с опциями вызова
+		err = operation(opCtx, callOpts)
 		cancel()
 
 		// Если операция успешна или контекст завершен, выходим из цикла
@@ -141,8 +165,8 @@ func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error
 	}
 
 	// Отправляем запрос с повторными попытками
-	return c.withRetry(ctx, func(opCtx context.Context) error {
-		_, err := c.client.Update(opCtx, request)
+	return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error {
+		_, err := c.client.Update(opCtx, request, callOpts...)
 		return err
 	})
 }
@@ -166,8 +190,8 @@ func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) err
 	}
 
 	// Отправляем запрос с повторными попытками
-	return c.withRetry(ctx, func(opCtx context.Context) error {
-		response, err := c.client.UpdateBatch(opCtx, request)
+	return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error {
+		response, err := c.client.UpdateBatch(opCtx, request, callOpts...)
 		if err != nil {
 			return err
 		}
@@ -189,9 +213,9 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
 	}
 
 	// Отправляем запрос с повторными попытками
-	return c.withRetry(ctx, func(opCtx context.Context) error {
-		// Открываем поток
-		stream, err := c.client.StreamMetrics(opCtx)
+	return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error {
+		// Открываем поток с опциями сжатия
+		stream, err := c.client.StreamMetrics(opCtx, callOpts...)
 		if err != nil {
 			return fmt.Errorf("failed to open stream: %w", err)
 		}
@@ -221,8 +245,8 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
 
 // Ping проверяет соединение с сервером.
 func (c *Client) Ping(ctx context.Context) error {
-	return c.withRetry(ctx, func(opCtx context.Context) error {
-		response, err := c.client.Ping(opCtx, &pb.PingRequest{})
+	return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error {
+		response, err := c.client.Ping(opCtx, &pb.PingRequest{}, callOpts...)
 		if err != nil {
 			return err
 		}

@@ -77,11 +77,11 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (75.0%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (75.2%)</option>
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (91.7%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (6.0%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (5.7%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/http/client.go (59.0%)</option>
 				
@@ -1863,6 +1863,7 @@ func SetupTestMetric() error <span class="cov8" title="1">{
 import (
         "context"
         "crypto/rsa"
+        "errors"
         "fmt"
         "log/slog"
         "runtime"
@@ -2072,7 +2073,7 @@ func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
                 a.runReports(ctx)
         }</span>)
 
-        // Запускаем воркеры для отправки метрик
+        // Запускаем воркеры для отправки метрик из очереди задач на отправку
         <span class="cov8" title="1">for i := range a.RateLimit </span><span class="cov8" title="1">{
                 workerID := i
                 a.runInWaitGroup(func() </span><span class="cov8" title="1">{
@@ -2080,7 +2081,7 @@ func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
                 }</span>)
         }
 
-        // Запускаем горутину для сбора результатов
+        // Запускаем горутину для сбора результатов из очереди результатов выполнения задач
         <span class="cov8" title="1">a.runInWaitGroup(func() </span><span class="cov8" title="1">{
                 a.runCollector()()
         }</span>)
@@ -2112,8 +2113,8 @@ func (a *agent) runWorker(id int) func() <span class="cov8" title="1">{
                         select </span>{
                         case &lt;-a.stopCh:<span class="cov8" title="1">
                                 return</span>
-                        case job, ok := &lt;-a.sendQueue:<span class="cov0" title="0">
-                                if !ok </span><span class="cov0" title="0">{
+                        case job, ok := &lt;-a.sendQueue:<span class="cov8" title="1">
+                                if !ok </span><span class="cov8" title="1">{
                                         // Канал закрыт, завершаем работу
                                         return
                                 }</span>
@@ -2134,9 +2135,14 @@ func (a *agent) runWorker(id int) func() <span class="cov8" title="1">{
 func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, workerID int) error <span class="cov0" title="0">{
         slog.Info("Sending metrics batch", "workerID", workerID, "metrics_count", len(items))
 
+        // Проверяем, что клиент не nil перед использованием
+        if a.client == nil </span><span class="cov0" title="0">{
+                return errors.New("client is nil")
+        }</span>
+
         // Используем клиент для отправки метрик
-        return a.client.UpdateBatch(ctx, items)
-}</span>
+        <span class="cov0" title="0">return a.client.UpdateBatch(ctx, items)</span>
+}
 
 // runCollector возвращает функцию, которая запускает сборщик результатов.
 func (a *agent) runCollector() func() <span class="cov8" title="1">{
@@ -2312,10 +2318,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2576,6 +2582,7 @@ import (
 
         "google.golang.org/grpc"
         "google.golang.org/grpc/credentials/insecure"
+        "google.golang.org/grpc/encoding/gzip"
         "google.golang.org/grpc/metadata"
 
         "github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -2594,7 +2601,13 @@ type Client struct {
 }
 
 // New создает новый gRPC клиент.
-func New(address string, timeout int, maxRetries int, realIP, privateKey string) (*Client, error) <span class="cov8" title="1">{
+func New(
+        address string,
+        timeout int,
+        maxRetries int,
+        realIP,
+        privateKey string,
+) (*Client, error) <span class="cov8" title="1">{
         // Создаем соединение с сервером
         ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
         defer cancel()
@@ -2612,6 +2625,9 @@ func New(address string, timeout int, maxRetries int, realIP, privateKey string)
 
         // Создаем клиент
         <span class="cov0" title="0">client := pb.NewMetricsServiceClient(conn)
+
+        // Логируем, что сжатие gRPC включено по умолчанию
+        slog.Info("gRPC compression enabled by default")
 
         return &amp;Client{
                 address:    address,
@@ -2650,18 +2666,32 @@ func (c *Client) createContext(parent context.Context) (context.Context, context
         <span class="cov0" title="0">return ctx, cancel</span>
 }
 
+// Возвращает опции вызова, всегда используем сжатие.
+func (c *Client) getCallOptions() []grpc.CallOption <span class="cov0" title="0">{
+        // Всегда используем сжатие gzip для gRPC запросов
+        return []grpc.CallOption{
+                grpc.UseCompressor(gzip.Name),
+        }
+}</span>
+
 // withRetry выполняет операцию с повторными попытками при ошибке.
-func (c *Client) withRetry(ctx context.Context, operation func(context.Context) error) error <span class="cov0" title="0">{
+func (c *Client) withRetry(
+        ctx context.Context,
+        operation func(context.Context, []grpc.CallOption) error,
+) error <span class="cov0" title="0">{
         var err error
         retryIntervals := []time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second}
+
+        // Получаем опции вызова
+        callOpts := c.getCallOptions()
 
         // Выполняем операцию с учетом повторных попыток
         for attempt := 0; attempt &lt;= c.maxRetries; attempt++ </span><span class="cov0" title="0">{
                 // Создаем контекст для текущей попытки
                 opCtx, cancel := c.createContext(ctx)
 
-                // Выполняем операцию
-                err = operation(opCtx)
+                // Выполняем операцию с опциями вызова
+                err = operation(opCtx, callOpts)
                 cancel()
 
                 // Если операция успешна или контекст завершен, выходим из цикла
@@ -2709,8 +2739,8 @@ func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error
         }
 
         // Отправляем запрос с повторными попытками
-        return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
-                _, err := c.client.Update(opCtx, request)
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+                _, err := c.client.Update(opCtx, request, callOpts...)
                 return err
         }</span>)
 }
@@ -2734,8 +2764,8 @@ func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) err
         }
 
         // Отправляем запрос с повторными попытками
-        return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
-                response, err := c.client.UpdateBatch(opCtx, request)
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+                response, err := c.client.UpdateBatch(opCtx, request, callOpts...)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
@@ -2757,9 +2787,9 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
         }</span>
 
         // Отправляем запрос с повторными попытками
-        <span class="cov0" title="0">return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
-                // Открываем поток
-                stream, err := c.client.StreamMetrics(opCtx)
+        <span class="cov0" title="0">return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+                // Открываем поток с опциями сжатия
+                stream, err := c.client.StreamMetrics(opCtx, callOpts...)
                 if err != nil </span><span class="cov0" title="0">{
                         return fmt.Errorf("failed to open stream: %w", err)
                 }</span>
@@ -2789,8 +2819,8 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
 
 // Ping проверяет соединение с сервером.
 func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
-        return c.withRetry(ctx, func(opCtx context.Context) error </span><span class="cov0" title="0">{
-                response, err := c.client.Ping(opCtx, &amp;pb.PingRequest{})
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+                response, err := c.client.Ping(opCtx, &amp;pb.PingRequest{}, callOpts...)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
@@ -5172,6 +5202,7 @@ import (
 
         "go.uber.org/zap"
         "google.golang.org/grpc"
+        _ "google.golang.org/grpc/encoding/gzip" // Автоматически регистрирует gzip компрессор при импорте
         "google.golang.org/grpc/keepalive"
 
         "github.com/maynagashev/go-metrics/internal/grpc/pb"

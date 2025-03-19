@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"crypto/rsa"
+	"errors"
 	"fmt"
 	"log/slog"
 	"runtime"
@@ -273,6 +274,11 @@ func (a *agent) runWorker(id int) func() {
 // sendMetrics отправляет метрики на сервер.
 func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, workerID int) error {
 	slog.Info("Sending metrics batch", "workerID", workerID, "metrics_count", len(items))
+
+	// Проверяем, что клиент не nil перед использованием
+	if a.client == nil {
+		return errors.New("client is nil")
+	}
 
 	// Используем клиент для отправки метрик
 	return a.client.UpdateBatch(ctx, items)

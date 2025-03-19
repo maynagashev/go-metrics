@@ -8,6 +8,7 @@ import (
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	_ "google.golang.org/grpc/encoding/gzip" // Автоматически регистрирует gzip компрессор при импорте
 	"google.golang.org/grpc/keepalive"
 
 	"github.com/maynagashev/go-metrics/internal/grpc/pb"
