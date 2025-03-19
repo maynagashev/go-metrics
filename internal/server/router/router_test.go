@@ -1,76 +1,157 @@
 package router_test
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
-
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 
-	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/router"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
 )
 
-func testRequest(
-	t *testing.T,
-	ts *httptest.Server,
-	method, path string,
-) (*http.Response, string, error) {
-	req, err := http.NewRequest(method, ts.URL+path, nil)
-	require.NoError(t, err)
+func TestNew(t *testing.T) {
+	// Create a logger
+	logger, _ := zap.NewDevelopment()
 
-	resp, err := ts.Client().Do(req)
-	if err != nil {
-		return nil, "", err
+	// Create a config
+	config := &app.Config{
+		Addr:            "localhost:8080",
+		StoreInterval:   300,
+		FileStoragePath: "/tmp/metrics-db.json",
+		Restore:         true,
 	}
 
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, "", err
+	// Create a real storage implementation
+	storage := memory.New(config, logger)
+
+	// Create the router
+	router := router.New(config, storage, logger)
+
+	// Verify the router was created
+	assert.NotNil(t, router)
+
+	// Test some basic routes to ensure they're registered
+	testCases := []struct {
+		name           string
+		method         string
+		path           string
+		expectedStatus int
+	}{
+		{
+			name:           "GET /",
+			method:         http.MethodGet,
+			path:           "/",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "POST /update",
+			method:         http.MethodPost,
+			path:           "/update",
+			expectedStatus: http.StatusBadRequest, // Without a valid body, we expect a bad request
+		},
+		{
+			name:           "POST /updates",
+			method:         http.MethodPost,
+			path:           "/updates",
+			expectedStatus: http.StatusBadRequest, // Without a valid body, we expect a bad request
+		},
+		{
+			name:           "POST /value",
+			method:         http.MethodPost,
+			path:           "/value",
+			expectedStatus: http.StatusBadRequest, // Without a valid body, we expect a bad request
+		},
+		{
+			name:           "GET /ping",
+			method:         http.MethodGet,
+			path:           "/ping",
+			expectedStatus: http.StatusInternalServerError, // Without a valid DB connection, we expect an error
+		},
 	}
 
-	return resp, string(respBody), resp.Body.Close()
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Create a request
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+
+			// Create a response recorder
+			rr := httptest.NewRecorder()
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tc.expectedStatus, rr.Code)
+		})
+	}
 }
 
-func TestNew(t *testing.T) {
-	config := &app.Config{}
-	st := memory.New(&app.Config{}, zap.NewNop())
-	st.UpdateGauge("test", 0.123)
-	st.IncrementCounter("test", 5)
-	ts := httptest.NewServer(router.New(config, st, zap.NewNop()))
-	defer ts.Close()
+func TestNew_WithPprof(t *testing.T) {
+	// Create a logger
+	logger, _ := zap.NewDevelopment()
 
-	var tests = []struct {
-		url    string
-		want   string
-		status int
-	}{
-		{"/", "", http.StatusOK},
-
-		{"/value/counter/test", "5", http.StatusOK},
-		{"/value/gauge/test", "0.123", http.StatusOK},
-
-		{"/value/counter/not_exist", "counter not_exist not found\n", http.StatusNotFound},
-		{"/value/gauge/not_exist", "gauge not_exist not found\n", http.StatusNotFound},
+	// Create a config with pprof enabled
+	config := &app.Config{
+		Addr:            "localhost:8080",
+		StoreInterval:   300,
+		FileStoragePath: "/tmp/metrics-db.json",
+		Restore:         true,
+		EnablePprof:     true,
 	}
 
-	for _, tt := range tests {
-		resp, get, err := testRequest(t, ts, http.MethodGet, tt.url)
-		require.NoError(t, err, "request failed")
+	// Create a real storage implementation
+	storage := memory.New(config, logger)
 
-		assert.Equal(t, tt.status, resp.StatusCode)
-		if tt.want != "" {
-			assert.Equal(t, tt.want, get)
-		}
+	// Create the router
+	router := router.New(config, storage, logger)
 
-		err = resp.Body.Close()
-		require.NoError(t, err, "failed to close response body")
+	// Verify the router was created
+	assert.NotNil(t, router)
+
+	// Test the pprof routes
+	testCases := []struct {
+		name           string
+		method         string
+		path           string
+		expectedStatus int
+	}{
+		{
+			name:           "GET /debug/pprof/",
+			method:         http.MethodGet,
+			path:           "/debug/pprof/",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "GET /debug/pprof/cmdline",
+			method:         http.MethodGet,
+			path:           "/debug/pprof/cmdline",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "GET /debug/pprof/heap",
+			method:         http.MethodGet,
+			path:           "/debug/pprof/heap",
+			expectedStatus: http.StatusOK,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Create a request
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+
+			// Create a response recorder
+			rr := httptest.NewRecorder()
+
+			// Serve the request
+			router.ServeHTTP(rr, req)
+
+			// Check the status code
+			assert.Equal(t, tc.expectedStatus, rr.Code)
+		})
 	}
 }

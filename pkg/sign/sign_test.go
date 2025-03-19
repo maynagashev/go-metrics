@@ -3,8 +3,9 @@ package sign_test
 import (
 	"testing"
 
-	"github.com/maynagashev/go-metrics/pkg/sign"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 func TestCalculateHash(t *testing.T) {

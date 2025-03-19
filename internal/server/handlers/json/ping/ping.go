@@ -7,13 +7,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
-
-	"github.com/maynagashev/go-metrics/pkg/response"
-
-	"github.com/maynagashev/go-metrics/internal/server/app"
 	"go.uber.org/zap"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
+	"github.com/maynagashev/go-metrics/pkg/response"
 )
 
 type Response struct {

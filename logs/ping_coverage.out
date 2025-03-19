@@ -1,0 +1,10 @@
+mode: set
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:28.47,29.54 1 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:29.54,36.3 3 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:40.64,42.33 1 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:42.33,43.55 1 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:43.55,45.4 1 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:49.2,51.16 2 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:51.16,52.55 1 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:52.55,54.4 1 1
+github.com/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:58.2,58.19 1 0

@@ -8,23 +8,34 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5"
-
-	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
-
 	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
+
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
-	"go.uber.org/zap"
+	"github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration"
 )
 
 const maxRetries = 3
 
+// PgxPoolInterface определяет интерфейс для pgxpool.Pool, чтобы можно было использовать мок в тестах.
+type PgxPoolInterface interface {
+	Close()
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+// Убедимся, что pgxpool.Pool реализует наш интерфейс.
+var _ PgxPoolInterface = (*pgxpool.Pool)(nil)
+
 type PgStorage struct {
-	conn *pgxpool.Pool
+	conn PgxPoolInterface
 	cfg  *app.Config
 	log  *zap.Logger
 }
@@ -52,8 +63,13 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
 	return p, nil
 }
 
+// Close закрывает соединение с базой данных.
+// Метод всегда возвращает nil, так как pgxpool.Close() не возвращает ошибку,
+// но интерфейс Repository требует возврата error.
 func (p *PgStorage) Close() error {
-	p.conn.Close()
+	if p.conn != nil {
+		p.conn.Close()
+	}
 	return nil
 }
 

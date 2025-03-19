@@ -1,0 +1,20 @@
+Build version: N/A
+Build date: N/A
+Build commit: N/A
+time=2025-03-07T18:31:55.371+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060 ConfigFile:}"
+time=2025-03-07T18:31:55.372+07:00 level=INFO msg="======= AGENT STARTING =======" server_url=http://localhost:8080 poll_interval=2s report_interval=10s send_compressed_data=true private_key=private_key_example send_hash=true encryption_enabled=false rate_limit=3
+time=2025-03-07T18:31:55.372+07:00 level=INFO msg="======= AGENT STARTED ======="
+time=2025-03-07T18:31:55.372+07:00 level=INFO msg="Collector started"
+time=2025-03-07T18:31:55.372+07:00 level=DEBUG msg="worker 0 started"
+time=2025-03-07T18:31:55.372+07:00 level=DEBUG msg="worker 1 started"
+time=2025-03-07T18:31:55.372+07:00 level=DEBUG msg="worker 2 started"
+time=2025-03-07T18:31:55.372+07:00 level=INFO msg="Poll routine started" poll_interval=2s metrics_storage_size=0
+time=2025-03-07T18:31:55.372+07:00 level=INFO msg="Report routine started" report_interval=10s server_url=http://localhost:8080
+time=2025-03-07T18:31:57.373+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-07T18:31:57.373+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-07T18:31:57.373+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-07T18:31:57.374+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.3787384033203125 sys_mb=7.708259582519531
+time=2025-03-07T18:31:57.374+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-07T18:31:57.374+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.5662040710449219 used_percent=61.027529139470445
+time=2025-03-07T18:31:57.375+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-07T18:31:57.375+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=2

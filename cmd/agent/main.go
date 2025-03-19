@@ -2,12 +2,17 @@
 package main
 
 import (
+	"context"
+	"crypto/rsa"
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
+	"github.com/maynagashev/go-metrics/pkg/crypto"
 )
 
 // Глобальные переменные для информации о сборке.
@@ -37,12 +42,49 @@ func main() {
 
 	initPprof(flags)
 
+	// Загружаем публичный ключ для шифрования, если он указан
+	var publicKey *rsa.PublicKey
+	if flags.CryptoKey != "" {
+		var err error
+		publicKey, err = crypto.LoadPublicKey(flags.CryptoKey)
+		if err != nil {
+			slog.Error("failed to load public key", "error", err, "path", flags.CryptoKey)
+			os.Exit(1)
+		}
+		slog.Info("loaded public key for encryption", "path", flags.CryptoKey)
+	}
+
 	serverURL := "http://" + flags.Server.Addr
 	pollInterval := time.Duration(flags.Server.PollInterval * float64(time.Second))
 	reportInterval := time.Duration(flags.Server.ReportInterval * float64(time.Second))
 
-	a := agent.New(serverURL, pollInterval, reportInterval, flags.PrivateKey, flags.RateLimit)
-	a.Run()
+	// Создаем контекст с отменой для graceful shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Канал для получения сигналов от ОС
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	// Запускаем агента
+	a := agent.New(
+		serverURL,
+		pollInterval,
+		reportInterval,
+		flags.PrivateKey,
+		flags.RateLimit,
+		publicKey,
+	)
+
+	// Запускаем горутину для обработки сигналов
+	go func() {
+		sig := <-sigCh
+		slog.Info("received signal", "signal", sig)
+		cancel() // Отменяем контекст, что приведет к graceful shutdown
+	}()
+
+	// Запускаем агента с контекстом
+	a.Run(ctx)
 }
 
 func initLogger() {

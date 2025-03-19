@@ -7,16 +7,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
-	sign "github.com/maynagashev/go-metrics/pkg/sign"
-
-	"github.com/maynagashev/go-metrics/pkg/response"
-
 	"go.uber.org/zap"
 
-	"github.com/maynagashev/go-metrics/internal/server/storage"
-
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
+	"github.com/maynagashev/go-metrics/pkg/response"
+	sign "github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 // NewBulkUpdate возвращает http.HandlerFunc, который обновляет множество метрик в хранилище.

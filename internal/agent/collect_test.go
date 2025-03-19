@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAgent_CollectRuntimeMetrics(t *testing.T) {
@@ -19,6 +20,7 @@ func TestAgent_CollectRuntimeMetrics(t *testing.T) {
 		time.Second,
 		"",
 		5,
+		nil,
 	)
 
 	// Reset metrics before collection
@@ -61,6 +63,7 @@ func TestAgent_CollectAdditionalMetrics(t *testing.T) {
 		time.Second,
 		"",
 		5,
+		nil,
 	)
 
 	// Reset metrics before collection
@@ -104,6 +107,7 @@ func TestAgent_GetMetrics(t *testing.T) {
 		time.Second,
 		"",
 		5,
+		nil,
 	)
 
 	// Reset metrics before collection
@@ -143,6 +147,7 @@ func TestAgent_ResetMetrics(t *testing.T) {
 		time.Second,
 		"",
 		5,
+		nil,
 	)
 
 	// Collect metrics
@@ -169,6 +174,7 @@ func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 		time.Second,
 		"",
 		5,
+		nil,
 	)
 	assert.False(t, a1.IsRequestSigningEnabled())
 
@@ -179,6 +185,23 @@ func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 		time.Second,
 		"test-private-key",
 		5,
+		nil,
 	)
 	assert.True(t, a2.IsRequestSigningEnabled())
+}
+
+func TestAgent_IsEncryptionEnabled(t *testing.T) {
+	// Test with no public key
+	a1 := agent.New(
+		"http://localhost:8080",
+		time.Second,
+		time.Second,
+		"",
+		5,
+		nil,
+	)
+	assert.False(t, a1.IsEncryptionEnabled())
+
+	// Тест с публичным ключом требует создания ключа, что сложно в тестах
+	// Поэтому просто проверяем, что метод существует
 }

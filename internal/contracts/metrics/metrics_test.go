@@ -5,8 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
 
 // Helper functions for tests.

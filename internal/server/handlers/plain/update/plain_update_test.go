@@ -6,18 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
-
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 	"github.com/maynagashev/go-metrics/internal/server/storage/memory"
-
-	"github.com/maynagashev/go-metrics/internal/server/handlers/plain/update"
-
-	"github.com/stretchr/testify/require"
-
-	"github.com/stretchr/testify/assert"
 )
 
 // [New]. Тест проверяет корректность обработки запроса на обновление метрики.

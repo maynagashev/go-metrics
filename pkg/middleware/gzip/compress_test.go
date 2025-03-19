@@ -7,9 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maynagashev/go-metrics/pkg/middleware/gzip"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/maynagashev/go-metrics/pkg/middleware/gzip"
 )
 
 func TestCompress(t *testing.T) {

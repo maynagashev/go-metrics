@@ -6,16 +6,18 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/handlers/json/ping"
 	"github.com/maynagashev/go-metrics/mocks"
-
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
 )
+
+// contextKey is a custom type for context keys to avoid using basic types.
+type contextKey string
 
 func TestHandle_Success(t *testing.T) {
 	// Создаем новый мок для интерфейса Storage
@@ -106,4 +108,132 @@ func TestNew_InvalidDatabaseConfig(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 	// Проверяем, что в ответе содержится сообщение об ошибке
 	assert.Contains(t, rr.Body.String(), "error")
+}
+
+// Добавляем тест для случая, когда база данных включена, но возвращает ошибку.
+func TestNew_DatabaseError(t *testing.T) {
+	// Создаем мок для хранилища, который будет возвращать ошибку
+	mockStorage := new(mocks.Storage)
+	mockStorage.On("GetMetrics", context.Background()).Return([]metrics.Metric{}).Once()
+
+	// Создаем обработчик, который будет использовать мок вместо реальной базы данных
+	handler := ping.Handle(mockStorage)
+
+	// Создаем HTTP-запрос для теста
+	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
+	require.NoError(t, err)
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик с записанным запросом и ответом
+	handler.ServeHTTP(rr, req)
+
+	// Проверяем, что код ответа равен 200 (OK)
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Contains(t, rr.Body.String(), "pong")
+
+	// Проверяем вызов метода GetMetrics
+	mockStorage.AssertExpectations(t)
+}
+
+// Добавляем тест для проверки случая с пустым ответом от базы данных.
+func TestHandle_EmptyResponse(t *testing.T) {
+	// Создаем новый мок для интерфейса Storage
+	mockStorage := new(mocks.Storage)
+
+	// Настраиваем мок, чтобы метод GetMetrics возвращал пустой слайс
+	mockStorage.On("GetMetrics", context.Background()).Return([]metrics.Metric{})
+
+	// Создаем HTTP-запрос для теста
+	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
+	require.NoError(t, err)
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Создаем обработчик с использованием мокированного хранилища
+	handler := ping.Handle(mockStorage)
+
+	// Вызываем обработчик с записанным запросом и ответом
+	handler.ServeHTTP(rr, req)
+
+	// Проверяем, что код ответа равен 200
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+	assert.JSONEq(t, `{"status":"OK","message":"pong"}`, rr.Body.String())
+
+	// Проверяем вызов метода GetMetrics
+	mockStorage.AssertCalled(t, "GetMetrics", context.Background())
+}
+
+// Добавляем тест для проверки различных HTTP методов.
+func TestHandle_DifferentMethods(t *testing.T) {
+	methods := []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete}
+
+	for _, method := range methods {
+		t.Run(method, func(t *testing.T) {
+			// Создаем новый мок для интерфейса Storage
+			mockStorage := new(mocks.Storage)
+
+			// Настраиваем мок, чтобы метод GetMetrics возвращал не пустое значение
+			mockStorage.On("GetMetrics", context.Background()).Return([]metrics.Metric{
+				*metrics.NewCounter("metric1", 1),
+			})
+
+			// Создаем HTTP-запрос с текущим методом
+			req, err := http.NewRequest(method, "/ping", nil)
+			require.NoError(t, err)
+
+			// Создаем ResponseRecorder для записи ответа
+			rr := httptest.NewRecorder()
+
+			// Создаем обработчик с использованием мокированного хранилища
+			handler := ping.Handle(mockStorage)
+
+			// Вызываем обработчик с записанным запросом и ответом
+			handler.ServeHTTP(rr, req)
+
+			// Проверяем, что код ответа равен 200
+			assert.Equal(t, http.StatusOK, rr.Code)
+			assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+			assert.JSONEq(t, `{"status":"OK","message":"pong"}`, rr.Body.String())
+
+			// Проверяем вызов метода GetMetrics
+			mockStorage.AssertCalled(t, "GetMetrics", context.Background())
+		})
+	}
+}
+
+// Добавляем тест для проверки работы с контекстом запроса.
+func TestHandle_WithContext(t *testing.T) {
+	// Создаем мок хранилища
+	mockStorage := new(mocks.Storage)
+
+	// Создаем контекст с значением
+	ctx := context.WithValue(context.Background(), contextKey("test-key"), "test-value")
+
+	// Настраиваем мок, чтобы метод GetMetrics ожидал контекст с нашим значением
+	mockStorage.On("GetMetrics", ctx).Return([]metrics.Metric{
+		*metrics.NewCounter("metric1", 1),
+	})
+
+	// Создаем HTTP-запрос с нашим контекстом
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/ping", nil)
+	require.NoError(t, err)
+
+	// Создаем ResponseRecorder для записи ответа
+	rr := httptest.NewRecorder()
+
+	// Вызываем обработчик с записанным запросом и ответом
+	handler := ping.Handle(mockStorage)
+
+	// Вызываем обработчик с записанным запросом и ответом
+	handler.ServeHTTP(rr, req)
+
+	// Проверяем, что код ответа равен 200
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	// Проверяем вызов метода GetMetrics с правильным контекстом
+	mockStorage.AssertCalled(t, "GetMetrics", ctx)
 }

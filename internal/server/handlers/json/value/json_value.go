@@ -7,12 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
-	"github.com/maynagashev/go-metrics/pkg/sign"
-
-	"github.com/maynagashev/go-metrics/internal/server/storage"
-
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
+	"github.com/maynagashev/go-metrics/internal/server/app"
+	"github.com/maynagashev/go-metrics/internal/server/storage"
+	"github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 // New хэндлер для получения значения метрики с сервера в ответ на запрос `POST /value`.

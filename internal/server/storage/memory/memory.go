@@ -9,11 +9,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/maynagashev/go-metrics/internal/server/app"
 	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
-
+	"github.com/maynagashev/go-metrics/internal/server/app"
 	"github.com/maynagashev/go-metrics/internal/server/storage"
 )
 
