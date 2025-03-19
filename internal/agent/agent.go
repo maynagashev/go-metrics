@@ -81,6 +81,7 @@ var New = func(
 	privateKey string,
 	rateLimit int,
 	publicKey *rsa.PublicKey,
+	realIP string,
 ) Agent {
 	return &agent{
 		ServerURL:          url,
@@ -92,7 +93,7 @@ var New = func(
 		PublicKey:          publicKey,
 		gauges:             make(map[string]float64),
 		counters:           make(map[string]int64),
-		client:             resty.New().SetHeader("Content-Type", "text/plain"),
+		client:             initHTTPClient(realIP),
 		pollTicker:         time.NewTicker(pollInterval),
 		reportTicker:       time.NewTicker(reportInterval),
 		sendQueue:          make(chan Job, rateLimit),
@@ -332,4 +333,32 @@ func (a *agent) GetMetrics() []*metrics.Metric {
 		"duration_ms", duration.Milliseconds())
 
 	return items
+}
+
+// initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
+func initHTTPClient(realIP string) *resty.Client {
+	client := resty.New().SetHeader("Content-Type", "text/plain")
+
+	// Добавляем перехватчик для установки заголовка X-Real-IP
+	client.OnBeforeRequest(func(_ *resty.Client, req *resty.Request) error {
+		// Если указан явный IP-адрес, используем его
+		if realIP != "" {
+			req.SetHeader("X-Real-IP", realIP)
+			slog.Debug("set X-Real-IP header (explicit)", "ip", realIP)
+			return nil
+		}
+
+		// Иначе получаем исходящий IP-адрес автоматически
+		hostIP, err := GetOutboundIP()
+		if err == nil {
+			// Устанавливаем заголовок X-Real-IP
+			req.SetHeader("X-Real-IP", hostIP.String())
+			slog.Debug("set X-Real-IP header (auto-detected)", "ip", hostIP.String())
+		} else {
+			slog.Error("failed to set X-Real-IP header", "error", err)
+		}
+		return nil
+	})
+
+	return client
 }

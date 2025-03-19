@@ -50,6 +50,27 @@ server-with-agent:
 	@echo "Запуск сервера и агента вместе..."
 	@go run ./cmd/server/. -d $(DB_DSN) & go run ./cmd/agent/.
 
+
+# Пример запуска автотеста для итерации 10
+iter10: build
+	@echo "Запуск тестов для итерации 10..."
+	./bin/metricstest-darwin-amd64 -test.v -test.run=^TestIteration10$  \
+									-server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent \
+									-database-dsn=$(DB_DSN) \
+									-source-path . \
+									-key=iter10 \
+									| tee logs/iter10.log
+
+# Пример запуска автотеста для итерации 14
+iter14: build
+	@echo "Запуск тестов для итерации 14..."
+	./bin/metricstest-darwin-amd64 -test.v -test.run=^TestIteration14$  \
+									-server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent \
+									-database-dsn=$(DB_DSN) \
+									-source-path . \
+									-key=iter14 \
+									| tee logs/iter14.log
+
 # Запуск сервера с указанием версий (iter20)
 server-with-version: set-versions
 	@echo "Запуск сервера с указанием версий..."
@@ -90,6 +111,29 @@ agent-with-graceful-shutdown:
 	@echo "Запуск агента с логированием для сохранения graceful shutdown лога..."
 	@go run ./cmd/agent/. -k="private_key_example" >logs/agent-graceful-shutdown.log 2>&1
 
+# Запуск сервера с доверенной подсетью (iter24)
+server-with-trusted-subnet:
+	@echo "Запуск сервера с доверенной подсетью..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -t="192.168.1.0/24" 2>&1 | tee logs/server-with-trusted-subnet.log
+
+# Запуск агента с заданным IP-адресом из доверенной подсети (iter24)
+agent-with-trusted-ip:
+	@echo "Запуск агента с заданным IP-адресом из доверенной подсети..."
+	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.1.1" 2>&1 | tee logs/agent-with-trusted-subnet.log
+
+# Запуск агента с IP-адресом отличным от доверенного (iter24)
+agent-with-other-ip:
+	@echo "Запуск агента с IP-адресом отличным от доверенного..."
+	@go run ./cmd/agent/. -k="private_key_example" -real-ip="192.168.2.1" 2>&1 | tee logs/agent-with-other-ip.log
+
+# Проверка запросов к серверу с разным X-Real-IP (iter24):
+request-from-trusted-subnet:
+	@echo "Проверка запросов к серверу с ip из доверенной подсети 192.168.1.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.1.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-trusted-subnet.log
+request-from-other-subnet:
+	@echo "Проверка запросов к серверу с ip из другой подсети 192.168.2.1..."
+	@curl -v -X POST -H "X-Real-IP: 192.168.2.1" -H "Content-Type: application/json" http://localhost:8080/update -d '{"id":"test","type":"counter","delta":1}' | tee logs/request-from-other-subnet.log
+
 # Запуск всех тестов
 test:
 	@echo "Запуск всех тестов..."
@@ -114,25 +158,6 @@ lint:
 	@echo "Запуск линтера..."
 	golangci-lint run ./... --fix
 
-# Пример запуска автотеста для итерации 10
-iter10: build
-	@echo "Запуск тестов для итерации 10..."
-	./bin/metricstest-darwin-amd64 -test.v -test.run=^TestIteration10$  \
-									-server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent \
-									-database-dsn=$(DB_DSN) \
-									-source-path . \
-									-key=iter10 \
-									| tee logs/iter10.log
-
-# Пример запуска автотеста для итерации 14
-iter14: build
-	@echo "Запуск тестов для итерации 14..."
-	./bin/metricstest-darwin-amd64 -test.v -test.run=^TestIteration14$  \
-									-server-port=8080 -binary-path=bin/server -agent-binary-path=bin/agent \
-									-database-dsn=$(DB_DSN) \
-									-source-path . \
-									-key=iter14 \
-									| tee logs/iter14.log
 
 
 # Запуск всех типов профилирования

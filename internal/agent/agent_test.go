@@ -16,7 +16,7 @@ func TestAgent_collectRuntimeMetrics(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0, nil)
+	a := agent.New("http://localhost:8080/metrics", 2*time.Second, 10*time.Second, "", 0, nil, "")
 	tests := []struct {
 		name string
 		want int

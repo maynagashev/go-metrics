@@ -30,6 +30,7 @@ type Flags struct {
 	EnablePprof bool   // добавляем поле для профилирования
 	PprofPort   string // добавляем порт для pprof
 	ConfigFile  string // путь к файлу конфигурации в формате JSON
+	RealIP      string // явно указанный IP-адрес для заголовка X-Real-IP
 }
 
 // mustParseFlags обрабатывает аргументы командной строки
@@ -91,6 +92,9 @@ func registerCommandLineFlags(flags *Flags) {
 	flag.BoolVar(&flags.EnablePprof, "pprof", false, "enable pprof profiling")
 	flag.StringVar(&flags.PprofPort, "pprof-port", defaultPprofPort, "port for pprof server")
 
+	// Добавляем флаг для явного указания IP-адреса для заголовка X-Real-IP
+	flag.StringVar(&flags.RealIP, "real-ip", "", "IP address to use in X-Real-IP header")
+
 	// Добавляем флаг для пути к файлу конфигурации
 	flag.StringVar(&flags.ConfigFile, "c", "", "путь к файлу конфигурации в формате JSON")
 	flag.StringVar(&flags.ConfigFile, "config", "", "путь к файлу конфигурации в формате JSON")
@@ -131,6 +135,11 @@ func applyEnvironmentVariables(flags *Flags) {
 		flags.RateLimit = l
 	}
 
+	// Добавляем обработку переменной окружения для X-Real-IP
+	if envRealIP, ok := os.LookupEnv("REAL_IP"); ok {
+		flags.RealIP = envRealIP
+	}
+
 	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
 	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
 		flags.ConfigFile = envConfigFile
@@ -150,10 +159,7 @@ func applyJSONConfig(flags *Flags) {
 	}
 
 	// Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-	applyErr := ApplyJSONConfig(flags, jsonConfig)
-	if applyErr != nil {
-		panic(fmt.Sprintf("error applying config: %s", applyErr))
-	}
+	ApplyJSONConfig(flags, jsonConfig)
 }
 
 // validateFlags проверяет и корректирует значения флагов.
