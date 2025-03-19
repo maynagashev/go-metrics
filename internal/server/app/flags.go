@@ -48,8 +48,8 @@ type Flags struct {
 		Timeout int
 	}
 
-	PrivateKey string
-	CryptoKey  string // Path to the private key file for decryption
+	PrivateKey string // Путь к файлу с приватным ключом для подписи запросов к серверу
+	CryptoKey  string // Путь к файлу с публичным ключом для шифрования
 	ConfigFile string // Путь к файлу конфигурации в формате JSON
 }
 

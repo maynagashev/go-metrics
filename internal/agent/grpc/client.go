@@ -38,12 +38,23 @@ func New(
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
+	// Создаем клиентские перехватчики
+	unaryInterceptors := []grpc.UnaryClientInterceptor{
+		SigningInterceptor(privateKey), // Добавляем перехватчик для подписи запросов
+	}
+
+	streamInterceptors := []grpc.StreamClientInterceptor{
+		StreamSigningInterceptor(privateKey), // Добавляем перехватчик для подписи потоковых запросов
+	}
+
 	// Устанавливаем соединение без TLS (в будущем можно добавить TLS)
 	conn, err := grpc.DialContext(
 		ctx,
 		address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
+		grpc.WithChainUnaryInterceptor(unaryInterceptors...),
+		grpc.WithChainStreamInterceptor(streamInterceptors...),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC server: %w", err)
@@ -54,6 +65,11 @@ func New(
 
 	// Логируем, что сжатие gRPC включено по умолчанию
 	slog.Info("gRPC compression enabled by default")
+
+	// Логируем состояние подписи запросов
+	if privateKey != "" {
+		slog.Info("gRPC request signing enabled")
+	}
 
 	return &Client{
 		address:    address,
@@ -86,8 +102,6 @@ func (c *Client) createContext(parent context.Context) (context.Context, context
 		})
 		ctx = metadata.NewOutgoingContext(ctx, md)
 	}
-
-	// TODO: добавить подпись запроса (HMAC-SHA256) если указан privateKey
 
 	return ctx, cancel
 }

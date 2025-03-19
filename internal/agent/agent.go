@@ -117,7 +117,7 @@ var New = func(
 	url string,
 	pollInterval time.Duration,
 	reportInterval time.Duration,
-	privateKey string,
+	privateKey string, // путь к файлу с приватным ключом для подписи запросов к серверу
 	rateLimit int,
 	publicKey *rsa.PublicKey,
 	realIP string,

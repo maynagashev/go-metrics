@@ -1,32 +1,591 @@
 Build version: N/A
 Build date: N/A
 Build commit: N/A
-2025-03-19T22:07:11.885+0700	DEBUG	pgstorage/pgstorage.go:46	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
+2025-03-19T22:24:19.463+0700	DEBUG	pgstorage/pgstorage.go:46	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
 
-2025/03/19 22:07:11 INFO Запуск миграций... path=migrations/server
-2025/03/19 22:07:11 INFO Нет новых миграций для применения.
-2025-03-19T22:07:11.916+0700	INFO	grpc/server.go:67	starting gRPC server	{"address": "localhost:9090"}
-2025-03-19T22:07:11.916+0700	INFO	grpc/server.go:122	gRPC server started	{"address": "localhost:9090"}
-2025-03-19T22:07:11.917+0700	INFO	logger/logger.go:17	logger middleware enabled
-2025-03-19T22:07:11.917+0700	INFO	decompresspool/decompresspool.go:42	decompress middleware enabled
-2025-03-19T22:07:11.917+0700	DEBUG	pgstorage/pgstorage.go:46	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
+2025/03/19 22:24:19 INFO Запуск миграций... path=migrations/server
+2025/03/19 22:24:19 INFO Нет новых миграций для применения.
+2025-03-19T22:24:19.493+0700	INFO	grpc/server.go:67	starting gRPC server	{"address": "localhost:9090"}
+2025-03-19T22:24:19.493+0700	INFO	grpc/server.go:132	gRPC server started successfully	{"address": "localhost:9090", "max_connections": 100, "request_signing_enabled": true}
+2025-03-19T22:24:19.494+0700	INFO	logger/logger.go:17	logger middleware enabled
+2025-03-19T22:24:19.494+0700	INFO	decompresspool/decompresspool.go:42	decompress middleware enabled
+2025-03-19T22:24:19.494+0700	DEBUG	pgstorage/pgstorage.go:46	Connecting to database: postgres://metrics:password@localhost:5432/metrics?sslmode=disable
 
-2025/03/19 22:07:11 INFO Запуск миграций... path=migrations/server
-2025/03/19 22:07:11 INFO Нет новых миграций для применения.
-2025-03-19T22:07:11.949+0700	INFO	app/app.go:41	starting server	{"config": {"Addr":"localhost:8080","StoreInterval":300,"FileStoragePath":"/tmp/metrics-db.json","Restore":true,"Database":{"DSN":"postgres://metrics:password@localhost:5432/metrics?sslmode=disable","MigrationsPath":"migrations/server"},"GRPC":{"Addr":"localhost:9090","Enabled":true,"MaxConn":100,"Timeout":5},"PrivateKey":"private_key_example","EnablePprof":false,"PrivateRSAKey":null,"ConfigFile":"","TrustedSubnet":""}}
-2025-03-19T22:07:11.950+0700	INFO	app/app.go:57	server is listening	{"addr": "localhost:8080"}
-2025-03-19T22:07:27.710+0700	DEBUG	update/json_update.go:78	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
-2025-03-19T22:07:27.710+0700	DEBUG	update/json_update.go:40	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
-2025-03-19T22:07:27.722+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
-2025-03-19T22:07:27.723+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/metrics/updates", "remote_addr": "127.0.0.1:59070", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/WmYVUl91gn-000002", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["362"],"Content-Type":["application/json"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":181},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2439},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":35040},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":48960},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8082696},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":675824},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1581056},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3735552},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":675824},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2154496},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":458752},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":458752},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448703},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1893760},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2154496},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":2620},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":465769},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":675824},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":0}]", "status": 404, "response_bytes": 19, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"Hashsha256":["e1d3470bcf658b828a803d0d4af963acc10a0ac3e00420dd6c55d4a254cfead1"],"X-Content-Type-Options":["nosniff"]}, "response_body": "404 page not found\n", "duration": "98.721µs"}
-2025-03-19T22:07:27.773+0700	INFO	update/json_update.go:61	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
-2025-03-19T22:07:27.794+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:59062", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/WmYVUl91gn-000001", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "84.273062ms"}
-2025-03-19T22:07:27.809+0700	DEBUG	update/json_update.go:78	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
-2025-03-19T22:07:27.810+0700	DEBUG	update/json_update.go:40	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
-2025-03-19T22:07:27.816+0700	INFO	update/json_update.go:61	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
-2025-03-19T22:07:27.818+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:59078", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/WmYVUl91gn-000003", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "8.818151ms"}
-2025-03-19T22:07:27.924+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/value", "remote_addr": "127.0.0.1:59088", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/WmYVUl91gn-000004", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["33"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\"}", "status": 200, "response_bytes": 48, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["96d52c185d37514e694874bb5e60f10ce0b5d9cda7a8f5bce1f969cf5288af39"],"Vary":["Accept-Encoding"]}, "response_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "duration": "2.037458ms"}
-2025-03-19T22:07:27.929+0700	DEBUG	updates/json_updates.go:76	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "", "calc_hash": "", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]"}
-2025-03-19T22:07:27.945+0700	INFO	updates/json_updates.go:54	Metrics updated successfully
-2025-03-19T22:07:27.945+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/updates/", "remote_addr": "127.0.0.1:59088", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/WmYVUl91gn-000005", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "16.524996ms"}
-2025-03-19T22:07:27.988+0700	INFO	logger/logger.go:39	request completed	{"method": "GET", "path": "/ping", "remote_addr": "127.0.0.1:59090", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/WmYVUl91gn-000006", "headers": {"Accept-Encoding":["gzip"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "", "status": 200, "response_bytes": 32, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["73cba2d0e5c3eb152b24388f61573ff57fc51c364394dc282649f988f4b260b2"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"pong\"}", "duration": "38.507787ms"}
+2025/03/19 22:24:19 INFO Запуск миграций... path=migrations/server
+2025/03/19 22:24:19 INFO Нет новых миграций для применения.
+2025-03-19T22:24:19.526+0700	INFO	app/app.go:41	starting server	{"config": {"Addr":"localhost:8080","StoreInterval":300,"FileStoragePath":"/tmp/metrics-db.json","Restore":true,"Database":{"DSN":"postgres://metrics:password@localhost:5432/metrics?sslmode=disable","MigrationsPath":"migrations/server"},"GRPC":{"Addr":"localhost:9090","Enabled":true,"MaxConn":100,"Timeout":5},"PrivateKey":"private_key_example","EnablePprof":false,"PrivateRSAKey":null,"ConfigFile":"","TrustedSubnet":""}}
+2025-03-19T22:24:19.527+0700	INFO	app/app.go:57	server is listening	{"addr": "localhost:8080"}
+2025-03-19T22:24:25.860+0700	DEBUG	update/json_update.go:78	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
+2025-03-19T22:24:25.860+0700	DEBUG	update/json_update.go:40	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
+2025-03-19T22:24:25.885+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-19T22:24:25.885+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/metrics/updates", "remote_addr": "127.0.0.1:50020", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/CMRTcrdM7O-000002", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["364"],"Content-Type":["application/json"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":48960},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":425984},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1589248},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8344840},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2179072},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":2620},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448720},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1881424},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2439},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":181},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2179072},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":676384},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":425984},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":676384},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3768320},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":45280},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":740232},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":676384},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":0}]", "status": 404, "response_bytes": 19, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"Hashsha256":["e1d3470bcf658b828a803d0d4af963acc10a0ac3e00420dd6c55d4a254cfead1"],"X-Content-Type-Options":["nosniff"]}, "response_body": "404 page not found\n", "duration": "80.668µs"}
+2025-03-19T22:24:25.900+0700	INFO	update/json_update.go:61	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
+2025-03-19T22:24:25.917+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:50010", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/CMRTcrdM7O-000001", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "57.234296ms"}
+2025-03-19T22:24:25.927+0700	DEBUG	update/json_update.go:78	request body	{"body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}"}
+2025-03-19T22:24:25.927+0700	DEBUG	update/json_update.go:40	parsed metric	{"metric": {"id":"TestGauge","type":"gauge","value":123.45}}
+2025-03-19T22:24:25.936+0700	INFO	update/json_update.go:61	metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}
+2025-03-19T22:24:25.945+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/update", "remote_addr": "127.0.0.1:50034", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/CMRTcrdM7O-000003", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["48"],"User-Agent":["Go-http-client/1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "status": 200, "response_bytes": 163, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["4ca68847e54ba8c547be73cbbcfa5cbca2a4e61a638267b5b55ddea9b40ac653"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"metric Metric{Name: TestGauge, Type: gauge, Value: 123.450000} updated, result: Metric{Name: TestGauge, Type: gauge, Value: 123.450000}\"}", "duration": "18.114261ms"}
+2025-03-19T22:24:26.058+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/value", "remote_addr": "127.0.0.1:50042", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/CMRTcrdM7O-000004", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["33"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\"}", "status": 200, "response_bytes": 48, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["96d52c185d37514e694874bb5e60f10ce0b5d9cda7a8f5bce1f969cf5288af39"],"Vary":["Accept-Encoding"]}, "response_body": "{\"id\":\"TestGauge\",\"type\":\"gauge\",\"value\":123.45}", "duration": "2.323556ms"}
+2025-03-19T22:24:26.061+0700	DEBUG	updates/json_updates.go:76	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "", "calc_hash": "", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]"}
+2025-03-19T22:24:26.069+0700	INFO	updates/json_updates.go:54	Metrics updated successfully
+2025-03-19T22:24:26.078+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/updates/", "remote_addr": "127.0.0.1:50042", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/CMRTcrdM7O-000005", "headers": {"Accept-Encoding":["gzip"],"Content-Length":["101"],"Content-Type":["application/json"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "[{\"id\":\"TestGauge1\",\"type\":\"gauge\",\"value\":123.45},{\"id\":\"TestCounter1\",\"type\":\"counter\",\"delta\":42}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "16.48386ms"}
+2025-03-19T22:24:26.111+0700	INFO	logger/logger.go:39	request completed	{"method": "GET", "path": "/ping", "remote_addr": "127.0.0.1:50048", "user_agent": "Go-http-client/1.1", "request_id": "ubuntu/CMRTcrdM7O-000006", "headers": {"Accept-Encoding":["gzip"],"User-Agent":["Go-http-client/1.1"],"X-Real-Ip":["192.168.1.1"]}, "request_body": "", "status": 200, "response_bytes": 32, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["73cba2d0e5c3eb152b24388f61573ff57fc51c364394dc282649f988f4b260b2"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"pong\"}", "duration": "28.042455ms"}
+2025-03-19T22:24:27.728+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "61c8c1fa2aaa919d69d24383de3db740a0cda7b9bf1b595e177c7341bcbbfe43", "expected": "5fc24f0f3eb1ea96c9bab03b5f4841d26e1638f86c60e624edb8df0fc75c36ad", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:32.731+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "61c8c1fa2aaa919d69d24383de3db740a0cda7b9bf1b595e177c7341bcbbfe43", "expected": "5fc24f0f3eb1ea96c9bab03b5f4841d26e1638f86c60e624edb8df0fc75c36ad", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:33.723+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "adc3cb3cfa8b8b8e473f5ac1b00a3ae6c9f5050098b43eaa9bae42db23d14f83", "expected": "2e295d2812face30fc7e8496a83a12d089ce7f628e828e2c1438660ea7b2e529", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:34.725+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "adc3cb3cfa8b8b8e473f5ac1b00a3ae6c9f5050098b43eaa9bae42db23d14f83", "expected": "2e295d2812face30fc7e8496a83a12d089ce7f628e828e2c1438660ea7b2e529", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:37.727+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "adc3cb3cfa8b8b8e473f5ac1b00a3ae6c9f5050098b43eaa9bae42db23d14f83", "expected": "2e295d2812face30fc7e8496a83a12d089ce7f628e828e2c1438660ea7b2e529", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:42.729+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "adc3cb3cfa8b8b8e473f5ac1b00a3ae6c9f5050098b43eaa9bae42db23d14f83", "expected": "2e295d2812face30fc7e8496a83a12d089ce7f628e828e2c1438660ea7b2e529", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:43.722+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "153476a88eb1dbdec8bd1487ecdb3587ada138df2b3a97bc2c55961dd45bfff0", "expected": "2c5c91f4c7e6c316c1beeb6fa334d58ffc2adb92c6bb608da39b0fd94d4bdf2d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:44.726+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "153476a88eb1dbdec8bd1487ecdb3587ada138df2b3a97bc2c55961dd45bfff0", "expected": "2c5c91f4c7e6c316c1beeb6fa334d58ffc2adb92c6bb608da39b0fd94d4bdf2d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:47.730+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "153476a88eb1dbdec8bd1487ecdb3587ada138df2b3a97bc2c55961dd45bfff0", "expected": "2c5c91f4c7e6c316c1beeb6fa334d58ffc2adb92c6bb608da39b0fd94d4bdf2d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:52.731+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "153476a88eb1dbdec8bd1487ecdb3587ada138df2b3a97bc2c55961dd45bfff0", "expected": "2c5c91f4c7e6c316c1beeb6fa334d58ffc2adb92c6bb608da39b0fd94d4bdf2d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:53.721+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "1994ac19595457e453af8c9caae2ea0c06229935e1bc9434e3d57fcc3d4ccb67", "expected": "f54574f756f4278aed2ed1eb94a1c4a27364b83b6977f22eca1a7194aa26dc70", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:54.724+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "1994ac19595457e453af8c9caae2ea0c06229935e1bc9434e3d57fcc3d4ccb67", "expected": "f54574f756f4278aed2ed1eb94a1c4a27364b83b6977f22eca1a7194aa26dc70", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:24:57.729+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "1994ac19595457e453af8c9caae2ea0c06229935e1bc9434e3d57fcc3d4ccb67", "expected": "f54574f756f4278aed2ed1eb94a1c4a27364b83b6977f22eca1a7194aa26dc70", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:02.731+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "1994ac19595457e453af8c9caae2ea0c06229935e1bc9434e3d57fcc3d4ccb67", "expected": "f54574f756f4278aed2ed1eb94a1c4a27364b83b6977f22eca1a7194aa26dc70", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:03.722+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "f5b19a28d7d9f517db1b1708b2e5f75c7f6827b3ece8a948c3a624c4657103d8", "expected": "34d47a10d7cd2023bb00575e5e59b8714cde291b47e03b0200939bd7bbad4d56", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:04.724+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "f5b19a28d7d9f517db1b1708b2e5f75c7f6827b3ece8a948c3a624c4657103d8", "expected": "34d47a10d7cd2023bb00575e5e59b8714cde291b47e03b0200939bd7bbad4d56", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:07.725+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "f5b19a28d7d9f517db1b1708b2e5f75c7f6827b3ece8a948c3a624c4657103d8", "expected": "34d47a10d7cd2023bb00575e5e59b8714cde291b47e03b0200939bd7bbad4d56", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:12.728+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "f5b19a28d7d9f517db1b1708b2e5f75c7f6827b3ece8a948c3a624c4657103d8", "expected": "34d47a10d7cd2023bb00575e5e59b8714cde291b47e03b0200939bd7bbad4d56", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:13.723+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1a480dad575128efd08622f71a6ac6e9551853b972287ada54da057ee66f401", "expected": "500631a3436421915b2453d8a3e5437775e473031e1071ba5a07819895c8814d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:14.725+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1a480dad575128efd08622f71a6ac6e9551853b972287ada54da057ee66f401", "expected": "500631a3436421915b2453d8a3e5437775e473031e1071ba5a07819895c8814d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:17.727+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1a480dad575128efd08622f71a6ac6e9551853b972287ada54da057ee66f401", "expected": "500631a3436421915b2453d8a3e5437775e473031e1071ba5a07819895c8814d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:22.730+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1a480dad575128efd08622f71a6ac6e9551853b972287ada54da057ee66f401", "expected": "500631a3436421915b2453d8a3e5437775e473031e1071ba5a07819895c8814d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:23.721+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "cac0753f453ec2dfaa633788dad5dfc3db90be70c82a755ad69d81e645fd0b3f", "expected": "706b5236bd63ee3381b08024eda8e2bc0abecc9e1126ae830cae8365b879819e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:24.723+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "cac0753f453ec2dfaa633788dad5dfc3db90be70c82a755ad69d81e645fd0b3f", "expected": "706b5236bd63ee3381b08024eda8e2bc0abecc9e1126ae830cae8365b879819e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:27.726+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "cac0753f453ec2dfaa633788dad5dfc3db90be70c82a755ad69d81e645fd0b3f", "expected": "706b5236bd63ee3381b08024eda8e2bc0abecc9e1126ae830cae8365b879819e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:32.729+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "cac0753f453ec2dfaa633788dad5dfc3db90be70c82a755ad69d81e645fd0b3f", "expected": "706b5236bd63ee3381b08024eda8e2bc0abecc9e1126ae830cae8365b879819e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:33.722+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1d5061aed8b0ffa7220f23d34ed1906e71760cf0953881a465841993946c32a", "expected": "42b8f60f1180d7f841bddfd44a2025fe7b9479b24da57694443f57005faf8642", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:34.724+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1d5061aed8b0ffa7220f23d34ed1906e71760cf0953881a465841993946c32a", "expected": "42b8f60f1180d7f841bddfd44a2025fe7b9479b24da57694443f57005faf8642", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:37.726+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1d5061aed8b0ffa7220f23d34ed1906e71760cf0953881a465841993946c32a", "expected": "42b8f60f1180d7f841bddfd44a2025fe7b9479b24da57694443f57005faf8642", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:42.728+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "b1d5061aed8b0ffa7220f23d34ed1906e71760cf0953881a465841993946c32a", "expected": "42b8f60f1180d7f841bddfd44a2025fe7b9479b24da57694443f57005faf8642", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:43.722+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "91d451f5771aca524a13d44dabcf76ae04c3a1f835eecc37d0210fbe17c911d3", "expected": "8bde7709832901b266d2cc378e670b8251ab993ab4da558bbcba1171cdb60c3b", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:44.724+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "91d451f5771aca524a13d44dabcf76ae04c3a1f835eecc37d0210fbe17c911d3", "expected": "8bde7709832901b266d2cc378e670b8251ab993ab4da558bbcba1171cdb60c3b", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:47.727+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "91d451f5771aca524a13d44dabcf76ae04c3a1f835eecc37d0210fbe17c911d3", "expected": "8bde7709832901b266d2cc378e670b8251ab993ab4da558bbcba1171cdb60c3b", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:48.342+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "81a1b3f3038fc118253615dadd5ffd35acd4627cae00a7917702241304323335", "expected": "6609a3f2fdf359ba2cb828fa29a9262c49501c2489a1570594940423c5b794af", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:49.344+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "81a1b3f3038fc118253615dadd5ffd35acd4627cae00a7917702241304323335", "expected": "6609a3f2fdf359ba2cb828fa29a9262c49501c2489a1570594940423c5b794af", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:52.349+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "81a1b3f3038fc118253615dadd5ffd35acd4627cae00a7917702241304323335", "expected": "6609a3f2fdf359ba2cb828fa29a9262c49501c2489a1570594940423c5b794af", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:25:52.728+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "91d451f5771aca524a13d44dabcf76ae04c3a1f835eecc37d0210fbe17c911d3", "expected": "8bde7709832901b266d2cc378e670b8251ab993ab4da558bbcba1171cdb60c3b", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:26:28.284+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-19T22:26:28.285+0700	DEBUG	crypto/crypto.go:152	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "e1348243ada499f8a15994c000e42dd4acecf22c34c8b183d8d22b2062749dcf", "calc_hash": "e1348243ada499f8a15994c000e42dd4acecf22c34c8b183d8d22b2062749dcf"}
+2025-03-19T22:26:28.286+0700	DEBUG	updates/json_updates.go:76	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "e1348243ada499f8a15994c000e42dd4acecf22c34c8b183d8d22b2062749dcf", "calc_hash": "e1348243ada499f8a15994c000e42dd4acecf22c34c8b183d8d22b2062749dcf", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["707"],"Content-Type":["application/json"],"Hashsha256":["e1348243ada499f8a15994c000e42dd4acecf22c34c8b183d8d22b2062749dcf"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "body": "[{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":1.5228426396510903},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":8.673469387315697},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":726640},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":726640},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2146304},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":11.340206186703758},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":9.844559584597604},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":4.568527918768602},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":6.598984771513611},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.525252525274796},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.752557556196899},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":12.999999999738066},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3637248},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":56160},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":3050},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8606984},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":806416384},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":4.060913705490016},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":18.556701029628694},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":557056},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.9999999999272404},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448934},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":225},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2825},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":8.121827410241355},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":3.0150753769643455},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1918432},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":948834},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":557056},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":4.020100502619127},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2211840},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1425408},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":28.865979382154734},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.9999999997817213},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":6.499999999505235},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":726640},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":33.163265307940684},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":13.4020618557861},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":7.106598984842817},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]"}
+2025-03-19T22:26:28.294+0700	INFO	updates/json_updates.go:54	Metrics updated successfully
+2025-03-19T22:26:28.295+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:48048", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/CMRTcrdM7O-000007", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["707"],"Content-Type":["application/json"],"Hashsha256":["e1348243ada499f8a15994c000e42dd4acecf22c34c8b183d8d22b2062749dcf"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":1.5228426396510903},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":8.673469387315697},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":726640},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":726640},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":2146304},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":11.340206186703758},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":9.844559584597604},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":4.568527918768602},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":6.598984771513611},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":2.525252525274796},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.752557556196899},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":12.999999999738066},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":3637248},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":56160},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":3050},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":8606984},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":806416384},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":4.060913705490016},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":18.556701029628694},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":557056},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":1.9999999999272404},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1448934},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":225},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2825},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":8.121827410241355},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":3.0150753769643455},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":1918432},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":948834},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":557056},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":4.020100502619127},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":2211840},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":1425408},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":28.865979382154734},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0.9999999997817213},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":6.499999999505235},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":726640},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":33.163265307940684},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":13.4020618557861},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":7.106598984842817},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "9.322076ms"}
+2025-03-19T22:26:38.282+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-19T22:26:38.283+0700	DEBUG	crypto/crypto.go:152	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "9cc945bf251daf9bfe8ad0d6577088857cb2c53184fce3c48c4e05f4bb8172a3", "calc_hash": "9cc945bf251daf9bfe8ad0d6577088857cb2c53184fce3c48c4e05f4bb8172a3"}
+2025-03-19T22:26:38.283+0700	DEBUG	updates/json_updates.go:76	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "9cc945bf251daf9bfe8ad0d6577088857cb2c53184fce3c48c4e05f4bb8172a3", "calc_hash": "9cc945bf251daf9bfe8ad0d6577088857cb2c53184fce3c48c4e05f4bb8172a3", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["707"],"Content-Type":["application/json"],"Hashsha256":["9cc945bf251daf9bfe8ad0d6577088857cb2c53184fce3c48c4e05f4bb8172a3"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "body": "[{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4472832},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":5166},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449190},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2052008},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":21.938775509704065},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":14.14141414139187},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":716427264},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":11.055276382019787},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":32.653061222398826},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":14.070351757612576},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13063432},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":5648},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":2261840},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":6.091370558050355},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":11.224489796191103},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":10.152284263355702},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7782400},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":13.775510204551342},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":7.999999999810825},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":12.886597937742215},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":9.743589743360127},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2261840},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3309568},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":12.5},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":482},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1093530},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":13.065326632963725},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":4431872},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":14.13612565518422},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":20.10309278284785},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":11.616161616432581},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.8150346114574128},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":56160},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":12.626262626381404},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":10.552763818483651},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2261840},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":31.122448977622085},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]"}
+2025-03-19T22:26:38.290+0700	INFO	updates/json_updates.go:54	Metrics updated successfully
+2025-03-19T22:26:38.290+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:48048", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/CMRTcrdM7O-000008", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["707"],"Content-Type":["application/json"],"Hashsha256":["9cc945bf251daf9bfe8ad0d6577088857cb2c53184fce3c48c4e05f4bb8172a3"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4472832},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":5166},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449190},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2052008},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":21.938775509704065},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":14.14141414139187},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":716427264},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":11.055276382019787},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":32.653061222398826},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":14.070351757612576},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13063432},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":5648},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":2261840},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":6.091370558050355},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":11.224489796191103},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":10.152284263355702},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7782400},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":13.775510204551342},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":7.999999999810825},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":12.886597937742215},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":9.743589743360127},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":2261840},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":3309568},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":12.5},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":482},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1093530},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":13.065326632963725},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":4431872},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":14.13612565518422},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":20.10309278284785},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":11.616161616432581},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.8150346114574128},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":56160},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":12.626262626381404},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":10.552763818483651},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":2261840},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":31.122448977622085},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "7.456414ms"}
+2025-03-19T22:26:48.285+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-19T22:26:48.286+0700	DEBUG	crypto/crypto.go:152	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "c884954aaf5ae2c998e2dc478e0a1686296b94f84e2da0b4b99114fbddcf50e0", "calc_hash": "c884954aaf5ae2c998e2dc478e0a1686296b94f84e2da0b4b99114fbddcf50e0"}
+2025-03-19T22:26:48.286+0700	DEBUG	updates/json_updates.go:76	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "c884954aaf5ae2c998e2dc478e0a1686296b94f84e2da0b4b99114fbddcf50e0", "calc_hash": "c884954aaf5ae2c998e2dc478e0a1686296b94f84e2da0b4b99114fbddcf50e0", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["692"],"Content-Type":["application/json"],"Hashsha256":["c884954aaf5ae2c998e2dc478e0a1686296b94f84e2da0b4b99114fbddcf50e0"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "body": "[{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":3.0927835051237076},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":16.580310879996897},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":8.16326530656943},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":864776192},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":8.080808081060486},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":12.060301507857382},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":13.567839197041867},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":17.25888324805978},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1068602},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":4.522613064907724},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":3375104},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":56160},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3375104},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7766016},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":8050},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":748},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2093064},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13063432},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":6.598984771534234},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":10.101010100958135},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.9435103194996757},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":7302},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":19.999999999701497},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":32.14285714031162},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":13.846153847439696},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":11.111111111274433},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":10.152284263955641},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":3463024},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":9.183673469031685},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":3463024},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449446},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":3463024},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":12.10526315750776},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":4390912},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]"}
+2025-03-19T22:26:48.295+0700	INFO	updates/json_updates.go:54	Metrics updated successfully
+2025-03-19T22:26:48.295+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:48048", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/CMRTcrdM7O-000009", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["692"],"Content-Type":["application/json"],"Hashsha256":["c884954aaf5ae2c998e2dc478e0a1686296b94f84e2da0b4b99114fbddcf50e0"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":3.0927835051237076},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":16.580310879996897},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":8.16326530656943},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":864776192},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":8.080808081060486},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":12.060301507857382},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":13.567839197041867},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":17.25888324805978},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1068602},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":4.522613064907724},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":3375104},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":56160},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":3375104},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7766016},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":8050},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":748},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2093064},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13063432},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":6.598984771534234},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":10.101010100958135},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.9435103194996757},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":7302},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":19.999999999701497},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":32.14285714031162},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":13.846153847439696},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":11.111111111274433},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":10.152284263955641},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":3463024},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":65280},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":589824},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":9.183673469031685},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":3463024},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449446},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":3463024},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":12.10526315750776},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":4390912},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "9.30017ms"}
+2025-03-19T22:26:58.281+0700	DEBUG	decompresspool/decompresspool.go:50	content encoded with gzip, replacing body with gzip.Reader
+2025-03-19T22:26:58.281+0700	DEBUG	crypto/crypto.go:152	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "800043c1f646f6fbd5b59b941a9bf24e2c3ad4f9cc7b0c359404738e01e3e563", "calc_hash": "800043c1f646f6fbd5b59b941a9bf24e2c3ad4f9cc7b0c359404738e01e3e563"}
+2025-03-19T22:26:58.282+0700	DEBUG	updates/json_updates.go:76	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "800043c1f646f6fbd5b59b941a9bf24e2c3ad4f9cc7b0c359404738e01e3e563", "calc_hash": "800043c1f646f6fbd5b59b941a9bf24e2c3ad4f9cc7b0c359404738e01e3e563", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["738"],"Content-Type":["application/json"],"Hashsha256":["800043c1f646f6fbd5b59b941a9bf24e2c3ad4f9cc7b0c359404738e01e3e563"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "body": "[{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":1925120},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7651328},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449710},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2728176},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.0050251258375948},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":13.705583756746387},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":8.163265306084568},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":9.59595959560326},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2787},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":9890},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.5561584479859075},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":66400},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":26.395939084577087},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1873736},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2981888},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":31.979695430272205},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":21.42857142761686},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":9.230769231377712},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":8.62944162439923},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000008921076102094774},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4669440},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":5.527638191009894},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":1},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":18.04123711313914},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":2.0100502514271517},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":1.485148514780159},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":7103},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":12.820512820445847},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":81600},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":3.589743589814388},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":12.060301507857382},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":11.340206185273157},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1742398008281611500},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13915400},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":4627232},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":785174528},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":21.35416666562454},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":28.20512820669725},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1873736},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1252490},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":149521},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":2.4875621891879955},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]"}
+2025-03-19T22:26:58.291+0700	INFO	updates/json_updates.go:54	Metrics updated successfully
+2025-03-19T22:26:58.291+0700	INFO	logger/logger.go:39	request completed	{"method": "POST", "path": "/updates", "remote_addr": "127.0.0.1:48048", "user_agent": "go-resty/2.12.0 (https://github.com/go-resty/resty)", "request_id": "ubuntu/CMRTcrdM7O-000010", "headers": {"Accept":["application/json"],"Accept-Encoding":["gzip"],"Content-Encoding":["gzip"],"Content-Length":["738"],"Content-Type":["application/json"],"Hashsha256":["800043c1f646f6fbd5b59b941a9bf24e2c3ad4f9cc7b0c359404738e01e3e563"],"User-Agent":["go-resty/2.12.0 (https://github.com/go-resty/resty)"],"X-Real-Ip":["100.64.19.228"]}, "request_body": "[{\"id\":\"HeapReleased\",\"type\":\"gauge\",\"value\":1925120},{\"id\":\"HeapSys\",\"type\":\"gauge\",\"value\":7651328},{\"id\":\"BuckHashSys\",\"type\":\"gauge\",\"value\":1449710},{\"id\":\"GCSys\",\"type\":\"gauge\",\"value\":2728176},{\"id\":\"StackSys\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"TotalMemory\",\"type\":\"gauge\",\"value\":16476016640},{\"id\":\"CPUutilization4\",\"type\":\"gauge\",\"value\":1.0050251258375948},{\"id\":\"CPUutilization13\",\"type\":\"gauge\",\"value\":13.705583756746387},{\"id\":\"CPUutilization17\",\"type\":\"gauge\",\"value\":8.163265306084568},{\"id\":\"CPUutilization18\",\"type\":\"gauge\",\"value\":9.59595959560326},{\"id\":\"HeapObjects\",\"type\":\"gauge\",\"value\":2787},{\"id\":\"Mallocs\",\"type\":\"gauge\",\"value\":9890},{\"id\":\"RandomValue\",\"type\":\"gauge\",\"value\":0.5561584479859075},{\"id\":\"MSpanInuse\",\"type\":\"gauge\",\"value\":66400},{\"id\":\"CPUutilization9\",\"type\":\"gauge\",\"value\":26.395939084577087},{\"id\":\"HeapAlloc\",\"type\":\"gauge\",\"value\":1873736},{\"id\":\"HeapInuse\",\"type\":\"gauge\",\"value\":2981888},{\"id\":\"NextGC\",\"type\":\"gauge\",\"value\":4194304},{\"id\":\"StackInuse\",\"type\":\"gauge\",\"value\":720896},{\"id\":\"CPUutilization5\",\"type\":\"gauge\",\"value\":31.979695430272205},{\"id\":\"CPUutilization11\",\"type\":\"gauge\",\"value\":21.42857142761686},{\"id\":\"CPUutilization15\",\"type\":\"gauge\",\"value\":9.230769231377712},{\"id\":\"CPUutilization19\",\"type\":\"gauge\",\"value\":8.62944162439923},{\"id\":\"GCCPUFraction\",\"type\":\"gauge\",\"value\":0.000008921076102094774},{\"id\":\"HeapIdle\",\"type\":\"gauge\",\"value\":4669440},{\"id\":\"CPUutilization20\",\"type\":\"gauge\",\"value\":5.527638191009894},{\"id\":\"MCacheSys\",\"type\":\"gauge\",\"value\":31200},{\"id\":\"NumForcedGC\",\"type\":\"gauge\",\"value\":0},{\"id\":\"NumGC\",\"type\":\"gauge\",\"value\":1},{\"id\":\"CPUutilization3\",\"type\":\"gauge\",\"value\":18.04123711313914},{\"id\":\"CPUutilization10\",\"type\":\"gauge\",\"value\":2.0100502514271517},{\"id\":\"CPUutilization12\",\"type\":\"gauge\",\"value\":1.485148514780159},{\"id\":\"Frees\",\"type\":\"gauge\",\"value\":7103},{\"id\":\"MCacheInuse\",\"type\":\"gauge\",\"value\":24000},{\"id\":\"CPUutilization14\",\"type\":\"gauge\",\"value\":12.820512820445847},{\"id\":\"MSpanSys\",\"type\":\"gauge\",\"value\":81600},{\"id\":\"CPUutilization2\",\"type\":\"gauge\",\"value\":3.589743589814388},{\"id\":\"CPUutilization6\",\"type\":\"gauge\",\"value\":12.060301507857382},{\"id\":\"CPUutilization16\",\"type\":\"gauge\",\"value\":11.340206185273157},{\"id\":\"LastGC\",\"type\":\"gauge\",\"value\":1742398008281611500},{\"id\":\"Lookups\",\"type\":\"gauge\",\"value\":0},{\"id\":\"Sys\",\"type\":\"gauge\",\"value\":13915400},{\"id\":\"TotalAlloc\",\"type\":\"gauge\",\"value\":4627232},{\"id\":\"FreeMemory\",\"type\":\"gauge\",\"value\":785174528},{\"id\":\"CPUutilization1\",\"type\":\"gauge\",\"value\":21.35416666562454},{\"id\":\"CPUutilization7\",\"type\":\"gauge\",\"value\":28.20512820669725},{\"id\":\"Alloc\",\"type\":\"gauge\",\"value\":1873736},{\"id\":\"OtherSys\",\"type\":\"gauge\",\"value\":1252490},{\"id\":\"PauseTotalNs\",\"type\":\"gauge\",\"value\":149521},{\"id\":\"CPUutilization8\",\"type\":\"gauge\",\"value\":2.4875621891879955},{\"id\":\"PollCount\",\"type\":\"counter\",\"delta\":1}]", "status": 200, "response_bytes": 56, "response_headers": {"Content-Encoding":["gzip"],"Content-Type":["application/json"],"Hashsha256":["20d913019bca8c31c1566976b46c8aaa3f1b57627b61ae9b57868fc047b48c67"],"Vary":["Accept-Encoding"]}, "response_body": "{\"status\":\"OK\",\"message\":\"Metrics updated successfully\"}", "duration": "9.604151ms"}
+2025-03-19T22:27:27.196+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:27:37.195+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:27:47.193+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:27:57.197+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:28:07.195+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:28:17.195+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:28:27.196+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:28:37.195+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:28:47.192+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:28:57.195+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:29:07.195+0700	DEBUG	grpc/metrics_service.go:109	metrics batch updated via gRPC	{"count": 51}
+2025-03-19T22:29:20.655+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "beff10618bb526b399a7203f51220993aced4cfd22b3240ab2f0e82fd9879f1f", "expected": "aad25e4b5e03c7bf25504c02cba4b8218027eac3069b37a78f9bd399dfca87f1", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:21.659+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "beff10618bb526b399a7203f51220993aced4cfd22b3240ab2f0e82fd9879f1f", "expected": "aad25e4b5e03c7bf25504c02cba4b8218027eac3069b37a78f9bd399dfca87f1", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:24.662+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "beff10618bb526b399a7203f51220993aced4cfd22b3240ab2f0e82fd9879f1f", "expected": "aad25e4b5e03c7bf25504c02cba4b8218027eac3069b37a78f9bd399dfca87f1", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:29.665+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "beff10618bb526b399a7203f51220993aced4cfd22b3240ab2f0e82fd9879f1f", "expected": "aad25e4b5e03c7bf25504c02cba4b8218027eac3069b37a78f9bd399dfca87f1", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:30.651+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "3b8a915816e0df44eeb74abc6ab2ceb80cf34a507044abe78e5bba137804a39f", "expected": "e960ddb64f9097385f941df489f73a2628c43ceeb77765a3549b265ecb0c0e3e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:31.657+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "3b8a915816e0df44eeb74abc6ab2ceb80cf34a507044abe78e5bba137804a39f", "expected": "e960ddb64f9097385f941df489f73a2628c43ceeb77765a3549b265ecb0c0e3e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:34.659+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "3b8a915816e0df44eeb74abc6ab2ceb80cf34a507044abe78e5bba137804a39f", "expected": "e960ddb64f9097385f941df489f73a2628c43ceeb77765a3549b265ecb0c0e3e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:39.662+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "3b8a915816e0df44eeb74abc6ab2ceb80cf34a507044abe78e5bba137804a39f", "expected": "e960ddb64f9097385f941df489f73a2628c43ceeb77765a3549b265ecb0c0e3e", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:40.651+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "787c9eb1fecd21378794324249bf29ef7b83e92b82bf229a74a325e1af415a63", "expected": "8ff0e973998c1291092380eadfe22b3053c1083d6063be0c3f1a78ec3277a11d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:41.654+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "787c9eb1fecd21378794324249bf29ef7b83e92b82bf229a74a325e1af415a63", "expected": "8ff0e973998c1291092380eadfe22b3053c1083d6063be0c3f1a78ec3277a11d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965
+2025-03-19T22:29:44.657+0700	WARN	grpc/interceptors.go:70	invalid signature	{"received": "787c9eb1fecd21378794324249bf29ef7b83e92b82bf229a74a325e1af415a63", "expected": "8ff0e973998c1291092380eadfe22b3053c1083d6063be0c3f1a78ec3277a11d", "error": "invalid hash in request header"}
+github.com/maynagashev/go-metrics/internal/server/grpc.(*Server).Start.SignatureValidatorInterceptor.func2
+	/home/dev/src/maynagashev/go-metrics/internal/server/grpc/interceptors.go:70
+github.com/maynagashev/go-metrics/internal/grpc/pb._MetricsService_UpdateBatch_Handler
+	/home/dev/src/maynagashev/go-metrics/internal/grpc/pb/metrics_grpc.pb.go:198
+google.golang.org/grpc.(*Server).processUnaryRPC
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1340
+google.golang.org/grpc.(*Server).handleStream
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:1713
+google.golang.org/grpc.(*Server).serveStreams.func1.2
+	/home/dev/go/1.22.8/pkg/mod/google.golang.org/grpc@v1.50.1/server.go:965

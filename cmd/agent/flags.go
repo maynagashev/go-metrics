@@ -27,7 +27,7 @@ type Flags struct {
 		ReportInterval float64
 		PollInterval   float64
 	}
-	PrivateKey  string
+	PrivateKey  string // путь к файлу с приватным ключом для подписи запросов к серверу
 	CryptoKey   string // путь к файлу с публичным ключом для шифрования
 	RateLimit   int
 	EnablePprof bool   // добавляем поле для профилирования

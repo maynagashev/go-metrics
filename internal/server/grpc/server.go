@@ -98,28 +98,42 @@ func (s *Server) Start() error {
 			zap.Uint32("using", DefaultMaxConcurrentStreams))
 	}
 
+	// Создаем перехватчики для проверки безопасности запросов
+	unaryInterceptors := []grpc.UnaryServerInterceptor{
+		SignatureValidatorInterceptor(s.log, s.cfg.PrivateKey), // Добавляем перехватчик для проверки подписи
+	}
+
+	streamInterceptors := []grpc.StreamServerInterceptor{
+		StreamSignatureValidatorInterceptor(s.log, s.cfg.PrivateKey), // Добавляем перехватчик для проверки подписи потоков
+	}
+
 	// Настраиваем опции сервера
 	opts := []grpc.ServerOption{
 		grpc.KeepaliveEnforcementPolicy(kaep),
 		grpc.KeepaliveParams(kasp),
 		grpc.MaxConcurrentStreams(maxConnections),
+		grpc.ChainUnaryInterceptor(unaryInterceptors...),   // Добавляем цепочку унарных перехватчиков
+		grpc.ChainStreamInterceptor(streamInterceptors...), // Добавляем цепочку потоковых перехватчиков
 	}
 
 	// Создаем gRPC сервер
 	s.grpcServer = grpc.NewServer(opts...)
 
-	// Регистрируем сервис метрик
+	// Регистрируем сервисы
 	pb.RegisterMetricsServiceServer(s.grpcServer, s.metricsServ)
 
 	// Запускаем сервер в отдельной горутине
 	go func() {
-		serveErr := s.grpcServer.Serve(lis)
-		if serveErr != nil {
-			s.log.Error("failed to serve gRPC", zap.Error(serveErr))
+		if err := s.grpcServer.Serve(lis); err != nil {
+			s.log.Error("gRPC server error", zap.Error(err))
 		}
 	}()
 
-	s.log.Info("gRPC server started", zap.String("address", addr))
+	s.log.Info("gRPC server started successfully",
+		zap.String("address", addr),
+		zap.Uint32("max_connections", maxConnections),
+		zap.Bool("request_signing_enabled", s.cfg.IsRequestSigningEnabled()))
+
 	return nil
 }
 
