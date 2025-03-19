@@ -77,7 +77,7 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (73.4%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (75.0%)</option>
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (91.7%)</option>
 				
@@ -1945,7 +1945,7 @@ type agent struct {
         ServerURL          string
         SendCompressedData bool
         PrivateKey         string
-        RateLimit          int
+        RateLimit          int            // Количество воркеров для сбора и отправки метрик
         PublicKey          *rsa.PublicKey // Public key for encryption
 
         // Конфигурация gRPC
@@ -2042,6 +2042,15 @@ func (a *agent) IsEncryptionEnabled() bool <span class="cov8" title="1">{
         return a.PublicKey != nil
 }</span>
 
+// runInWaitGroup запускает функцию в отдельной горутине и управляет WaitGroup.
+func (a *agent) runInWaitGroup(f func()) <span class="cov8" title="1">{
+        a.wg.Add(1)
+        go func() </span><span class="cov8" title="1">{
+                defer a.wg.Done()
+                f()
+        }</span>()
+}
+
 // Run запускает агента и его воркеры.
 func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
         slog.Info("Starting agent",
@@ -2053,13 +2062,33 @@ func (a *agent) Run(ctx context.Context) <span class="cov8" title="1">{
                 "grpc_enabled", a.GRPCEnabled,
                 "grpc_address", a.GRPCAddress)
 
-        // Запускаем воркеры для сбора и отправки метрик
-        for i := range a.RateLimit </span><span class="cov8" title="1">{
-                a.runWorker(i)
-        }</span>
-        <span class="cov8" title="1">a.runCollector()
-        a.runPolls(ctx)
-        a.runReports(ctx)
+        // Запускаем горутину для сбора метрик по таймеру pollTicker
+        a.runInWaitGroup(func() </span><span class="cov8" title="1">{
+                a.runPolls(ctx)
+        }</span>)
+
+        // Запускаем горутину для создания задач по отправке метрик по таймеру reportTicker
+        <span class="cov8" title="1">a.runInWaitGroup(func() </span><span class="cov8" title="1">{
+                a.runReports(ctx)
+        }</span>)
+
+        // Запускаем воркеры для отправки метрик
+        <span class="cov8" title="1">for i := range a.RateLimit </span><span class="cov8" title="1">{
+                workerID := i
+                a.runInWaitGroup(func() </span><span class="cov8" title="1">{
+                        a.runWorker(workerID)()
+                }</span>)
+        }
+
+        // Запускаем горутину для сбора результатов
+        <span class="cov8" title="1">a.runInWaitGroup(func() </span><span class="cov8" title="1">{
+                a.runCollector()()
+        }</span>)
+
+        // Ждем сигнала завершения из контекста
+        <span class="cov8" title="1">&lt;-ctx.Done()
+
+        // После получения сигнала завершения, корректно завершаем работу агента
         a.Shutdown()</span>
 }
 
@@ -2074,12 +2103,10 @@ func maskString(s string) string <span class="cov8" title="1">{
 }
 
 // runWorker запускает обработчик задач на отправку метрик.
-func (a *agent) runWorker(id int) <span class="cov8" title="1">{
-        a.wg.Add(1)
-        go func() </span><span class="cov8" title="1">{
-                defer a.wg.Done()
-                slog.Info("Starting worker", "workerID", id)
-                defer slog.Info("Worker shutting down", "workerID", id)
+func (a *agent) runWorker(id int) func() <span class="cov8" title="1">{
+        return func() </span><span class="cov8" title="1">{
+                slog.Info("Starting sender worker", "workerID", id)
+                defer slog.Info("Sender worker shutting down", "workerID", id)
 
                 for </span><span class="cov8" title="1">{
                         select </span>{
@@ -2100,7 +2127,7 @@ func (a *agent) runWorker(id int) <span class="cov8" title="1">{
                                 a.resultQueue &lt;- Result{Job: job, Error: err}</span>
                         }
                 }
-        }()
+        }
 }
 
 // sendMetrics отправляет метрики на сервер.
@@ -2111,11 +2138,9 @@ func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, worker
         return a.client.UpdateBatch(ctx, items)
 }</span>
 
-// runCollector запускает сборщик результатов.
-func (a *agent) runCollector() <span class="cov8" title="1">{
-        a.wg.Add(1)
-        go func() </span><span class="cov8" title="1">{
-                defer a.wg.Done()
+// runCollector возвращает функцию, которая запускает сборщик результатов.
+func (a *agent) runCollector() func() <span class="cov8" title="1">{
+        return func() </span><span class="cov8" title="1">{
                 slog.Info("Collector started")
                 for </span><span class="cov8" title="1">{
                         select </span>{
@@ -2134,7 +2159,7 @@ func (a *agent) runCollector() <span class="cov8" title="1">{
                                 return</span>
                         }
                 }
-        }()
+        }
 }
 
 // GetMetrics возвращает список всех собранных метрик.
@@ -2255,11 +2280,8 @@ func (a *agent) Shutdown() <span class="cov8" title="1">{
         slog.Info("======= GRACEFUL SHUTDOWN COMPLETED =======")</span>
 }
 
-// runPolls собирает сведения из системы в отдельной горутине.
+// runPolls собирает сведения из системы в отдельной горутине по таймеру.
 func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
-        a.wg.Add(1)
-        defer a.wg.Done()
-
         slog.Info("Poll routine started",
                 "poll_interval", a.PollInterval,
                 "metrics_storage_size", len(a.gauges)+len(a.counters))
@@ -2290,30 +2312,36 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
         }
 }
 
-// Создает задачи по отправке метрик в очереди задач на отправку.
+// runReports создает по таймеру задачи по отправке метрик в очереди задач на отправку.
 func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
-        a.wg.Add(1)
-        defer a.wg.Done()
-
         slog.Info("Report routine started",
                 "report_interval", a.ReportInterval,
-                "server_url", a.ServerURL)
+                "server_url", a.ServerURL,
+                "grpc_enabled", a.GRPCEnabled,
+                "grpc_address", a.GRPCAddress)
 
-        for </span><span class="cov8" title="1">{
+        // Добавляем отладочную информацию о клиенте
+        if a.client != nil </span><span class="cov8" title="1">{
+                slog.Info("Client initialized", "client_type", fmt.Sprintf("%T", a.client))
+        }</span> else<span class="cov8" title="1"> {
+                slog.Error("Client is nil")
+        }</span>
+
+        <span class="cov8" title="1">for </span><span class="cov8" title="1">{
                 select </span>{
                 case &lt;-a.reportTicker.C:<span class="cov0" title="0">
                         reportStart := time.Now()
-                        slog.Debug("Starting metrics report cycle")
+                        slog.Info("Starting metrics report cycle")
 
                         metrics := a.GetMetrics()
                         metricsCount := len(metrics)
@@ -2328,12 +2356,12 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         }</span>
 
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
-                        slog.Debug("Report cycle completed",
+                        slog.Info("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
                 case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }

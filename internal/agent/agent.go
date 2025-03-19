@@ -182,6 +182,15 @@ func (a *agent) IsEncryptionEnabled() bool {
 	return a.PublicKey != nil
 }
 
+// runInWaitGroup запускает функцию в отдельной горутине и управляет WaitGroup.
+func (a *agent) runInWaitGroup(f func()) {
+	a.wg.Add(1)
+	go func() {
+		defer a.wg.Done()
+		f()
+	}()
+}
+
 // Run запускает агента и его воркеры.
 func (a *agent) Run(ctx context.Context) {
 	slog.Info("Starting agent",
@@ -193,15 +202,28 @@ func (a *agent) Run(ctx context.Context) {
 		"grpc_enabled", a.GRPCEnabled,
 		"grpc_address", a.GRPCAddress)
 
-	// Запускаем воркеры для сбора и отправки метрик
-	for i := range a.RateLimit {
-		a.runWorker(i)
-	}
-	a.runCollector()
+	// Запускаем горутину для сбора метрик по таймеру pollTicker
+	a.runInWaitGroup(func() {
+		a.runPolls(ctx)
+	})
 
-	// Запускаем горутины для сбора метрик и их отправки
-	go a.runPolls(ctx)
-	go a.runReports(ctx)
+	// Запускаем горутину для создания задач по отправке метрик по таймеру reportTicker
+	a.runInWaitGroup(func() {
+		a.runReports(ctx)
+	})
+
+	// Запускаем воркеры для отправки метрик из очереди задач на отправку
+	for i := range a.RateLimit {
+		workerID := i
+		a.runInWaitGroup(func() {
+			a.runWorker(workerID)()
+		})
+	}
+
+	// Запускаем горутину для сбора результатов из очереди результатов выполнения задач
+	a.runInWaitGroup(func() {
+		a.runCollector()()
+	})
 
 	// Ждем сигнала завершения из контекста
 	<-ctx.Done()
@@ -221,12 +243,10 @@ func maskString(s string) string {
 }
 
 // runWorker запускает обработчик задач на отправку метрик.
-func (a *agent) runWorker(id int) {
-	a.wg.Add(1)
-	go func() {
-		defer a.wg.Done()
-		slog.Info("Starting worker", "workerID", id)
-		defer slog.Info("Worker shutting down", "workerID", id)
+func (a *agent) runWorker(id int) func() {
+	return func() {
+		slog.Info("Starting sender worker", "workerID", id)
+		defer slog.Info("Sender worker shutting down", "workerID", id)
 
 		for {
 			select {
@@ -247,7 +267,7 @@ func (a *agent) runWorker(id int) {
 				a.resultQueue <- Result{Job: job, Error: err}
 			}
 		}
-	}()
+	}
 }
 
 // sendMetrics отправляет метрики на сервер.
@@ -258,11 +278,9 @@ func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, worker
 	return a.client.UpdateBatch(ctx, items)
 }
 
-// runCollector запускает сборщик результатов.
-func (a *agent) runCollector() {
-	a.wg.Add(1)
-	go func() {
-		defer a.wg.Done()
+// runCollector возвращает функцию, которая запускает сборщик результатов.
+func (a *agent) runCollector() func() {
+	return func() {
 		slog.Info("Collector started")
 		for {
 			select {
@@ -281,7 +299,7 @@ func (a *agent) runCollector() {
 				return
 			}
 		}
-	}()
+	}
 }
 
 // GetMetrics возвращает список всех собранных метрик.
@@ -402,11 +420,8 @@ func (a *agent) Shutdown() {
 	slog.Info("======= GRACEFUL SHUTDOWN COMPLETED =======")
 }
 
-// runPolls собирает сведения из системы в отдельной горутине.
+// runPolls собирает сведения из системы в отдельной горутине по таймеру.
 func (a *agent) runPolls(ctx context.Context) {
-	a.wg.Add(1)
-	defer a.wg.Done()
-
 	slog.Info("Poll routine started",
 		"poll_interval", a.PollInterval,
 		"metrics_storage_size", len(a.gauges)+len(a.counters))
@@ -447,11 +462,8 @@ func (a *agent) runPolls(ctx context.Context) {
 	}
 }
 
-// Создает задачи по отправке метрик в очереди задач на отправку.
+// runReports создает по таймеру задачи по отправке метрик в очереди задач на отправку.
 func (a *agent) runReports(ctx context.Context) {
-	a.wg.Add(1)
-	defer a.wg.Done()
-
 	slog.Info("Report routine started",
 		"report_interval", a.ReportInterval,
 		"server_url", a.ServerURL,
