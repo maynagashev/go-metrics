@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"crypto/rsa"
 	"io"
 	"log/slog"
 	"os"
@@ -89,26 +88,26 @@ func TestMain(t *testing.T) {
 		reportInterval time.Duration,
 		privateKey string,
 		rateLimit int,
-		publicKey *rsa.PublicKey,
 		realIP string,
 		grpcEnabled bool,
 		grpcAddress string,
 		grpcTimeout int,
 		grpcRetry int,
-	) agent.Agent {
+		cryptoKeyPath string,
+	) (agent.Agent, error) {
 		// Проверяем, что параметры переданы правильно
 		assert.Equal(t, "http://localhost:9090", serverURL)
 		assert.Equal(t, 2*time.Second, pollInterval)
 		assert.Equal(t, 5*time.Second, reportInterval)
 		assert.Equal(t, "test-key", privateKey)
 		assert.Equal(t, 5, rateLimit)
-		assert.Nil(t, publicKey)
 		assert.Equal(t, "", realIP)
 		assert.False(t, grpcEnabled)
 		assert.Equal(t, "localhost:9090", grpcAddress)
 		assert.Equal(t, 5, grpcTimeout)
 		assert.Equal(t, 3, grpcRetry)
-		return mockAgent
+		assert.Equal(t, "", cryptoKeyPath)
+		return mockAgent, nil
 	}
 
 	// Запускаем main()

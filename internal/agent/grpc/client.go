@@ -2,11 +2,16 @@ package grpc
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"errors"
 	"fmt"
 	"log/slog"
+	"os"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
@@ -17,13 +22,14 @@ import (
 
 // Client представляет gRPC клиент для отправки метрик.
 type Client struct {
-	address    string        // адрес gRPC сервера
-	timeout    time.Duration // таймаут для запросов
-	maxRetries int           // максимальное количество повторных попыток
-	conn       *grpc.ClientConn
-	client     pb.MetricsServiceClient
-	realIP     string // IP-адрес для заголовка X-Real-IP
-	privateKey string // приватный ключ для подписи запросов
+	address       string        // адрес gRPC сервера
+	timeout       time.Duration // таймаут для запросов
+	maxRetries    int           // максимальное количество повторных попыток
+	conn          *grpc.ClientConn
+	client        pb.MetricsServiceClient
+	realIP        string // IP-адрес для заголовка X-Real-IP
+	privateKey    string // приватный ключ для подписи запросов
+	publicKeyPath string // путь к публичному ключу для TLS
 }
 
 // New создает новый gRPC клиент.
@@ -33,6 +39,7 @@ func New(
 	maxRetries int,
 	realIP,
 	privateKey string,
+	publicKeyPath string,
 ) (*Client, error) {
 	// Создаем соединение с сервером
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
@@ -47,15 +54,40 @@ func New(
 		StreamSigningInterceptor(privateKey), // Добавляем перехватчик для подписи потоковых запросов
 	}
 
-	// Устанавливаем соединение без TLS (в будущем можно добавить TLS)
-	conn, err := grpc.DialContext(
-		ctx,
-		address,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
+	// Опции для подключения
+	var dialOpts []grpc.DialOption
+	dialOpts = append(dialOpts,
 		grpc.WithChainUnaryInterceptor(unaryInterceptors...),
 		grpc.WithChainStreamInterceptor(streamInterceptors...),
+		grpc.WithBlock(),
 	)
+
+	// Если указан путь к публичному ключу, настраиваем TLS
+	if publicKeyPath != "" {
+		creds, err := loadTLSCredentials(publicKeyPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load TLS credentials: %w", err)
+		}
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+		slog.Info("TLS encryption enabled for gRPC client, credentials loaded from file", "path", publicKeyPath)
+	} else {
+		// Устанавливаем соединение без TLS
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		slog.Warn("TLS encryption disabled for gRPC client, using insecure connection")
+	}
+
+	slog.Info("Connecting to gRPC server",
+		"address", address,
+		"timeout", timeout,
+		"maxRetries", maxRetries,
+		"realIP", realIP,
+		"privateKey", privateKey,
+		"publicKeyPath", publicKeyPath,
+		"dialOpts", dialOpts,
+	)
+
+	// Устанавливаем соединение с сервером
+	conn, err := grpc.DialContext(ctx, address, dialOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC server: %w", err)
 	}
@@ -72,14 +104,37 @@ func New(
 	}
 
 	return &Client{
-		address:    address,
-		timeout:    time.Duration(timeout) * time.Second,
-		maxRetries: maxRetries,
-		conn:       conn,
-		client:     client,
-		realIP:     realIP,
-		privateKey: privateKey,
+		address:       address,
+		timeout:       time.Duration(timeout) * time.Second,
+		maxRetries:    maxRetries,
+		conn:          conn,
+		client:        client,
+		realIP:        realIP,
+		privateKey:    privateKey,
+		publicKeyPath: publicKeyPath,
 	}, nil
+}
+
+// loadTLSCredentials загружает TLS креды для защищенного соединения.
+func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials, error) {
+	// Загружаем сертификат CA
+	pemServerCA, err := os.ReadFile(publicKeyPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read server CA cert: %w", err)
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, errors.New("failed to add server CA's certificate")
+	}
+
+	// Создаем TLS конфигурацию с проверкой сервера
+	config := &tls.Config{
+		RootCAs:    certPool,
+		MinVersion: tls.VersionTLS12,
+	}
+
+	return credentials.NewTLS(config), nil
 }
 
 // Close закрывает соединение с сервером.

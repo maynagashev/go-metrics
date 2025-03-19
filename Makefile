@@ -96,12 +96,12 @@ agent-with-version: set-versions
 # Запуск сервера с шифрованием (iter21)
 server-with-encryption:
 	@echo "Запуск сервера с шифрованием..."
-	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=private.pem 2>&1 | tee logs/server-with-encryption.log
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=server.key 2>&1 | tee logs/server-with-encryption.log
 
 # Запуск агента с шифрованием (iter21)
 agent-with-encryption:
 	@echo "Запуск агента с шифрованием..."
-	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=public.pem 2>&1 | tee logs/agent-with-encryption.log
+	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=server.crt 2>&1 | tee logs/agent-with-encryption.log
 
 # Запуск сервера с конфигурационным файлом (iter22)
 server-with-config:
@@ -157,6 +157,15 @@ agent-with-grpc:
 	@echo "Запуск агента с использованием gRPC..."
 	@go run ./cmd/agent/. -k="private_key_example" -grpc-enabled -grpc-address="localhost:9090" 2>&1 | tee logs/agent-with-grpc.log
 
+# Запуск сервера с шифрованием gRPC (iter25)
+server-with-grpc-encryption:
+	@echo "Запуск сервера с шифрованием gRPC..."
+	@go run ./cmd/server/. -d $(DB_DSN) -k="private_key_example" -crypto-key=server.key -grpc-enabled -grpc-address="localhost:9090" 2>&1 | tee logs/server-with-grpc-encryption.log
+
+# Запуск агента с шифрованием gRPC (iter25)	
+agent-with-grpc-encryption:
+	@echo "Запуск агента с шифрованием gRPC..."
+	@go run ./cmd/agent/. -k="private_key_example" -crypto-key=server.crt -grpc-enabled -grpc-address="localhost:9090" 2>&1 | tee logs/agent-with-grpc-encryption.log	
 
 # Запуск всех тестов
 test:
@@ -245,4 +254,7 @@ staticlint:
 	@echo "Запуск кастомного мультичекера staticlint..."
 	go run ./cmd/staticlint/ ./... | tee logs/staticlint.log
 
-
+# Генерация приватного ключа и публичного сертификата x509
+gen-keys:
+	@echo "Генерация ключей..."
+	@go run ./cmd/keygen/main.go -bits=4096 -private=server.key -public=server.crt

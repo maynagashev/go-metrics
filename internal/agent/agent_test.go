@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -16,19 +17,20 @@ func TestAgent_collectRuntimeMetrics(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	a := agent.New(
+	a, err := agent.New(
 		"http://localhost:8080/metrics",
 		2*time.Second,
 		10*time.Second,
 		"",               // пустой приватный ключ
 		0,                // нулевой rate limit
-		nil,              // без публичного ключа
 		"",               // без явного IP-адреса
 		false,            // gRPC выключен
 		"localhost:9090", // адрес gRPC сервера по умолчанию
 		5,                // таймаут по умолчанию
 		3,                // количество повторных попыток по умолчанию
+		"",               // путь к файлу с ключом шифрования
 	)
+	require.NoError(t, err)
 	tests := []struct {
 		name string
 		want int
@@ -58,19 +60,20 @@ func TestAgent_collectRuntimeMetrics(t *testing.T) {
 
 func TestAgent_GRPCConfig(t *testing.T) {
 	// Создаем тестовый агент с включенным gRPC
-	a := agent.New(
+	a, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		true,               // включаем gRPC
 		"custom-grpc:9999", // указываем адрес gRPC сервера
 		10,                 // устанавливаем таймаут в секундах
 		5,                  // устанавливаем количество повторных попыток
+		"",                 // путь к файлу с ключом шифрования
 	)
+	require.NoError(t, err)
 
 	// Запускаем агент (это выведет gRPC конфигурацию в логи)
 	ctx, cancel := context.WithCancel(context.Background())

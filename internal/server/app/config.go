@@ -26,7 +26,9 @@ type Config struct {
 	PrivateKey string
 	// Включить профилирование через pprof
 	EnablePprof bool
-	// Приватный ключ для расшифровки данных.
+	// CryptoKey путь к файлу приватного ключа для шифрования для настройки TLS в gRPC сервере
+	CryptoKey string
+	// Приватный ключ для расшифровки данных загруженный из CryptoKey, используется в HTTP сервере
 	PrivateRSAKey *rsa.PrivateKey
 	// Конфигурационный файл
 	ConfigFile string
@@ -74,6 +76,7 @@ func NewConfig(flags *Flags) *Config {
 		EnablePprof:   flags.Server.EnablePprof,
 		ConfigFile:    flags.ConfigFile,
 		TrustedSubnet: flags.Server.TrustedSubnet,
+		CryptoKey:     flags.CryptoKey,
 	}
 
 	// Load private key for decryption if provided
@@ -138,4 +141,9 @@ func (cfg *Config) IsTrustedSubnetEnabled() bool {
 // IsGRPCEnabled возвращает true, если включен gRPC сервер.
 func (cfg *Config) IsGRPCEnabled() bool {
 	return cfg.GRPC.Enabled
+}
+
+// GetCryptoKeyPath возвращает путь к файлу с ключом для шифрования.
+func (cfg *Config) GetCryptoKeyPath() string {
+	return cfg.CryptoKey
 }

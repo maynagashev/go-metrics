@@ -2,12 +2,14 @@
 package grpc
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"time"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	_ "google.golang.org/grpc/encoding/gzip" // Автоматически регистрирует gzip компрессор при импорте
 	"google.golang.org/grpc/keepalive"
 
@@ -116,6 +118,24 @@ func (s *Server) Start() error {
 		grpc.ChainStreamInterceptor(streamInterceptors...), // Добавляем цепочку потоковых перехватчиков
 	}
 
+	// Добавляем TLS только если есть путь к приватному ключу
+	cryptoKeyPath := s.cfg.GetCryptoKeyPath()
+	if cryptoKeyPath != "" {
+		s.log.Info("loading TLS credentials", zap.String("key_path", cryptoKeyPath))
+		// Загружаем сертификат и ключ сервера
+		creds, tlsErr := loadTLSCredentials(cryptoKeyPath)
+		if tlsErr != nil {
+			s.log.Error("failed to load TLS credentials", zap.Error(tlsErr))
+			return fmt.Errorf("failed to load TLS credentials: %w", tlsErr)
+		}
+
+		// Добавляем TLS credentials в опции сервера
+		opts = append(opts, grpc.Creds(creds))
+		s.log.Info("TLS encryption enabled for gRPC server", zap.String("key_path", cryptoKeyPath))
+	} else {
+		s.log.Warn("TLS encryption disabled for gRPC server, using insecure connection")
+	}
+
 	// Создаем gRPC сервер
 	s.grpcServer = grpc.NewServer(opts...)
 
@@ -132,9 +152,31 @@ func (s *Server) Start() error {
 	s.log.Info("gRPC server started successfully",
 		zap.String("address", addr),
 		zap.Uint32("max_connections", maxConnections),
-		zap.Bool("request_signing_enabled", s.cfg.IsRequestSigningEnabled()))
+		zap.Bool("request_signing_enabled", s.cfg.IsRequestSigningEnabled()),
+		zap.Bool("tls_enabled", cryptoKeyPath != ""))
 
 	return nil
+}
+
+// loadTLSCredentials загружает TLS креды для защищенного соединения..
+func loadTLSCredentials(keyFile string) (credentials.TransportCredentials, error) {
+	// Создаем сертификат из публичного ключа, извлеченного из приватного ключа
+	certFile := "server.crt"
+
+	// Загружаем сертификат и приватный ключ сервера
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load server certificate and key: %w", err)
+	}
+
+	// Создаем TLS конфигурацию
+	config := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		ClientAuth:   tls.NoClientCert,
+		MinVersion:   tls.VersionTLS12,
+	}
+
+	return credentials.NewTLS(config), nil
 }
 
 // Stop останавливает gRPC сервер.

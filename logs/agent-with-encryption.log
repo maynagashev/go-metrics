@@ -1,8 +1,8 @@
 Build version: N/A
 Build date: N/A
 Build commit: N/A
-time=2025-03-06T12:00:54.835+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey:public.pem RateLimit:3 EnablePprof:false PprofPort:6060}"
-time=2025-03-06T12:00:54.835+07:00 level=INFO msg="loaded public key for encryption" path=public.pem
+time=2025-03-06T12:00:54.835+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey:server.crt RateLimit:3 EnablePprof:false PprofPort:6060}"
+time=2025-03-06T12:00:54.835+07:00 level=INFO msg="loaded public key for encryption" path=server.crt
 time=2025-03-06T12:00:54.835+07:00 level=INFO msg="starting agent..." server_url=http://localhost:8080 poll_interval=2s report_interval=10s send_compressed_data=true private_key=private_key_example send_hash=true encryption_enabled=true rate_limit=3
 time=2025-03-06T12:00:54.835+07:00 level=DEBUG msg="worker 0 started"
 time=2025-03-06T12:00:54.835+07:00 level=DEBUG msg="worker 1 started"

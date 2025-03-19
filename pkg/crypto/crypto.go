@@ -249,7 +249,9 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string, bits int) error {
 		Subject: pkix.Name{
 			Organization: []string{"go-metrics"},
 			Country:      []string{"RU"},
+			CommonName:   "localhost",
 		},
+		DNSNames: []string{"localhost"},
 		IPAddresses: []net.IP{
 			net.IPv4(LoopbackIPv4First, LoopbackIPv4Second, LoopbackIPv4Third, LoopbackIPv4Fourth),
 			net.IPv6loopback,

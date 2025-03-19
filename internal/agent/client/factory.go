@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"crypto/rsa"
 	"fmt"
 	"log/slog"
 
@@ -34,8 +33,8 @@ type Factory struct {
 	grpcTimeout    int
 	grpcRetry      int
 	realIP         string
-	privateKey     string
-	publicKey      *rsa.PublicKey
+	privateKey     string // приватный ключ для подписи запросов
+	cryptoKeyPath  string // путь к файлу с ключом (одинаковый и для шифрования, и для TLS)
 }
 
 // NewFactory создает новую фабрику клиентов.
@@ -44,7 +43,7 @@ func NewFactory(
 	grpcEnabled bool,
 	grpcTimeout, grpcRetry int,
 	realIP, privateKey string,
-	publicKey *rsa.PublicKey,
+	cryptoKeyPath string,
 ) *Factory {
 	return &Factory{
 		httpServerAddr: httpServerAddr,
@@ -54,7 +53,7 @@ func NewFactory(
 		grpcRetry:      grpcRetry,
 		realIP:         realIP,
 		privateKey:     privateKey,
-		publicKey:      publicKey,
+		cryptoKeyPath:  cryptoKeyPath,
 	}
 }
 
@@ -77,6 +76,7 @@ func (f *Factory) createGRPCClient() (Client, error) {
 		f.grpcRetry,
 		f.realIP,
 		f.privateKey,
+		f.cryptoKeyPath, // используем тот же путь для TLS
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gRPC client: %w", err)
@@ -90,7 +90,7 @@ func (f *Factory) createHTTPClient() (Client, error) {
 	client := http.New(
 		f.httpServerAddr,
 		f.privateKey,
-		f.publicKey,
+		f.cryptoKeyPath, // передаем путь к файлу ключа вместо самого ключа
 		f.realIP,
 	)
 

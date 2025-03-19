@@ -20,8 +20,8 @@ func TestGenerateKeyPair(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Пути к файлам ключей
-	privateKeyPath := filepath.Join(tempDir, "private.pem")
-	publicKeyPath := filepath.Join(tempDir, "public.pem")
+	privateKeyPath := filepath.Join(tempDir, "server.key")
+	publicKeyPath := filepath.Join(tempDir, "server.crt")
 
 	// Генерируем ключи
 	err = generateKeys(privateKeyPath, publicKeyPath, DefaultKeySize)
@@ -57,25 +57,25 @@ func TestParseFlags(t *testing.T) {
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	privateKeyPath, publicKeyPath, keySize, err := parseFlags()
 	require.NoError(t, err)
-	assert.Equal(t, "private.pem", privateKeyPath)
-	assert.Equal(t, "public.pem", publicKeyPath)
+	assert.Equal(t, "server.key", privateKeyPath)
+	assert.Equal(t, "server.crt", publicKeyPath)
 	assert.Equal(t, DefaultKeySize, keySize)
 
 	// Тест 2: Проверка пользовательских значений
 	os.Args = []string{
 		"keygen",
 		"-private",
-		"custom_private.pem",
+		"custom_server.key",
 		"-public",
-		"custom_public.pem",
+		"custom_server.crt",
 		"-bits",
 		"4096",
 	}
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	privateKeyPath, publicKeyPath, keySize, err = parseFlags()
 	require.NoError(t, err)
-	assert.Equal(t, "custom_private.pem", privateKeyPath)
-	assert.Equal(t, "custom_public.pem", publicKeyPath)
+	assert.Equal(t, "custom_server.key", privateKeyPath)
+	assert.Equal(t, "custom_server.crt", publicKeyPath)
 	assert.Equal(t, 4096, keySize)
 
 	// Тест 3: Проверка неверного размера ключа
@@ -164,8 +164,8 @@ func TestMain(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Пути к файлам ключей
-	privateKeyPath := filepath.Join(tempDir, "private.pem")
-	publicKeyPath := filepath.Join(tempDir, "public.pem")
+	privateKeyPath := filepath.Join(tempDir, "server.key")
+	publicKeyPath := filepath.Join(tempDir, "server.crt")
 
 	// Устанавливаем тестовые аргументы
 	os.Args = []string{"keygen", "-private", privateKeyPath, "-public", publicKeyPath}

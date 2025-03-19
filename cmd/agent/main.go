@@ -3,7 +3,6 @@ package main
 
 import (
 	"context"
-	"crypto/rsa"
 	"fmt"
 	"log/slog"
 	"os"
@@ -12,7 +11,6 @@ import (
 	"time"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
-	"github.com/maynagashev/go-metrics/pkg/crypto"
 )
 
 // Глобальные переменные для информации о сборке.
@@ -42,16 +40,10 @@ func main() {
 
 	initPprof(flags)
 
-	// Загружаем публичный ключ для шифрования, если он указан
-	var publicKey *rsa.PublicKey
-	if flags.CryptoKey != "" {
-		var err error
-		publicKey, err = crypto.LoadPublicKey(flags.CryptoKey)
-		if err != nil {
-			slog.Error("failed to load public key", "error", err, "path", flags.CryptoKey)
-			os.Exit(1)
-		}
-		slog.Info("loaded public key for encryption", "path", flags.CryptoKey)
+	// Путь к ключу для шифрования передаем напрямую в агент
+	cryptoKeyPath := flags.CryptoKey
+	if cryptoKeyPath != "" {
+		slog.Info("using crypto key for encryption", "path", cryptoKeyPath)
 	}
 
 	serverURL := "http://" + flags.Server.Addr
@@ -67,19 +59,23 @@ func main() {
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	// Запускаем агента
-	a := agent.New(
+	a, err := agent.New(
 		serverURL,
 		pollInterval,
 		reportInterval,
 		flags.PrivateKey,
 		flags.RateLimit,
-		publicKey,
 		flags.RealIP,
 		flags.GRPCEnabled,
 		flags.GRPCAddress,
 		flags.GRPCTimeout,
 		flags.GRPCRetry,
+		flags.CryptoKey,
 	)
+	if err != nil {
+		slog.Error("Failed to create agent", "error", err)
+		os.Exit(1)
+	}
 
 	// Запускаем горутину для обработки сигналов
 	go func() {

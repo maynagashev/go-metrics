@@ -108,6 +108,8 @@ type agent struct {
 	resultQueue chan Result
 	// Канал для сигнала остановки
 	stopCh chan struct{}
+	// Флаг шифрования: true, если путь к ключу задан
+	encryptionEnabled bool
 }
 
 // New создает новый экземпляр агента.
@@ -119,13 +121,13 @@ var New = func(
 	reportInterval time.Duration,
 	privateKey string, // путь к файлу с приватным ключом для подписи запросов к серверу
 	rateLimit int,
-	publicKey *rsa.PublicKey,
 	realIP string,
 	grpcEnabled bool, // флаг использования gRPC вместо HTTP
 	grpcAddress string, // адрес и порт gRPC сервера
 	grpcTimeout int, // таймаут для gRPC запросов в секундах
 	grpcRetry int, // количество повторных попыток при ошибке gRPC запроса
-) Agent {
+	cryptoKeyPath string, // путь к файлу с ключом
+) (Agent, error) {
 	// Создаем фабрику клиентов
 	factory := client.NewFactory(
 		url,
@@ -135,20 +137,17 @@ var New = func(
 		grpcRetry,
 		realIP,
 		privateKey,
-		publicKey,
+		cryptoKeyPath,
 	)
 
 	// Создаем клиент через фабрику
 	client, err := factory.CreateClient()
 	if err != nil {
-		slog.Error("Failed to create client", "error", err)
-		// В случае ошибки создания gRPC клиента, будем использовать HTTP клиент
-		if grpcEnabled {
-			slog.Warn("Falling back to HTTP client")
-			grpcEnabled = false
-			client, _ = factory.CreateClient() // Должно быть успешно, т.к. HTTP клиент не требует соединения при создании
-		}
+		return nil, fmt.Errorf("failed to create client with factory: %w", err)
 	}
+
+	// Флаг шифрования: true, если путь к ключу задан
+	encryptionEnabled := cryptoKeyPath != ""
 
 	return &agent{
 		ServerURL:          url,
@@ -157,7 +156,7 @@ var New = func(
 		SendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
 		PrivateKey:         privateKey,
 		RateLimit:          rateLimit,
-		PublicKey:          publicKey,
+		PublicKey:          nil, // больше не используется, используем путь к файлу
 		GRPCEnabled:        grpcEnabled,
 		GRPCAddress:        grpcAddress,
 		GRPCTimeout:        grpcTimeout,
@@ -170,7 +169,8 @@ var New = func(
 		sendQueue:          make(chan Job, rateLimit),
 		resultQueue:        make(chan Result, rateLimit),
 		stopCh:             make(chan struct{}),
-	}
+		encryptionEnabled:  encryptionEnabled,
+	}, nil
 }
 
 // IsRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
@@ -178,9 +178,9 @@ func (a *agent) IsRequestSigningEnabled() bool {
 	return a.PrivateKey != ""
 }
 
-// IsEncryptionEnabled возвращает true, если задан публичный ключ и агент должен шифровать данные.
+// IsEncryptionEnabled возвращает true, если включено шифрование.
 func (a *agent) IsEncryptionEnabled() bool {
-	return a.PublicKey != nil
+	return a.encryptionEnabled
 }
 
 // runInWaitGroup запускает функцию в отдельной горутине и управляет WaitGroup.

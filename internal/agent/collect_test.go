@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/maynagashev/go-metrics/internal/agent"
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
@@ -14,19 +15,20 @@ import (
 
 func TestAgent_CollectRuntimeMetrics(t *testing.T) {
 	// Create a test agent with required parameters
-	a := agent.New(
+	a, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 
 	// Reset metrics before collection
 	a.ResetMetrics()
@@ -62,19 +64,20 @@ func TestAgent_CollectRuntimeMetrics(t *testing.T) {
 
 func TestAgent_CollectAdditionalMetrics(t *testing.T) {
 	// Create a test agent with required parameters
-	a := agent.New(
+	a, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 
 	// Reset metrics before collection
 	a.ResetMetrics()
@@ -111,19 +114,20 @@ func TestAgent_CollectAdditionalMetrics(t *testing.T) {
 
 func TestAgent_GetMetrics(t *testing.T) {
 	// Create a test agent with required parameters
-	a := agent.New(
+	a, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 
 	// Reset metrics before collection
 	a.ResetMetrics()
@@ -156,19 +160,20 @@ func TestAgent_GetMetrics(t *testing.T) {
 
 func TestAgent_ResetMetrics(t *testing.T) {
 	// Create a test agent with required parameters
-	a := agent.New(
+	a, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 
 	// Collect metrics
 	a.CollectRuntimeMetrics()
@@ -188,53 +193,56 @@ func TestAgent_ResetMetrics(t *testing.T) {
 
 func TestAgent_IsRequestSigningEnabled(t *testing.T) {
 	// Test with no private key
-	a1 := agent.New(
+	a1, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 	assert.False(t, a1.IsRequestSigningEnabled())
 
 	// Test with private key
-	a2 := agent.New(
+	a2, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"test-private-key",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 	assert.True(t, a2.IsRequestSigningEnabled())
 }
 
 func TestAgent_IsEncryptionEnabled(t *testing.T) {
 	// Test with no public key
-	a1 := agent.New(
+	a1, err := agent.New(
 		"http://localhost:8080",
 		time.Second,
 		time.Second,
 		"",
 		5,
-		nil,
 		"",
 		false,
 		"localhost:9090",
 		5,
 		3,
+		"",
 	)
+	require.NoError(t, err)
 	assert.False(t, a1.IsEncryptionEnabled())
 
 	// Тест с публичным ключом требует создания ключа, что сложно в тестах

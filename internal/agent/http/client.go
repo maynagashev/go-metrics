@@ -29,16 +29,30 @@ type Client struct {
 	serverURL          string
 	client             *resty.Client
 	privateKey         string
-	publicKey          *rsa.PublicKey
+	cryptoKeyPath      string         // путь к файлу с публичным ключом
+	publicKey          *rsa.PublicKey // загруженный публичный ключ
 	sendCompressedData bool
 }
 
 // New создает новый HTTP клиент.
-func New(serverURL, privateKey string, publicKey *rsa.PublicKey, realIP string) *Client {
+func New(serverURL, privateKey string, cryptoKeyPath string, realIP string) *Client {
+	// Загружаем публичный ключ для шифрования, если указан путь
+	var publicKey *rsa.PublicKey
+	if cryptoKeyPath != "" {
+		var err error
+		publicKey, err = crypto.LoadPublicKey(cryptoKeyPath)
+		if err != nil {
+			slog.Error("failed to load public key", "error", err, "path", cryptoKeyPath)
+		} else {
+			slog.Info("loaded public key for encryption", "path", cryptoKeyPath)
+		}
+	}
+
 	return &Client{
 		serverURL:          serverURL,
 		client:             initHTTPClient(realIP),
 		privateKey:         privateKey,
+		cryptoKeyPath:      cryptoKeyPath,
 		publicKey:          publicKey,
 		sendCompressedData: true, // согласно условиям задачи, отправка сжатых данных включена по умолчанию
 	}
