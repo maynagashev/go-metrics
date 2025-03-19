@@ -14,6 +14,8 @@ require (
 	github.com/timakin/bodyclose v0.0.0-20241222091800-1db5c5ca4d67
 	go.uber.org/zap v1.27.0
 	golang.org/x/tools v0.30.0
+	google.golang.org/grpc v1.50.1
+	google.golang.org/protobuf v1.28.1
 	honnef.co/go/tools v0.5.1
 )
 
@@ -50,7 +52,5 @@ require (
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	google.golang.org/genproto v0.0.0-20220314164441-57ef72a4c106 // indirect
-	google.golang.org/grpc v1.50.1 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

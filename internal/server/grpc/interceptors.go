@@ -28,7 +28,7 @@ func SignatureValidatorInterceptor(log *zap.Logger, privateKey string) grpc.Unar
 	return func(
 		ctx context.Context,
 		req interface{},
-		info *grpc.UnaryServerInfo,
+		_ *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		// Если ключ не указан, не проверяем подпись

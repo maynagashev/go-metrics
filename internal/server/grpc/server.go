@@ -124,8 +124,8 @@ func (s *Server) Start() error {
 
 	// Запускаем сервер в отдельной горутине
 	go func() {
-		if err := s.grpcServer.Serve(lis); err != nil {
-			s.log.Error("gRPC server error", zap.Error(err))
+		if serveErr := s.grpcServer.Serve(lis); serveErr != nil {
+			s.log.Error("gRPC server error", zap.Error(serveErr))
 		}
 	}()
 
