@@ -81,9 +81,9 @@
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (91.7%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (17.5%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (74.6%)</option>
 				
-				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (6.9%)</option>
+				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (0.0%)</option>
 				
 				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (65.5%)</option>
 				
@@ -2625,7 +2625,7 @@ func New(
         realIP,
         privateKey string,
         publicKeyPath string,
-) (*Client, error) <span class="cov8" title="1">{
+) (*Client, error) <span class="cov0" title="0">{
         // Создаем соединение с сервером
         ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
         defer cancel()
@@ -2650,12 +2650,12 @@ func New(
         )
 
         // Если указан путь к публичному ключу, настраиваем TLS
-        if publicKeyPath != "" </span><span class="cov8" title="1">{
+        if publicKeyPath != "" </span><span class="cov0" title="0">{
                 creds, err := loadTLSCredentials(publicKeyPath)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, fmt.Errorf("failed to load TLS credentials: %w", err)
                 }</span>
-                <span class="cov8" title="1">dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+                <span class="cov0" title="0">dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
                 slog.Info(
                         "TLS encryption enabled for gRPC client, credentials loaded from file",
                         "path",
@@ -2667,7 +2667,7 @@ func New(
                 slog.Warn("TLS encryption disabled for gRPC client, using insecure connection")
         }</span>
 
-        <span class="cov8" title="1">slog.Info("Connecting to gRPC server",
+        <span class="cov0" title="0">slog.Info("Connecting to gRPC server",
                 "address", address,
                 "timeout", timeout,
                 "maxRetries", maxRetries,
@@ -2679,7 +2679,7 @@ func New(
 
         // Устанавливаем соединение с сервером
         conn, err := grpc.DialContext(ctx, address, dialOpts...)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to connect to gRPC server: %w", err)
         }</span>
 
@@ -2710,17 +2710,17 @@ func New(
 func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials, error) <span class="cov8" title="1">{
         // Загружаем сертификат CA
         pemServerCA, err := os.ReadFile(publicKeyPath)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("failed to read server CA cert: %w", err)
         }</span>
 
         <span class="cov8" title="1">certPool := x509.NewCertPool()
-        if !certPool.AppendCertsFromPEM(pemServerCA) </span><span class="cov0" title="0">{
+        if !certPool.AppendCertsFromPEM(pemServerCA) </span><span class="cov8" title="1">{
                 return nil, errors.New("failed to add server CA's certificate")
         }</span>
 
         // Создаем TLS конфигурацию с проверкой сервера
-        <span class="cov8" title="1">config := &amp;tls.Config{
+        <span class="cov0" title="0">config := &amp;tls.Config{
                 RootCAs:    certPool,
                 MinVersion: tls.VersionTLS12,
         }
@@ -2729,31 +2729,31 @@ func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials,
 }
 
 // Close закрывает соединение с сервером.
-func (c *Client) Close() error <span class="cov0" title="0">{
+func (c *Client) Close() error <span class="cov8" title="1">{
         if c.conn != nil </span><span class="cov0" title="0">{
                 return c.conn.Close()
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // createContext создает контекст с метаданными и таймаутом.
-func (c *Client) createContext(parent context.Context) (context.Context, context.CancelFunc) <span class="cov0" title="0">{
+func (c *Client) createContext(parent context.Context) (context.Context, context.CancelFunc) <span class="cov8" title="1">{
         // Создаем контекст с таймаутом
         ctx, cancel := context.WithTimeout(parent, c.timeout)
 
         // Добавляем метаданные (X-Real-IP)
-        if c.realIP != "" </span><span class="cov0" title="0">{
+        if c.realIP != "" </span><span class="cov8" title="1">{
                 md := metadata.New(map[string]string{
                         "X-Real-IP": c.realIP,
                 })
                 ctx = metadata.NewOutgoingContext(ctx, md)
         }</span>
 
-        <span class="cov0" title="0">return ctx, cancel</span>
+        <span class="cov8" title="1">return ctx, cancel</span>
 }
 
 // Возвращает опции вызова, всегда используем сжатие.
-func (c *Client) getCallOptions() []grpc.CallOption <span class="cov0" title="0">{
+func (c *Client) getCallOptions() []grpc.CallOption <span class="cov8" title="1">{
         // Всегда используем сжатие gzip для gRPC запросов
         return []grpc.CallOption{
                 grpc.UseCompressor(gzip.Name),
@@ -2764,39 +2764,49 @@ func (c *Client) getCallOptions() []grpc.CallOption <span class="cov0" title="0"
 func (c *Client) withRetry(
         ctx context.Context,
         operation func(context.Context, []grpc.CallOption) error,
-) error <span class="cov0" title="0">{
+) error <span class="cov8" title="1">{
         var err error
         retryIntervals := []time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second}
 
+        // Проверяем, не отменен ли контекст перед выполнением операции
+        if ctx.Err() != nil </span><span class="cov0" title="0">{
+                return ctx.Err()
+        }</span>
+
         // Получаем опции вызова
-        callOpts := c.getCallOptions()
+        <span class="cov8" title="1">callOpts := c.getCallOptions()
 
         // Выполняем операцию с учетом повторных попыток
-        for attempt := 0; attempt &lt;= c.maxRetries; attempt++ </span><span class="cov0" title="0">{
+        for attempt := 0; attempt &lt;= c.maxRetries; attempt++ </span><span class="cov8" title="1">{
+                // Проверяем, не отменен ли контекст перед каждой попыткой
+                if ctx.Err() != nil </span><span class="cov0" title="0">{
+                        return ctx.Err()
+                }</span>
+
                 // Создаем контекст для текущей попытки
-                opCtx, cancel := c.createContext(ctx)
+                <span class="cov8" title="1">opCtx, cancel := c.createContext(ctx)
 
                 // Выполняем операцию с опциями вызова
                 err = operation(opCtx, callOpts)
                 cancel()
 
                 // Если операция успешна или контекст завершен, выходим из цикла
-                if err == nil || ctx.Err() != nil </span><span class="cov0" title="0">{
+                if err == nil || ctx.Err() != nil </span><span class="cov8" title="1">{
                         return err
                 }</span>
 
                 // Если это последняя попытка, возвращаем ошибку
-                <span class="cov0" title="0">if attempt == c.maxRetries </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if attempt == c.maxRetries </span><span class="cov8" title="1">{
                         break</span>
                 }
 
                 // Определяем интервал для следующей попытки
-                <span class="cov0" title="0">retryInterval := time.Second
-                if attempt &lt; len(retryIntervals) </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">retryInterval := time.Second
+                if attempt &lt; len(retryIntervals) </span><span class="cov8" title="1">{
                         retryInterval = retryIntervals[attempt]
                 }</span>
 
-                <span class="cov0" title="0">slog.Warn("gRPC request failed, retrying",
+                <span class="cov8" title="1">slog.Warn("gRPC request failed, retrying",
                         "error", err,
                         "attempt", attempt+1,
                         "maxRetries", c.maxRetries,
@@ -2806,16 +2816,16 @@ func (c *Client) withRetry(
                 select </span>{
                 case &lt;-ctx.Done():<span class="cov0" title="0">
                         return ctx.Err()</span>
-                case &lt;-time.After(retryInterval):<span class="cov0" title="0"></span>
+                case &lt;-time.After(retryInterval):<span class="cov8" title="1"></span>
                         // Продолжаем выполнение
                 }
         }
 
-        <span class="cov0" title="0">return fmt.Errorf("operation failed after %d attempts: %w", c.maxRetries+1, err)</span>
+        <span class="cov8" title="1">return fmt.Errorf("operation failed after %d attempts: %w", c.maxRetries+1, err)</span>
 }
 
 // UpdateMetric отправляет метрику на сервер.
-func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error <span class="cov0" title="0">{
+func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error <span class="cov8" title="1">{
         // Преобразуем метрику из доменной модели в protobuf
         protoMetric := metricToProto(metric)
 
@@ -2825,69 +2835,69 @@ func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error
         }
 
         // Отправляем запрос с повторными попытками
-        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov8" title="1">{
                 _, err := c.client.Update(opCtx, request, callOpts...)
                 return err
         }</span>)
 }
 
 // UpdateBatch отправляет пакет метрик на сервер.
-func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error <span class="cov0" title="0">{
+func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error <span class="cov8" title="1">{
         // Если метрик нет, ничего не делаем
-        if len(metrics) == 0 </span><span class="cov0" title="0">{
+        if len(metrics) == 0 </span><span class="cov8" title="1">{
                 return nil
         }</span>
 
         // Преобразуем метрики из доменной модели в protobuf
-        <span class="cov0" title="0">protoMetrics := make([]*pb.Metric, 0, len(metrics))
-        for _, m := range metrics </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">protoMetrics := make([]*pb.Metric, 0, len(metrics))
+        for _, m := range metrics </span><span class="cov8" title="1">{
                 protoMetrics = append(protoMetrics, metricToProto(m))
         }</span>
 
         // Создаем запрос
-        <span class="cov0" title="0">request := &amp;pb.UpdateBatchRequest{
+        <span class="cov8" title="1">request := &amp;pb.UpdateBatchRequest{
                 Metrics: protoMetrics,
         }
 
         // Отправляем запрос с повторными попытками
-        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov8" title="1">{
                 response, err := c.client.UpdateBatch(opCtx, request, callOpts...)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
 
                 // Проверяем успешность операции
-                <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if !response.GetSuccess() </span><span class="cov8" title="1">{
                         return fmt.Errorf("server returned error: %s", response.GetError())
                 }</span>
 
-                <span class="cov0" title="0">return nil</span>
+                <span class="cov8" title="1">return nil</span>
         })
 }
 
 // StreamMetrics отправляет метрики потоком на сервер.
-func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) error <span class="cov0" title="0">{
+func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) error <span class="cov8" title="1">{
         // Если метрик нет, ничего не делаем
-        if len(metrics) == 0 </span><span class="cov0" title="0">{
+        if len(metrics) == 0 </span><span class="cov8" title="1">{
                 return nil
         }</span>
 
-        <span class="cov0" title="0">slog.Info("Starting gRPC streaming of metrics", "count", len(metrics))
+        <span class="cov8" title="1">slog.Info("Starting gRPC streaming of metrics", "count", len(metrics))
 
         // Отправляем запрос с повторными попытками
-        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov8" title="1">{
                 // Открываем поток с опциями сжатия
                 stream, err := c.client.StreamMetrics(opCtx, callOpts...)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         slog.Error("Failed to open gRPC stream", "error", err)
                         return fmt.Errorf("failed to open stream: %w", err)
                 }</span>
 
                 // Отправляем метрики в поток
-                <span class="cov0" title="0">sentCount := 0
-                for _, m := range metrics </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">sentCount := 0
+                for _, m := range metrics </span><span class="cov8" title="1">{
                         protoMetric := metricToProto(m)
-                        if sendErr := stream.Send(protoMetric); sendErr != nil </span><span class="cov0" title="0">{
+                        if sendErr := stream.Send(protoMetric); sendErr != nil </span><span class="cov8" title="1">{
                                 slog.Error("Failed to send metric in stream",
                                         "error", sendErr,
                                         "metric", m.Name,
@@ -2895,70 +2905,79 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
                                         "total", len(metrics))
                                 return fmt.Errorf("failed to send metric: %w", sendErr)
                         }</span>
-                        <span class="cov0" title="0">sentCount++</span>
+                        <span class="cov8" title="1">sentCount++</span>
                 }
 
-                <span class="cov0" title="0">slog.Info("All metrics sent to gRPC stream", "count", sentCount)
+                <span class="cov8" title="1">slog.Info("All metrics sent to gRPC stream", "count", sentCount)
 
                 // Закрываем поток и получаем ответ
                 response, err := stream.CloseAndRecv()
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         slog.Error("Failed to close gRPC stream", "error", err)
                         return fmt.Errorf("failed to close stream: %w", err)
                 }</span>
 
                 // Проверяем успешность операции
-                <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if !response.GetSuccess() </span><span class="cov8" title="1">{
                         errMsg := fmt.Sprintf("server returned error: %s", response.GetError())
                         slog.Error("Stream operation failed", "error", errMsg)
                         return errors.New(errMsg)
                 }</span>
 
-                <span class="cov0" title="0">slog.Info("Stream successfully completed")
+                <span class="cov8" title="1">slog.Info("Stream successfully completed")
                 return nil</span>
         })
 }
 
 // Ping проверяет соединение с сервером.
-func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
-        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+func (c *Client) Ping(ctx context.Context) error <span class="cov8" title="1">{
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov8" title="1">{
                 response, err := c.client.Ping(opCtx, &amp;pb.PingRequest{}, callOpts...)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
 
                 // Проверяем успешность операции
-                <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if !response.GetSuccess() </span><span class="cov8" title="1">{
                         return fmt.Errorf("server returned error: %s", response.GetError())
                 }</span>
 
-                <span class="cov0" title="0">return nil</span>
+                <span class="cov8" title="1">return nil</span>
         })
 }
 
 // metricToProto преобразует метрику из доменной модели в protobuf.
-func metricToProto(metric *metrics.Metric) *pb.Metric <span class="cov0" title="0">{
-        protoMetric := &amp;pb.Metric{
+func metricToProto(metric *metrics.Metric) *pb.Metric <span class="cov8" title="1">{
+        if metric == nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        // Создаем базовую метрику только с обязательными полями
+        <span class="cov8" title="1">protoMetric := &amp;pb.Metric{
                 Name: metric.Name,
         }
 
-        // Устанавливаем тип метрики
+        // Устанавливаем специфичные для типа поля
         switch metric.MType </span>{
-        case metrics.TypeGauge:<span class="cov0" title="0">
+        case metrics.TypeGauge:<span class="cov8" title="1">
                 protoMetric.Type = pb.MetricType_GAUGE
-                if metric.Value != nil </span><span class="cov0" title="0">{
+                // Устанавливаем Value только если он не nil
+                if metric.Value != nil </span><span class="cov8" title="1">{
                         value := *metric.Value
                         protoMetric.Value = &amp;value
                 }</span>
-        case metrics.TypeCounter:<span class="cov0" title="0">
+                // Delta остается nil для gauge метрик
+        case metrics.TypeCounter:<span class="cov8" title="1">
                 protoMetric.Type = pb.MetricType_COUNTER
-                if metric.Delta != nil </span><span class="cov0" title="0">{
+                // Устанавливаем Delta только если он не nil
+                if metric.Delta != nil </span><span class="cov8" title="1">{
                         delta := *metric.Delta
                         protoMetric.Delta = &amp;delta
                 }</span>
+                // Value остается nil для counter метрик
         }
 
-        <span class="cov0" title="0">return protoMetric</span>
+        <span class="cov8" title="1">return protoMetric</span>
 }
 </pre>
 		
@@ -2978,7 +2997,7 @@ import (
 const SignatureHeader = sign.HeaderKey
 
 // SigningInterceptor создает перехватчик для подписи исходящих gRPC запросов.
-func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span class="cov8" title="1">{
+func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span class="cov0" title="0">{
         return func(
                 ctx context.Context,
                 method string,
@@ -3022,7 +3041,7 @@ func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span cla
 }
 
 // StreamSigningInterceptor создает перехватчик для подписи потоковых gRPC запросов.
-func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <span class="cov8" title="1">{
+func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <span class="cov0" title="0">{
         return func(
                 ctx context.Context,
                 desc *grpc.StreamDesc,

@@ -183,11 +183,21 @@ func (c *Client) withRetry(
 	var err error
 	retryIntervals := []time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second}
 
+	// Проверяем, не отменен ли контекст перед выполнением операции
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	// Получаем опции вызова
 	callOpts := c.getCallOptions()
 
 	// Выполняем операцию с учетом повторных попыток
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		// Проверяем, не отменен ли контекст перед каждой попыткой
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		// Создаем контекст для текущей попытки
 		opCtx, cancel := c.createContext(ctx)
 
@@ -353,24 +363,33 @@ func (c *Client) Ping(ctx context.Context) error {
 
 // metricToProto преобразует метрику из доменной модели в protobuf.
 func metricToProto(metric *metrics.Metric) *pb.Metric {
+	if metric == nil {
+		return nil
+	}
+
+	// Создаем базовую метрику только с обязательными полями
 	protoMetric := &pb.Metric{
 		Name: metric.Name,
 	}
 
-	// Устанавливаем тип метрики
+	// Устанавливаем специфичные для типа поля
 	switch metric.MType {
 	case metrics.TypeGauge:
 		protoMetric.Type = pb.MetricType_GAUGE
+		// Устанавливаем Value только если он не nil
 		if metric.Value != nil {
 			value := *metric.Value
 			protoMetric.Value = &value
 		}
+		// Delta остается nil для gauge метрик
 	case metrics.TypeCounter:
 		protoMetric.Type = pb.MetricType_COUNTER
+		// Устанавливаем Delta только если он не nil
 		if metric.Delta != nil {
 			delta := *metric.Delta
 			protoMetric.Delta = &delta
 		}
+		// Value остается nil для counter метрик
 	}
 
 	return protoMetric
