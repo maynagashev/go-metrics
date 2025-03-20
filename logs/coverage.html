@@ -101,7 +101,7 @@
 				
 				<option value="file22">github.com/maynagashev/go-metrics/internal/server/grpc/interceptors.go (0.0%)</option>
 				
-				<option value="file23">github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go (0.0%)</option>
+				<option value="file23">github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go (95.8%)</option>
 				
 				<option value="file24">github.com/maynagashev/go-metrics/internal/server/grpc/server.go (0.0%)</option>
 				
@@ -2326,10 +2326,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -4405,7 +4405,7 @@ func NewMetricsService(
         log *zap.Logger,
         cfg *app.Config,
         storage storage.Repository,
-) *MetricsService <span class="cov0" title="0">{
+) *MetricsService <span class="cov8" title="1">{
         return &amp;MetricsService{
                 log:     log,
                 cfg:     cfg,
@@ -4417,20 +4417,20 @@ func NewMetricsService(
 func (s *MetricsService) Update(
         ctx context.Context,
         req *pb.UpdateRequest,
-) (*pb.MetricResponse, error) <span class="cov0" title="0">{
-        if req == nil || req.GetMetric() == nil </span><span class="cov0" title="0">{
+) (*pb.MetricResponse, error) <span class="cov8" title="1">{
+        if req == nil || req.GetMetric() == nil </span><span class="cov8" title="1">{
                 return nil, status.Errorf(codes.InvalidArgument, "metric is required")
         }</span>
 
         // Преобразуем метрику из protobuf в доменную модель
-        <span class="cov0" title="0">metric, err := s.protoToMetric(req.GetMetric())
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">metric, err := s.protoToMetric(req.GetMetric())
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, status.Errorf(codes.InvalidArgument, "invalid metric: %v", err)
         }</span>
 
         // Сохраняем метрику в хранилище
-        <span class="cov0" title="0">updateErr := s.storage.UpdateMetric(ctx, *metric)
-        if updateErr != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">updateErr := s.storage.UpdateMetric(ctx, *metric)
+        if updateErr != nil </span><span class="cov8" title="1">{
                 s.log.Error(
                         "failed to update metric",
                         zap.Error(updateErr),
@@ -4439,7 +4439,7 @@ func (s *MetricsService) Update(
                 return nil, status.Errorf(codes.Internal, "failed to update metric: %v", updateErr)
         }</span>
 
-        <span class="cov0" title="0">s.log.Debug("metric updated via gRPC",
+        <span class="cov8" title="1">s.log.Debug("metric updated via gRPC",
                 zap.String("name", metric.Name),
                 zap.String("type", string(metric.MType)))
 
@@ -4455,34 +4455,34 @@ func (s *MetricsService) Update(
 func (s *MetricsService) UpdateBatch(
         ctx context.Context,
         req *pb.UpdateBatchRequest,
-) (*pb.UpdateBatchResponse, error) <span class="cov0" title="0">{
-        if req == nil || len(req.GetMetrics()) == 0 </span><span class="cov0" title="0">{
+) (*pb.UpdateBatchResponse, error) <span class="cov8" title="1">{
+        if req == nil || len(req.GetMetrics()) == 0 </span><span class="cov8" title="1">{
                 return nil, status.Errorf(codes.InvalidArgument, "metrics are required")
         }</span>
 
         // Преобразуем метрики из protobuf в доменную модель
-        <span class="cov0" title="0">metricsToUpdate := make([]metrics.Metric, 0, len(req.GetMetrics()))
-        for _, protoMetric := range req.GetMetrics() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">metricsToUpdate := make([]metrics.Metric, 0, len(req.GetMetrics()))
+        for _, protoMetric := range req.GetMetrics() </span><span class="cov8" title="1">{
                 metric, err := s.protoToMetric(protoMetric)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         s.log.Error("invalid metric", zap.Error(err), zap.String("name", protoMetric.GetName()))
                         continue</span> // Пропускаем невалидные метрики
                 }
-                <span class="cov0" title="0">metricsToUpdate = append(metricsToUpdate, *metric)</span>
+                <span class="cov8" title="1">metricsToUpdate = append(metricsToUpdate, *metric)</span>
         }
 
         // Если все метрики оказались невалидными
-        <span class="cov0" title="0">if len(metricsToUpdate) == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(metricsToUpdate) == 0 </span><span class="cov8" title="1">{
                 return nil, status.Errorf(codes.InvalidArgument, "no valid metrics provided")
         }</span>
 
         // Сохраняем метрики в хранилище
-        <span class="cov0" title="0">if err := s.storage.UpdateMetrics(ctx, metricsToUpdate); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := s.storage.UpdateMetrics(ctx, metricsToUpdate); err != nil </span><span class="cov8" title="1">{
                 s.log.Error("failed to update metrics batch", zap.Error(err))
                 return nil, status.Errorf(codes.Internal, "failed to update metrics batch: %v", err)
         }</span>
 
-        <span class="cov0" title="0">s.log.Debug("metrics batch updated via gRPC", zap.Int("count", len(metricsToUpdate)))
+        <span class="cov8" title="1">s.log.Debug("metrics batch updated via gRPC", zap.Int("count", len(metricsToUpdate)))
 
         return &amp;pb.UpdateBatchResponse{
                 Success: true,
@@ -4493,30 +4493,30 @@ func (s *MetricsService) UpdateBatch(
 func (s *MetricsService) GetValue(
         ctx context.Context,
         req *pb.GetValueRequest,
-) (*pb.MetricResponse, error) <span class="cov0" title="0">{
-        if req == nil || req.GetName() == "" </span><span class="cov0" title="0">{
+) (*pb.MetricResponse, error) <span class="cov8" title="1">{
+        if req == nil || req.GetName() == "" </span><span class="cov8" title="1">{
                 return nil, status.Errorf(codes.InvalidArgument, "metric name is required")
         }</span>
 
         // Преобразуем тип метрики из protobuf в доменную модель
-        <span class="cov0" title="0">var metricType metrics.MetricType
+        <span class="cov8" title="1">var metricType metrics.MetricType
         switch req.GetType() </span>{
-        case pb.MetricType_GAUGE:<span class="cov0" title="0">
+        case pb.MetricType_GAUGE:<span class="cov8" title="1">
                 metricType = metrics.TypeGauge</span>
-        case pb.MetricType_COUNTER:<span class="cov0" title="0">
+        case pb.MetricType_COUNTER:<span class="cov8" title="1">
                 metricType = metrics.TypeCounter</span>
-        default:<span class="cov0" title="0">
+        default:<span class="cov8" title="1">
                 return nil, status.Errorf(codes.InvalidArgument, "invalid metric type")</span>
         }
 
         // Получаем метрику из хранилища
-        <span class="cov0" title="0">metric, found := s.storage.GetMetric(ctx, metricType, req.GetName())
-        if !found </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">metric, found := s.storage.GetMetric(ctx, metricType, req.GetName())
+        if !found </span><span class="cov8" title="1">{
                 return nil, status.Errorf(codes.NotFound, "metric not found")
         }</span>
 
         // Преобразуем метрику из доменной модели в protobuf
-        <span class="cov0" title="0">protoMetric := s.metricToProto(&amp;metric)
+        <span class="cov8" title="1">protoMetric := s.metricToProto(&amp;metric)
 
         return &amp;pb.MetricResponse{
                 Metric: protoMetric,
@@ -4524,9 +4524,9 @@ func (s *MetricsService) GetValue(
 }
 
 // Ping проверяет соединение с базой данных.
-func (s *MetricsService) Ping(ctx context.Context, _ *pb.PingRequest) (*pb.PingResponse, error) <span class="cov0" title="0">{
+func (s *MetricsService) Ping(ctx context.Context, _ *pb.PingRequest) (*pb.PingResponse, error) <span class="cov8" title="1">{
         // Проверяем, включена ли база данных
-        if !s.cfg.IsDatabaseEnabled() </span><span class="cov0" title="0">{
+        if !s.cfg.IsDatabaseEnabled() </span><span class="cov8" title="1">{
                 return &amp;pb.PingResponse{
                         Success: false,
                         Error:   "database not configured",
@@ -4535,7 +4535,7 @@ func (s *MetricsService) Ping(ctx context.Context, _ *pb.PingRequest) (*pb.PingR
 
         // Для проверки соединения с базой данных не используем Ping, так как его нет в интерфейсе
         // Вместо этого просто попробуем получить количество метрик
-        <span class="cov0" title="0">_ = s.storage.Count(ctx)
+        <span class="cov8" title="1">_ = s.storage.Count(ctx)
 
         return &amp;pb.PingResponse{
                 Success: true,
@@ -4547,27 +4547,27 @@ func (s *MetricsService) Ping(ctx context.Context, _ *pb.PingRequest) (*pb.PingR
 // что позволяет отправлять большие объемы метрик без создания большого JSON-объекта
 // в памяти и снижает накладные расходы на обработку HTTP-запросов.
 // Метод собирает метрики из потока, буферизует их и затем сохраняет в хранилище.
-func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsServer) error <span class="cov0" title="0">{
+func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsServer) error <span class="cov8" title="1">{
         ctx := stream.Context()
         // Создаем буфер для метрик
         var metricsBuffer []metrics.Metric
 
         // Обрабатываем поток метрик
-        for </span><span class="cov0" title="0">{
+        for </span><span class="cov8" title="1">{
                 // Получаем метрику из потока
                 protoMetric, err := stream.Recv()
-                if errors.Is(err, io.EOF) </span><span class="cov0" title="0">{
+                if errors.Is(err, io.EOF) </span><span class="cov8" title="1">{
                         // Конец потока, сохраняем накопленные метрики
                         break</span>
                 }
-                <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
                         s.log.Error("error receiving stream", zap.Error(err))
                         return status.Errorf(codes.Internal, "failed to receive metric: %v", err)
                 }</span>
 
                 // Преобразуем метрику из protobuf в доменную модель
-                <span class="cov0" title="0">metric, err := s.protoToMetric(protoMetric)
-                if err != nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">metric, err := s.protoToMetric(protoMetric)
+                if err != nil </span><span class="cov8" title="1">{
                         s.log.Error(
                                 "invalid metric in stream",
                                 zap.Error(err),
@@ -4577,7 +4577,7 @@ func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsSer
                 }
 
                 // Добавляем метрику в буфер
-                <span class="cov0" title="0">metricsBuffer = append(metricsBuffer, *metric)
+                <span class="cov8" title="1">metricsBuffer = append(metricsBuffer, *metric)
 
                 // Если буфер достиг определенного размера, сохраняем метрики
                 // Это позволяет сократить количество обращений к хранилищу
@@ -4592,15 +4592,15 @@ func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsSer
         }
 
         // Сохраняем оставшиеся метрики
-        <span class="cov0" title="0">if len(metricsBuffer) &gt; 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(metricsBuffer) &gt; 0 </span><span class="cov8" title="1">{
                 saveErr := s.saveMetricsBuffer(ctx, metricsBuffer)
-                if saveErr != nil </span><span class="cov0" title="0">{
+                if saveErr != nil </span><span class="cov8" title="1">{
                         return status.Errorf(codes.Internal, "failed to save metrics batch: %v", saveErr)
                 }</span>
         }
 
         // Отправляем ответ клиенту
-        <span class="cov0" title="0">return stream.SendAndClose(&amp;pb.UpdateBatchResponse{
+        <span class="cov8" title="1">return stream.SendAndClose(&amp;pb.UpdateBatchResponse{
                 Success: true,
         })</span>
 }
@@ -4609,63 +4609,63 @@ func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsSer
 func (s *MetricsService) saveMetricsBuffer(
         ctx context.Context,
         metricsBuffer []metrics.Metric,
-) error <span class="cov0" title="0">{
-        if len(metricsBuffer) == 0 </span><span class="cov0" title="0">{
+) error <span class="cov8" title="1">{
+        if len(metricsBuffer) == 0 </span><span class="cov8" title="1">{
                 return nil
         }</span>
 
-        <span class="cov0" title="0">s.log.Debug("saving metrics from stream buffer", zap.Int("count", len(metricsBuffer)))
+        <span class="cov8" title="1">s.log.Debug("saving metrics from stream buffer", zap.Int("count", len(metricsBuffer)))
 
         // Сохраняем метрики в хранилище
-        if err := s.storage.UpdateMetrics(ctx, metricsBuffer); err != nil </span><span class="cov0" title="0">{
+        if err := s.storage.UpdateMetrics(ctx, metricsBuffer); err != nil </span><span class="cov8" title="1">{
                 s.log.Error("failed to update metrics batch from stream", zap.Error(err))
                 return err
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // protoToMetric преобразует метрику из protobuf в доменную модель.
-func (s *MetricsService) protoToMetric(protoMetric *pb.Metric) (*metrics.Metric, error) <span class="cov0" title="0">{
-        if protoMetric == nil </span><span class="cov0" title="0">{
+func (s *MetricsService) protoToMetric(protoMetric *pb.Metric) (*metrics.Metric, error) <span class="cov8" title="1">{
+        if protoMetric == nil </span><span class="cov8" title="1">{
                 return nil, errors.New("metric is nil")
         }</span>
 
         // Проверяем тип метрики
-        <span class="cov0" title="0">switch protoMetric.GetType() </span>{
-        case pb.MetricType_GAUGE:<span class="cov0" title="0">
-                if protoMetric.Value == nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">switch protoMetric.GetType() </span>{
+        case pb.MetricType_GAUGE:<span class="cov8" title="1">
+                if protoMetric.Value == nil </span><span class="cov8" title="1">{
                         return nil, errors.New("gauge value is required")
                 }</span>
-                <span class="cov0" title="0">return metrics.NewGauge(protoMetric.GetName(), protoMetric.GetValue()), nil</span>
-        case pb.MetricType_COUNTER:<span class="cov0" title="0">
-                if protoMetric.Delta == nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">return metrics.NewGauge(protoMetric.GetName(), protoMetric.GetValue()), nil</span>
+        case pb.MetricType_COUNTER:<span class="cov8" title="1">
+                if protoMetric.Delta == nil </span><span class="cov8" title="1">{
                         return nil, errors.New("counter delta is required")
                 }</span>
-                <span class="cov0" title="0">return metrics.NewCounter(protoMetric.GetName(), protoMetric.GetDelta()), nil</span>
-        default:<span class="cov0" title="0">
+                <span class="cov8" title="1">return metrics.NewCounter(protoMetric.GetName(), protoMetric.GetDelta()), nil</span>
+        default:<span class="cov8" title="1">
                 return nil, fmt.Errorf("unknown metric type: %v", protoMetric.GetType())</span>
         }
 }
 
 // metricToProto преобразует метрику из доменной модели в protobuf.
-func (s *MetricsService) metricToProto(metric *metrics.Metric) *pb.Metric <span class="cov0" title="0">{
+func (s *MetricsService) metricToProto(metric *metrics.Metric) *pb.Metric <span class="cov8" title="1">{
         protoMetric := &amp;pb.Metric{
                 Name: metric.Name,
         }
 
         switch metric.MType </span>{
-        case metrics.TypeGauge:<span class="cov0" title="0">
+        case metrics.TypeGauge:<span class="cov8" title="1">
                 value := *metric.Value
                 protoMetric.Type = pb.MetricType_GAUGE
                 protoMetric.Value = &amp;value</span>
-        case metrics.TypeCounter:<span class="cov0" title="0">
+        case metrics.TypeCounter:<span class="cov8" title="1">
                 delta := *metric.Delta
                 protoMetric.Type = pb.MetricType_COUNTER
                 protoMetric.Delta = &amp;delta</span>
         }
 
-        <span class="cov0" title="0">return protoMetric</span>
+        <span class="cov8" title="1">return protoMetric</span>
 }
 </pre>
 		
