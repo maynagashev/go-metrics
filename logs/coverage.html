@@ -83,7 +83,7 @@
 				
 				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (74.6%)</option>
 				
-				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (0.0%)</option>
+				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (89.7%)</option>
 				
 				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (65.5%)</option>
 				
@@ -93,7 +93,7 @@
 				
 				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/app.go (8.7%)</option>
 				
-				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/config.go (55.0%)</option>
+				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/config.go (70.0%)</option>
 				
 				<option value="file20">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (89.8%)</option>
 				
@@ -143,7 +143,7 @@
 				
 				<option value="file43">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
-				<option value="file44">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (66.7%)</option>
+				<option value="file44">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (68.4%)</option>
 				
 				<option value="file45">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
@@ -2997,7 +2997,7 @@ import (
 const SignatureHeader = sign.HeaderKey
 
 // SigningInterceptor создает перехватчик для подписи исходящих gRPC запросов.
-func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span class="cov0" title="0">{
+func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span class="cov8" title="1">{
         return func(
                 ctx context.Context,
                 method string,
@@ -3005,34 +3005,34 @@ func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span cla
                 cc *grpc.ClientConn,
                 invoker grpc.UnaryInvoker,
                 opts ...grpc.CallOption,
-        ) error </span><span class="cov0" title="0">{
+        ) error </span><span class="cov8" title="1">{
                 // Если ключ не указан, не подписываем запрос
-                if privateKey == "" </span><span class="cov0" title="0">{
+                if privateKey == "" </span><span class="cov8" title="1">{
                         return invoker(ctx, method, req, reply, cc, opts...)
                 }</span>
 
                 // Сериализуем запрос в байты
-                <span class="cov0" title="0">reqMsg, ok := req.(proto.Message)
-                if !ok </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">reqMsg, ok := req.(proto.Message)
+                if !ok </span><span class="cov8" title="1">{
                         return invoker(ctx, method, req, reply, cc, opts...)
                 }</span>
 
-                <span class="cov0" title="0">reqBytes, err := proto.Marshal(reqMsg)
+                <span class="cov8" title="1">reqBytes, err := proto.Marshal(reqMsg)
                 if err != nil </span><span class="cov0" title="0">{
                         return invoker(ctx, method, req, reply, cc, opts...)
                 }</span>
 
                 // Вычисляем HMAC-SHA256 с использованием пакета sign
-                <span class="cov0" title="0">signature := sign.ComputeHMACSHA256(reqBytes, privateKey)
+                <span class="cov8" title="1">signature := sign.ComputeHMACSHA256(reqBytes, privateKey)
 
                 // Добавляем подпись в метаданные запроса
                 md, ok := metadata.FromOutgoingContext(ctx)
-                if !ok </span><span class="cov0" title="0">{
+                if !ok </span><span class="cov8" title="1">{
                         md = metadata.New(nil)
                 }</span> else<span class="cov0" title="0"> {
                         md = md.Copy()
                 }</span>
-                <span class="cov0" title="0">md.Set(SignatureHeader, signature)
+                <span class="cov8" title="1">md.Set(SignatureHeader, signature)
                 newCtx := metadata.NewOutgoingContext(ctx, md)
 
                 // Вызываем следующий обработчик с обновленным контекстом
@@ -3041,7 +3041,7 @@ func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span cla
 }
 
 // StreamSigningInterceptor создает перехватчик для подписи потоковых gRPC запросов.
-func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <span class="cov0" title="0">{
+func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <span class="cov8" title="1">{
         return func(
                 ctx context.Context,
                 desc *grpc.StreamDesc,
@@ -3049,24 +3049,24 @@ func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <s
                 method string,
                 streamer grpc.Streamer,
                 opts ...grpc.CallOption,
-        ) (grpc.ClientStream, error) </span><span class="cov0" title="0">{
+        ) (grpc.ClientStream, error) </span><span class="cov8" title="1">{
                 // Если ключ не указан, не подписываем запрос
-                if privateKey == "" </span><span class="cov0" title="0">{
+                if privateKey == "" </span><span class="cov8" title="1">{
                         return streamer(ctx, desc, cc, method, opts...)
                 }</span>
 
                 // Для потоковых запросов подписываем метод
-                <span class="cov0" title="0">methodBytes := []byte(method)
+                <span class="cov8" title="1">methodBytes := []byte(method)
                 signature := sign.ComputeHMACSHA256(methodBytes, privateKey)
 
                 // Добавляем подпись в метаданные потока
                 md, ok := metadata.FromOutgoingContext(ctx)
-                if !ok </span><span class="cov0" title="0">{
+                if !ok </span><span class="cov8" title="1">{
                         md = metadata.New(nil)
                 }</span> else<span class="cov0" title="0"> {
                         md = md.Copy()
                 }</span>
-                <span class="cov0" title="0">md.Set(SignatureHeader, signature)
+                <span class="cov8" title="1">md.Set(SignatureHeader, signature)
                 newCtx := metadata.NewOutgoingContext(ctx, md)
 
                 // Создаем поток с обновленным контекстом
@@ -3773,17 +3773,17 @@ func (cfg *Config) IsEncryptionEnabled() bool <span class="cov8" title="1">{
 }</span>
 
 // IsTrustedSubnetEnabled возвращает true, если указана доверенная подсеть.
-func (cfg *Config) IsTrustedSubnetEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsTrustedSubnetEnabled() bool <span class="cov8" title="1">{
         return cfg.TrustedSubnet != ""
 }</span>
 
 // IsGRPCEnabled возвращает true, если включен gRPC сервер.
-func (cfg *Config) IsGRPCEnabled() bool <span class="cov0" title="0">{
+func (cfg *Config) IsGRPCEnabled() bool <span class="cov8" title="1">{
         return cfg.GRPC.Enabled
 }</span>
 
 // GetCryptoKeyPath возвращает путь к файлу с ключом для шифрования.
-func (cfg *Config) GetCryptoKeyPath() string <span class="cov0" title="0">{
+func (cfg *Config) GetCryptoKeyPath() string <span class="cov8" title="1">{
         return cfg.CryptoKey
 }</span>
 </pre>
@@ -6934,7 +6934,7 @@ type ContextKey struct {
 }
 
 // String возвращает строковое представление ключа контекста.
-func (k ContextKey) String() string <span class="cov0" title="0">{
+func (k ContextKey) String() string <span class="cov8" title="1">{
         return "crypto middleware context key: " + k.name
 }</span>
 

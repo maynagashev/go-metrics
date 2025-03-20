@@ -85,8 +85,8 @@ github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:260:					UpdateB
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:294:					StreamMetrics				100.0%
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:348:					Ping					85.7%
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:365:					metricToProto				92.3%
-github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go:17:				SigningInterceptor			0.0%
-github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go:61:				StreamSigningInterceptor		0.0%
+github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go:17:				SigningInterceptor			88.2%
+github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go:61:				StreamSigningInterceptor		91.7%
 github.com/maynagashev/go-metrics/internal/agent/http/client.go:39:					New					87.5%
 github.com/maynagashev/go-metrics/internal/agent/http/client.go:63:					Close					100.0%
 github.com/maynagashev/go-metrics/internal/agent/http/client.go:68:					UpdateMetric				100.0%
@@ -118,9 +118,9 @@ github.com/maynagashev/go-metrics/internal/server/app/config.go:117:					GetStor
 github.com/maynagashev/go-metrics/internal/server/app/config.go:122:					IsDatabaseEnabled			100.0%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:127:					IsRequestSigningEnabled			100.0%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:132:					IsEncryptionEnabled			100.0%
-github.com/maynagashev/go-metrics/internal/server/app/config.go:137:					IsTrustedSubnetEnabled			0.0%
-github.com/maynagashev/go-metrics/internal/server/app/config.go:142:					IsGRPCEnabled				0.0%
-github.com/maynagashev/go-metrics/internal/server/app/config.go:147:					GetCryptoKeyPath			0.0%
+github.com/maynagashev/go-metrics/internal/server/app/config.go:137:					IsTrustedSubnetEnabled			100.0%
+github.com/maynagashev/go-metrics/internal/server/app/config.go:142:					IsGRPCEnabled				100.0%
+github.com/maynagashev/go-metrics/internal/server/app/config.go:147:					GetCryptoKeyPath			100.0%
 github.com/maynagashev/go-metrics/internal/server/app/config_json.go:21:				DefaultServerAddr			100.0%
 github.com/maynagashev/go-metrics/internal/server/app/config_json.go:26:				DefaultStoreInterval			100.0%
 github.com/maynagashev/go-metrics/internal/server/app/config_json.go:31:				DefaultFileStoragePath			100.0%
@@ -219,7 +219,7 @@ github.com/maynagashev/go-metrics/pkg/crypto/crypto.go:132:						Decrypt					100
 github.com/maynagashev/go-metrics/pkg/crypto/crypto.go:137:						EncryptLargeData			78.6%
 github.com/maynagashev/go-metrics/pkg/crypto/crypto.go:204:						DecryptLargeData			72.2%
 github.com/maynagashev/go-metrics/pkg/crypto/crypto.go:245:						GenerateKeyPair				72.7%
-github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:30:					String					0.0%
+github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:30:					String					100.0%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:35:					New					100.0%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:46:					Handler					75.0%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:90:					processRequestBody			83.3%
@@ -233,4 +233,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				71.0%
+total:													(statements)				72.4%
