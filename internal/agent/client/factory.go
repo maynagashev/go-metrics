@@ -18,6 +18,9 @@ type Client interface {
 	// UpdateBatch отправляет пакет метрик на сервер.
 	UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error
 
+	// StreamMetrics отправляет метрики потоком на сервер (используется только для gRPC).
+	StreamMetrics(ctx context.Context, metrics []*metrics.Metric) error
+
 	// Ping проверяет соединение с сервером.
 	Ping(ctx context.Context) error
 

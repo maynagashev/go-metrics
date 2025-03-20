@@ -167,6 +167,10 @@ func (s *MetricsService) Ping(ctx context.Context, _ *pb.PingRequest) (*pb.PingR
 }
 
 // StreamMetrics обрабатывает потоковую отправку метрик от клиента.
+// Этот метод реализует потоковую передачу клиент -> сервер (client streaming RPC),
+// что позволяет отправлять большие объемы метрик без создания большого JSON-объекта
+// в памяти и снижает накладные расходы на обработку HTTP-запросов.
+// Метод собирает метрики из потока, буферизует их и затем сохраняет в хранилище.
 func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsServer) error {
 	ctx := stream.Context()
 	// Создаем буфер для метрик

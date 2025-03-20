@@ -280,7 +280,13 @@ func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, worker
 		return errors.New("client is nil")
 	}
 
-	// Используем клиент для отправки метрик
+	// Используем потоковую передачу для gRPC, если она включена
+	if a.GRPCEnabled {
+		slog.Debug("Using gRPC streaming for metrics", "workerID", workerID)
+		return a.client.StreamMetrics(ctx, items)
+	}
+
+	// Используем обычное пакетное обновление для HTTP или если gRPC не поддерживает потоки
 	return a.client.UpdateBatch(ctx, items)
 }
 

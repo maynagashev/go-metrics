@@ -77,7 +77,7 @@
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
-				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (67.0%)</option>
+				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (66.0%)</option>
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (50.0%)</option>
 				
@@ -85,7 +85,7 @@
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (0.0%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (57.1%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (56.6%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/agent/ip.go (57.1%)</option>
 				
@@ -2150,7 +2150,13 @@ func (a *agent) sendMetrics(ctx context.Context, items []*metrics.Metric, worker
                 return errors.New("client is nil")
         }</span>
 
-        // Используем клиент для отправки метрик
+        // Используем потоковую передачу для gRPC, если она включена
+        <span class="cov0" title="0">if a.GRPCEnabled </span><span class="cov0" title="0">{
+                slog.Debug("Using gRPC streaming for metrics", "workerID", workerID)
+                return a.client.StreamMetrics(ctx, items)
+        }</span>
+
+        // Используем обычное пакетное обновление для HTTP или если gRPC не поддерживает потоки
         <span class="cov0" title="0">return a.client.UpdateBatch(ctx, items)</span>
 }
 
@@ -2328,10 +2334,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2374,10 +2380,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Info("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -2501,6 +2507,9 @@ type Client interface {
 
         // UpdateBatch отправляет пакет метрик на сервер.
         UpdateBatch(ctx context.Context, metrics []*metrics.Metric) error
+
+        // StreamMetrics отправляет метрики потоком на сервер (используется только для gRPC).
+        StreamMetrics(ctx context.Context, metrics []*metrics.Metric) error
 
         // Ping проверяет соединение с сервером.
         Ping(ctx context.Context) error
@@ -2871,34 +2880,50 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
                 return nil
         }</span>
 
+        <span class="cov0" title="0">slog.Info("Starting gRPC streaming of metrics", "count", len(metrics))
+
         // Отправляем запрос с повторными попытками
-        <span class="cov0" title="0">return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
+        return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error </span><span class="cov0" title="0">{
                 // Открываем поток с опциями сжатия
                 stream, err := c.client.StreamMetrics(opCtx, callOpts...)
                 if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Failed to open gRPC stream", "error", err)
                         return fmt.Errorf("failed to open stream: %w", err)
                 }</span>
 
                 // Отправляем метрики в поток
-                <span class="cov0" title="0">for _, m := range metrics </span><span class="cov0" title="0">{
+                <span class="cov0" title="0">sentCount := 0
+                for _, m := range metrics </span><span class="cov0" title="0">{
                         protoMetric := metricToProto(m)
                         if sendErr := stream.Send(protoMetric); sendErr != nil </span><span class="cov0" title="0">{
+                                slog.Error("Failed to send metric in stream",
+                                        "error", sendErr,
+                                        "metric", m.Name,
+                                        "sent", sentCount,
+                                        "total", len(metrics))
                                 return fmt.Errorf("failed to send metric: %w", sendErr)
                         }</span>
+                        <span class="cov0" title="0">sentCount++</span>
                 }
 
+                <span class="cov0" title="0">slog.Info("All metrics sent to gRPC stream", "count", sentCount)
+
                 // Закрываем поток и получаем ответ
-                <span class="cov0" title="0">response, err := stream.CloseAndRecv()
+                response, err := stream.CloseAndRecv()
                 if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Failed to close gRPC stream", "error", err)
                         return fmt.Errorf("failed to close stream: %w", err)
                 }</span>
 
                 // Проверяем успешность операции
                 <span class="cov0" title="0">if !response.GetSuccess() </span><span class="cov0" title="0">{
-                        return fmt.Errorf("server returned error: %s", response.GetError())
+                        errMsg := fmt.Sprintf("server returned error: %s", response.GetError())
+                        slog.Error("Stream operation failed", "error", errMsg)
+                        return errors.New(errMsg)
                 }</span>
 
-                <span class="cov0" title="0">return nil</span>
+                <span class="cov0" title="0">slog.Info("Stream successfully completed")
+                return nil</span>
         })
 }
 
@@ -3180,6 +3205,13 @@ func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
 
         <span class="cov0" title="0">return nil</span>
 }
+
+// StreamMetrics отправляет метрики потоком на сервер.
+// Для HTTP клиента этот метод не реализован и возвращает ошибку,
+// так как потоковая передача поддерживается только в gRPC режиме.
+func (c *Client) StreamMetrics(_ context.Context, _ []*metrics.Metric) error <span class="cov0" title="0">{
+        return errors.New("streaming metrics is not supported in HTTP mode, use gRPC mode instead")
+}</span>
 
 // isRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
 func (c *Client) isRequestSigningEnabled() bool <span class="cov8" title="1">{
@@ -5405,6 +5437,10 @@ func (s *MetricsService) Ping(ctx context.Context, _ *pb.PingRequest) (*pb.PingR
 }
 
 // StreamMetrics обрабатывает потоковую отправку метрик от клиента.
+// Этот метод реализует потоковую передачу клиент -&gt; сервер (client streaming RPC),
+// что позволяет отправлять большие объемы метрик без создания большого JSON-объекта
+// в памяти и снижает накладные расходы на обработку HTTP-запросов.
+// Метод собирает метрики из потока, буферизует их и затем сохраняет в хранилище.
 func (s *MetricsService) StreamMetrics(stream pb.MetricsService_StreamMetricsServer) error <span class="cov0" title="0">{
         ctx := stream.Context()
         // Создаем буфер для метрик

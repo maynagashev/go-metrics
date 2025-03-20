@@ -287,33 +287,49 @@ func (c *Client) StreamMetrics(ctx context.Context, metrics []*metrics.Metric) e
 		return nil
 	}
 
+	slog.Info("Starting gRPC streaming of metrics", "count", len(metrics))
+
 	// Отправляем запрос с повторными попытками
 	return c.withRetry(ctx, func(opCtx context.Context, callOpts []grpc.CallOption) error {
 		// Открываем поток с опциями сжатия
 		stream, err := c.client.StreamMetrics(opCtx, callOpts...)
 		if err != nil {
+			slog.Error("Failed to open gRPC stream", "error", err)
 			return fmt.Errorf("failed to open stream: %w", err)
 		}
 
 		// Отправляем метрики в поток
+		sentCount := 0
 		for _, m := range metrics {
 			protoMetric := metricToProto(m)
 			if sendErr := stream.Send(protoMetric); sendErr != nil {
+				slog.Error("Failed to send metric in stream",
+					"error", sendErr,
+					"metric", m.Name,
+					"sent", sentCount,
+					"total", len(metrics))
 				return fmt.Errorf("failed to send metric: %w", sendErr)
 			}
+			sentCount++
 		}
+
+		slog.Info("All metrics sent to gRPC stream", "count", sentCount)
 
 		// Закрываем поток и получаем ответ
 		response, err := stream.CloseAndRecv()
 		if err != nil {
+			slog.Error("Failed to close gRPC stream", "error", err)
 			return fmt.Errorf("failed to close stream: %w", err)
 		}
 
 		// Проверяем успешность операции
 		if !response.GetSuccess() {
-			return fmt.Errorf("server returned error: %s", response.GetError())
+			errMsg := fmt.Sprintf("server returned error: %s", response.GetError())
+			slog.Error("Stream operation failed", "error", errMsg)
+			return errors.New(errMsg)
 		}
 
+		slog.Info("Stream successfully completed")
 		return nil
 	})
 }

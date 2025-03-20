@@ -140,6 +140,13 @@ func (c *Client) Ping(ctx context.Context) error {
 	return nil
 }
 
+// StreamMetrics отправляет метрики потоком на сервер.
+// Для HTTP клиента этот метод не реализован и возвращает ошибку,
+// так как потоковая передача поддерживается только в gRPC режиме.
+func (c *Client) StreamMetrics(_ context.Context, _ []*metrics.Metric) error {
+	return errors.New("streaming metrics is not supported in HTTP mode, use gRPC mode instead")
+}
+
 // isRequestSigningEnabled возвращает true, если задан приватный ключ и агент должен отправлять хэш на его основе.
 func (c *Client) isRequestSigningEnabled() bool {
 	return c.privateKey != ""
