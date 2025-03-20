@@ -103,9 +103,9 @@
 				
 				<option value="file23">github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go (95.8%)</option>
 				
-				<option value="file24">github.com/maynagashev/go-metrics/internal/server/grpc/server.go (0.0%)</option>
+				<option value="file24">github.com/maynagashev/go-metrics/internal/server/grpc/server.go (62.5%)</option>
 				
-				<option value="file25">github.com/maynagashev/go-metrics/internal/server/grpc/wrapper.go (0.0%)</option>
+				<option value="file25">github.com/maynagashev/go-metrics/internal/server/grpc/wrapper.go (93.3%)</option>
 				
 				<option value="file26">github.com/maynagashev/go-metrics/internal/server/handlers/json/index/index.go (63.6%)</option>
 				
@@ -4735,7 +4735,7 @@ type Server struct {
 }
 
 // New создает новый экземпляр gRPC сервера.
-func New(log *zap.Logger, cfg *app.Config, storage storage.Repository) *Server <span class="cov0" title="0">{
+func New(log *zap.Logger, cfg *app.Config, storage storage.Repository) *Server <span class="cov8" title="1">{
         metricsService := NewMetricsService(log, cfg, storage)
 
         return &amp;Server{
@@ -4747,7 +4747,7 @@ func New(log *zap.Logger, cfg *app.Config, storage storage.Repository) *Server <
 }</span>
 
 // Start запускает gRPC сервер.
-func (s *Server) Start() error <span class="cov0" title="0">{
+func (s *Server) Start() error <span class="cov8" title="1">{
         // Проверяем, включен ли gRPC
         if !s.cfg.IsGRPCEnabled() </span><span class="cov0" title="0">{
                 s.log.Info("gRPC server disabled, skip start")
@@ -4755,7 +4755,7 @@ func (s *Server) Start() error <span class="cov0" title="0">{
         }</span>
 
         // Создаем слушатель TCP
-        <span class="cov0" title="0">addr := s.cfg.GRPC.Addr
+        <span class="cov8" title="1">addr := s.cfg.GRPC.Addr
         s.log.Info("starting gRPC server", zap.String("address", addr))
         lis, err := net.Listen("tcp", addr)
         if err != nil </span><span class="cov0" title="0">{
@@ -4763,16 +4763,16 @@ func (s *Server) Start() error <span class="cov0" title="0">{
         }</span>
 
         // Создаем и настраиваем сервер
-        <span class="cov0" title="0">configErr := s.configureAndStartServer(lis, addr)
+        <span class="cov8" title="1">configErr := s.configureAndStartServer(lis, addr)
         if configErr != nil </span><span class="cov0" title="0">{
                 return configErr
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // configureAndStartServer создает и запускает gRPC сервер.
-func (s *Server) configureAndStartServer(lis net.Listener, addr string) error <span class="cov0" title="0">{
+func (s *Server) configureAndStartServer(lis net.Listener, addr string) error <span class="cov8" title="1">{
         // Параметры сервера
         opts := s.createServerOptions()
 
@@ -4783,19 +4783,19 @@ func (s *Server) configureAndStartServer(lis net.Listener, addr string) error <s
         }</span>
 
         // Создаем gRPC сервер
-        <span class="cov0" title="0">s.grpcServer = grpc.NewServer(opts...)
+        <span class="cov8" title="1">s.grpcServer = grpc.NewServer(opts...)
 
         // Регистрируем сервисы
         pb.RegisterMetricsServiceServer(s.grpcServer, s.metricsServ)
 
         // Запускаем сервер в отдельной горутине
-        go func() </span><span class="cov0" title="0">{
+        go func() </span><span class="cov8" title="1">{
                 if serveErr := s.grpcServer.Serve(lis); serveErr != nil </span><span class="cov0" title="0">{
                         s.log.Error("gRPC server error", zap.Error(serveErr))
                 }</span>
         }()
 
-        <span class="cov0" title="0">s.log.Info("gRPC server started successfully",
+        <span class="cov8" title="1">s.log.Info("gRPC server started successfully",
                 zap.String("address", addr),
                 zap.Uint32("max_connections", s.getMaxConnections()),
                 zap.Bool("request_signing_enabled", s.cfg.IsRequestSigningEnabled()),
@@ -4805,7 +4805,7 @@ func (s *Server) configureAndStartServer(lis net.Listener, addr string) error <s
 }
 
 // createServerOptions создает и возвращает опции для gRPC сервера.
-func (s *Server) createServerOptions() []grpc.ServerOption <span class="cov0" title="0">{
+func (s *Server) createServerOptions() []grpc.ServerOption <span class="cov8" title="1">{
         // Создаем параметры keepalive
         kaep := keepalive.EnforcementPolicy{
                 MinTime:             MinPingTime,
@@ -4848,7 +4848,7 @@ func (s *Server) createServerOptions() []grpc.ServerOption <span class="cov0" ti
 }</span>
 
 // getMaxConnections возвращает максимальное количество одновременных потоков.
-func (s *Server) getMaxConnections() uint32 <span class="cov0" title="0">{
+func (s *Server) getMaxConnections() uint32 <span class="cov8" title="1">{
         maxConnections := DefaultMaxConcurrentStreams
 
         // Безопасное использование значения из конфигурации, если оно положительное и в пределах uint32
@@ -4856,17 +4856,17 @@ func (s *Server) getMaxConnections() uint32 <span class="cov0" title="0">{
                 // Просто копируем значение - безопасно, т.к. уже проверили, что значение в допустимых пределах
                 //nolint:gosec // G115: проверка на допустимые значения выполнена выше
                 maxConnections = uint32(s.cfg.GRPC.MaxConn)
-        }</span> else<span class="cov0" title="0"> if s.cfg.GRPC.MaxConn &gt; int(DefaultMaxConcurrentStreams) </span><span class="cov0" title="0">{
+        }</span> else<span class="cov8" title="1"> if s.cfg.GRPC.MaxConn &gt; int(DefaultMaxConcurrentStreams) </span><span class="cov0" title="0">{
                 s.log.Warn("MaxConn value exceeds safe limit, using default",
                         zap.Int("configured", s.cfg.GRPC.MaxConn),
                         zap.Uint32("using", DefaultMaxConcurrentStreams))
         }</span>
 
-        <span class="cov0" title="0">return maxConnections</span>
+        <span class="cov8" title="1">return maxConnections</span>
 }
 
 // configureTLS настраивает TLS для gRPC сервера.
-func (s *Server) configureTLS(cryptoKeyPath string, opts *[]grpc.ServerOption) error <span class="cov0" title="0">{
+func (s *Server) configureTLS(cryptoKeyPath string, opts *[]grpc.ServerOption) error <span class="cov8" title="1">{
         if cryptoKeyPath != "" </span><span class="cov0" title="0">{
                 s.log.Info("loading TLS credentials", zap.String("key_path", cryptoKeyPath))
                 // Загружаем сертификат и ключ сервера
@@ -4879,11 +4879,11 @@ func (s *Server) configureTLS(cryptoKeyPath string, opts *[]grpc.ServerOption) e
                 // Добавляем TLS credentials в опции сервера
                 <span class="cov0" title="0">*opts = append(*opts, grpc.Creds(creds))
                 s.log.Info("TLS encryption enabled for gRPC server", zap.String("key_path", cryptoKeyPath))</span>
-        } else<span class="cov0" title="0"> {
+        } else<span class="cov8" title="1"> {
                 s.log.Warn("TLS encryption disabled for gRPC server, using insecure connection")
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // loadTLSCredentials загружает TLS креды для защищенного соединения..
@@ -4908,8 +4908,8 @@ func loadTLSCredentials(keyFile string) (credentials.TransportCredentials, error
 }
 
 // Stop останавливает gRPC сервер.
-func (s *Server) Stop() <span class="cov0" title="0">{
-        if s.grpcServer != nil </span><span class="cov0" title="0">{
+func (s *Server) Stop() <span class="cov8" title="1">{
+        if s.grpcServer != nil </span><span class="cov8" title="1">{
                 s.log.Info("stopping gRPC server")
                 s.grpcServer.GracefulStop()
                 s.log.Info("gRPC server stopped")
@@ -4938,7 +4938,7 @@ type ServerWrapper struct {
 }
 
 // NewServer создает новый экземпляр обертки gRPC сервера.
-func NewServer(log *zap.Logger, cfg *app.Config, storage storage.Repository) *ServerWrapper <span class="cov0" title="0">{
+func NewServer(log *zap.Logger, cfg *app.Config, storage storage.Repository) *ServerWrapper <span class="cov8" title="1">{
         return &amp;ServerWrapper{
                 server: New(log, cfg, storage),
                 log:    log,
@@ -4947,34 +4947,46 @@ func NewServer(log *zap.Logger, cfg *app.Config, storage storage.Repository) *Se
 }</span>
 
 // Start запускает gRPC сервер в отдельной горутине.
-func (w *ServerWrapper) Start(ctx context.Context) error <span class="cov0" title="0">{
+func (w *ServerWrapper) Start(ctx context.Context) error <span class="cov8" title="1">{
         // Проверяем, включен ли gRPC сервер
-        if !w.cfg.IsGRPCEnabled() </span><span class="cov0" title="0">{
+        if !w.cfg.IsGRPCEnabled() </span><span class="cov8" title="1">{
                 w.log.Info("gRPC server is disabled, skipping start")
                 return nil
         }</span>
 
         // Запускаем gRPC сервер
-        <span class="cov0" title="0">if err := w.server.Start(); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := w.server.Start(); err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
 
         // В отдельной горутине ожидаем завершения контекста для graceful shutdown
-        <span class="cov0" title="0">go func() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">go func() </span><span class="cov8" title="1">{
                 &lt;-ctx.Done()
                 w.log.Info("context done, stopping gRPC server")
                 w.server.Stop()
         }</span>()
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // Stop останавливает gRPC сервер.
-func (w *ServerWrapper) Stop() <span class="cov0" title="0">{
-        if w.server != nil </span><span class="cov0" title="0">{
+func (w *ServerWrapper) Stop() <span class="cov8" title="1">{
+        if w.server != nil </span><span class="cov8" title="1">{
                 w.server.Stop()
         }</span>
 }
+
+// GetLogger возвращает логгер, используемый оберткой.
+// Метод используется в основном для тестирования.
+func (w *ServerWrapper) GetLogger() *zap.Logger <span class="cov8" title="1">{
+        return w.log
+}</span>
+
+// GetConfig возвращает конфигурацию, используемую оберткой.
+// Метод используется в основном для тестирования.
+func (w *ServerWrapper) GetConfig() *app.Config <span class="cov8" title="1">{
+        return w.cfg
+}</span>
 </pre>
 		
 		<pre class="file" id="file26" style="display: none">// Package index реализует обработчик для получения списка всех метрик в формате JSON.

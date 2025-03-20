@@ -56,3 +56,15 @@ func (w *ServerWrapper) Stop() {
 		w.server.Stop()
 	}
 }
+
+// GetLogger возвращает логгер, используемый оберткой.
+// Метод используется в основном для тестирования.
+func (w *ServerWrapper) GetLogger() *zap.Logger {
+	return w.log
+}
+
+// GetConfig возвращает конфигурацию, используемую оберткой.
+// Метод используется в основном для тестирования.
+func (w *ServerWrapper) GetConfig() *app.Config {
+	return w.cfg
+}
