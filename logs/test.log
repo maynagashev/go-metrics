@@ -1,5 +1,5 @@
-?   	github.com/maynagashev/go-metrics/cmd/keygen	[no test files]
 ?   	github.com/maynagashev/go-metrics/internal/config	[no test files]
+?   	github.com/maynagashev/go-metrics/internal/grpc/pb	[no test files]
 === RUN   TestAgentEncryption
 --- PASS: TestAgentEncryption (0.00s)
 === RUN   TestLoadJSONConfig
@@ -28,10 +28,10 @@
 Build version: N/A
 Build date: N/A
 Build commit: N/A
-time=2025-03-08T12:32:08.152+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:9090 ReportInterval:5 PollInterval:2} PrivateKey:test-key CryptoKey: RateLimit:5 EnablePprof:false PprofPort:6060 ConfigFile:}"
+time=2025-03-21T01:59:16.635+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:9090 ReportInterval:5 PollInterval:2} PrivateKey:test-key CryptoKey: RateLimit:5 EnablePprof:false PprofPort:6060 ConfigFile: RealIP: GRPCAddress:localhost:9090 GRPCEnabled:false GRPCTimeout:5 GRPCRetry:3}"
 --- PASS: TestMain (0.00s)
 === RUN   TestInitLogger
-time=2025-03-08T12:32:08.154+07:00 level=DEBUG msg="test message"
+time=2025-03-21T01:59:16.636+07:00 level=DEBUG msg="test message"
 --- PASS: TestInitLogger (0.00s)
 === RUN   TestPrintVersion
 --- PASS: TestPrintVersion (0.00s)
@@ -46,16 +46,32 @@ time=2025-03-08T12:32:08.154+07:00 level=DEBUG msg="test message"
 === RUN   TestStartPProf
 === RUN   TestStartPProf/empty_address
 === RUN   TestStartPProf/valid_address
---- PASS: TestStartPProf (0.21s)
+--- PASS: TestStartPProf (0.20s)
     --- PASS: TestStartPProf/empty_address (0.10s)
-    --- PASS: TestStartPProf/valid_address (0.11s)
+    --- PASS: TestStartPProf/valid_address (0.10s)
 === RUN   TestStartPProf_ServerError
-time=2025-03-08T12:32:08.670+07:00 level=ERROR msg="Failed to start pprof server" error="listen tcp 127.0.0.1:9996: bind: address already in use"
---- PASS: TestStartPProf_ServerError (0.20s)
+time=2025-03-21T01:59:17.149+07:00 level=ERROR msg="Failed to start pprof server" error="listen tcp 127.0.0.1:9996: bind: address already in use"
+--- PASS: TestStartPProf_ServerError (0.21s)
 === RUN   Example_jsonConfig
 --- PASS: Example_jsonConfig (0.00s)
 PASS
-ok  	github.com/maynagashev/go-metrics/cmd/agent	0.636s
+ok  	github.com/maynagashev/go-metrics/cmd/agent	0.644s
+=== RUN   TestGenerateKeyPair
+2025/03/20 23:57:06 INFO Генерация RSA ключей bits=2048
+--- PASS: TestGenerateKeyPair (0.67s)
+=== RUN   TestParseFlags
+--- PASS: TestParseFlags (0.00s)
+=== RUN   TestGetStringOrDefault
+--- PASS: TestGetStringOrDefault (0.00s)
+=== RUN   TestPrintVersion
+--- PASS: TestPrintVersion (0.00s)
+=== RUN   TestInitLogger
+--- PASS: TestInitLogger (0.00s)
+=== RUN   TestMain
+time=2025-03-20T23:57:07.318+07:00 level=INFO msg="Build information" version=N/A date=N/A commit=N/A
+--- PASS: TestMain (0.30s)
+PASS
+ok  	github.com/maynagashev/go-metrics/cmd/keygen	(cached)
 === RUN   TestRun
 === RUN   TestRun/empty_dsn
 === RUN   TestRun/empty_migrations_path
@@ -65,9 +81,9 @@ ok  	github.com/maynagashev/go-metrics/cmd/agent	0.636s
 === RUN   TestMain_Integration
 === RUN   TestMain_Integration/no_args
 === RUN   TestMain_Integration/only_dsn
-/tmp/go-build3395294389/b192/migrate.test flag redefined: d
+/tmp/go-build796955045/b302/migrate.test flag redefined: d
 === RUN   TestMain_Integration/only_migrations_path
-/tmp/go-build3395294389/b192/migrate.test flag redefined: d
+/tmp/go-build796955045/b302/migrate.test flag redefined: d
 --- PASS: TestMain_Integration (0.00s)
     --- PASS: TestMain_Integration/no_args (0.00s)
     --- PASS: TestMain_Integration/only_dsn (0.00s)
@@ -80,18 +96,18 @@ ok  	github.com/maynagashev/go-metrics/cmd/migrate	(cached)
 --- PASS: TestInitLogger (0.00s)
 === RUN   TestInitStorage
 === RUN   TestInitStorage/MemoryStorage
-2025-03-08T12:32:08.389+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
+2025-03-21T01:59:16.631+0700	DEBUG	memory/memory.go:37	memory storage created	{"storage": {}}
 --- PASS: TestInitStorage (0.00s)
     --- PASS: TestInitStorage/MemoryStorage (0.00s)
 PASS
-ok  	github.com/maynagashev/go-metrics/cmd/server	0.014s
+ok  	github.com/maynagashev/go-metrics/cmd/server	0.016s
 === RUN   TestLoadConfig
-2025/03/05 23:16:44 Конфигурационный файл не найден
-2025/03/05 23:16:44 Ошибка при чтении конфигурационного файла: invalid character 'i' looking for beginning of object key string
+2025/03/20 23:57:06 Конфигурационный файл не найден
+2025/03/20 23:57:06 Ошибка при чтении конфигурационного файла: invalid character 'i' looking for beginning of object key string
 --- PASS: TestLoadConfig (0.00s)
 === RUN   TestAddAnalyzers
-2025/03/05 23:16:44 Используются все анализаторы staticcheck (секция отсутствует в конфигурации)
-2025/03/05 23:16:44 Используются анализаторы staticcheck из конфигурационного файла: [SA1000]
+2025/03/20 23:57:06 Используются все анализаторы staticcheck (секция отсутствует в конфигурации)
+2025/03/20 23:57:06 Используются анализаторы staticcheck из конфигурационного файла: [SA1000]
 --- PASS: TestAddAnalyzers (0.00s)
 === RUN   TestGetAllStaticcheckAnalyzers
 --- PASS: TestGetAllStaticcheckAnalyzers (0.00s)
@@ -100,831 +116,126 @@ ok  	github.com/maynagashev/go-metrics/cmd/server	0.014s
 PASS
 ok  	github.com/maynagashev/go-metrics/cmd/staticlint	(cached)
 ?   	github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration	[no test files]
-?   	github.com/maynagashev/go-metrics/mocks	[no test files]
 === RUN   TestAnalyzer
---- PASS: TestAnalyzer (1.85s)
+--- PASS: TestAnalyzer (1.51s)
 PASS
-ok  	github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck	1.877s
+ok  	github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck	1.536s
 === RUN   TestAnalyzer
---- PASS: TestAnalyzer (1.85s)
+--- PASS: TestAnalyzer (1.55s)
 PASS
-ok  	github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit	1.891s
+ok  	github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit	1.583s
 === RUN   Example_update
---- PASS: Example_update (0.33s)
+--- PASS: Example_update (0.01s)
 === RUN   Example_getValue
 --- PASS: Example_getValue (0.12s)
 === RUN   Example_updateBatch
 --- PASS: Example_updateBatch (0.01s)
 === RUN   Example_ping
---- PASS: Example_ping (0.03s)
+--- PASS: Example_ping (0.01s)
 PASS
 ok  	github.com/maynagashev/go-metrics/example	(cached)
-=== RUN   TestIsRetriableSendError
-=== RUN   TestIsRetriableSendError/nil_error
-=== RUN   TestIsRetriableSendError/regular_error
-=== RUN   TestIsRetriableSendError/timeout_error
-=== RUN   TestIsRetriableSendError/temporary_error
-=== RUN   TestIsRetriableSendError/net.OpError
---- PASS: TestIsRetriableSendError (0.00s)
-    --- PASS: TestIsRetriableSendError/nil_error (0.00s)
-    --- PASS: TestIsRetriableSendError/regular_error (0.00s)
-    --- PASS: TestIsRetriableSendError/timeout_error (0.00s)
-    --- PASS: TestIsRetriableSendError/temporary_error (0.00s)
-    --- PASS: TestIsRetriableSendError/net.OpError (0.00s)
-=== RUN   TestMakeUpdatesRequest
-2025/03/08 12:32:08 INFO sending metrics batch (try=0) workerID=1 url=http://127.0.0.1:34315/updates metrics="[Metric{Name: test_gauge, Type: gauge, Value: 42.000000} Metric{Name: test_counter, Type: counter, Delta: 10}]"
-2025/03/08 12:32:08.450404 DEBUG RESTY 
+=== RUN   TestAgent_collectRuntimeMetrics
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080/metrics
+=== RUN   TestAgent_collectRuntimeMetrics/collect_runtime_metrics
+2025/03/21 01:59:16 INFO Preparing metrics for sending gauges_count=27 counters_count=0 poll_count=0
+--- PASS: TestAgent_collectRuntimeMetrics (0.00s)
+    --- PASS: TestAgent_collectRuntimeMetrics/collect_runtime_metrics (0.00s)
+=== RUN   TestAgent_GRPCConfig
+2025/03/21 01:59:16 INFO Starting agent server_url=http://localhost:8080/metrics poll_interval=2s report_interval=10s private_key=<empty> rate_limit=0 grpc_enabled=false grpc_address=localhost:9090
+2025/03/21 01:59:16 INFO ======= GRACEFUL SHUTDOWN STARTED =======
+2025/03/21 01:59:16 INFO Tickers stopped
+2025/03/21 01:59:16 INFO Stop channel closed
+2025/03/21 01:59:16 INFO Shutdown signal received while preparing metrics - ensuring final metrics are sent gauges_count=27 counters_count=1 poll_count=0
+2025/03/21 01:59:16 INFO Sending final metrics batch before shutdown count=28
+    agent_test.go:77: Test completed successfully
+--- PASS: TestAgent_GRPCConfig (0.00s)
+=== RUN   TestAgent_CollectRuntimeMetrics
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+2025/03/21 01:59:16 INFO Preparing metrics for sending gauges_count=27 counters_count=0 poll_count=0
+--- PASS: TestAgent_CollectRuntimeMetrics (0.00s)
+=== RUN   TestAgent_CollectAdditionalMetrics
+2025/03/21 01:59:16 INFO sending metrics batch (try=0) url=http://localhost:8080/metrics/updates metrics="[Metric{Name: OtherSys, Type: gauge, Value: 746877.000000} Metric{Name: Sys, Type: gauge, Value: 6904848.000000} Metric{Name: Alloc, Type: gauge, Value: 682864.000000} Metric{Name: Mallocs, Type: gauge, Value: 2631.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 682864.000000} Metric{Name: GCSys, Type: gauge, Value: 1875256.000000} Metric{Name: HeapSys, Type: gauge, Value: 3735552.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 35040.000000} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 458752.000000} Metric{Name: HeapIdle, Type: gauge, Value: 2162688.000000} Metric{Name: HeapObjects, Type: gauge, Value: 2450.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: MSpanSys, Type: gauge, Value: 48960.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: HeapAlloc, Type: gauge, Value: 682864.000000} Metric{Name: HeapReleased, Type: gauge, Value: 2162688.000000} Metric{Name: BuckHashSys, Type: gauge, Value: 8251.000000} Metric{Name: Frees, Type: gauge, Value: 181.000000} Metric{Name: StackInuse, Type: gauge, Value: 458752.000000} Metric{Name: HeapInuse, Type: gauge, Value: 1572864.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: PollCount, Type: counter, Delta: 0}]"
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+2025/03/21 01:59:16 INFO Collector started
+2025/03/21 01:59:16 INFO Stop signal received, collector exiting
+2025/03/21 01:59:16 INFO Report routine started report_interval=10s server_url=http://localhost:8080/metrics grpc_enabled=false grpc_address=localhost:9090
+2025/03/21 01:59:16 INFO Client initialized client_type=*http.Client
+2025/03/21 01:59:16 INFO Stopping reports due to context cancellation
+2025/03/21 01:59:16 INFO Poll routine started poll_interval=2s metrics_storage_size=28
+2025/03/21 01:59:16 INFO Stopping polls due to agent shutdown
+2025/03/21 01:59:16 INFO Preparing metrics for sending gauges_count=22 counters_count=0 poll_count=0
+--- PASS: TestAgent_CollectAdditionalMetrics (0.00s)
+=== RUN   TestAgent_GetMetrics
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+2025/03/21 01:59:16 INFO Preparing metrics for sending gauges_count=49 counters_count=0 poll_count=0
+--- PASS: TestAgent_GetMetrics (0.00s)
+=== RUN   TestAgent_ResetMetrics
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+2025/03/21 01:59:16 INFO Preparing metrics for sending gauges_count=49 counters_count=0 poll_count=0
+2025/03/21 01:59:16 INFO Preparing metrics for sending gauges_count=0 counters_count=0 poll_count=0
+--- PASS: TestAgent_ResetMetrics (0.00s)
+=== RUN   TestAgent_IsRequestSigningEnabled
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+--- PASS: TestAgent_IsRequestSigningEnabled (0.00s)
+=== RUN   TestAgent_IsEncryptionEnabled
+2025/03/21 01:59:16 INFO using HTTP client address=http://localhost:8080
+--- PASS: TestAgent_IsEncryptionEnabled (0.00s)
+=== RUN   TestGetOutboundIP
+--- PASS: TestGetOutboundIP (0.00s)
+=== RUN   TestWorker
+=== RUN   TestWorker/Успешная_обработка_задания
+=== RUN   TestWorker/Обработка_ошибки_из_sendMetrics
+=== RUN   TestWorker/Обработка_закрытой_очереди_отправки
+=== RUN   TestWorker/Обработка_сигнала_остановки
+=== RUN   TestWorker/Обработка_сигнала_остановки_во_время_отправки_результата
+2025/03/21 01:59:16.755571 DEBUG RESTY 
 ==============================================================================
 ~~~ REQUEST ~~~
-POST  /updates  HTTP/1.1
-HOST   : 127.0.0.1:34315
-HEADERS:
-	Accept: application/json
-	Content-Type: application/json
-	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
-BODY   :
-"W3siaWQiOiJ0ZXN0X2dhdWdlIiwidHlwZSI6ImdhdWdlIiwidmFsdWUiOjQyfSx7ImlkIjoidGVzdF9jb3VudGVyIiwidHlwZSI6ImNvdW50ZXIiLCJkZWx0YSI6MTB9XQ=="
-
-------------------------------------------------------------------------------
-~~~ RESPONSE ~~~
-STATUS       : 200 OK
-PROTO        : HTTP/1.1
-RECEIVED AT  : 2025-03-08T12:32:08.450280725+07:00
-TIME DURATION: 1.998483ms
-HEADERS      :
-	Content-Length: 0
-	Date: Sat, 08 Mar 2025 05:32:08 GMT
-BODY         :
-***** NO CONTENT *****
-==============================================================================
---- PASS: TestMakeUpdatesRequest (0.00s)
-=== RUN   TestMakeUpdatesRequest_Error
-2025/03/08 12:32:08 INFO sending metrics batch (try=0) workerID=1 url=http://127.0.0.1:37651/updates metrics="[Metric{Name: test_gauge, Type: gauge, Value: 42.000000}]"
-2025/03/08 12:32:08.452658 DEBUG RESTY 
-==============================================================================
-~~~ REQUEST ~~~
-POST  /updates  HTTP/1.1
-HOST   : 127.0.0.1:37651
-HEADERS:
-	Accept: application/json
-	Content-Type: application/json
-	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
-BODY   :
-"W3siaWQiOiJ0ZXN0X2dhdWdlIiwidHlwZSI6ImdhdWdlIiwidmFsdWUiOjQyfV0="
-
-------------------------------------------------------------------------------
-~~~ RESPONSE ~~~
-STATUS       : 500 Internal Server Error
-PROTO        : HTTP/1.1
-RECEIVED AT  : 2025-03-08T12:32:08.452592501+07:00
-TIME DURATION: 1.167349ms
-HEADERS      :
-	Content-Length: 0
-	Date: Sat, 08 Mar 2025 05:32:08 GMT
-BODY         :
-***** NO CONTENT *****
-==============================================================================
---- PASS: TestMakeUpdatesRequest_Error (0.00s)
-=== RUN   TestMakeUpdatesRequest_WithCompression
-2025/03/08 12:32:08 INFO sending metrics batch (try=0) workerID=1 url=http://127.0.0.1:39547/updates metrics="[Metric{Name: test_gauge, Type: gauge, Value: 42.000000}]"
-2025/03/08 12:32:08.456560 DEBUG RESTY 
-==============================================================================
-~~~ REQUEST ~~~
-POST  /updates  HTTP/1.1
-HOST   : 127.0.0.1:39547
+POST  /metrics/updates  HTTP/1.1
+HOST   : localhost:8080
 HEADERS:
 	Accept: application/json
 	Content-Encoding: gzip
 	Content-Type: application/json
 	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
+	X-Real-Ip: 100.64.19.228
 BODY   :
-"H4sIAAAAAAAC/4quVspMUbJSKkktLolPTyxNT1XSUSqpLEhVslKCccsSc0pTlaxMjGpjAQEAAP//wvrKmC8AAAA="
+"H4sIAAAAAAAC/5SUy2rrMBCG30VrLyxZkpXszjHkAs2Fpl2VLqbykKRRLGNLpaH03YtDsWOohbMMfBP0f/OPX77IMSdTsnEHrHaXmkTEXUokU7IHv0cSkQ8wHsk05VKl6Xf0y4dQOYm54qpl/xlj9TCtmJK8hVfQ0MN/zmRCW3gLvsYn68CshyfiFr+Sd71mnoWCUpUKJmRLLxDKEJ+kiRCCdVl3JRTLwtc4PCJi3gVY+/PMVhrzeTYi7tqfR3EPULtxoLUnX44xvXOgTyEVXDTueuaWuRn2wKhkUqnewObtHbULVIWL7kWrDPQBw7IZj+O4v51gBjWRN7bxM2SR0wlP4ttmZdvnWQXaHW0xwmgT+K7qNgOPaBBqzEdr/e/1aQH1IRRbMdFd4KxCDB0I7Vci7P+vUgQHqEj7H4/rkoMnSNnNirfWmMz6wnW8bn5iRSKSo3HQrOD1JwAA//+4i/BsJQUAAA=="
 
 ------------------------------------------------------------------------------
 ~~~ RESPONSE ~~~
-STATUS       : 200 OK
+STATUS       : 404 Not Found
 PROTO        : HTTP/1.1
-RECEIVED AT  : 2025-03-08T12:32:08.45650831+07:00
-TIME DURATION: 1.573135ms
+RECEIVED AT  : 2025-03-21T01:59:16.755397391+07:00
+TIME DURATION: 7.210334ms
 HEADERS      :
-	Content-Length: 0
-	Date: Sat, 08 Mar 2025 05:32:08 GMT
+	Content-Length: 19
+	Content-Type: text/plain; charset=utf-8
+	Date: Thu, 20 Mar 2025 18:59:16 GMT
+	X-Content-Type-Options: nosniff
 BODY         :
-***** NO CONTENT *****
+404 page not found
 ==============================================================================
---- PASS: TestMakeUpdatesRequest_WithCompression (0.00s)
-=== RUN   TestMakeUpdatesRequest_WithSigning
-2025/03/08 12:32:08 INFO sending metrics batch (try=0) workerID=1 url=http://127.0.0.1:36305/updates metrics="[Metric{Name: test_gauge, Type: gauge, Value: 42.000000}]"
-2025/03/08 12:32:08.459269 DEBUG RESTY 
-==============================================================================
-~~~ REQUEST ~~~
-POST  /updates  HTTP/1.1
-HOST   : 127.0.0.1:36305
-HEADERS:
-	Accept: application/json
-	Content-Type: application/json
-	Hashsha256: 6e1211038d31d69ce8482a6f00f85caea2904caf485f3b77117fb58727d2ecc5
-	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
-BODY   :
-"W3siaWQiOiJ0ZXN0X2dhdWdlIiwidHlwZSI6ImdhdWdlIiwidmFsdWUiOjQyfV0="
-
-------------------------------------------------------------------------------
-~~~ RESPONSE ~~~
-STATUS       : 200 OK
-PROTO        : HTTP/1.1
-RECEIVED AT  : 2025-03-08T12:32:08.459186395+07:00
-TIME DURATION: 1.834774ms
-HEADERS      :
-	Content-Length: 0
-	Date: Sat, 08 Mar 2025 05:32:08 GMT
-BODY         :
-***** NO CONTENT *****
-==============================================================================
---- PASS: TestMakeUpdatesRequest_WithSigning (0.00s)
-=== RUN   TestAgent_collectRuntimeMetrics
-=== RUN   TestAgent_collectRuntimeMetrics/collect_runtime_metrics
-2025/03/08 12:32:08 INFO Preparing metrics for sending gauges_count=27 counters_count=0 poll_count=0
---- PASS: TestAgent_collectRuntimeMetrics (0.00s)
-    --- PASS: TestAgent_collectRuntimeMetrics/collect_runtime_metrics (0.00s)
-=== RUN   TestAgent_CollectRuntimeMetrics
-2025/03/08 12:32:08 INFO ======= AGENT STARTING ======= server_url=http://localhost:8080/metrics poll_interval=2s report_interval=10s send_compressed_data=true private_key="" send_hash=false encryption_enabled=false rate_limit=0
-2025/03/08 12:32:08 INFO Preparing metrics for sending gauges_count=27 counters_count=0 poll_count=0
-2025/03/08 12:32:08 INFO ======= AGENT STARTED =======
-2025/03/08 12:32:08 INFO Context done, initiating graceful shutdown
-2025/03/08 12:32:08 INFO ======= GRACEFUL SHUTDOWN STARTED =======
-2025/03/08 12:32:08 INFO Tickers stopped
-2025/03/08 12:32:08 INFO Stop channel closed
-2025/03/08 12:32:08 INFO Shutdown signal received while preparing metrics - ensuring final metrics are sent gauges_count=27 counters_count=1 poll_count=0
---- PASS: TestAgent_CollectRuntimeMetrics (0.00s)
-2025/03/08 12:32:08 INFO Sending final metrics batch before shutdown count=28
-=== RUN   TestAgent_CollectAdditionalMetrics
-2025/03/08 12:32:08 INFO Poll routine started poll_interval=2s metrics_storage_size=28
-2025/03/08 12:32:08 INFO Stopping polls due to agent shutdown
-2025/03/08 12:32:08 INFO Report routine started report_interval=10s server_url=http://localhost:8080/metrics
-2025/03/08 12:32:08 INFO Stopping reports due to agent shutdown
-2025/03/08 12:32:08 INFO Collector started
-2025/03/08 12:32:08 INFO Stop signal received, collector exiting
-2025/03/08 12:32:08 INFO Collector shutting down
-2025/03/08 12:32:08 INFO sending metrics batch (try=0) workerID=-1 url=http://localhost:8080/metrics/updates metrics="[Metric{Name: BuckHashSys, Type: gauge, Value: 1448302.000000} Metric{Name: HeapInuse, Type: gauge, Value: 3481600.000000} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: HeapAlloc, Type: gauge, Value: 1851880.000000} Metric{Name: HeapReleased, Type: gauge, Value: 4268032.000000} Metric{Name: HeapSys, Type: gauge, Value: 7880704.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 491520.000000} Metric{Name: Alloc, Type: gauge, Value: 1851880.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: Sys, Type: gauge, Value: 13325576.000000} Metric{Name: HeapIdle, Type: gauge, Value: 4399104.000000} Metric{Name: MSpanSys, Type: gauge, Value: 81600.000000} Metric{Name: GCSys, Type: gauge, Value: 1922480.000000} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: Mallocs, Type: gauge, Value: 3439.000000} Metric{Name: StackInuse, Type: gauge, Value: 491520.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: OtherSys, Type: gauge, Value: 1469770.000000} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 65600.000000} Metric{Name: Frees, Type: gauge, Value: 176.000000} Metric{Name: HeapObjects, Type: gauge, Value: 3263.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 1851880.000000} Metric{Name: PollCount, Type: counter, Delta: 0}]"
-2025/03/08 12:32:08 INFO Preparing metrics for sending gauges_count=22 counters_count=0 poll_count=0
---- PASS: TestAgent_CollectAdditionalMetrics (0.00s)
-=== RUN   TestAgent_GetMetrics
-2025/03/08 12:32:08 INFO Preparing metrics for sending gauges_count=49 counters_count=0 poll_count=0
---- PASS: TestAgent_GetMetrics (0.00s)
-=== RUN   TestAgent_ResetMetrics
-2025/03/08 12:32:08 INFO Preparing metrics for sending gauges_count=49 counters_count=0 poll_count=0
-2025/03/08 12:32:08 INFO Preparing metrics for sending gauges_count=0 counters_count=0 poll_count=0
---- PASS: TestAgent_ResetMetrics (0.00s)
-=== RUN   TestAgent_IsRequestSigningEnabled
---- PASS: TestAgent_IsRequestSigningEnabled (0.00s)
-=== RUN   TestAgent_IsEncryptionEnabled
---- PASS: TestAgent_IsEncryptionEnabled (0.00s)
+2025/03/21 01:59:16 ERROR failed to send metrics (try=0): server returned non-OK response: 404 metrics="[Metric{Name: OtherSys, Type: gauge, Value: 746877.000000} Metric{Name: Sys, Type: gauge, Value: 6904848.000000} Metric{Name: Alloc, Type: gauge, Value: 682864.000000} Metric{Name: Mallocs, Type: gauge, Value: 2631.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 682864.000000} Metric{Name: GCSys, Type: gauge, Value: 1875256.000000} Metric{Name: HeapSys, Type: gauge, Value: 3735552.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 35040.000000} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 458752.000000} Metric{Name: HeapIdle, Type: gauge, Value: 2162688.000000} Metric{Name: HeapObjects, Type: gauge, Value: 2450.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: MSpanSys, Type: gauge, Value: 48960.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: HeapAlloc, Type: gauge, Value: 682864.000000} Metric{Name: HeapReleased, Type: gauge, Value: 2162688.000000} Metric{Name: BuckHashSys, Type: gauge, Value: 8251.000000} Metric{Name: Frees, Type: gauge, Value: 181.000000} Metric{Name: StackInuse, Type: gauge, Value: 458752.000000} Metric{Name: HeapInuse, Type: gauge, Value: 1572864.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: PollCount, Type: counter, Delta: 0}]"
+2025/03/21 01:59:16 ERROR Failed to send final metrics directly error="server returned non-OK response: 404"
+2025/03/21 01:59:16 ERROR Failed to queue final metrics, queue might be full
+2025/03/21 01:59:16 INFO Closing send queue
+2025/03/21 01:59:16 INFO Waiting for all goroutines to finish
+2025/03/21 01:59:16 INFO ======= GRACEFUL SHUTDOWN COMPLETED =======
+--- PASS: TestWorker (0.10s)
+    --- PASS: TestWorker/Успешная_обработка_задания (0.00s)
+    --- PASS: TestWorker/Обработка_ошибки_из_sendMetrics (0.00s)
+    --- PASS: TestWorker/Обработка_закрытой_очереди_отправки (0.00s)
+    --- PASS: TestWorker/Обработка_сигнала_остановки (0.00s)
+    --- PASS: TestWorker/Обработка_сигнала_остановки_во_время_отправки_результата (0.10s)
+=== RUN   TestCollector
+=== RUN   TestCollector/Успешная_обработка_результатов
+=== RUN   TestCollector/Обработка_закрытой_очереди_результатов
+=== RUN   TestCollector/Обработка_сигнала_остановки
+--- PASS: TestCollector (0.10s)
+    --- PASS: TestCollector/Успешная_обработка_результатов (0.10s)
+    --- PASS: TestCollector/Обработка_закрытой_очереди_результатов (0.00s)
+    --- PASS: TestCollector/Обработка_сигнала_остановки (0.00s)
 PASS
-ok  	github.com/maynagashev/go-metrics/internal/agent	0.035s
-testing: warning: no tests to run
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/benchmarks	0.013s [no tests to run]
-=== RUN   TestNewMetric
-=== RUN   TestNewMetric/Create_counter_metric
-=== RUN   TestNewMetric/Create_gauge_metric
---- PASS: TestNewMetric (0.00s)
-    --- PASS: TestNewMetric/Create_counter_metric (0.00s)
-    --- PASS: TestNewMetric/Create_gauge_metric (0.00s)
-=== RUN   TestNewCounter
---- PASS: TestNewCounter (0.00s)
-=== RUN   TestNewGauge
---- PASS: TestNewGauge (0.00s)
-=== RUN   TestMetric_String
---- PASS: TestMetric_String (0.00s)
-=== RUN   TestMetric_ValueString
-=== RUN   TestMetric_ValueString/Nil_metric
-=== RUN   TestMetric_ValueString/Counter_metric
-=== RUN   TestMetric_ValueString/Gauge_metric
-=== RUN   TestMetric_ValueString/Unknown_metric_type
---- PASS: TestMetric_ValueString (0.00s)
-    --- PASS: TestMetric_ValueString/Nil_metric (0.00s)
-    --- PASS: TestMetric_ValueString/Counter_metric (0.00s)
-    --- PASS: TestMetric_ValueString/Gauge_metric (0.00s)
-    --- PASS: TestMetric_ValueString/Unknown_metric_type (0.00s)
-=== RUN   TestMetric_ToJSON
-=== RUN   TestMetric_ToJSON/Counter_metric_to_JSON
-=== RUN   TestMetric_ToJSON/Gauge_metric_to_JSON
---- PASS: TestMetric_ToJSON (0.00s)
-    --- PASS: TestMetric_ToJSON/Counter_metric_to_JSON (0.00s)
-    --- PASS: TestMetric_ToJSON/Gauge_metric_to_JSON (0.00s)
-=== RUN   TestMetricToString
---- PASS: TestMetricToString (0.00s)
-=== RUN   TestFloatPtr
---- PASS: TestFloatPtr (0.00s)
-=== RUN   TestInt64Ptr
---- PASS: TestInt64Ptr (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/contracts/metrics	(cached)
-=== RUN   TestNewConfig
---- PASS: TestNewConfig (0.00s)
-=== RUN   TestConfig_IsStoreEnabled
---- PASS: TestConfig_IsStoreEnabled (0.00s)
-=== RUN   TestConfig_IsRestoreEnabled
---- PASS: TestConfig_IsRestoreEnabled (0.00s)
-=== RUN   TestConfig_GetStorePath
---- PASS: TestConfig_GetStorePath (0.00s)
-=== RUN   TestConfig_IsSyncStore
---- PASS: TestConfig_IsSyncStore (0.00s)
-=== RUN   TestConfig_GetStoreInterval
---- PASS: TestConfig_GetStoreInterval (0.00s)
-=== RUN   TestConfig_IsDatabaseEnabled
---- PASS: TestConfig_IsDatabaseEnabled (0.00s)
-=== RUN   TestConfig_IsRequestSigningEnabled
---- PASS: TestConfig_IsRequestSigningEnabled (0.00s)
-=== RUN   TestConfig_IsEncryptionEnabled
---- PASS: TestConfig_IsEncryptionEnabled (0.78s)
-=== RUN   TestNew
---- PASS: TestNew (0.00s)
-=== RUN   TestServer_GetStoreInterval
---- PASS: TestServer_GetStoreInterval (0.00s)
-=== RUN   TestServer_Start
-    app_test.go:168: Skipping test that requires complex mocking of HTTP server
---- SKIP: TestServer_Start (0.00s)
-=== RUN   TestParseFlags
---- PASS: TestParseFlags (0.00s)
-=== RUN   TestRegisterCommandLineFlags
---- PASS: TestRegisterCommandLineFlags (0.00s)
-=== RUN   TestApplyEnvironmentVariables
---- PASS: TestApplyEnvironmentVariables (0.00s)
-=== RUN   TestLoadAndApplyJSONConfig
---- PASS: TestLoadAndApplyJSONConfig (0.00s)
-=== RUN   TestLoadJSONConfig
---- PASS: TestLoadJSONConfig (0.00s)
-=== RUN   TestApplyJSONConfig
---- PASS: TestApplyJSONConfig (0.00s)
-=== RUN   Example_jsonConfig
---- PASS: Example_jsonConfig (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/app	0.814s
-=== RUN   TestJSONIndexHandler
-2025-03-08T12:32:08.445+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONIndexHandler (0.00s)
-=== RUN   TestJSONIndexHandler_EmptyStorage
-2025-03-08T12:32:08.446+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONIndexHandler_EmptyStorage (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/index	0.015s
-=== RUN   TestHandle_Success
---- PASS: TestHandle_Success (0.00s)
-=== RUN   TestNew_DatabaseNotEnabled
---- PASS: TestNew_DatabaseNotEnabled (0.00s)
-=== RUN   TestNew_InvalidDatabaseConfig
-2025-03-08T12:32:08.545+0700	DEBUG	pgstorage/pgstorage.go:47	Connecting to database: invalid-dsn
-
-2025-03-08T12:32:08.546+0700	ERROR	pgstorage/pgstorage.go:50	Unable to connect to database: cannot parse `invalid-dsn`: failed to parse as DSN (invalid dsn)
-
-github.com/maynagashev/go-metrics/internal/server/storage/pgstorage.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:50
-github.com/maynagashev/go-metrics/internal/server/handlers/json/ping.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/handlers/json/ping/ping.go:49
-github.com/maynagashev/go-metrics/internal/server/handlers/json/ping_test.TestNew_InvalidDatabaseConfig
-	/home/dev/src/maynagashev/go-metrics/internal/server/handlers/json/ping/ping_test.go:93
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
---- PASS: TestNew_InvalidDatabaseConfig (0.00s)
-=== RUN   TestNew_DatabaseError
---- PASS: TestNew_DatabaseError (0.00s)
-=== RUN   TestHandle_EmptyResponse
---- PASS: TestHandle_EmptyResponse (0.00s)
-=== RUN   TestHandle_DifferentMethods
-=== RUN   TestHandle_DifferentMethods/GET
-=== RUN   TestHandle_DifferentMethods/POST
-=== RUN   TestHandle_DifferentMethods/PUT
-=== RUN   TestHandle_DifferentMethods/DELETE
---- PASS: TestHandle_DifferentMethods (0.00s)
-    --- PASS: TestHandle_DifferentMethods/GET (0.00s)
-    --- PASS: TestHandle_DifferentMethods/POST (0.00s)
-    --- PASS: TestHandle_DifferentMethods/PUT (0.00s)
-    --- PASS: TestHandle_DifferentMethods/DELETE (0.00s)
-=== RUN   TestHandle_WithContext
---- PASS: TestHandle_WithContext (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/ping	0.018s
-=== RUN   TestUpdateHandler
-=== RUN   TestUpdateHandler/update_gauge
-=== RUN   TestUpdateHandler/update_counter
-=== RUN   TestUpdateHandler/invalid_metrics_type
-=== RUN   TestUpdateHandler/invalid_url
---- PASS: TestUpdateHandler (0.00s)
-    --- PASS: TestUpdateHandler/update_gauge (0.00s)
-    --- PASS: TestUpdateHandler/update_counter (0.00s)
-    --- PASS: TestUpdateHandler/invalid_metrics_type (0.00s)
-    --- PASS: TestUpdateHandler/invalid_url (0.00s)
-=== RUN   TestJSONUpdateHandler_Gauge
---- PASS: TestJSONUpdateHandler_Gauge (0.00s)
-=== RUN   TestJSONUpdateHandler_Counter
---- PASS: TestJSONUpdateHandler_Counter (0.00s)
-=== RUN   TestJSONUpdateHandler_InvalidJSON
---- PASS: TestJSONUpdateHandler_InvalidJSON (0.00s)
-=== RUN   TestJSONUpdateHandler_WithSignature
---- PASS: TestJSONUpdateHandler_WithSignature (0.00s)
-=== RUN   TestJSONUpdateHandler_InvalidSignature
---- PASS: TestJSONUpdateHandler_InvalidSignature (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/update	0.017s
-=== RUN   TestNewBulkUpdate_Success
---- PASS: TestNewBulkUpdate_Success (0.00s)
-=== RUN   TestNewBulkUpdate_InvalidJSON
---- PASS: TestNewBulkUpdate_InvalidJSON (0.00s)
-=== RUN   TestNewBulkUpdate_WithSignature
---- PASS: TestNewBulkUpdate_WithSignature (0.00s)
-=== RUN   TestNewBulkUpdate_InvalidSignature
---- PASS: TestNewBulkUpdate_InvalidSignature (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/updates	0.013s
-=== RUN   TestJSONValueHandler
-=== RUN   TestJSONValueHandler/Get_gauge_metric
-2025-03-08T12:32:08.542+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-=== RUN   TestJSONValueHandler/Get_counter_metric
-2025-03-08T12:32:08.544+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-=== RUN   TestJSONValueHandler/Metric_not_found
-2025-03-08T12:32:08.544+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONValueHandler (0.00s)
-    --- PASS: TestJSONValueHandler/Get_gauge_metric (0.00s)
-    --- PASS: TestJSONValueHandler/Get_counter_metric (0.00s)
-    --- PASS: TestJSONValueHandler/Metric_not_found (0.00s)
-=== RUN   TestJSONValueHandler_InvalidJSON
-2025-03-08T12:32:08.544+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONValueHandler_InvalidJSON (0.00s)
-=== RUN   TestJSONValueHandler_GaugeMetric
-2025-03-08T12:32:08.544+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONValueHandler_GaugeMetric (0.00s)
-=== RUN   TestJSONValueHandler_MetricNotFound
-2025-03-08T12:32:08.545+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONValueHandler_MetricNotFound (0.00s)
-=== RUN   TestJSONValueHandler_WithSignature
-2025-03-08T12:32:08.545+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestJSONValueHandler_WithSignature (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/json/value	0.013s
-=== RUN   TestNew
-=== RUN   TestNew/Empty_metrics_list
-=== RUN   TestNew/With_gauge_metrics
-=== RUN   TestNew/With_counter_metrics
-=== RUN   TestNew/With_unknown_metric_type
-=== RUN   TestNew/With_multiple_metrics
---- PASS: TestNew (0.00s)
-    --- PASS: TestNew/Empty_metrics_list (0.00s)
-    --- PASS: TestNew/With_gauge_metrics (0.00s)
-    --- PASS: TestNew/With_counter_metrics (0.00s)
-    --- PASS: TestNew/With_unknown_metric_type (0.00s)
-    --- PASS: TestNew/With_multiple_metrics (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/plain/index	0.014s
-=== RUN   TestUpdateHandler
-=== RUN   TestUpdateHandler/update_gauge
-=== RUN   TestUpdateHandler/update_counter
-=== RUN   TestUpdateHandler/invalid_metrics_type
-=== RUN   TestUpdateHandler/invalid_url
---- PASS: TestUpdateHandler (0.00s)
-    --- PASS: TestUpdateHandler/update_gauge (0.00s)
-    --- PASS: TestUpdateHandler/update_counter (0.00s)
-    --- PASS: TestUpdateHandler/invalid_metrics_type (0.00s)
-    --- PASS: TestUpdateHandler/invalid_url (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/plain/update	0.012s
-=== RUN   TestPlainValueHandler
-2025-03-08T12:32:08.898+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-=== RUN   TestPlainValueHandler/Get_existing_gauge_metric
-=== RUN   TestPlainValueHandler/Get_existing_counter_metric
-=== RUN   TestPlainValueHandler/Get_non-existent_metric
---- PASS: TestPlainValueHandler (0.00s)
-    --- PASS: TestPlainValueHandler/Get_existing_gauge_metric (0.00s)
-    --- PASS: TestPlainValueHandler/Get_existing_counter_metric (0.00s)
-    --- PASS: TestPlainValueHandler/Get_non-existent_metric (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/handlers/plain/value	0.012s
-=== RUN   TestDecompressMiddleware_WithGzip
-    logger.go:146: 2025-03-05T23:16:44.557+0700	INFO	decompress middleware enabled
-    logger.go:146: 2025-03-05T23:16:44.560+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
---- PASS: TestDecompressMiddleware_WithGzip (0.00s)
-=== RUN   TestDecompressMiddleware_WithoutGzip
-    logger.go:146: 2025-03-05T23:16:44.561+0700	INFO	decompress middleware enabled
---- PASS: TestDecompressMiddleware_WithoutGzip (0.00s)
-=== RUN   TestDecompressMiddleware_InvalidGzip
-    logger.go:146: 2025-03-05T23:16:44.561+0700	INFO	decompress middleware enabled
-    logger.go:146: 2025-03-05T23:16:44.561+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
-    logger.go:146: 2025-03-05T23:16:44.561+0700	ERROR	error while decompressing request body	{"error": "gzip: invalid header"}
---- PASS: TestDecompressMiddleware_InvalidGzip (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/middleware/decompress	(cached)
-=== RUN   TestDecompressPoolMiddleware_WithGzip
-    logger.go:146: 2025-03-05T23:16:44.691+0700	INFO	decompress middleware enabled
-    logger.go:146: 2025-03-05T23:16:44.691+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
---- PASS: TestDecompressPoolMiddleware_WithGzip (0.00s)
-=== RUN   TestDecompressPoolMiddleware_WithoutGzip
-    logger.go:146: 2025-03-05T23:16:44.692+0700	INFO	decompress middleware enabled
---- PASS: TestDecompressPoolMiddleware_WithoutGzip (0.00s)
-=== RUN   TestDecompressPoolMiddleware_InvalidGzip
-    logger.go:146: 2025-03-05T23:16:44.692+0700	INFO	decompress middleware enabled
-    logger.go:146: 2025-03-05T23:16:44.692+0700	DEBUG	content encoded with gzip, replacing body with gzip.Reader
-    logger.go:146: 2025-03-05T23:16:44.692+0700	ERROR	error initializing gzip reader	{"error": "gzip: invalid header"}
---- PASS: TestDecompressPoolMiddleware_InvalidGzip (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool	(cached)
-=== RUN   TestLoggerMiddleware
---- PASS: TestLoggerMiddleware (0.00s)
-=== RUN   TestLoggerMiddleware_WithRequestBody
-    logger.go:146: 2025-03-05T23:16:44.951+0700	INFO	logger middleware enabled
-    logger.go:146: 2025-03-05T23:16:44.951+0700	INFO	request completed	{"method": "POST", "path": "/update", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "", "headers": {"Content-Type":["application/json"]}, "request_body": "{\"test\":\"data\"}", "status": 200, "response_bytes": 0, "response_headers": {}, "response_body": "", "duration": "5.173µs"}
---- PASS: TestLoggerMiddleware_WithRequestBody (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/middleware/logger	(cached)
-=== RUN   TestNew
-2025-03-08T12:32:09.761+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:09.762+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics-db.json"}
-2025-03-08T12:32:09.762+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "open /tmp/metrics-db.json: no such file or directory"}
-github.com/maynagashev/go-metrics/internal/server/storage/memory.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
-github.com/maynagashev/go-metrics/internal/server/router.TestNew
-	/home/dev/src/maynagashev/go-metrics/internal/server/router/router_test.go:27
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-2025-03-08T12:32:09.762+0700	INFO	logger/logger.go:18	logger middleware enabled
-2025-03-08T12:32:09.762+0700	INFO	decompresspool/decompresspool.go:42	decompress middleware enabled
-=== RUN   TestNew/GET_/
-2025-03-08T12:32:09.762+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000001", "headers": {}, "request_body": "", "status": 0, "response_bytes": 0, "response_headers": {"Content-Type":["text/html"]}, "response_body": "", "duration": "42.511µs"}
-=== RUN   TestNew/POST_/update
-2025-03-08T12:32:09.763+0700	DEBUG	update/json_update.go:81	request body	{"body": ""}
-2025-03-08T12:32:09.763+0700	ERROR	update/json_update.go:39	error while parsing metric	{"error": "unexpected end of JSON input"}
-github.com/maynagashev/go-metrics/internal/server/router.New.New.func6
-	/home/dev/src/maynagashev/go-metrics/internal/server/handlers/json/update/json_update.go:39
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5.(*Mux).routeHTTP
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:459
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:84
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/router.New.New.func4.1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:49
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:46
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.(*Compressor).Handler-fm.(*Compressor).Handler.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/compress.go:209
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.StripSlashes.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/strip.go:30
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.Recoverer.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/recoverer.go:45
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5/middleware.RequestID.func1
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/middleware/request_id.go:76
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/go-chi/chi/v5.(*Mux).ServeHTTP
-	/home/dev/go/1.22.8/pkg/mod/github.com/go-chi/chi/v5@v5.0.12/mux.go:90
-github.com/maynagashev/go-metrics/internal/server/router.TestNew.func1
-	/home/dev/src/maynagashev/go-metrics/internal/server/router/router_test.go:83
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-2025-03-08T12:32:09.763+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/update", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000002", "headers": {}, "request_body": "", "status": 400, "response_bytes": 29, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "unexpected end of JSON input\n", "duration": "218.052µs"}
-=== RUN   TestNew/POST_/updates
-2025-03-08T12:32:09.763+0700	DEBUG	updates/json_updates.go:41	json decode failed	{"error": "unexpected end of JSON input"}
-2025-03-08T12:32:09.763+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/updates", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000003", "headers": {}, "request_body": "", "status": 400, "response_bytes": 57, "response_headers": {"Content-Type":["application/json"]}, "response_body": "{\"status\":\"Error\",\"error\":\"unexpected end of JSON input\"}", "duration": "195.327µs"}
-=== RUN   TestNew/POST_/value
-2025-03-08T12:32:09.764+0700	INFO	logger/logger.go:40	request completed	{"method": "POST", "path": "/value", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000004", "headers": {}, "request_body": "", "status": 400, "response_bytes": 62, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "unexpected end of JSON input\nMetric{Name: , Type: } not found\n", "duration": "50.161µs"}
-=== RUN   TestNew/GET_/ping
-2025-03-08T12:32:09.764+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/ping", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000005", "headers": {}, "request_body": "", "status": 500, "response_bytes": 70, "response_headers": {"Content-Type":["application/json"]}, "response_body": "{\"status\":\"Error\",\"error\":\"не указана база данных\"}", "duration": "19.633µs"}
---- PASS: TestNew (0.00s)
-    --- PASS: TestNew/GET_/ (0.00s)
-    --- PASS: TestNew/POST_/update (0.00s)
-    --- PASS: TestNew/POST_/updates (0.00s)
-    --- PASS: TestNew/POST_/value (0.00s)
-    --- PASS: TestNew/GET_/ping (0.00s)
-=== RUN   TestNew_WithPprof
-2025-03-08T12:32:09.764+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:09.764+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics-db.json"}
-2025-03-08T12:32:09.764+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "open /tmp/metrics-db.json: no such file or directory"}
-github.com/maynagashev/go-metrics/internal/server/storage/memory.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
-github.com/maynagashev/go-metrics/internal/server/router.TestNew_WithPprof
-	/home/dev/src/maynagashev/go-metrics/internal/server/router/router_test.go:105
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-2025-03-08T12:32:09.765+0700	INFO	logger/logger.go:18	logger middleware enabled
-2025-03-08T12:32:09.765+0700	INFO	decompresspool/decompresspool.go:42	decompress middleware enabled
-2025-03-08T12:32:09.765+0700	INFO	router/router.go:59	Registering pprof handlers at /debug/pprof/
-=== RUN   TestNew_WithPprof/GET_/debug/pprof/
-2025-03-08T12:32:09.766+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/debug/pprof/", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000006", "headers": {}, "request_body": "", "status": 200, "response_bytes": 2327, "response_headers": {"Content-Type":["text/html; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "<html>\n<head>\n<title>/debug/pprof/</title>\n<style>\n.profile-name{\n\tdisplay:inline-block;\n\twidth:6rem;\n}\n</style>\n</head>\n<body>\n/debug/pprof/\n<br>\n<p>Set debug=1 as a query parameter to export in legacy text format</p>\n<br>\nTypes of profiles available:\n<table>\n<thead><td>Count</td><td>Profile</td></thead>\n<tr><td>1</td><td><a href='allocs?debug=1'>allocs</a></td></tr>\n<tr><td>0</td><td><a href='block?debug=1'>block</a></td></tr>\n<tr><td>0</td><td><a href='cmdline?debug=1'>cmdline</a></td></tr>\n<tr><td>5</td><td><a href='goroutine?debug=1'>goroutine</a></td></tr>\n<tr><td>1</td><td><a href='heap?debug=1'>heap</a></td></tr>\n<tr><td>0</td><td><a href='mutex?debug=1'>mutex</a></td></tr>\n<tr><td>0</td><td><a href='profile?debug=1'>profile</a></td></tr>\n<tr><td>7</td><td><a href='threadcreate?debug=1'>threadcreate</a></td></tr>\n<tr><td>0</td><td><a href='trace?debug=1'>trace</a></td></tr>\n</table>\n<a href=\"goroutine?debug=2\">full goroutine stack dump</a>\n<br>\n<p>\nProfile Descriptions:\n<ul>\n<li><div class=profile-name>allocs: </div> A sampling of all past memory allocations</li>\n<li><div class=profile-name>block: </div> Stack traces that led to blocking on synchronization primitives</li>\n<li><div class=profile-name>cmdline: </div> The command line invocation of the current program</li>\n<li><div class=profile-name>goroutine: </div> Stack traces of all current goroutines. Use debug=2 as a query parameter to export in the same format as an unrecovered panic.</li>\n<li><div class=profile-name>heap: </div> A sampling of memory allocations of live objects. You can specify the gc GET parameter to run GC before taking the heap sample.</li>\n<li><div class=profile-name>mutex: </div> Stack traces of holders of contended mutexes</li>\n<li><div class=profile-name>profile: </div> CPU profile. You can specify the duration in the seconds GET parameter. After you get the profile file, use the go tool pprof command to investigate the profile.</li>\n<li><div class=profile-name>threadcreate: </div> Stack traces that led to the creation of new OS threads</li>\n<li><div class=profile-name>trace: </div> A trace of execution of the current program. You can specify the duration in the seconds GET parameter. After you get the trace file, use the go tool trace command to investigate the trace.</li>\n</ul>\n</p>\n</body>\n</html>", "duration": "329.269µs"}
-=== RUN   TestNew_WithPprof/GET_/debug/pprof/cmdline
-2025-03-08T12:32:09.766+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/debug/pprof/cmdline", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000007", "headers": {}, "request_body": "", "status": 200, "response_bytes": 151, "response_headers": {"Content-Type":["text/plain; charset=utf-8"],"X-Content-Type-Options":["nosniff"]}, "response_body": "/tmp/go-build2124843394/b580/router.test\u0000-test.testlogfile=/tmp/go-build2124843394/b580/testlog.txt\u0000-test.paniconexit0\u0000-test.timeout=10m0s\u0000-test.v=true", "duration": "33.414µs"}
-=== RUN   TestNew_WithPprof/GET_/debug/pprof/heap
-2025-03-08T12:32:09.774+0700	INFO	logger/logger.go:40	request completed	{"method": "GET", "path": "/debug/pprof/heap", "remote_addr": "192.0.2.1:1234", "user_agent": "", "request_id": "ubuntu/xIj9blz7ET-000008", "headers": {}, "request_body": "", "status": 200, "response_bytes": 946, "response_headers": {"Content-Disposition":["attachment; filename=\"heap\""],"Content-Type":["application/octet-stream"],"X-Content-Type-Options":["nosniff"]}, "response_body": "\u001f\ufffd\u0008\u0000\u0000\u0000\u0000\u0000\u0004\ufffd\ufffdRO\ufffd\ufffdT\u001c6\ufffdf\ufffdf:\ufffd\ufffdm\ufffd}MUb\u0004y\u001dܼ\ufffdMv6\u0003\"\u0005-H\u000f\ufffdX\ufffd\ufffdR\ufffd\ufffdy\ufffd\ufffdf\ufffd%\ufffd\ufffd\ufffd\ufffd\"\ufffd\ufffd\ufffd\ufffd\ufffd\u001e\ufffd\u0008\ufffd \u001e,z\ufffd\ufffdU/E\ufffd\u0008z\ufffd\ufffd\ufffdڋ\u0015\u0005\u0011\u000f\ufffd\ufffdlܭ\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd}\ufffd\ufffd\ufffd\ufffd7yQ\u0006\u0002\u0014_\ufffd*]\ufffd\ufffd\u0004eU\u0006\n\u0014U\u0019\ufffd\ufffd}\u001b\ufffd\ufffd\u0012\u0010\ufffdg\ufffd+\u001a\n\u0010\ufffd/\ufffd\ufffd\ufffdk\u0019\n\ufffd\u000e\u0010 @@\ufffd\ufffdw\ufffd^\u0007\ufffdPE\ufffd>\ufffd\ufffd\ufffd\ufffd\u0012\u0010ѥ\ufffd\ufffdJ\ufffd\u0002$\ufffd\ufffdb(@\ufffdoH5E\ufffd\u001d\ufffd\ufffd\ufffd\ufffd\u0015\ufffd\ufffd\u00012<\ufffd\ufffd\ufffd]\ufffd\ufffdd@ \ufffd\u001f/\ufffd\u0014\u0005~ \ufffdX\u0005\u001eEG\ufffd.~G0恌.\ufffdzU2\ufffd\ufffdm(\ufffdTЂ\ufffdh^\ufffd\ufffd3\ufffd\"P\ufffdo\ufffd^\ufffd\r\u0019\ufffdaϐ\u0001\ufffd\ufffdC\u000eiC\ufffd\ufffd\ufffdŧ{*\u0000\ufffd\u0018:\ufffd/`͘\u0007-\ufffd\ufffd\ufffd\ufffd9|\u000e&\ufffd\ufffd\u001c<\ufffd\ufffd\ufffd'\ufffd\ufffd\u0001A\u001b}\ufffd\ufffd\u0017\ufffd\ufffd*\ufffdҭ}\ufffdp\u0011-\ufffd\u000f\ufffd׎,\ufffdZ\u0000\ufffd\u001f>4\ufffdRۂ(\ufffdJ\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u001b\ufffd\ufffd_~\ufffd\ufffdW7\ufffd\ufffd\ufffd2\ufffd \u0010`UU\"\ufffdn]\ufffd\ufffd\ufffd+h\u001a\u0010aU\ufffdy\ufffd\ufffd珠\ufffd\ufffdO\ufffd\ufffdU\ufffdbd\ufffd\ufffdN\u0000\tV\ufffd͟o׽\ufffdbM;\tdXݪO\ufffd\ufffd\ufffd\ufffd]\ufffd\ufffd\ufffd)\ufffd!M\u0003\n\ufffd\ufffd\ufffdO\ufffd\u0013P\ufffd~\ufffd\ufffd\u000f\ufffd\u0007\ufffdRly\u0001\ufffd\ufffd\ufffd[\ufffd\ufffdv\ufffd$ɂ\ufffd\ufffd\ufffd\u0005eA\ufffd \ufffd\ufffd%\ufffdx\ufffd\ufffd\u000cٍ\ufffdI\ufffd\ufffd\ufffdtf\ufffdY\u000f\u0007\ufffdx+gEAF\ufffdW2\u0013\ufffd\ufffd\ufffd,?m\ufffdi\\>\ufffd\ufffd\u000e}\ufffdlfcFB6%f\ufffd\ufffdtJ\ufffd,/\ufffd,-\ufffdmRj\ufffd\ufffd\ufffd\u0003Ұgr$\ufffd\ufffd\ufffd(\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdI\u0014\ufffd\u0003\ufffdƶ/\ufffdq\ufffdrJ\ufffd\ufffdܜ\ufffdf\ufffd\ufffdI\ufffd-\u0007\ufffd1\ufffdk\ufffdB\ufffdq\u0018&l\ufffd˙\ufffd\ufffd \u000bY\ufffd\u0018>\ufffdo8\ufffd\u001a\ufffd[\ufffdDd\ufffd\ufffd\ufffd0\ufffd3\ufffd\u0015\ufffd2mz@\ufffd4\ufffd\ufffd+\ufffd<\ufffdx\ufffd`\ufffd\ufffd\ufffd{\ufffd\ufffd\u0010ϳ\ufffd\ufffd\ufffd\u0019\ufffdƶ\ufffd\ufffd\ufffd\ufffd{\ufffd4\ufffd\ufffd썽\ufffdԋ\ufffdb\ufffdMyfcV\ufffdqP\ufffd8-Y\ufffdz\t)X>e9ɳI\ufffdr>\ufffd\ufffd\ufffdO\ufffd\ufffd\ufffd\ufffd%\ufffd\ufffdD\u0019=w\ufffd\ufffd}i\ufffd/\ufffd\ufffd\\c\ufffd\u001b\u0017\ufffdr\ufffd\ufffd\ufffd<\u001b\ufffds\ufffd\ufffd\ufffdFɊ\ufffd\ufffd\ufffd\ufffd\ufffd8\ufffd\ufffd\ufffd\ufffdI\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'\ufffd\ufffdj*W¤\u001co\ufffdP\ufffdI\ufffd\ufffdԦ\ufffd\ufffd\ufffd\ufffdC\ufffd\ufffd+\ufffd\ufffd$\ufffdy\ufffd12)r\ufffd\ufffd>\ufffdq\u0007\u001b\u0003g9\ufffd\ufffd\ufffd\ufffdr\ufffdN\ufffde`\u0016\ufffd9\ufffdxh\ufffd,\ufffdw\ufffd\ufffd^\ufffd\u0003\ufffd\ufffd\u0007}\ufffd\u001fZnh\ufffd,7\ufffd=\ufffd\u001f\u000e-\ufffd\ufffd>\r\ufffd\ufffd\"5\ufffd\ufffd\ufffd\ufffdތ\u001dw\ufffd<p\ufffd\u0004\ufffd'X\ufffd\u0015\ufffd\u000b\u0019u\ufffdp\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdе\ufffd\ufffd\ufffd:\ufffd\u0003\ufffd\u0019\r\ufffdpH\ufffd\ufffdi\ufffd[\u0004^\ufffd\\\ufffd+\u0000\u0000\ufffd\ufffd\ufffd\u001b\u000f\ufffd=\u0006\u0000\u0000", "duration": "7.600155ms"}
---- PASS: TestNew_WithPprof (0.01s)
-    --- PASS: TestNew_WithPprof/GET_/debug/pprof/ (0.00s)
-    --- PASS: TestNew_WithPprof/GET_/debug/pprof/cmdline (0.00s)
-    --- PASS: TestNew_WithPprof/GET_/debug/pprof/heap (0.01s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/router	0.028s
-=== RUN   TestMemoryStorage
-=== RUN   TestMemoryStorage/memory_storage
---- PASS: TestMemoryStorage (0.00s)
-    --- PASS: TestMemoryStorage/memory_storage (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/storage	0.013s
-=== RUN   TestMemStorage_UpdateGauge
-2025-03-08T12:32:09.761+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_UpdateGauge (0.00s)
-=== RUN   TestMemStorage_IncrementCounter
-2025-03-08T12:32:09.761+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_IncrementCounter (0.00s)
-=== RUN   TestMemStorage_UpdateMetric
-2025-03-08T12:32:09.761+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_UpdateMetric (0.00s)
-=== RUN   TestMemStorage_GetMetric
-2025-03-08T12:32:09.762+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_GetMetric (0.00s)
-=== RUN   TestMemStorage_Count
-2025-03-08T12:32:09.762+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_Count (0.00s)
-=== RUN   TestMemStorage_UpdateMetrics
-2025-03-08T12:32:09.762+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_UpdateMetrics (0.00s)
-=== RUN   TestMemStorage_GetMetrics
-2025-03-08T12:32:09.762+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_GetMetrics (0.00s)
-=== RUN   TestMemStorage_FileOperations
-2025-03-08T12:32:09.762+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:09.763+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test4144041070"}
-2025-03-08T12:32:09.763+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "EOF"}
-github.com/maynagashev/go-metrics/internal/server/storage/memory.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
-github.com/maynagashev/go-metrics/internal/server/storage/memory_test.setupTestStorageWithConfig
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:33
-github.com/maynagashev/go-metrics/internal/server/storage/memory_test.TestMemStorage_FileOperations
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:299
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-2025-03-08T12:32:09.763+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test4144041070", "gauges": {"test_gauge":42}, "counters": {}}
-2025-03-08T12:32:09.763+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test4144041070", "gauges": {"test_gauge":42}, "counters": {"test_counter":10}}
-2025-03-08T12:32:09.763+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:09.763+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test4144041070"}
-2025-03-08T12:32:09.763+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test4144041070", "gauges": {"test_gauge":42}, "counters": {}}
-2025-03-08T12:32:09.764+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test4144041070", "gauges": {"test_gauge":42}, "counters": {"test_counter":10}}
-2025-03-08T12:32:09.764+0700	INFO	memory/memory.go:282	Metrics restored from file	{"file": "/tmp/metrics_test4144041070", "metrics": 2}
---- PASS: TestMemStorage_FileOperations (0.00s)
-=== RUN   TestMemStorage_Dump
-2025-03-08T12:32:09.764+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:09.764+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test3946421977"}
-2025-03-08T12:32:09.764+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "EOF"}
-github.com/maynagashev/go-metrics/internal/server/storage/memory.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
-github.com/maynagashev/go-metrics/internal/server/storage/memory_test.setupTestStorageWithConfig
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:33
-github.com/maynagashev/go-metrics/internal/server/storage/memory_test.TestMemStorage_Dump
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:353
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-2025-03-08T12:32:10.765+0700	INFO	memory/memory.go:64	store 1 metrics to file /tmp/metrics_test3946421977
-2025-03-08T12:32:10.766+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3946421977", "gauges": {"test_gauge":42}, "counters": {}}
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3946421977", "gauges": {"test_gauge":42}, "counters": {}}
-2025-03-08T12:32:11.766+0700	INFO	memory/memory.go:64	store 1 metrics to file /tmp/metrics_test3946421977
---- PASS: TestMemStorage_Dump (2.00s)
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3946421977", "gauges": {"test_gauge":42}, "counters": {}}
-=== RUN   TestMemStorage_Close
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test3773080276"}
-2025-03-08T12:32:11.766+0700	ERROR	memory/memory.go:44	failed to read metrics from file	{"error": "EOF"}
-github.com/maynagashev/go-metrics/internal/server/storage/memory.New
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory.go:44
-github.com/maynagashev/go-metrics/internal/server/storage/memory_test.setupTestStorageWithConfig
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:33
-github.com/maynagashev/go-metrics/internal/server/storage/memory_test.TestMemStorage_Close
-	/home/dev/src/maynagashev/go-metrics/internal/server/storage/memory/memory_test.go:398
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:251	load metrics from file	{"path": "/tmp/metrics_test3773080276"}
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3773080276", "gauges": {"test_gauge":42}, "counters": {}}
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:207	store metrics to file	{"path": "/tmp/metrics_test3773080276", "gauges": {"test_gauge":42}, "counters": {"test_counter":10}}
-2025-03-08T12:32:11.766+0700	INFO	memory/memory.go:282	Metrics restored from file	{"file": "/tmp/metrics_test3773080276", "metrics": 2}
---- PASS: TestMemStorage_Close (0.00s)
-=== RUN   TestMemStorage_GetAllMetrics
-2025-03-08T12:32:11.766+0700	DEBUG	memory/memory.go:38	memory storage created	{"storage": {}}
---- PASS: TestMemStorage_GetAllMetrics (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/storage/memory	2.018s
-=== RUN   Test_isRetriableError
-=== RUN   Test_isRetriableError/Connection_exception
-=== RUN   Test_isRetriableError/Connection_does_not_exist
-=== RUN   Test_isRetriableError/Connection_failure
-=== RUN   Test_isRetriableError/Disk_full
-=== RUN   Test_isRetriableError/Non-retriable_error
---- PASS: Test_isRetriableError (0.00s)
-    --- PASS: Test_isRetriableError/Connection_exception (0.00s)
-    --- PASS: Test_isRetriableError/Connection_does_not_exist (0.00s)
-    --- PASS: Test_isRetriableError/Connection_failure (0.00s)
-    --- PASS: Test_isRetriableError/Disk_full (0.00s)
-    --- PASS: Test_isRetriableError/Non-retriable_error (0.00s)
-=== RUN   TestPgStorage_Close
-    pgstorage_test.go:216: Skipping full Close() test as it requires a real database connection
---- SKIP: TestPgStorage_Close (0.00s)
-=== RUN   TestPgStorage_Count
-    pgstorage_test.go:221: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_Count (0.00s)
-=== RUN   TestPgStorage_GetMetrics
-    pgstorage_test.go:226: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_GetMetrics (0.00s)
-=== RUN   TestPgStorage_GetMetric
-    pgstorage_test.go:231: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_GetMetric (0.00s)
-=== RUN   TestPgStorage_GetCounter
-    pgstorage_test.go:236: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_GetCounter (0.00s)
-=== RUN   TestPgStorage_GetGauge
-    pgstorage_test.go:241: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_GetGauge (0.00s)
-=== RUN   TestPgStorage_UpdateMetric
-    pgstorage_test.go:246: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_UpdateMetric (0.00s)
-=== RUN   TestPgStorage_UpdateMetrics
-    pgstorage_test.go:251: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_UpdateMetrics (0.00s)
-=== RUN   TestPgStorage_UpdateMetrics_TransactionError
-    pgstorage_test.go:256: Skipping test that requires complex mocking
---- SKIP: TestPgStorage_UpdateMetrics_TransactionError (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/internal/server/storage/pgstorage	0.009s
-=== RUN   TestGenerateAndLoadKeys
---- PASS: TestGenerateAndLoadKeys (0.74s)
-=== RUN   TestEncryptLargeData
---- PASS: TestEncryptLargeData (0.20s)
-PASS
-ok  	github.com/maynagashev/go-metrics/pkg/crypto	0.950s
-=== RUN   TestMiddleware_Handler
-=== RUN   TestMiddleware_Handler/No_body
-=== RUN   TestMiddleware_Handler/With_body
-2025-03-08T12:32:09.838+0700	DEBUG	crypto/crypto.go:139	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "cda50cb63e462b6b039a07e38b6f14ae8ce4172e00d228ebeec81ee547b3bef2", "calc_hash": "cda50cb63e462b6b039a07e38b6f14ae8ce4172e00d228ebeec81ee547b3bef2"}
-=== RUN   TestMiddleware_Handler/With_invalid_signature
-2025-03-08T12:32:09.839+0700	DEBUG	crypto/crypto.go:139	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "invalid-hash", "error": "invalid hash in request header", "calc_hash": "cda50cb63e462b6b039a07e38b6f14ae8ce4172e00d228ebeec81ee547b3bef2"}
-2025-03-08T12:32:09.839+0700	ERROR	crypto/crypto.go:146	failed to verify request signature	{"error": "invalid hash in request header"}
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).verifyRequestSignature
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:146
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).processRequestBody
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:97
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).Handler-fm.(*Middleware).Handler.func1
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:63
-net/http.HandlerFunc.ServeHTTP
-	/home/dev/.goenv/versions/1.22.8/src/net/http/server.go:2171
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.TestMiddleware_Handler.func5
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto_test.go:89
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
---- PASS: TestMiddleware_Handler (0.00s)
-    --- PASS: TestMiddleware_Handler/No_body (0.00s)
-    --- PASS: TestMiddleware_Handler/With_body (0.00s)
-    --- PASS: TestMiddleware_Handler/With_invalid_signature (0.00s)
-=== RUN   TestMiddleware_ProcessRequestBody
-=== RUN   TestMiddleware_ProcessRequestBody/Valid_request
-=== RUN   TestMiddleware_ProcessRequestBody/With_signature
-2025-03-08T12:32:09.839+0700	DEBUG	crypto/crypto.go:139	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "cda50cb63e462b6b039a07e38b6f14ae8ce4172e00d228ebeec81ee547b3bef2", "calc_hash": "cda50cb63e462b6b039a07e38b6f14ae8ce4172e00d228ebeec81ee547b3bef2"}
-=== RUN   TestMiddleware_ProcessRequestBody/With_invalid_signature
-2025-03-08T12:32:09.839+0700	DEBUG	crypto/crypto.go:139	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "invalid-hash", "error": "invalid hash in request header", "calc_hash": "cda50cb63e462b6b039a07e38b6f14ae8ce4172e00d228ebeec81ee547b3bef2"}
-2025-03-08T12:32:09.839+0700	ERROR	crypto/crypto.go:146	failed to verify request signature	{"error": "invalid hash in request header"}
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).verifyRequestSignature
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:146
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).processRequestBody
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:97
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.TestMiddleware_ProcessRequestBody.func4
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto_test.go:151
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
---- PASS: TestMiddleware_ProcessRequestBody (0.00s)
-    --- PASS: TestMiddleware_ProcessRequestBody/Valid_request (0.00s)
-    --- PASS: TestMiddleware_ProcessRequestBody/With_signature (0.00s)
-    --- PASS: TestMiddleware_ProcessRequestBody/With_invalid_signature (0.00s)
-=== RUN   TestMiddleware_HandleEncryption
-=== RUN   TestMiddleware_HandleEncryption/No_encryption
-=== RUN   TestMiddleware_HandleEncryption/With_encryption_but_no_private_key
-2025-03-08T12:32:10.105+0700	ERROR	crypto/crypto.go:111	received encrypted data but server has no private key configured
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).handleEncryption
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:111
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.TestMiddleware_HandleEncryption.func11
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto_test.go:276
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-=== RUN   TestMiddleware_HandleEncryption/With_encryption_and_valid_private_key
-2025-03-08T12:32:10.105+0700	DEBUG	crypto/crypto.go:116	decrypting request body
-=== RUN   TestMiddleware_HandleEncryption/With_encryption_but_invalid_encrypted_data
-2025-03-08T12:32:10.110+0700	DEBUG	crypto/crypto.go:116	decrypting request body
-2025-03-08T12:32:10.131+0700	ERROR	crypto/crypto.go:119	failed to decrypt data	{"error": "ошибка при расшифровке части 0: crypto/rsa: decryption error"}
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).handleEncryption
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:119
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.TestMiddleware_HandleEncryption.func11
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto_test.go:276
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
-=== RUN   TestMiddleware_HandleEncryption/With_encryption_header_but_empty_body
-2025-03-08T12:32:10.136+0700	DEBUG	crypto/crypto.go:116	decrypting request body
-2025-03-08T12:32:10.136+0700	ERROR	crypto/crypto.go:119	failed to decrypt data	{"error": "ошибка при чтении количества частей: EOF"}
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).handleEncryption
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:119
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.TestMiddleware_HandleEncryption.func11
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto_test.go:276
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
---- PASS: TestMiddleware_HandleEncryption (0.30s)
-    --- PASS: TestMiddleware_HandleEncryption/No_encryption (0.00s)
-    --- PASS: TestMiddleware_HandleEncryption/With_encryption_but_no_private_key (0.00s)
-    --- PASS: TestMiddleware_HandleEncryption/With_encryption_and_valid_private_key (0.01s)
-    --- PASS: TestMiddleware_HandleEncryption/With_encryption_but_invalid_encrypted_data (0.02s)
-    --- PASS: TestMiddleware_HandleEncryption/With_encryption_header_but_empty_body (0.00s)
-=== RUN   TestMiddleware_VerifyRequestSignature
-=== RUN   TestMiddleware_VerifyRequestSignature/No_signature
-=== RUN   TestMiddleware_VerifyRequestSignature/Valid_signature
-2025-03-08T12:32:10.136+0700	DEBUG	crypto/crypto.go:139	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "3886242ea9c05465b1000a7cc42b386014323517ff4350666513178bf2a99a2a", "calc_hash": "3886242ea9c05465b1000a7cc42b386014323517ff4350666513178bf2a99a2a"}
-=== RUN   TestMiddleware_VerifyRequestSignature/Invalid_signature
-2025-03-08T12:32:10.136+0700	DEBUG	crypto/crypto.go:139	validateRequest => sign.VerifyHMACSHA256	{"hash_from_request": "invalid-hash", "error": "invalid hash in request header", "calc_hash": "3886242ea9c05465b1000a7cc42b386014323517ff4350666513178bf2a99a2a"}
-2025-03-08T12:32:10.136+0700	ERROR	crypto/crypto.go:146	failed to verify request signature	{"error": "invalid hash in request header"}
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.(*Middleware).verifyRequestSignature
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:146
-github.com/maynagashev/go-metrics/pkg/middleware/crypto.TestMiddleware_VerifyRequestSignature.func4
-	/home/dev/src/maynagashev/go-metrics/pkg/middleware/crypto/crypto_test.go:418
-testing.tRunner
-	/home/dev/.goenv/versions/1.22.8/src/testing/testing.go:1689
---- PASS: TestMiddleware_VerifyRequestSignature (0.00s)
-    --- PASS: TestMiddleware_VerifyRequestSignature/No_signature (0.00s)
-    --- PASS: TestMiddleware_VerifyRequestSignature/Valid_signature (0.00s)
-    --- PASS: TestMiddleware_VerifyRequestSignature/Invalid_signature (0.00s)
-=== RUN   TestSignedResponseWriter_Write
---- PASS: TestSignedResponseWriter_Write (0.00s)
-=== RUN   TestContextKey_String
---- PASS: TestContextKey_String (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/pkg/middleware/crypto	0.313s
-=== RUN   TestCompress
---- PASS: TestCompress (0.00s)
-=== RUN   TestCompressEmptyData
---- PASS: TestCompressEmptyData (0.00s)
-=== RUN   TestCompressError
---- PASS: TestCompressError (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/pkg/middleware/gzip	(cached)
-=== RUN   TestRandomFloat64
---- PASS: TestRandomFloat64 (0.01s)
-=== RUN   TestRandomFloat64_EqualMinMax
---- PASS: TestRandomFloat64_EqualMinMax (0.00s)
-=== RUN   TestRandomFloat64_MinGreaterThanMax
---- PASS: TestRandomFloat64_MinGreaterThanMax (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/pkg/random	(cached)
-=== RUN   TestOK
---- PASS: TestOK (0.00s)
-=== RUN   TestError
---- PASS: TestError (0.00s)
-=== RUN   TestWriteResponseError
---- PASS: TestWriteResponseError (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/pkg/response	(cached)
-=== RUN   TestCalculateHash
-=== RUN   TestCalculateHash/Empty_data_with_empty_key
-=== RUN   TestCalculateHash/Data_with_empty_key
-=== RUN   TestCalculateHash/Data_with_key
---- PASS: TestCalculateHash (0.00s)
-    --- PASS: TestCalculateHash/Empty_data_with_empty_key (0.00s)
-    --- PASS: TestCalculateHash/Data_with_empty_key (0.00s)
-    --- PASS: TestCalculateHash/Data_with_key (0.00s)
-=== RUN   TestVerifyHash
-=== RUN   TestVerifyHash/Valid_hash
-=== RUN   TestVerifyHash/Invalid_hash
-=== RUN   TestVerifyHash/Empty_data_with_valid_hash
---- PASS: TestVerifyHash (0.00s)
-    --- PASS: TestVerifyHash/Valid_hash (0.00s)
-    --- PASS: TestVerifyHash/Invalid_hash (0.00s)
-    --- PASS: TestVerifyHash/Empty_data_with_valid_hash (0.00s)
-=== RUN   TestComputeHMACSHA256
-=== RUN   TestComputeHMACSHA256/Empty_data_and_key
-=== RUN   TestComputeHMACSHA256/Simple_data_with_key
-=== RUN   TestComputeHMACSHA256/Complex_data_with_key
---- PASS: TestComputeHMACSHA256 (0.00s)
-    --- PASS: TestComputeHMACSHA256/Empty_data_and_key (0.00s)
-    --- PASS: TestComputeHMACSHA256/Simple_data_with_key (0.00s)
-    --- PASS: TestComputeHMACSHA256/Complex_data_with_key (0.00s)
-=== RUN   TestVerifyHMACSHA256
-=== RUN   TestVerifyHMACSHA256/Empty_expectedMAC
-=== RUN   TestVerifyHMACSHA256/Valid_MAC
-=== RUN   TestVerifyHMACSHA256/Invalid_MAC
---- PASS: TestVerifyHMACSHA256 (0.00s)
-    --- PASS: TestVerifyHMACSHA256/Empty_expectedMAC (0.00s)
-    --- PASS: TestVerifyHMACSHA256/Valid_MAC (0.00s)
-    --- PASS: TestVerifyHMACSHA256/Invalid_MAC (0.00s)
-PASS
-ok  	github.com/maynagashev/go-metrics/pkg/sign	(cached)
+ok  	github.com/maynagashev/go-metrics/internal/agent	0.232s

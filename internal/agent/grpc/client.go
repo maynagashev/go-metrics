@@ -93,7 +93,7 @@ func New(
 	)
 
 	// Устанавливаем соединение с сервером
-	conn, err := grpc.DialContext(ctx, address, dialOpts...)
+	conn, err := grpcDialContext(ctx, address, dialOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC server: %w", err)
 	}
@@ -120,6 +120,11 @@ func New(
 		publicKeyPath: publicKeyPath,
 	}, nil
 }
+
+// Функция для подключения к серверу с контекстом, может быть заменена в тестах.
+//
+//nolint:gochecknoglobals // Переменная используется для мокинга в тестах
+var grpcDialContext = grpc.DialContext
 
 // loadTLSCredentials загружает TLS креды для защищенного соединения.
 func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials, error) {

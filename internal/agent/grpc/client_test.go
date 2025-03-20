@@ -4,6 +4,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"net"
 	"os"
 	"path/filepath"
 	"testing"
@@ -720,4 +721,156 @@ func TestLoadTLSCredentials(t *testing.T) {
 		assert.Nil(t, creds)
 		assert.Contains(t, err.Error(), "failed to add server CA's certificate")
 	})
+}
+
+// Оригинальная функция grpc.DialContext объявлена в client.go
+// var grpcDialContext = grpc.DialContext
+
+func TestNew(t *testing.T) {
+	// Создаем временную директорию для тестовых файлов
+	tempDir := t.TempDir()
+
+	// Генерируем тестовый сертификат для TLS
+	certPath := filepath.Join(tempDir, "cert.pem")
+	certErr := os.WriteFile(certPath, []byte(`-----BEGIN CERTIFICATE-----
+MIIDazCCAlOgAwIBAgIUDWGvlEVRgkXQQcX4FhVj94PRceowDQYJKoZIhvcNAQEL
+BQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
+GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAeFw0yMzEyMDExMTQ4MDZaFw0yNDEx
+MzAxMTQ4MDZaMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEw
+HwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDCXnkH3PV5r6CJKUQqctriqXdoqiXb9+dYH9vBwiSZ
+f5OJJsabBUBz9GYDdJKN0RtLPbkLz6xRS+ShjcU3OGte3a0KiKo5XBfU4YE70oiy
+ux1i8xI/u40OUg0vBmzKv6eW9j0hVQeN7exGVlTUMRdBWW51n6fHQZ9p7XLwQQLx
+RdCQj/HndLjtZ8/HMFoVoYfKxKXfDUW7l4KQ5ZExEYlTH3bdQTuKQYg4a3v/4jnO
+l5YN6xPnGYOKJOZ9IRtUn+d7v/7L9cYdANaM/kHQFwNf5SuNuDfDsQQeZciPiXKM
+R/oZjGz3cSrHOJ307GH2Wt73R4Z0xPzOXEgBjDHnUPGTAgMBAAGjUzBRMB0GA1Ud
+DgQWBBR3K9Pq5HcND9Dahi9YDo6wWISjXzAfBgNVHSMEGDAWgBR3K9Pq5HcND9Da
+hi9YDo6wWISjXzAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAK
+8qRnLMlY3mL0xgQAjU/O9Rh8Z8D0xxvz7Btw8w9M94JaOfr8/3c7oGFJZcaEBTJb
+s2RZxYFO/HZnBELJFEFbWQdqpU45VU85c1BwYl1hGUZ0pt/rdUJJC8QrGFTU7dDC
+qktKH6K/JZFK15BXVQ9vJ4uifHRLct6JFbXfaEXA2b6HlwllKmgjmQKXMEvuKXmf
+E9tK/v2o+5D9dOYuIR0c5hEj/oXt8CECBRERIjQyn1GUdQVjSBAGSQL00XxInL3y
+T5V87yJWj2IQouCn2q1lJ2YdHha5B0IokA26NZY5hMuFgd49g42X07H/LMpaVWWp
+Js/DykPmHQcN1KR+P7MX
+-----END CERTIFICATE-----`), 0644)
+	require.NoError(t, certErr)
+
+	// Создаем тесты для различных сценариев
+	tests := []struct {
+		name          string
+		address       string
+		timeout       int
+		maxRetries    int
+		realIP        string
+		privateKey    string
+		publicKeyPath string
+		wantErr       bool
+	}{
+		{
+			name:          "WithoutTLS",
+			address:       "localhost:50051",
+			timeout:       5,
+			maxRetries:    3,
+			realIP:        "127.0.0.1",
+			privateKey:    "test-key",
+			publicKeyPath: "",
+			wantErr:       false,
+		},
+		{
+			name:          "WithTLS",
+			address:       "localhost:50051",
+			timeout:       5,
+			maxRetries:    3,
+			realIP:        "127.0.0.1",
+			privateKey:    "test-key",
+			publicKeyPath: certPath,
+			wantErr:       false,
+		},
+		{
+			name:          "WithInvalidTLSCert",
+			address:       "localhost:50051",
+			timeout:       5,
+			maxRetries:    3,
+			realIP:        "127.0.0.1",
+			privateKey:    "test-key",
+			publicKeyPath: "non-existent-path",
+			wantErr:       true,
+		},
+	}
+
+	// Создаем тестовый gRPC сервер
+	lis := createMockGRPCServer()
+	defer lis.Close()
+
+	// Выполняем тесты
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Мокаем функцию grpc.DialContext, чтобы не устанавливать реальное соединение
+			originalDialContext := grpcDialContext
+			defer func() { grpcDialContext = originalDialContext }()
+
+			// Создаем мок соединение
+			mockConn := &grpc.ClientConn{}
+
+			// Переопределяем функцию DialContext
+			grpcDialContext = func(_ context.Context, _ string, _ ...grpc.DialOption) (*grpc.ClientConn, error) {
+				// Для случая, когда мы ожидаем ошибку из-за неверного пути к сертификату
+				if tt.wantErr && tt.name == "WithInvalidTLSCert" {
+					return nil, assert.AnError
+				}
+				return mockConn, nil
+			}
+
+			// Оригинальная функция Client.New создаст клиента используя переопределенную функцию DialContext
+			client, clientErr := New(
+				tt.address,
+				tt.timeout,
+				tt.maxRetries,
+				tt.realIP,
+				tt.privateKey,
+				tt.publicKeyPath,
+			)
+
+			if tt.wantErr {
+				require.Error(t, clientErr)
+				assert.Nil(t, client)
+			} else {
+				require.NoError(t, clientErr)
+				assert.NotNil(t, client)
+
+				// Проверяем, что поля клиента корректно установлены
+				assert.Equal(t, tt.address, client.address)
+				assert.Equal(t, time.Duration(tt.timeout)*time.Second, client.timeout)
+				assert.Equal(t, tt.maxRetries, client.maxRetries)
+				assert.Equal(t, tt.realIP, client.realIP)
+				assert.Equal(t, tt.privateKey, client.privateKey)
+				assert.Equal(t, tt.publicKeyPath, client.publicKeyPath)
+				assert.NotNil(t, client.conn)
+
+				// Мы не проверяем client.client, так как используем мок-соединение
+				// Также не закрываем соединение, так как мы используем пустой mock ClientConn
+			}
+		})
+	}
+}
+
+// createMockGRPCServer создает тестовый gRPC сервер.
+func createMockGRPCServer() *mockListener {
+	return &mockListener{}
+}
+
+// mockListener имитирует net.Listener для тестирования.
+type mockListener struct{}
+
+func (m *mockListener) Accept() (net.Conn, error) {
+	// Возвращаем специальную ошибку вместо nil, nil
+	return nil, errors.New("mock listener: no connections")
+}
+
+func (m *mockListener) Close() error {
+	return nil
+}
+
+func (m *mockListener) Addr() net.Addr {
+	return nil
 }

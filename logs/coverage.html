@@ -81,7 +81,7 @@
 				
 				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (91.7%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (74.6%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (93.7%)</option>
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (89.7%)</option>
 				
@@ -2625,7 +2625,7 @@ func New(
         realIP,
         privateKey string,
         publicKeyPath string,
-) (*Client, error) <span class="cov0" title="0">{
+) (*Client, error) <span class="cov8" title="1">{
         // Создаем соединение с сервером
         ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
         defer cancel()
@@ -2650,24 +2650,24 @@ func New(
         )
 
         // Если указан путь к публичному ключу, настраиваем TLS
-        if publicKeyPath != "" </span><span class="cov0" title="0">{
+        if publicKeyPath != "" </span><span class="cov8" title="1">{
                 creds, err := loadTLSCredentials(publicKeyPath)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, fmt.Errorf("failed to load TLS credentials: %w", err)
                 }</span>
-                <span class="cov0" title="0">dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+                <span class="cov8" title="1">dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
                 slog.Info(
                         "TLS encryption enabled for gRPC client, credentials loaded from file",
                         "path",
                         publicKeyPath,
                 )</span>
-        } else<span class="cov0" title="0"> {
+        } else<span class="cov8" title="1"> {
                 // Устанавливаем соединение без TLS
                 dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
                 slog.Warn("TLS encryption disabled for gRPC client, using insecure connection")
         }</span>
 
-        <span class="cov0" title="0">slog.Info("Connecting to gRPC server",
+        <span class="cov8" title="1">slog.Info("Connecting to gRPC server",
                 "address", address,
                 "timeout", timeout,
                 "maxRetries", maxRetries,
@@ -2678,23 +2678,23 @@ func New(
         )
 
         // Устанавливаем соединение с сервером
-        conn, err := grpc.DialContext(ctx, address, dialOpts...)
+        conn, err := grpcDialContext(ctx, address, dialOpts...)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to connect to gRPC server: %w", err)
         }</span>
 
         // Создаем клиент
-        <span class="cov0" title="0">client := pb.NewMetricsServiceClient(conn)
+        <span class="cov8" title="1">client := pb.NewMetricsServiceClient(conn)
 
         // Логируем, что сжатие gRPC включено по умолчанию
         slog.Info("gRPC compression enabled by default")
 
         // Логируем состояние подписи запросов
-        if privateKey != "" </span><span class="cov0" title="0">{
+        if privateKey != "" </span><span class="cov8" title="1">{
                 slog.Info("gRPC request signing enabled")
         }</span>
 
-        <span class="cov0" title="0">return &amp;Client{
+        <span class="cov8" title="1">return &amp;Client{
                 address:       address,
                 timeout:       time.Duration(timeout) * time.Second,
                 maxRetries:    maxRetries,
@@ -2705,6 +2705,11 @@ func New(
                 publicKeyPath: publicKeyPath,
         }, nil</span>
 }
+
+// Функция для подключения к серверу с контекстом, может быть заменена в тестах.
+//
+//nolint:gochecknoglobals // Переменная используется для мокинга в тестах
+var grpcDialContext = grpc.DialContext
 
 // loadTLSCredentials загружает TLS креды для защищенного соединения.
 func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials, error) <span class="cov8" title="1">{
@@ -2720,7 +2725,7 @@ func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials,
         }</span>
 
         // Создаем TLS конфигурацию с проверкой сервера
-        <span class="cov0" title="0">config := &amp;tls.Config{
+        <span class="cov8" title="1">config := &amp;tls.Config{
                 RootCAs:    certPool,
                 MinVersion: tls.VersionTLS12,
         }
