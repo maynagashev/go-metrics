@@ -74,9 +74,9 @@ github.com/maynagashev/go-metrics/internal/agent/client/factory.go:44:					NewFa
 github.com/maynagashev/go-metrics/internal/agent/client/factory.go:64:					CreateClient				100.0%
 github.com/maynagashev/go-metrics/internal/agent/client/factory.go:75:					createGRPCClient			75.0%
 github.com/maynagashev/go-metrics/internal/agent/client/factory.go:92:					createHTTPClient			100.0%
-github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:36:					New					82.6%
+github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:36:					New					65.2%
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:125:					loadTLSCredentials			75.0%
-github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:147:					Close					66.7%
+github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:147:					Close					0.0%
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:155:					createContext				0.0%
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:171:					getCallOptions				0.0%
 github.com/maynagashev/go-metrics/internal/agent/grpc/client.go:179:					withRetry				0.0%
@@ -139,8 +139,8 @@ github.com/maynagashev/go-metrics/internal/server/app/flags.go:236:					applySec
 github.com/maynagashev/go-metrics/internal/server/app/flags.go:249:					applyConfigEnvVars			50.0%
 github.com/maynagashev/go-metrics/internal/server/app/flags.go:257:					applyGRPCEnvVars			27.8%
 github.com/maynagashev/go-metrics/internal/server/app/flags.go:288:					loadAndApplyJSONConfig			66.7%
-github.com/maynagashev/go-metrics/internal/server/grpc/interceptors.go:28:				SignatureValidatorInterceptor		0.0%
-github.com/maynagashev/go-metrics/internal/server/grpc/interceptors.go:84:				StreamSignatureValidatorInterceptor	0.0%
+github.com/maynagashev/go-metrics/internal/server/grpc/interceptors.go:28:				SignatureValidatorInterceptor		92.0%
+github.com/maynagashev/go-metrics/internal/server/grpc/interceptors.go:84:				StreamSignatureValidatorInterceptor	100.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go:28:				NewMetricsService			100.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go:41:				Update					100.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go:79:				UpdateBatch				100.0%
@@ -231,4 +231,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				63.8%
+total:													(statements)				65.5%
