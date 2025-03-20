@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -232,37 +233,62 @@ func isRetriableSendError(err error) bool {
 		return false
 	}
 
-	// Добавляем основные сетевые ошибки, которые можно повторить
+	// Проверяем на общие интерфейсы ошибок
 	var netErr net.Error
-	if errors.As(err, &netErr) && netErr.Timeout() {
-		return true
+	if errors.As(err, &netErr) {
+		// Начиная с Go 1.18 метод netErr.Temporary() считается устаревшим,
+		// так как понятие временной ошибки плохо определено
+		// Используем только Timeout, который более однозначен
+		if netErr.Timeout() {
+			return true
+		}
 	}
 
-	// Добавляем конкретные ошибки, для которых можно делать повторную отправку
+	// Проверяем конкретные типы ошибок
 	var netOpErr *net.OpError
 	if errors.As(err, &netOpErr) {
 		return true
 	}
 
-	// Проверяем на различные DNS ошибки
 	var dnsErr *net.DNSError
 	if errors.As(err, &dnsErr) {
 		return true
 	}
 
-	// Добавляем проверку на конкретные коды ошибок HTTP
-	if errors.Is(err, net.ErrClosed) || errors.Is(err, context.DeadlineExceeded) {
+	// Проверяем конкретные ошибки из стандартной библиотеки
+	if errors.Is(err, net.ErrClosed) ||
+		errors.Is(err, context.DeadlineExceeded) ||
+		errors.Is(err, context.Canceled) ||
+		err.Error() == "EOF" || // Проверяем точное совпадение с EOF
+		err.Error() == "unexpected EOF" { // Проверяем точное совпадение с unexpected EOF
 		return true
 	}
 
-	// Для любой Connection refused ошибки повторяем тоже
-	if errors.Is(err, errors.New("connection refused")) {
-		return true
+	// Проверяем текст ошибки на распространенные проблемы соединения
+	errMsg := err.Error()
+	retryablePatterns := []string{
+		"connection refused",
+		"connection reset",
+		"broken pipe",
+		"no route to host",
+		"network is unreachable",
+		"eof", // Добавляем проверку EOF в нижнем регистре
+		"i/o timeout",
+		"timeout",
+		"tls handshake",
+		"use of closed network connection",
+		"connection timed out",
+		"client connection lost",
+		"nodename nor servname provided",
 	}
 
-	// Добавляем ошибки TLS, которые могут быть временными
-	if errors.Is(err, errors.New("TLS handshake timeout")) {
-		return true
+	// Приводим сообщение к нижнему регистру для проверки
+	lowerErrMsg := strings.ToLower(errMsg)
+
+	for _, pattern := range retryablePatterns {
+		if strings.Contains(lowerErrMsg, pattern) {
+			return true
+		}
 	}
 
 	// По умолчанию считаем, что ошибку нельзя повторить

@@ -79,13 +79,13 @@
 				
 				<option value="file11">github.com/maynagashev/go-metrics/internal/agent/agent.go (66.0%)</option>
 				
-				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (50.0%)</option>
+				<option value="file12">github.com/maynagashev/go-metrics/internal/agent/client/factory.go (91.7%)</option>
 				
-				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (0.0%)</option>
+				<option value="file13">github.com/maynagashev/go-metrics/internal/agent/grpc/client.go (22.5%)</option>
 				
-				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (0.0%)</option>
+				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (6.9%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (56.6%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (65.5%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/agent/ip.go (57.1%)</option>
 				
@@ -2326,10 +2326,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2544,7 +2544,7 @@ func NewFactory(
 
 // CreateClient создает клиент в зависимости от конфигурации.
 func (f *Factory) CreateClient() (Client, error) <span class="cov8" title="1">{
-        if f.grpcEnabled </span><span class="cov0" title="0">{
+        if f.grpcEnabled </span><span class="cov8" title="1">{
                 slog.Info("using gRPC client", "address", f.grpcServerAddr)
                 return f.createGRPCClient()
         }</span>
@@ -2554,7 +2554,7 @@ func (f *Factory) CreateClient() (Client, error) <span class="cov8" title="1">{
 }
 
 // createGRPCClient создает gRPC клиент.
-func (f *Factory) createGRPCClient() (Client, error) <span class="cov0" title="0">{
+func (f *Factory) createGRPCClient() (Client, error) <span class="cov8" title="1">{
         client, err := grpc.New(
                 f.grpcServerAddr,
                 f.grpcTimeout,
@@ -2567,7 +2567,7 @@ func (f *Factory) createGRPCClient() (Client, error) <span class="cov0" title="0
                 return nil, fmt.Errorf("failed to create gRPC client: %w", err)
         }</span>
 
-        <span class="cov0" title="0">return client, nil</span>
+        <span class="cov8" title="1">return client, nil</span>
 }
 
 // createHTTPClient создает HTTP клиент.
@@ -2625,7 +2625,7 @@ func New(
         realIP,
         privateKey string,
         publicKeyPath string,
-) (*Client, error) <span class="cov0" title="0">{
+) (*Client, error) <span class="cov8" title="1">{
         // Создаем соединение с сервером
         ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
         defer cancel()
@@ -2650,12 +2650,12 @@ func New(
         )
 
         // Если указан путь к публичному ключу, настраиваем TLS
-        if publicKeyPath != "" </span><span class="cov0" title="0">{
+        if publicKeyPath != "" </span><span class="cov8" title="1">{
                 creds, err := loadTLSCredentials(publicKeyPath)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, fmt.Errorf("failed to load TLS credentials: %w", err)
                 }</span>
-                <span class="cov0" title="0">dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
+                <span class="cov8" title="1">dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
                 slog.Info(
                         "TLS encryption enabled for gRPC client, credentials loaded from file",
                         "path",
@@ -2667,7 +2667,7 @@ func New(
                 slog.Warn("TLS encryption disabled for gRPC client, using insecure connection")
         }</span>
 
-        <span class="cov0" title="0">slog.Info("Connecting to gRPC server",
+        <span class="cov8" title="1">slog.Info("Connecting to gRPC server",
                 "address", address,
                 "timeout", timeout,
                 "maxRetries", maxRetries,
@@ -2684,17 +2684,17 @@ func New(
         }</span>
 
         // Создаем клиент
-        <span class="cov0" title="0">client := pb.NewMetricsServiceClient(conn)
+        <span class="cov8" title="1">client := pb.NewMetricsServiceClient(conn)
 
         // Логируем, что сжатие gRPC включено по умолчанию
         slog.Info("gRPC compression enabled by default")
 
         // Логируем состояние подписи запросов
-        if privateKey != "" </span><span class="cov0" title="0">{
+        if privateKey != "" </span><span class="cov8" title="1">{
                 slog.Info("gRPC request signing enabled")
         }</span>
 
-        <span class="cov0" title="0">return &amp;Client{
+        <span class="cov8" title="1">return &amp;Client{
                 address:       address,
                 timeout:       time.Duration(timeout) * time.Second,
                 maxRetries:    maxRetries,
@@ -2707,20 +2707,20 @@ func New(
 }
 
 // loadTLSCredentials загружает TLS креды для защищенного соединения.
-func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials, error) <span class="cov0" title="0">{
+func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials, error) <span class="cov8" title="1">{
         // Загружаем сертификат CA
         pemServerCA, err := os.ReadFile(publicKeyPath)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to read server CA cert: %w", err)
         }</span>
 
-        <span class="cov0" title="0">certPool := x509.NewCertPool()
+        <span class="cov8" title="1">certPool := x509.NewCertPool()
         if !certPool.AppendCertsFromPEM(pemServerCA) </span><span class="cov0" title="0">{
                 return nil, errors.New("failed to add server CA's certificate")
         }</span>
 
         // Создаем TLS конфигурацию с проверкой сервера
-        <span class="cov0" title="0">config := &amp;tls.Config{
+        <span class="cov8" title="1">config := &amp;tls.Config{
                 RootCAs:    certPool,
                 MinVersion: tls.VersionTLS12,
         }
@@ -2729,8 +2729,8 @@ func loadTLSCredentials(publicKeyPath string) (credentials.TransportCredentials,
 }
 
 // Close закрывает соединение с сервером.
-func (c *Client) Close() error <span class="cov0" title="0">{
-        if c.conn != nil </span><span class="cov0" title="0">{
+func (c *Client) Close() error <span class="cov8" title="1">{
+        if c.conn != nil </span><span class="cov8" title="1">{
                 return c.conn.Close()
         }</span>
         <span class="cov0" title="0">return nil</span>
@@ -2978,7 +2978,7 @@ import (
 const SignatureHeader = sign.HeaderKey
 
 // SigningInterceptor создает перехватчик для подписи исходящих gRPC запросов.
-func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span class="cov0" title="0">{
+func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span class="cov8" title="1">{
         return func(
                 ctx context.Context,
                 method string,
@@ -3022,7 +3022,7 @@ func SigningInterceptor(privateKey string) grpc.UnaryClientInterceptor <span cla
 }
 
 // StreamSigningInterceptor создает перехватчик для подписи потоковых gRPC запросов.
-func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <span class="cov0" title="0">{
+func StreamSigningInterceptor(privateKey string) grpc.StreamClientInterceptor <span class="cov8" title="1">{
         return func(
                 ctx context.Context,
                 desc *grpc.StreamDesc,
@@ -3067,6 +3067,7 @@ import (
         "log/slog"
         "net"
         "net/http"
+        "strings"
         "time"
 
         "github.com/go-resty/resty/v2"
@@ -3096,10 +3097,10 @@ type Client struct {
 func New(serverURL, privateKey string, cryptoKeyPath string, realIP string) *Client <span class="cov8" title="1">{
         // Загружаем публичный ключ для шифрования, если указан путь
         var publicKey *rsa.PublicKey
-        if cryptoKeyPath != "" </span><span class="cov0" title="0">{
+        if cryptoKeyPath != "" </span><span class="cov8" title="1">{
                 var err error
                 publicKey, err = crypto.LoadPublicKey(cryptoKeyPath)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         slog.Error("failed to load public key", "error", err, "path", cryptoKeyPath)
                 }</span> else<span class="cov0" title="0"> {
                         slog.Info("loaded public key for encryption", "path", cryptoKeyPath)
@@ -3122,7 +3123,7 @@ func (c *Client) Close() error <span class="cov8" title="1">{
 }</span>
 
 // UpdateMetric отправляет метрику на сервер.
-func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error <span class="cov0" title="0">{
+func (c *Client) UpdateMetric(ctx context.Context, metric *metrics.Metric) error <span class="cov8" title="1">{
         return c.UpdateBatch(ctx, []*metrics.Metric{metric})
 }</span>
 
@@ -3158,18 +3159,18 @@ func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) err
 
                 <span class="cov8" title="1">err := c.makeUpdatesRequest(ctx, metrics, i)
                 // Если нет ошибок выходим из цикла и функции
-                if err == nil </span><span class="cov0" title="0">{
+                if err == nil </span><span class="cov8" title="1">{
                         return nil
                 }</span>
 
                 // Логируем ошибку
-                <span class="cov8" title="1">slog.Error(
+                <span class="cov0" title="0">slog.Error(
                         fmt.Sprintf("failed to send metrics (try=%d): %s", i, err),
                         "metrics", metrics,
                 )
 
                 // Если ошибка не retriable, то выходим из цикла и функции, иначе продолжаем попытки
-                if !isRetriableSendError(err) </span><span class="cov8" title="1">{
+                if !isRetriableSendError(err) </span><span class="cov0" title="0">{
                         slog.Debug("non-retriable error, stopping retries", "err", err)
                         return err
                 }</span>
@@ -3179,7 +3180,7 @@ func (c *Client) UpdateBatch(ctx context.Context, metrics []*metrics.Metric) err
 }
 
 // Ping проверяет соединение с сервером.
-func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
+func (c *Client) Ping(ctx context.Context) error <span class="cov8" title="1">{
         req := c.client.R()
         url := fmt.Sprintf("%s/ping", c.serverURL)
 
@@ -3187,21 +3188,21 @@ func (c *Client) Ping(ctx context.Context) error <span class="cov0" title="0">{
         req.SetContext(ctx)
 
         res, err := req.Get(url)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
 
-        <span class="cov0" title="0">if res.StatusCode() != http.StatusOK </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if res.StatusCode() != http.StatusOK </span><span class="cov8" title="1">{
                 return fmt.Errorf("ping failed with status code: %d", res.StatusCode())
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // StreamMetrics отправляет метрики потоком на сервер.
 // Для HTTP клиента этот метод не реализован и возвращает ошибку,
 // так как потоковая передача поддерживается только в gRPC режиме.
-func (c *Client) StreamMetrics(_ context.Context, _ []*metrics.Metric) error <span class="cov0" title="0">{
+func (c *Client) StreamMetrics(_ context.Context, _ []*metrics.Metric) error <span class="cov8" title="1">{
         return errors.New("streaming metrics is not supported in HTTP mode, use gRPC mode instead")
 }</span>
 
@@ -3277,51 +3278,76 @@ func (c *Client) makeUpdatesRequest(ctx context.Context, items []*metrics.Metric
                 "status_code", statusCode,
                 "response_body", string(res.Body()))
 
-        if statusCode != http.StatusOK </span><span class="cov8" title="1">{
+        if statusCode != http.StatusOK </span><span class="cov0" title="0">{
                 return fmt.Errorf("server returned non-OK response: %d", statusCode)
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 // isRetriableSendError проверяет, является ли ошибка возможной для повторной отправки.
 func isRetriableSendError(err error) bool <span class="cov8" title="1">{
-        if err == nil </span><span class="cov0" title="0">{
+        if err == nil </span><span class="cov8" title="1">{
                 return false
         }</span>
 
-        // Добавляем основные сетевые ошибки, которые можно повторить
+        // Проверяем на общие интерфейсы ошибок
         <span class="cov8" title="1">var netErr net.Error
-        if errors.As(err, &amp;netErr) &amp;&amp; netErr.Timeout() </span><span class="cov0" title="0">{
-                return true
-        }</span>
+        if errors.As(err, &amp;netErr) </span><span class="cov8" title="1">{
+                // Начиная с Go 1.18 метод netErr.Temporary() считается устаревшим,
+                // так как понятие временной ошибки плохо определено
+                // Используем только Timeout, который более однозначен
+                if netErr.Timeout() </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
 
-        // Добавляем конкретные ошибки, для которых можно делать повторную отправку
+        // Проверяем конкретные типы ошибок
         <span class="cov8" title="1">var netOpErr *net.OpError
         if errors.As(err, &amp;netOpErr) </span><span class="cov0" title="0">{
                 return true
         }</span>
 
-        // Проверяем на различные DNS ошибки
         <span class="cov8" title="1">var dnsErr *net.DNSError
         if errors.As(err, &amp;dnsErr) </span><span class="cov0" title="0">{
                 return true
         }</span>
 
-        // Добавляем проверку на конкретные коды ошибок HTTP
-        <span class="cov8" title="1">if errors.Is(err, net.ErrClosed) || errors.Is(err, context.DeadlineExceeded) </span><span class="cov0" title="0">{
+        // Проверяем конкретные ошибки из стандартной библиотеки
+        <span class="cov8" title="1">if errors.Is(err, net.ErrClosed) ||
+                errors.Is(err, context.DeadlineExceeded) ||
+                errors.Is(err, context.Canceled) ||
+                err.Error() == "EOF" || // Проверяем точное совпадение с EOF
+                err.Error() == "unexpected EOF" </span><span class="cov8" title="1">{ // Проверяем точное совпадение с unexpected EOF
                 return true
         }</span>
 
-        // Для любой Connection refused ошибки повторяем тоже
-        <span class="cov8" title="1">if errors.Is(err, errors.New("connection refused")) </span><span class="cov0" title="0">{
-                return true
-        }</span>
+        // Проверяем текст ошибки на распространенные проблемы соединения
+        <span class="cov8" title="1">errMsg := err.Error()
+        retryablePatterns := []string{
+                "connection refused",
+                "connection reset",
+                "broken pipe",
+                "no route to host",
+                "network is unreachable",
+                "eof", // Добавляем проверку EOF в нижнем регистре
+                "i/o timeout",
+                "timeout",
+                "tls handshake",
+                "use of closed network connection",
+                "connection timed out",
+                "client connection lost",
+                "nodename nor servname provided",
+        }
 
-        // Добавляем ошибки TLS, которые могут быть временными
-        <span class="cov8" title="1">if errors.Is(err, errors.New("TLS handshake timeout")) </span><span class="cov0" title="0">{
-                return true
-        }</span>
+        // Приводим сообщение к нижнему регистру для проверки
+        lowerErrMsg := strings.ToLower(errMsg)
+
+        for _, pattern := range retryablePatterns </span><span class="cov8" title="1">{
+                if strings.Contains(lowerErrMsg, pattern) </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
 
         // По умолчанию считаем, что ошибку нельзя повторить
         <span class="cov8" title="1">return false</span>
@@ -3334,40 +3360,40 @@ func initHTTPClient(realIP string) *resty.Client <span class="cov8" title="1">{
         // Добавляем перехватчик для установки заголовка X-Real-IP
         client.OnBeforeRequest(func(_ *resty.Client, req *resty.Request) error </span><span class="cov8" title="1">{
                 // Если указан явный IP-адрес, используем его
-                if realIP != "" </span><span class="cov0" title="0">{
+                if realIP != "" </span><span class="cov8" title="1">{
                         req.SetHeader("X-Real-IP", realIP)
                         slog.Debug("set X-Real-IP header (explicit)", "ip", realIP)
                         return nil
                 }</span>
 
                 // Иначе получаем исходящий IP-адрес автоматически
-                <span class="cov8" title="1">hostIP, err := getOutboundIP()
-                if err == nil </span><span class="cov8" title="1">{
+                <span class="cov0" title="0">hostIP, err := getOutboundIP()
+                if err == nil </span><span class="cov0" title="0">{
                         // Устанавливаем заголовок X-Real-IP
                         req.SetHeader("X-Real-IP", hostIP.String())
                         slog.Debug("set X-Real-IP header (auto-detected)", "ip", hostIP.String())
                 }</span> else<span class="cov0" title="0"> {
                         slog.Error("failed to set X-Real-IP header", "error", err)
                 }</span>
-                <span class="cov8" title="1">return nil</span>
+                <span class="cov0" title="0">return nil</span>
         })
 
         <span class="cov8" title="1">return client</span>
 }
 
 // getOutboundIP получает исходящий IP-адрес для текущего хоста.
-func getOutboundIP() (net.IP, error) <span class="cov8" title="1">{
+func getOutboundIP() (net.IP, error) <span class="cov0" title="0">{
         conn, err := net.Dial("udp", "8.8.8.8:80")
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-        <span class="cov8" title="1">defer conn.Close()
+        <span class="cov0" title="0">defer conn.Close()
 
         localAddr, ok := conn.LocalAddr().(*net.UDPAddr)
         if !ok </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("unexpected address type: %T", conn.LocalAddr())
         }</span>
-        <span class="cov8" title="1">return localAddr.IP, nil</span>
+        <span class="cov0" title="0">return localAddr.IP, nil</span>
 }
 </pre>
 		
