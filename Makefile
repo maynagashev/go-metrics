@@ -179,6 +179,13 @@ test-coverage:
 	go tool cover -html=logs/coverage.out -o logs/coverage.html
 	go tool cover -func=logs/coverage.out | tee logs/coverage.log
 
+# Тест с генерацией отчёта о покрытии без сгенерированных файлов
+test-coverage-clean:
+	@echo "Запуск тестов с генерацией покрытия (исключая сгенерированные файлы)..."
+	go test -coverprofile=logs/coverage.raw.out ./...
+	cat logs/coverage.raw.out | grep -v "\.pb\.go" | grep -v "/mocks/" > logs/coverage.out
+	go tool cover -html=logs/coverage.out -o logs/coverage.html
+	go tool cover -func=logs/coverage.out | tee logs/coverage.log
 
 # Пример запуска бенчмарков
 bench:
