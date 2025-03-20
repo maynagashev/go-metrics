@@ -72,68 +72,24 @@ func (s *Server) Start() error {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
 
-	// Создаем параметры keepalive
-	kaep := keepalive.EnforcementPolicy{
-		MinTime:             MinPingTime,
-		PermitWithoutStream: PermitWithoutStream,
+	// Создаем и настраиваем сервер
+	configErr := s.configureAndStartServer(lis, addr)
+	if configErr != nil {
+		return configErr
 	}
 
-	kasp := keepalive.ServerParameters{
-		MaxConnectionIdle:     MaxConnectionIdleTime,
-		MaxConnectionAge:      MaxConnectionAgeTime,
-		MaxConnectionAgeGrace: MaxConnectionAgeGraceTime,
-		Time:                  PingTime,
-		Timeout:               PingTimeout,
-	}
+	return nil
+}
 
-	// Определяем максимальное количество одновременных потоков
-	maxConnections := DefaultMaxConcurrentStreams
+// configureAndStartServer создает и запускает gRPC сервер.
+func (s *Server) configureAndStartServer(lis net.Listener, addr string) error {
+	// Параметры сервера
+	opts := s.createServerOptions()
 
-	// Безопасное использование значения из конфигурации, если оно положительное и в пределах uint32
-	if s.cfg.GRPC.MaxConn > 0 && s.cfg.GRPC.MaxConn <= int(DefaultMaxConcurrentStreams) {
-		// Просто копируем значение - безопасно, т.к. уже проверили, что значение в допустимых пределах
-		//nolint:gosec // G115: проверка на допустимые значения выполнена выше
-		maxConnections = uint32(s.cfg.GRPC.MaxConn)
-	} else if s.cfg.GRPC.MaxConn > int(DefaultMaxConcurrentStreams) {
-		s.log.Warn("MaxConn value exceeds safe limit, using default",
-			zap.Int("configured", s.cfg.GRPC.MaxConn),
-			zap.Uint32("using", DefaultMaxConcurrentStreams))
-	}
-
-	// Создаем перехватчики для проверки безопасности запросов
-	unaryInterceptors := []grpc.UnaryServerInterceptor{
-		SignatureValidatorInterceptor(s.log, s.cfg.PrivateKey), // Добавляем перехватчик для проверки подписи
-	}
-
-	streamInterceptors := []grpc.StreamServerInterceptor{
-		StreamSignatureValidatorInterceptor(s.log, s.cfg.PrivateKey), // Добавляем перехватчик для проверки подписи потоков
-	}
-
-	// Настраиваем опции сервера
-	opts := []grpc.ServerOption{
-		grpc.KeepaliveEnforcementPolicy(kaep),
-		grpc.KeepaliveParams(kasp),
-		grpc.MaxConcurrentStreams(maxConnections),
-		grpc.ChainUnaryInterceptor(unaryInterceptors...),   // Добавляем цепочку унарных перехватчиков
-		grpc.ChainStreamInterceptor(streamInterceptors...), // Добавляем цепочку потоковых перехватчиков
-	}
-
-	// Добавляем TLS только если есть путь к приватному ключу
+	// Добавляем TLS если необходимо
 	cryptoKeyPath := s.cfg.GetCryptoKeyPath()
-	if cryptoKeyPath != "" {
-		s.log.Info("loading TLS credentials", zap.String("key_path", cryptoKeyPath))
-		// Загружаем сертификат и ключ сервера
-		creds, tlsErr := loadTLSCredentials(cryptoKeyPath)
-		if tlsErr != nil {
-			s.log.Error("failed to load TLS credentials", zap.Error(tlsErr))
-			return fmt.Errorf("failed to load TLS credentials: %w", tlsErr)
-		}
-
-		// Добавляем TLS credentials в опции сервера
-		opts = append(opts, grpc.Creds(creds))
-		s.log.Info("TLS encryption enabled for gRPC server", zap.String("key_path", cryptoKeyPath))
-	} else {
-		s.log.Warn("TLS encryption disabled for gRPC server, using insecure connection")
+	if err := s.configureTLS(cryptoKeyPath, &opts); err != nil {
+		return err
 	}
 
 	// Создаем gRPC сервер
@@ -151,9 +107,91 @@ func (s *Server) Start() error {
 
 	s.log.Info("gRPC server started successfully",
 		zap.String("address", addr),
-		zap.Uint32("max_connections", maxConnections),
+		zap.Uint32("max_connections", s.getMaxConnections()),
 		zap.Bool("request_signing_enabled", s.cfg.IsRequestSigningEnabled()),
 		zap.Bool("tls_enabled", cryptoKeyPath != ""))
+
+	return nil
+}
+
+// createServerOptions создает и возвращает опции для gRPC сервера.
+func (s *Server) createServerOptions() []grpc.ServerOption {
+	// Создаем параметры keepalive
+	kaep := keepalive.EnforcementPolicy{
+		MinTime:             MinPingTime,
+		PermitWithoutStream: PermitWithoutStream,
+	}
+
+	kasp := keepalive.ServerParameters{
+		MaxConnectionIdle:     MaxConnectionIdleTime,
+		MaxConnectionAge:      MaxConnectionAgeTime,
+		MaxConnectionAgeGrace: MaxConnectionAgeGraceTime,
+		Time:                  PingTime,
+		Timeout:               PingTimeout,
+	}
+
+	// Создаем перехватчики для проверки безопасности запросов
+	unaryInterceptors := []grpc.UnaryServerInterceptor{
+		SignatureValidatorInterceptor(
+			s.log,
+			s.cfg.PrivateKey,
+		), // Добавляем перехватчик для проверки подписи
+	}
+
+	streamInterceptors := []grpc.StreamServerInterceptor{
+		StreamSignatureValidatorInterceptor(
+			s.log,
+			s.cfg.PrivateKey,
+		), // Добавляем перехватчик для проверки подписи потоков
+	}
+
+	// Настраиваем опции сервера
+	return []grpc.ServerOption{
+		grpc.KeepaliveEnforcementPolicy(kaep),
+		grpc.KeepaliveParams(kasp),
+		grpc.MaxConcurrentStreams(s.getMaxConnections()),
+		grpc.ChainUnaryInterceptor(
+			unaryInterceptors...), // Добавляем цепочку унарных перехватчиков
+		grpc.ChainStreamInterceptor(
+			streamInterceptors...), // Добавляем цепочку потоковых перехватчиков
+	}
+}
+
+// getMaxConnections возвращает максимальное количество одновременных потоков.
+func (s *Server) getMaxConnections() uint32 {
+	maxConnections := DefaultMaxConcurrentStreams
+
+	// Безопасное использование значения из конфигурации, если оно положительное и в пределах uint32
+	if s.cfg.GRPC.MaxConn > 0 && s.cfg.GRPC.MaxConn <= int(DefaultMaxConcurrentStreams) {
+		// Просто копируем значение - безопасно, т.к. уже проверили, что значение в допустимых пределах
+		//nolint:gosec // G115: проверка на допустимые значения выполнена выше
+		maxConnections = uint32(s.cfg.GRPC.MaxConn)
+	} else if s.cfg.GRPC.MaxConn > int(DefaultMaxConcurrentStreams) {
+		s.log.Warn("MaxConn value exceeds safe limit, using default",
+			zap.Int("configured", s.cfg.GRPC.MaxConn),
+			zap.Uint32("using", DefaultMaxConcurrentStreams))
+	}
+
+	return maxConnections
+}
+
+// configureTLS настраивает TLS для gRPC сервера.
+func (s *Server) configureTLS(cryptoKeyPath string, opts *[]grpc.ServerOption) error {
+	if cryptoKeyPath != "" {
+		s.log.Info("loading TLS credentials", zap.String("key_path", cryptoKeyPath))
+		// Загружаем сертификат и ключ сервера
+		creds, tlsErr := loadTLSCredentials(cryptoKeyPath)
+		if tlsErr != nil {
+			s.log.Error("failed to load TLS credentials", zap.Error(tlsErr))
+			return fmt.Errorf("failed to load TLS credentials: %w", tlsErr)
+		}
+
+		// Добавляем TLS credentials в опции сервера
+		*opts = append(*opts, grpc.Creds(creds))
+		s.log.Info("TLS encryption enabled for gRPC server", zap.String("key_path", cryptoKeyPath))
+	} else {
+		s.log.Warn("TLS encryption disabled for gRPC server, using insecure connection")
+	}
 
 	return nil
 }

@@ -35,6 +35,15 @@ func main() {
 	initLogger()
 	printVersion()
 
+	// Создаем функцию, которая будет выполнять всю логику
+	// и возвращать код ошибки
+	if err := run(); err != nil {
+		os.Exit(1)
+	}
+}
+
+// run выполняет основную логику программы и возвращает ошибку.
+func run() error {
 	flags := mustParseFlags()
 	slog.Debug("parsed flags and env variables", "flags", flags)
 
@@ -74,7 +83,7 @@ func main() {
 	)
 	if err != nil {
 		slog.Error("Failed to create agent", "error", err)
-		os.Exit(1)
+		return err
 	}
 
 	// Запускаем горутину для обработки сигналов
@@ -86,6 +95,7 @@ func main() {
 
 	// Запускаем агента с контекстом
 	a.Run(ctx)
+	return nil
 }
 
 func initLogger() {

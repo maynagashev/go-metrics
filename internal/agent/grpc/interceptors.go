@@ -3,10 +3,11 @@ package grpc
 import (
 	"context"
 
-	"github.com/maynagashev/go-metrics/pkg/sign"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 // Константа для имени заголовка с подписью, совпадающего с HTTP.

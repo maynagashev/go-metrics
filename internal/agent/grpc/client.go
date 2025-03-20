@@ -51,7 +51,9 @@ func New(
 	}
 
 	streamInterceptors := []grpc.StreamClientInterceptor{
-		StreamSigningInterceptor(privateKey), // Добавляем перехватчик для подписи потоковых запросов
+		StreamSigningInterceptor(
+			privateKey,
+		), // Добавляем перехватчик для подписи потоковых запросов
 	}
 
 	// Опции для подключения
@@ -69,7 +71,11 @@ func New(
 			return nil, fmt.Errorf("failed to load TLS credentials: %w", err)
 		}
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(creds))
-		slog.Info("TLS encryption enabled for gRPC client, credentials loaded from file", "path", publicKeyPath)
+		slog.Info(
+			"TLS encryption enabled for gRPC client, credentials loaded from file",
+			"path",
+			publicKeyPath,
+		)
 	} else {
 		// Устанавливаем соединение без TLS
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))

@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 
-	"github.com/maynagashev/go-metrics/pkg/sign"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/maynagashev/go-metrics/pkg/sign"
 )
 
 var (
@@ -80,7 +81,10 @@ func SignatureValidatorInterceptor(log *zap.Logger, privateKey string) grpc.Unar
 }
 
 // StreamSignatureValidatorInterceptor создает перехватчик для проверки подписи входящих потоковых gRPC запросов.
-func StreamSignatureValidatorInterceptor(log *zap.Logger, privateKey string) grpc.StreamServerInterceptor {
+func StreamSignatureValidatorInterceptor(
+	log *zap.Logger,
+	privateKey string,
+) grpc.StreamServerInterceptor {
 	return func(
 		srv interface{},
 		ss grpc.ServerStream,
