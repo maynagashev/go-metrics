@@ -156,8 +156,8 @@ github.com/maynagashev/go-metrics/internal/server/grpc/server.go:85:					configu
 github.com/maynagashev/go-metrics/internal/server/grpc/server.go:118:					createServerOptions			100.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/server.go:161:					getMaxConnections			66.7%
 github.com/maynagashev/go-metrics/internal/server/grpc/server.go:179:					configureTLS				30.0%
-github.com/maynagashev/go-metrics/internal/server/grpc/server.go:200:					loadTLSCredentials			0.0%
-github.com/maynagashev/go-metrics/internal/server/grpc/server.go:221:					Stop					100.0%
+github.com/maynagashev/go-metrics/internal/server/grpc/server.go:205:					loadTLSCredentials			100.0%
+github.com/maynagashev/go-metrics/internal/server/grpc/server.go:226:					Stop					100.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/wrapper.go:22:					NewServer				100.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/wrapper.go:31:					Start					90.0%
 github.com/maynagashev/go-metrics/internal/server/grpc/wrapper.go:54:					Stop					100.0%
@@ -223,7 +223,7 @@ github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:30:					String
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:35:					New					100.0%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:46:					Handler					75.0%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:90:					processRequestBody			83.3%
-github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:110:					handleEncryption			15.4%
+github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:110:					handleEncryption			100.0%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:137:					verifyRequestSignature			91.7%
 github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go:174:					Write					100.0%
 github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go:13:					Compress				72.7%
@@ -233,4 +233,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				72.4%
+total:													(statements)				73.2%

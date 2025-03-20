@@ -196,13 +196,18 @@ func (s *Server) configureTLS(cryptoKeyPath string, opts *[]grpc.ServerOption) e
 	return nil
 }
 
-// loadTLSCredentials загружает TLS креды для защищенного соединения..
+// Заменяемая функция для тестирования.
+//
+//nolint:gochecknoglobals // Глобальная переменная необходима для возможности тестирования функции loadTLSCredentials
+var tlsLoadX509KeyPair = tls.LoadX509KeyPair
+
+// loadTLSCredentials загружает TLS креды для защищенного соединения.
 func loadTLSCredentials(keyFile string) (credentials.TransportCredentials, error) {
 	// Создаем сертификат из публичного ключа, извлеченного из приватного ключа
 	certFile := "server.crt"
 
 	// Загружаем сертификат и приватный ключ сервера
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	cert, err := tlsLoadX509KeyPair(certFile, keyFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load server certificate and key: %w", err)
 	}

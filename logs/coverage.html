@@ -103,7 +103,7 @@
 				
 				<option value="file23">github.com/maynagashev/go-metrics/internal/server/grpc/metrics_service.go (95.8%)</option>
 				
-				<option value="file24">github.com/maynagashev/go-metrics/internal/server/grpc/server.go (62.5%)</option>
+				<option value="file24">github.com/maynagashev/go-metrics/internal/server/grpc/server.go (73.2%)</option>
 				
 				<option value="file25">github.com/maynagashev/go-metrics/internal/server/grpc/wrapper.go (93.3%)</option>
 				
@@ -143,7 +143,7 @@
 				
 				<option value="file43">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
-				<option value="file44">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (68.4%)</option>
+				<option value="file44">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (87.7%)</option>
 				
 				<option value="file45">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
@@ -2326,10 +2326,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2372,10 +2372,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Info("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -4886,19 +4886,24 @@ func (s *Server) configureTLS(cryptoKeyPath string, opts *[]grpc.ServerOption) e
         <span class="cov8" title="1">return nil</span>
 }
 
-// loadTLSCredentials загружает TLS креды для защищенного соединения..
-func loadTLSCredentials(keyFile string) (credentials.TransportCredentials, error) <span class="cov0" title="0">{
+// Заменяемая функция для тестирования.
+//
+//nolint:gochecknoglobals // Глобальная переменная необходима для возможности тестирования функции loadTLSCredentials
+var tlsLoadX509KeyPair = tls.LoadX509KeyPair
+
+// loadTLSCredentials загружает TLS креды для защищенного соединения.
+func loadTLSCredentials(keyFile string) (credentials.TransportCredentials, error) <span class="cov8" title="1">{
         // Создаем сертификат из публичного ключа, извлеченного из приватного ключа
         certFile := "server.crt"
 
         // Загружаем сертификат и приватный ключ сервера
-        cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-        if err != nil </span><span class="cov0" title="0">{
+        cert, err := tlsLoadX509KeyPair(certFile, keyFile)
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("failed to load server certificate and key: %w", err)
         }</span>
 
         // Создаем TLS конфигурацию
-        <span class="cov0" title="0">config := &amp;tls.Config{
+        <span class="cov8" title="1">config := &amp;tls.Config{
                 Certificates: []tls.Certificate{cert},
                 ClientAuth:   tls.NoClientCert,
                 MinVersion:   tls.VersionTLS12,
@@ -7023,21 +7028,21 @@ func (m *Middleware) handleEncryption(
                 return body, true
         }</span>
 
-        <span class="cov0" title="0">if !m.config.IsEncryptionEnabled() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !m.config.IsEncryptionEnabled() </span><span class="cov8" title="1">{
                 m.log.Error("received encrypted data but server has no private key configured")
                 http.Error(w, "Server is not configured for encryption", http.StatusBadRequest)
                 return nil, false
         }</span>
 
-        <span class="cov0" title="0">m.log.Debug("decrypting request body")
+        <span class="cov8" title="1">m.log.Debug("decrypting request body")
         decrypted, err := crypto.DecryptLargeData(m.config.PrivateRSAKey, body)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 m.log.Error("failed to decrypt data", zap.Error(err))
                 http.Error(w, "Failed to decrypt request body", http.StatusBadRequest)
                 return nil, false
         }</span>
 
-        <span class="cov0" title="0">return decrypted, true</span>
+        <span class="cov8" title="1">return decrypted, true</span>
 }
 
 // Возвращает флаг успешности операции.
