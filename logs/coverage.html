@@ -91,7 +91,7 @@
 				
 				<option value="file17">github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go (90.0%)</option>
 				
-				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/app.go (8.7%)</option>
+				<option value="file18">github.com/maynagashev/go-metrics/internal/server/app/app.go (78.3%)</option>
 				
 				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/config.go (70.0%)</option>
 				
@@ -2324,10 +2324,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -3578,7 +3578,7 @@ func New(cfg *Config) *Server <span class="cov8" title="1">{
 // Start запускает HTTP-сервер с указанным обработчиком и логгером.
 // Настраивает таймауты и другие параметры сервера.
 // Обрабатывает сигналы SIGTERM, SIGINT, SIGQUIT для graceful shutdown.
-func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0" title="0">{
+func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov8" title="1">{
         log.Info("starting server", zap.Any("config", s.cfg))
 
         httpServer := &amp;http.Server{
@@ -3594,20 +3594,20 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0"
         serverErrors := make(chan error, 1)
 
         // Запускаем сервер в отдельной горутине
-        go func() </span><span class="cov0" title="0">{
+        go func() </span><span class="cov8" title="1">{
                 log.Info("server is listening", zap.String("addr", s.cfg.Addr))
                 serverErrors &lt;- httpServer.ListenAndServe()
         }</span>()
 
         // Канал для получения сигналов от ОС
-        <span class="cov0" title="0">shutdown := make(chan os.Signal, 1)
+        <span class="cov8" title="1">shutdown := make(chan os.Signal, 1)
         signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
         // Блокируемся до получения сигнала или ошибки
         select </span>{
         case err := &lt;-serverErrors:<span class="cov0" title="0">
                 log.Fatal("server error", zap.Error(err))</span>
-        case sig := &lt;-shutdown:<span class="cov0" title="0">
+        case sig := &lt;-shutdown:<span class="cov8" title="1">
                 log.Info("shutdown signal received", zap.String("signal", sig.String()))
 
                 // Создаем контекст с таймаутом для graceful shutdown
@@ -3620,15 +3620,15 @@ func (s *Server) Start(log *zap.Logger, handler http.Handler) <span class="cov0"
                         if closeErr := httpServer.Close(); closeErr != nil </span><span class="cov0" title="0">{
                                 log.Error("server close failed", zap.Error(closeErr))
                         }</span>
-                } else<span class="cov0" title="0"> {
+                } else<span class="cov8" title="1"> {
                         log.Info("server shutdown completed")
                 }</span>
 
                 // Даем время на завершение текущих операций и сохранение данных
-                <span class="cov0" title="0">select </span>{
+                <span class="cov8" title="1">select </span>{
                 case &lt;-ctx.Done():<span class="cov0" title="0">
                         log.Error("shutdown timeout exceeded")</span>
-                case &lt;-time.After(DataSavingTimeout):<span class="cov0" title="0"> // Дополнительное время для сохранения данных
+                case &lt;-time.After(DataSavingTimeout):<span class="cov8" title="1"> // Дополнительное время для сохранения данных
                         log.Info("all pending operations completed")</span>
                 }
         }

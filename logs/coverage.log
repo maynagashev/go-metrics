@@ -107,7 +107,7 @@ github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:42:				S
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:57:				ValueString				100.0%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:70:				ToJSON					75.0%
 github.com/maynagashev/go-metrics/internal/server/app/app.go:31:					New					100.0%
-github.com/maynagashev/go-metrics/internal/server/app/app.go:40:					Start					0.0%
+github.com/maynagashev/go-metrics/internal/server/app/app.go:40:					Start					76.2%
 github.com/maynagashev/go-metrics/internal/server/app/app.go:97:					GetStoreInterval			100.0%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:59:					NewConfig				33.3%
 github.com/maynagashev/go-metrics/internal/server/app/config.go:97:					IsStoreEnabled				100.0%
@@ -232,4 +232,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				76.8%
+total:													(statements)				77.5%
