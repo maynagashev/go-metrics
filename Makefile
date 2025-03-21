@@ -183,7 +183,7 @@ test-coverage:
 test-coverage-clean:
 	@echo "Запуск тестов с генерацией покрытия (исключая сгенерированные файлы)..."
 	go test -coverprofile=logs/coverage.raw.out ./...
-	cat logs/coverage.raw.out | grep -v "\.pb\.go" | grep -v "/mocks/" > logs/coverage.out
+	cat logs/coverage.raw.out | grep -v "\.pb\.go" | grep -v "/mocks/" | grep -v "migration/migration.go" > logs/coverage.out
 	go tool cover -html=logs/coverage.out -o logs/coverage.html
 	go tool cover -func=logs/coverage.out | tee logs/coverage.log
 

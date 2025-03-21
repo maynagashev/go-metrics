@@ -125,7 +125,7 @@
 				
 				<option value="file34">github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go (84.2%)</option>
 				
-				<option value="file35">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (55.6%)</option>
+				<option value="file35">github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go (80.4%)</option>
 				
 				<option value="file36">github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go (100.0%)</option>
 				
@@ -135,23 +135,21 @@
 				
 				<option value="file39">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (76.0%)</option>
 				
-				<option value="file40">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go (0.0%)</option>
+				<option value="file40">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
 				
-				<option value="file41">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
+				<option value="file41">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
 				
-				<option value="file42">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
+				<option value="file42">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
 				
-				<option value="file43">github.com/maynagashev/go-metrics/pkg/crypto/crypto.go (63.9%)</option>
+				<option value="file43">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (87.7%)</option>
 				
-				<option value="file44">github.com/maynagashev/go-metrics/pkg/middleware/crypto/crypto.go (87.7%)</option>
+				<option value="file44">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
 				
-				<option value="file45">github.com/maynagashev/go-metrics/pkg/middleware/gzip/compress.go (72.7%)</option>
+				<option value="file45">github.com/maynagashev/go-metrics/pkg/random/float.go (80.0%)</option>
 				
-				<option value="file46">github.com/maynagashev/go-metrics/pkg/random/float.go (80.0%)</option>
+				<option value="file46">github.com/maynagashev/go-metrics/pkg/response/response.go (85.7%)</option>
 				
-				<option value="file47">github.com/maynagashev/go-metrics/pkg/response/response.go (85.7%)</option>
-				
-				<option value="file48">github.com/maynagashev/go-metrics/pkg/sign/sign.go (90.0%)</option>
+				<option value="file47">github.com/maynagashev/go-metrics/pkg/sign/sign.go (90.0%)</option>
 				
 				</select>
 			</div>
@@ -2372,10 +2370,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Info("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -5691,7 +5689,7 @@ type gzipReadCloser struct {
         originalBody io.ReadCloser
 }
 
-func (gz *gzipReadCloser) Close() error <span class="cov0" title="0">{
+func (gz *gzipReadCloser) Close() error <span class="cov8" title="1">{
         // Закрываем gzip reader
         if err := gz.Reader.Close(); err != nil </span><span class="cov0" title="0">{
                 gz.log.Error("error closing gzip reader", zap.Error(err))
@@ -5699,13 +5697,16 @@ func (gz *gzipReadCloser) Close() error <span class="cov0" title="0">{
         }</span>
 
         // Закрываем оригинальное тело
-        <span class="cov0" title="0">if err := gz.originalBody.Close(); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := gz.originalBody.Close(); err != nil </span><span class="cov8" title="1">{
                 gz.log.Error("error closing original body", zap.Error(err))
                 return err
         }</span>
 
+        // Сохраним ссылку на middleware перед сбросом
+        <span class="cov8" title="1">middleware := gz.middleware
+
         // Возвращаем Reader в его пул
-        <span class="cov0" title="0">gz.middleware.readerPool.Put(gz.Reader)
+        middleware.readerPool.Put(gz.Reader)
 
         // Очищаем поля перед возвратом в пул
         gz.Reader = nil
@@ -5714,7 +5715,7 @@ func (gz *gzipReadCloser) Close() error <span class="cov0" title="0">{
         gz.middleware = nil
 
         // Возвращаем closer в его пул
-        gz.middleware.closerPool.Put(gz)
+        middleware.closerPool.Put(gz)
 
         return nil</span>
 }
@@ -6256,44 +6257,7 @@ func (ms *MemStorage) restoreMetricsFromFile() error <span class="cov8" title="1
 }
 </pre>
 		
-		<pre class="file" id="file40" style="display: none">// Package migration предоставляет функционал для управления миграциями базы данных.
-// Обеспечивает корректное обновление схемы базы данных при изменениях.
-package migration
-
-import (
-        "errors"
-        "log/slog"
-
-        "github.com/golang-migrate/migrate/v4"
-        // Подключение драйвера для работы с PostgreSQL.
-        _ "github.com/golang-migrate/migrate/v4/database/postgres"
-        // Подключение драйвера файловой системы, для чтения миграций из файлов.
-        _ "github.com/golang-migrate/migrate/v4/source/file"
-)
-
-// Up выполняет миграции базы данных.
-func Up(migrationsPath string, dsn string) error <span class="cov0" title="0">{
-        var err error
-        slog.Info("Запуск миграций...", "path", migrationsPath)
-        m, err := migrate.New("file://"+migrationsPath, dsn)
-        if err != nil </span><span class="cov0" title="0">{
-                panic(err)</span>
-        }
-
-        <span class="cov0" title="0">if err = m.Up(); err != nil </span><span class="cov0" title="0">{
-                if errors.Is(err, migrate.ErrNoChange) </span><span class="cov0" title="0">{
-                        slog.Info("Нет новых миграций для применения.")
-                        return nil
-                }</span>
-                <span class="cov0" title="0">panic(err)</span>
-        }
-
-        <span class="cov0" title="0">slog.Info("Миграции применены.")
-        return nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file41" style="display: none">// Package pgstorage реализует хранилище метрик на основе PostgreSQL.
+		<pre class="file" id="file40" style="display: none">// Package pgstorage реализует хранилище метрик на основе PostgreSQL.
 // Предоставляет методы для сохранения и получения метрик из базы данных.
 package pgstorage
 
@@ -6540,7 +6504,7 @@ func isRetriableError(err *pgconn.PgError) bool <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file42" style="display: none">// Package storage определяет интерфейсы и базовые типы для хранения метрик.
+		<pre class="file" id="file41" style="display: none">// Package storage определяет интерфейсы и базовые типы для хранения метрик.
 // Предоставляет общий интерфейс для различных реализаций хранилищ.
 package storage
 
@@ -6595,7 +6559,7 @@ type Repository interface {
 }
 </pre>
 		
-		<pre class="file" id="file43" style="display: none">// Package crypto предоставляет функции для асимметричного шифрования и расшифровки.
+		<pre class="file" id="file42" style="display: none">// Package crypto предоставляет функции для асимметричного шифрования и расшифровки.
 // Он использует RSA шифрование для безопасной связи между агентом и сервером.
 package crypto
 
@@ -6915,7 +6879,7 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string, bits int) error <span
 }
 </pre>
 		
-		<pre class="file" id="file44" style="display: none">// Package crypto предоставляет middleware для обработки зашифрованных запросов.
+		<pre class="file" id="file43" style="display: none">// Package crypto предоставляет middleware для обработки зашифрованных запросов.
 package crypto
 
 import (
@@ -7100,7 +7064,7 @@ func (w *signedResponseWriter) Write(b []byte) (int, error) <span class="cov8" t
 }</span>
 </pre>
 		
-		<pre class="file" id="file45" style="display: none">// Package gzip предоставляет функции для сжатия данных методом gzip.
+		<pre class="file" id="file44" style="display: none">// Package gzip предоставляет функции для сжатия данных методом gzip.
 package gzip
 
 import (
@@ -7139,7 +7103,7 @@ func Compress(data []byte) ([]byte, error) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file46" style="display: none">// Package random предоставляет функции для генерации случайных чисел.
+		<pre class="file" id="file45" style="display: none">// Package random предоставляет функции для генерации случайных чисел.
 // Использует криптографически стойкий генератор случайных чисел.
 package random
 
@@ -7164,7 +7128,7 @@ func GenerateRandomFloat64() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file47" style="display: none">// Package response предоставляет функции для формирования стандартизированных HTTP-ответов.
+		<pre class="file" id="file46" style="display: none">// Package response предоставляет функции для формирования стандартизированных HTTP-ответов.
 // Поддерживает ответы в формате JSON с информацией о статусе и сообщением.
 package response
 
@@ -7222,7 +7186,7 @@ func writeResponse(w http.ResponseWriter, resp Response, statusCode int) <span c
 }
 </pre>
 		
-		<pre class="file" id="file48" style="display: none">// Package sign предоставляет функции для создания и проверки цифровых подписей.
+		<pre class="file" id="file47" style="display: none">// Package sign предоставляет функции для создания и проверки цифровых подписей.
 // Реализует подпись данных с использованием алгоритма HMAC-SHA256.
 package sign
 

@@ -178,7 +178,7 @@ github.com/maynagashev/go-metrics/internal/server/handlers/plain/value/plain_val
 github.com/maynagashev/go-metrics/internal/server/middleware/decompress/decompress.go:12:		New					84.2%
 github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:22:	New					100.0%
 github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:41:	Handler					75.0%
-github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:98:	Close					0.0%
+github.com/maynagashev/go-metrics/internal/server/middleware/decompresspool/decompresspool.go:98:	Close					85.7%
 github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:22:			New					100.0%
 github.com/maynagashev/go-metrics/internal/server/middleware/ipfilter/ipfilter.go:46:			Handler					100.0%
 github.com/maynagashev/go-metrics/internal/server/middleware/logger/logger.go:15:			New					100.0%
@@ -199,7 +199,6 @@ github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:160:	
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:185:				GetMetrics				100.0%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:204:				storeMetricsToFile			77.3%
 github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go:248:				restoreMetricsFromFile			85.0%
-github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/migration/migration.go:17:		Up					0.0%
 github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:44:			New					0.0%
 github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:69:			Close					66.7%
 github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:76:			Count					100.0%
@@ -233,4 +232,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				74.4%
+total:													(statements)				75.3%
