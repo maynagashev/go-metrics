@@ -67,7 +67,7 @@
 				
 				<option value="file5">github.com/maynagashev/go-metrics/cmd/migrate/main.go (76.9%)</option>
 				
-				<option value="file6">github.com/maynagashev/go-metrics/cmd/server/main.go (20.8%)</option>
+				<option value="file6">github.com/maynagashev/go-metrics/cmd/server/main.go (83.3%)</option>
 				
 				<option value="file7">github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go (81.9%)</option>
 				
@@ -982,24 +982,24 @@ func printVersion() <span class="cov8" title="1">{
         fmt.Println("Build commit:", BuildCommit)
 }</span>
 
-func main() <span class="cov0" title="0">{
+func main() <span class="cov8" title="1">{
         log := initLogger()
-        defer func() </span><span class="cov0" title="0">{
+        defer func() </span><span class="cov8" title="1">{
                 // Ignore stderr sync error as it's harmless
                 if syncErr := log.Sync(); syncErr != nil &amp;&amp;
-                        syncErr.Error() != "sync /dev/stderr: invalid argument" </span><span class="cov0" title="0">{
+                        syncErr.Error() != "sync /dev/stderr: invalid argument" </span><span class="cov8" title="1">{
                         log.Error("failed to sync logger", zap.Error(syncErr))
                 }</span>
         }()
 
-        <span class="cov0" title="0">printVersion()
+        <span class="cov8" title="1">printVersion()
 
         flags, err := app.ParseFlags()
         if err != nil </span><span class="cov0" title="0">{
                 panic(err)</span>
         }
 
-        <span class="cov0" title="0">cfg := app.NewConfig(flags)
+        <span class="cov8" title="1">cfg := app.NewConfig(flags)
         server := app.New(cfg)
 
         // Инициализируем хранилище
@@ -1008,7 +1008,7 @@ func main() <span class="cov0" title="0">{
                 log.Error("failed to init storage", zap.Error(storageErr))
                 panic(storageErr)</span>
         }
-        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
                 closeErr := repo.Close()
                 if closeErr != nil </span><span class="cov0" title="0">{
                         log.Error("failed to close storage", zap.Error(closeErr))
@@ -1016,7 +1016,7 @@ func main() <span class="cov0" title="0">{
         }()
 
         // Создаем контекст для graceful shutdown
-        <span class="cov0" title="0">ctx, cancel := context.WithCancel(context.Background())
+        <span class="cov8" title="1">ctx, cancel := context.WithCancel(context.Background())
         defer cancel()
 
         // Инициализируем gRPC сервер
@@ -1028,7 +1028,7 @@ func main() <span class="cov0" title="0">{
         }
 
         // Инициализируем HTTP router
-        <span class="cov0" title="0">handlers := router.New(cfg, repo, log)
+        <span class="cov8" title="1">handlers := router.New(cfg, repo, log)
 
         // Запускаем HTTP сервер
         go server.Start(log, handlers)
@@ -1049,9 +1049,9 @@ func main() <span class="cov0" title="0">{
 
 func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) <span class="cov8" title="1">{
         // Если указан DATABASE_DSN или флаг -d, то используем PostgreSQL.
-        if cfg.IsDatabaseEnabled() </span><span class="cov0" title="0">{
+        if cfg.IsDatabaseEnabled() </span><span class="cov8" title="1">{
                 pg, err := pgstorage.New(context.Background(), cfg, log)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return nil, err
                 }</span>
                 <span class="cov0" title="0">return pg, nil</span>

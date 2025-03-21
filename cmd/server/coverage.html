@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>server: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/maynagashev/go-metrics/cmd/server/main.go (83.3%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Package main реализует HTTP-сервер для сбора и хранения метрик.
+//
+// Сервер поддерживает хранение метрик в PostgreSQL или в памяти. Выбор хранилища
+// определяется наличием параметров подключения к БД (флаг -d или переменная DATABASE_DSN).
+//
+// # Поддерживаемые типы метрик
+//
+//   - gauge - число с плавающей точкой
+//   - counter - целочисленный счетчик
+//
+// # API Endpoints
+//
+//   - POST /update - обновление одиночной метрики
+//   - POST /updates/ - пакетное обновление метрик
+//   - POST /value - получение значения метрики
+//   - GET /ping - проверка подключения к БД
+//   - GET / - получение всех метрик (текстовый формат)
+//
+// # gRPC API
+//
+// Сервер также поддерживает gRPC-интерфейс для работы с метриками:
+//   - Update - обновление одиночной метрики
+//   - UpdateBatch - пакетное обновление метрик
+//   - GetValue - получение значения метрики
+//   - Ping - проверка подключения к БД
+//   - StreamMetrics - потоковая отправка метрик
+//
+// # Конфигурация
+//
+// Сервер поддерживает настройку через флаги командной строки и переменные окружения:
+//   - DATABASE_DSN - строка подключения к PostgreSQL
+//   - STORE_INTERVAL - интервал сохранения метрик (для in-memory хранилища)
+//   - FILE_STORAGE_PATH - путь к файлу для сохранения метрик
+//   - RESTORE - восстанавливать ли метрики из файла при старте
+//   - GRPC_ENABLED - включить gRPC сервер
+//   - GRPC_ADDRESS - адрес для gRPC сервера
+//
+// # Примеры
+//
+// Примеры использования API представлены в тестах:
+//   - Example - обновление метрики
+//   - Example_getValue - получение значения
+//   - Example_updateBatch - пакетное обновление
+//   - Example_ping - проверка БД
+package main
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "os/signal"
+        "syscall"
+
+        //nolint:gosec // G108: pprof is used intentionally for debugging and profiling
+        _ "net/http/pprof"
+
+        "go.uber.org/zap"
+
+        "github.com/maynagashev/go-metrics/internal/server/app"
+        grpcserver "github.com/maynagashev/go-metrics/internal/server/grpc"
+        "github.com/maynagashev/go-metrics/internal/server/router"
+        "github.com/maynagashev/go-metrics/internal/server/storage"
+        "github.com/maynagashev/go-metrics/internal/server/storage/memory"
+        "github.com/maynagashev/go-metrics/internal/server/storage/pgstorage"
+)
+
+// Глобальные переменные для информации о сборке.
+//
+//nolint:gochecknoglobals // Эти переменные необходимы для информации о версии и задаются при сборке
+var (
+        BuildVersion = "N/A"
+        BuildDate    = "N/A"
+        BuildCommit  = "N/A"
+)
+
+// printVersion выводит информацию о версии сборки.
+//
+//nolint:forbidigo // Используем fmt.Println для вывода в stdout согласно требованиям задания
+func printVersion() <span class="cov8" title="1">{
+        fmt.Println("Build version:", BuildVersion)
+        fmt.Println("Build date:", BuildDate)
+        fmt.Println("Build commit:", BuildCommit)
+}</span>
+
+func main() <span class="cov8" title="1">{
+        log := initLogger()
+        defer func() </span><span class="cov8" title="1">{
+                // Ignore stderr sync error as it's harmless
+                if syncErr := log.Sync(); syncErr != nil &amp;&amp;
+                        syncErr.Error() != "sync /dev/stderr: invalid argument" </span><span class="cov8" title="1">{
+                        log.Error("failed to sync logger", zap.Error(syncErr))
+                }</span>
+        }()
+
+        <span class="cov8" title="1">printVersion()
+
+        flags, err := app.ParseFlags()
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+
+        <span class="cov8" title="1">cfg := app.NewConfig(flags)
+        server := app.New(cfg)
+
+        // Инициализируем хранилище
+        repo, storageErr := initStorage(cfg, log)
+        if storageErr != nil </span><span class="cov0" title="0">{
+                log.Error("failed to init storage", zap.Error(storageErr))
+                panic(storageErr)</span>
+        }
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
+                closeErr := repo.Close()
+                if closeErr != nil </span><span class="cov0" title="0">{
+                        log.Error("failed to close storage", zap.Error(closeErr))
+                }</span>
+        }()
+
+        // Создаем контекст для graceful shutdown
+        <span class="cov8" title="1">ctx, cancel := context.WithCancel(context.Background())
+        defer cancel()
+
+        // Инициализируем gRPC сервер
+        grpcSrv := grpcserver.NewServer(log, cfg, repo)
+        startErr := grpcSrv.Start(ctx)
+        if startErr != nil </span><span class="cov0" title="0">{
+                log.Error("failed to start gRPC server", zap.Error(startErr))
+                panic(startErr)</span>
+        }
+
+        // Инициализируем HTTP router
+        <span class="cov8" title="1">handlers := router.New(cfg, repo, log)
+
+        // Запускаем HTTP сервер
+        go server.Start(log, handlers)
+
+        // Канал для получения сигналов от ОС
+        sigCh := make(chan os.Signal, 1)
+        signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+        // Ожидаем сигнал для graceful shutdown
+        sig := &lt;-sigCh
+        log.Info("received signal, initiating graceful shutdown", zap.String("signal", sig.String()))
+
+        // Отменяем контекст, что приведет к graceful shutdown gRPC сервера
+        cancel()
+
+        log.Debug("server stopped")</span>
+}
+
+func initStorage(cfg *app.Config, log *zap.Logger) (storage.Repository, error) <span class="cov8" title="1">{
+        // Если указан DATABASE_DSN или флаг -d, то используем PostgreSQL.
+        if cfg.IsDatabaseEnabled() </span><span class="cov8" title="1">{
+                pg, err := pgstorage.New(context.Background(), cfg, log)
+                if err != nil </span><span class="cov8" title="1">{
+                        return nil, err
+                }</span>
+                <span class="cov0" title="0">return pg, nil</span>
+        }
+
+        <span class="cov8" title="1">return memory.New(cfg, log), nil</span>
+}
+
+func initLogger() *zap.Logger <span class="cov8" title="1">{
+        // Создаем конфигурацию для регистратора в режиме разработки
+        cfg := zap.NewDevelopmentConfig()
+
+        // Указываем путь к файлу для записи логов, для записи в файл добавить в список например: "../../run.log"
+        cfg.OutputPaths = []string{"stderr"}
+
+        // Создаем регистратор с заданной конфигурацией
+        logger, err := cfg.Build()
+        if err != nil </span><span class="cov0" title="0">{
+                // вызываем панику, если ошибка
+                panic(err)</span>
+        }
+        <span class="cov8" title="1">return logger</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

@@ -29,8 +29,8 @@ github.com/maynagashev/go-metrics/cmd/keygen/main.go:110:						initLogger				100
 github.com/maynagashev/go-metrics/cmd/migrate/main.go:14:						run					57.1%
 github.com/maynagashev/go-metrics/cmd/migrate/main.go:32:						main					100.0%
 github.com/maynagashev/go-metrics/cmd/server/main.go:79:						printVersion				100.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:85:						main					0.0%
-github.com/maynagashev/go-metrics/cmd/server/main.go:150:						initStorage				33.3%
+github.com/maynagashev/go-metrics/cmd/server/main.go:85:						main					81.8%
+github.com/maynagashev/go-metrics/cmd/server/main.go:150:						initStorage				83.3%
 github.com/maynagashev/go-metrics/cmd/server/main.go:163:						initLogger				83.3%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:65:			getErrorType				69.2%
 github.com/maynagashev/go-metrics/cmd/staticlint/passes/errcheck/analyzer.go:87:			NewAnalyzer				100.0%
@@ -232,4 +232,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				75.3%
+total:													(statements)				76.8%
