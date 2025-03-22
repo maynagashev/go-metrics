@@ -1,194 +1,192 @@
 Build version: N/A
 Build date: N/A
 Build commit: N/A
-time=2025-03-19T22:29:10.645+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example2 CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060 ConfigFile: RealIP: GRPCAddress:localhost:9090 GRPCEnabled:true GRPCTimeout:5 GRPCRetry:3}"
-time=2025-03-19T22:29:10.645+07:00 level=INFO msg="using gRPC client" address=localhost:9090
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="gRPC compression enabled by default"
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="gRPC request signing enabled"
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Starting agent" server_url=http://localhost:8080 poll_interval=2s report_interval=10s private_key=pr****************e2 rate_limit=3 grpc_enabled=true grpc_address=localhost:9090
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Collector started"
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Starting sender worker" workerID=0
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Starting sender worker" workerID=2
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Report routine started" report_interval=10s server_url=http://localhost:8080 grpc_enabled=true grpc_address=localhost:9090
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Poll routine started" poll_interval=2s metrics_storage_size=0
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Client initialized" client_type=*grpc.Client
-time=2025-03-19T22:29:10.648+07:00 level=INFO msg="Starting sender worker" workerID=1
-time=2025-03-19T22:29:12.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:12.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:12.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:12.651+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.93304443359375 sys_mb=7.958259582519531
-time=2025-03-19T22:29:12.651+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:12.651+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6121749877929688 used_percent=64.69120303097728
-time=2025-03-19T22:29:12.651+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:12.652+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=2
-time=2025-03-19T22:29:14.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:14.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:14.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:14.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.9707260131835938 sys_mb=8.208259582519531
-time=2025-03-19T22:29:14.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:14.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6314773559570312 used_percent=64.5653597980343
-time=2025-03-19T22:29:14.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:14.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:16.648+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:16.648+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:16.648+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:16.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.0084228515625 sys_mb=8.208259582519531
-time=2025-03-19T22:29:16.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:16.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6448822021484375 used_percent=64.47809987159616
-time=2025-03-19T22:29:16.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:16.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:18.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:18.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:18.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:18.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.0464248657226562 sys_mb=8.208259582519531
-time=2025-03-19T22:29:18.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:18.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6527633666992188 used_percent=64.42601737989018
-time=2025-03-19T22:29:18.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:18.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:20.650+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:20.650+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:20.650+07:00 level=INFO msg="Starting metrics report cycle"
-time=2025-03-19T22:29:20.650+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:20.650+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.083831787109375 sys_mb=8.208259582519531
-time=2025-03-19T22:29:20.650+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:20.650+07:00 level=DEBUG msg="Starting metrics preparation for sending"
-time=2025-03-19T22:29:20.651+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6711807250976562 used_percent=64.30609091688802
-time=2025-03-19T22:29:20.651+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:20.651+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:20.651+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
-time=2025-03-19T22:29:20.651+07:00 level=DEBUG msg="Reset poll count to zero"
-time=2025-03-19T22:29:20.652+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:20.652+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
-time=2025-03-19T22:29:20.652+07:00 level=INFO msg="Report cycle completed" duration_ms=1
-time=2025-03-19T22:29:20.652+07:00 level=INFO msg="Sending metrics batch" workerID=0 metrics_count=51
-time=2025-03-19T22:29:20.656+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=1 maxRetries=3 retryIn=1s
-time=2025-03-19T22:29:21.660+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=2 maxRetries=3 retryIn=3s
-time=2025-03-19T22:29:22.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:22.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:22.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:22.650+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.810028076171875 sys_mb=12.208259582519531
-time=2025-03-19T22:29:22.650+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:22.650+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6770095825195312 used_percent=64.18412590289785
-time=2025-03-19T22:29:22.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:22.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:24.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:24.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:24.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:24.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.8478317260742188 sys_mb=12.208259582519531
-time=2025-03-19T22:29:24.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:24.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6826095581054688 used_percent=64.22646312646599
-time=2025-03-19T22:29:24.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:24.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:24.663+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=3 maxRetries=3 retryIn=5s
-time=2025-03-19T22:29:26.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:26.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:26.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:26.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.8973236083984375 sys_mb=12.208259582519531
-time=2025-03-19T22:29:26.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:26.650+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.656524658203125 used_percent=64.20968237138173
-time=2025-03-19T22:29:26.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:26.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:28.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:28.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:28.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:28.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.9350204467773438 sys_mb=12.208259582519531
-time=2025-03-19T22:29:28.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:28.650+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6608161926269531 used_percent=64.26621487073226
-time=2025-03-19T22:29:28.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:28.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:29.665+07:00 level=ERROR msg="Failed to send metrics" error="operation failed after 4 attempts: rpc error: code = Unauthenticated desc = invalid signature"
-time=2025-03-19T22:29:30.648+07:00 level=INFO msg="Starting metrics report cycle"
-time=2025-03-19T22:29:30.648+07:00 level=DEBUG msg="Starting metrics preparation for sending"
-time=2025-03-19T22:29:30.648+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Reset poll count to zero"
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:30.649+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
-time=2025-03-19T22:29:30.649+07:00 level=INFO msg="Report cycle completed" duration_ms=0
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.9883651733398438 sys_mb=12.208259582519531
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:30.649+07:00 level=INFO msg="Sending metrics batch" workerID=2 metrics_count=51
-time=2025-03-19T22:29:30.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6253623962402344 used_percent=64.48605519252499
-time=2025-03-19T22:29:30.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:30.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:30.651+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=1 maxRetries=3 retryIn=1s
-time=2025-03-19T22:29:31.658+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=2 maxRetries=3 retryIn=3s
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.0834808349609375 sys_mb=13.270759582519531
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6003036499023438 used_percent=64.50196583438264
-time=2025-03-19T22:29:32.649+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:32.649+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.1211471557617188 sys_mb=13.270759582519531
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6046066284179688 used_percent=64.4356134857606
-time=2025-03-19T22:29:34.649+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:34.649+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:34.660+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=3 maxRetries=3 retryIn=5s
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.1710128784179688 sys_mb=13.270759582519531
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.5932807922363281 used_percent=64.41231931166585
-time=2025-03-19T22:29:36.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:36.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:38.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:38.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:38.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:38.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.2084274291992188 sys_mb=13.270759582519531
-time=2025-03-19T22:29:38.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:38.650+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.5894966125488281 used_percent=64.51509211391523
-time=2025-03-19T22:29:38.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:38.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:39.663+07:00 level=ERROR msg="Failed to send metrics" error="operation failed after 4 attempts: rpc error: code = Unauthenticated desc = invalid signature"
-time=2025-03-19T22:29:40.649+07:00 level=INFO msg="Starting metrics report cycle"
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Starting metrics preparation for sending"
-time=2025-03-19T22:29:40.649+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Reset poll count to zero"
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:40.649+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:40.649+07:00 level=INFO msg="Report cycle completed" duration_ms=0
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.2651443481445312 sys_mb=13.270759582519531
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:40.649+07:00 level=INFO msg="Sending metrics batch" workerID=1 metrics_count=51
-time=2025-03-19T22:29:40.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6122474670410156 used_percent=64.43504169706884
-time=2025-03-19T22:29:40.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:40.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-19T22:29:40.652+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=1 maxRetries=3 retryIn=1s
-time=2025-03-19T22:29:41.655+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=2 maxRetries=3 retryIn=3s
-time=2025-03-19T22:29:42.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:42.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:42.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:42.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.4436569213867188 sys_mb=13.270759582519531
-time=2025-03-19T22:29:42.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:42.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6411056518554688 used_percent=64.43887019526584
-time=2025-03-19T22:29:42.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:42.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:44.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:44.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:44.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:44.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.48126220703125 sys_mb=13.270759582519531
-time=2025-03-19T22:29:44.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:44.649+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.642730712890625 used_percent=64.42457547797184
-time=2025-03-19T22:29:44.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:44.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-19T22:29:44.658+07:00 level=WARN msg="gRPC request failed, retrying" error="rpc error: code = Unauthenticated desc = invalid signature" attempt=3 maxRetries=3 retryIn=5s
-time=2025-03-19T22:29:46.649+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-19T22:29:46.649+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-19T22:29:46.649+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-19T22:29:46.649+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=3.5303878784179688 sys_mb=13.270759582519531
-time=2025-03-19T22:29:46.649+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-19T22:29:46.650+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.5557289123535156 used_percent=64.88844526925654
-time=2025-03-19T22:29:46.650+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-19T22:29:46.650+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:34:59.995+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060 ConfigFile: RealIP: GRPCAddress:localhost:9090 GRPCEnabled:true GRPCTimeout:5 GRPCRetry:3}"
+time=2025-03-22T13:34:59.995+07:00 level=INFO msg="using gRPC client" address=localhost:9090
+time=2025-03-22T13:34:59.995+07:00 level=WARN msg="TLS encryption disabled for gRPC client, using insecure connection"
+time=2025-03-22T13:34:59.995+07:00 level=INFO msg="Connecting to gRPC server" address=localhost:9090 timeout=5 maxRetries=3 realIP="" privateKey=private_key_example publicKeyPath="" dialOpts="[0xc00029e018 0xc00029e020 0xc00029e028 0xc00029e030]"
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="gRPC compression enabled by default"
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="gRPC request signing enabled"
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="Starting agent" server_url=http://localhost:8080 poll_interval=2s report_interval=10s private_key=pr***************le rate_limit=3 grpc_enabled=true grpc_address=localhost:9090
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="Collector started"
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="Starting sender worker" workerID=2
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="Starting sender worker" workerID=1
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="Starting sender worker" workerID=0
+time=2025-03-22T13:34:59.997+07:00 level=INFO msg="Poll routine started" poll_interval=2s metrics_storage_size=0
+time=2025-03-22T13:34:59.998+07:00 level=INFO msg="Report routine started" report_interval=10s server_url=http://localhost:8080 grpc_enabled=true grpc_address=localhost:9090
+time=2025-03-22T13:34:59.998+07:00 level=INFO msg="Client initialized" client_type=*grpc.Client
+time=2025-03-22T13:35:01.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:01.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:01.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:02.001+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.9355087280273438 sys_mb=12.708259582519531
+time=2025-03-22T13:35:02.001+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:02.001+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.5579490661621094 used_percent=64.58487519468783
+time=2025-03-22T13:35:02.002+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:02.002+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=2
+time=2025-03-22T13:35:03.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:03.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:03.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:03.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.9729995727539062 sys_mb=12.708259582519531
+time=2025-03-22T13:35:03.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:03.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.5563240051269531 used_percent=64.60018918747585
+time=2025-03-22T13:35:04.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:04.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:05.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:05.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:05.998+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:05.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.010894775390625 sys_mb=12.708259582519531
+time=2025-03-22T13:35:05.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:05.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.6199951171875 used_percent=64.2953263732562
+time=2025-03-22T13:35:05.999+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:05.999+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
+time=2025-03-22T13:35:07.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:07.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:07.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:08.000+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.0488967895507812 sys_mb=12.708259582519531
+time=2025-03-22T13:35:08.000+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:08.000+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.6442184448242188 used_percent=64.1368166037492
+time=2025-03-22T13:35:08.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:08.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:09.998+07:00 level=INFO msg="Starting metrics report cycle"
+time=2025-03-22T13:35:09.998+07:00 level=DEBUG msg="Starting metrics preparation for sending"
+time=2025-03-22T13:35:09.998+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
+time=2025-03-22T13:35:09.998+07:00 level=DEBUG msg="Reset poll count to zero"
+time=2025-03-22T13:35:09.998+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
+time=2025-03-22T13:35:09.998+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
+time=2025-03-22T13:35:09.998+07:00 level=INFO msg="Report cycle completed" duration_ms=0
+time=2025-03-22T13:35:09.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:09.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:09.998+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:09.998+07:00 level=INFO msg="Sending metrics batch" workerID=2 metrics_count=51
+time=2025-03-22T13:35:09.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.0911026000976562 sys_mb=12.708259582519531
+time=2025-03-22T13:35:09.999+07:00 level=DEBUG msg="Using gRPC streaming for metrics" workerID=2
+time=2025-03-22T13:35:09.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:09.999+07:00 level=INFO msg="Starting gRPC streaming of metrics" count=51
+time=2025-03-22T13:35:09.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.6559524536132812 used_percent=64.0595008284721
+time=2025-03-22T13:35:10.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:10.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:10.004+07:00 level=INFO msg="All metrics sent to gRPC stream" count=51
+time=2025-03-22T13:35:10.036+07:00 level=INFO msg="Stream successfully completed"
+time=2025-03-22T13:35:10.036+07:00 level=INFO msg="Metrics sent successfully" count=51
+time=2025-03-22T13:35:11.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:11.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:11.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:12.000+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.0844573974609375 sys_mb=12.708259582519531
+time=2025-03-22T13:35:12.000+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:12.000+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.66241455078125 used_percent=64.01129655571894
+time=2025-03-22T13:35:12.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:12.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.1220626831054688 sys_mb=12.708259582519531
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.6297607421875 used_percent=64.04915891126461
+time=2025-03-22T13:35:13.999+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:13.999+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
+time=2025-03-22T13:35:15.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:15.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:15.998+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:15.998+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.15972900390625 sys_mb=12.708259582519531
+time=2025-03-22T13:35:15.998+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:15.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.6348686218261719 used_percent=64.05840697184438
+time=2025-03-22T13:35:16.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:16.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:17.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:17.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:17.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:18.000+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.1975326538085938 sys_mb=12.708259582519531
+time=2025-03-22T13:35:18.000+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:18.000+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.5974693298339844 used_percent=64.13825850566755
+time=2025-03-22T13:35:18.001+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:18.001+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.235137939453125 sys_mb=12.708259582519531
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:19.999+07:00 level=INFO msg="Starting metrics report cycle"
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Starting metrics preparation for sending"
+time=2025-03-22T13:35:19.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.7001495361328125 used_percent=63.73360613454685
+time=2025-03-22T13:35:20.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:20.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
+time=2025-03-22T13:35:20.000+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
+time=2025-03-22T13:35:20.000+07:00 level=DEBUG msg="Reset poll count to zero"
+time=2025-03-22T13:35:20.000+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
+time=2025-03-22T13:35:20.000+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
+time=2025-03-22T13:35:20.000+07:00 level=INFO msg="Report cycle completed" duration_ms=0
+time=2025-03-22T13:35:20.000+07:00 level=INFO msg="Sending metrics batch" workerID=1 metrics_count=51
+time=2025-03-22T13:35:20.000+07:00 level=DEBUG msg="Using gRPC streaming for metrics" workerID=1
+time=2025-03-22T13:35:20.000+07:00 level=INFO msg="Starting gRPC streaming of metrics" count=51
+time=2025-03-22T13:35:20.002+07:00 level=INFO msg="All metrics sent to gRPC stream" count=51
+time=2025-03-22T13:35:20.007+07:00 level=INFO msg="Stream successfully completed"
+time=2025-03-22T13:35:20.007+07:00 level=INFO msg="Metrics sent successfully" count=51
+time=2025-03-22T13:35:21.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:21.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:22.000+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:22.000+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.3480987548828125 sys_mb=12.708259582519531
+time=2025-03-22T13:35:22.000+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:22.000+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.7112045288085938 used_percent=63.57499692352824
+time=2025-03-22T13:35:22.001+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:22.001+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:23.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:23.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:23.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:23.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.3859024047851562 sys_mb=12.708259582519531
+time=2025-03-22T13:35:23.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:23.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.5463485717773438 used_percent=64.65582671322187
+time=2025-03-22T13:35:24.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:24.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:25.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:25.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:25.998+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:25.998+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.423370361328125 sys_mb=12.708259582519531
+time=2025-03-22T13:35:25.998+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:25.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.5667076110839844 used_percent=64.6399160713642
+time=2025-03-22T13:35:25.999+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:25.999+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:27.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:27.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:27.998+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:27.998+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.464630126953125 sys_mb=12.708259582519531
+time=2025-03-22T13:35:27.998+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:27.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.6374969482421875 used_percent=64.17902952542781
+time=2025-03-22T13:35:28.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:28.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:29.999+07:00 level=INFO msg="Starting metrics report cycle"
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Starting metrics preparation for sending"
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:29.999+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Reset poll count to zero"
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
+time=2025-03-22T13:35:29.999+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
+time=2025-03-22T13:35:29.999+07:00 level=INFO msg="Report cycle completed" duration_ms=0
+time=2025-03-22T13:35:29.999+07:00 level=INFO msg="Sending metrics batch" workerID=0 metrics_count=51
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Using gRPC streaming for metrics" workerID=0
+time=2025-03-22T13:35:29.999+07:00 level=INFO msg="Starting gRPC streaming of metrics" count=51
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.508331298828125 sys_mb=12.708259582519531
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:29.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.4525032043457031 used_percent=65.33158150537047
+time=2025-03-22T13:35:30.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:30.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:30.013+07:00 level=INFO msg="All metrics sent to gRPC stream" count=51
+time=2025-03-22T13:35:30.019+07:00 level=INFO msg="Stream successfully completed"
+time=2025-03-22T13:35:30.019+07:00 level=INFO msg="Metrics sent successfully" count=51
+time=2025-03-22T13:35:31.999+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:31.999+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:31.999+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:31.999+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.4171066284179688 sys_mb=13.520759582519531
+time=2025-03-22T13:35:31.999+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:31.999+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.2933235168457031 used_percent=66.0755283141059
+time=2025-03-22T13:35:32.000+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:32.000+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-22T13:35:33.998+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-22T13:35:33.998+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-22T13:35:33.998+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-22T13:35:33.998+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=2.4582290649414062 sys_mb=13.520759582519531
+time=2025-03-22T13:35:33.998+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-22T13:35:33.998+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=1.4167938232421875 used_percent=65.37635504597306
+time=2025-03-22T13:35:33.999+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-22T13:35:33.999+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0

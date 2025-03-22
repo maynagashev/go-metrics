@@ -95,9 +95,9 @@
 				
 				<option value="file19">github.com/maynagashev/go-metrics/internal/server/app/config.go (70.0%)</option>
 				
-				<option value="file20">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (89.8%)</option>
+				<option value="file20">github.com/maynagashev/go-metrics/internal/server/app/config_json.go (100.0%)</option>
 				
-				<option value="file21">github.com/maynagashev/go-metrics/internal/server/app/flags.go (58.0%)</option>
+				<option value="file21">github.com/maynagashev/go-metrics/internal/server/app/flags.go (90.0%)</option>
 				
 				<option value="file22">github.com/maynagashev/go-metrics/internal/server/grpc/interceptors.go (95.5%)</option>
 				
@@ -2324,10 +2324,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -3838,6 +3838,7 @@ type JSONConfig struct {
         StoreInterval string `json:"store_interval"` // Интервал сохранения метрик в виде строки (например, "1s")
         StoreFile     string `json:"store_file"`     // Путь к файлу для хранения метрик
         DatabaseDSN   string `json:"database_dsn"`   // Строка подключения к базе данных
+        Key           string `json:"key"`            // Приватный ключ для подписи метрик
         CryptoKey     string `json:"crypto_key"`     // Путь к файлу с приватным ключом для расшифровки
         EnablePprof   bool   `json:"enable_pprof"`   // Включить профилирование через pprof
         TrustedSubnet string `json:"trusted_subnet"` // CIDR доверенной подсети для проверки IP-адресов агентов
@@ -3918,7 +3919,7 @@ func applyServerConfig(flags *Flags, jsonConfig *JSONConfig) error <span class="
         }</span>
 
         // Доверенная подсеть
-        <span class="cov8" title="1">if flags.Server.TrustedSubnet == "" &amp;&amp; jsonConfig.TrustedSubnet != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if flags.Server.TrustedSubnet == "" &amp;&amp; jsonConfig.TrustedSubnet != "" </span><span class="cov8" title="1">{
                 flags.Server.TrustedSubnet = jsonConfig.TrustedSubnet
         }</span>
 
@@ -3935,8 +3936,13 @@ func applyDatabaseConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8
 
 // applySecurityConfig применяет настройки безопасности из JSON-конфигурации.
 func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
+        // Приватный ключ для подписи метрик
+        if flags.PrivateKey == "" &amp;&amp; jsonConfig.Key != "" </span><span class="cov8" title="1">{
+                flags.PrivateKey = jsonConfig.Key
+        }</span>
+
         // Путь к файлу с приватным ключом для расшифровки
-        if flags.CryptoKey == "" &amp;&amp; jsonConfig.CryptoKey != "" </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if flags.CryptoKey == "" &amp;&amp; jsonConfig.CryptoKey != "" </span><span class="cov8" title="1">{
                 flags.CryptoKey = jsonConfig.CryptoKey
         }</span>
 }
@@ -3944,22 +3950,22 @@ func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8
 // applyGRPCConfig применяет настройки gRPC из JSON-конфигурации.
 func applyGRPCConfig(flags *Flags, jsonConfig *JSONConfig) <span class="cov8" title="1">{
         // Адрес и порт для gRPC сервера
-        if flags.GRPC.Addr == defaultGRPCAddr &amp;&amp; jsonConfig.GRPCAddress != "" </span><span class="cov0" title="0">{
+        if flags.GRPC.Addr == defaultGRPCAddr &amp;&amp; jsonConfig.GRPCAddress != "" </span><span class="cov8" title="1">{
                 flags.GRPC.Addr = jsonConfig.GRPCAddress
         }</span>
 
         // Включить gRPC сервер
-        <span class="cov8" title="1">if !flags.GRPC.Enabled &amp;&amp; jsonConfig.GRPCEnabled </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !flags.GRPC.Enabled &amp;&amp; jsonConfig.GRPCEnabled </span><span class="cov8" title="1">{
                 flags.GRPC.Enabled = jsonConfig.GRPCEnabled
         }</span>
 
         // Максимальное количество одновременных соединений для gRPC сервера
-        <span class="cov8" title="1">if flags.GRPC.MaxConn == defaultGRPCMaxConn &amp;&amp; jsonConfig.GRPCMaxConn &gt; 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if flags.GRPC.MaxConn == defaultGRPCMaxConn &amp;&amp; jsonConfig.GRPCMaxConn &gt; 0 </span><span class="cov8" title="1">{
                 flags.GRPC.MaxConn = jsonConfig.GRPCMaxConn
         }</span>
 
         // Таймаут для gRPC запросов в секундах
-        <span class="cov8" title="1">if flags.GRPC.Timeout == defaultGRPCTimeout &amp;&amp; jsonConfig.GRPCTimeout &gt; 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if flags.GRPC.Timeout == defaultGRPCTimeout &amp;&amp; jsonConfig.GRPCTimeout &gt; 0 </span><span class="cov8" title="1">{
                 flags.GRPC.Timeout = jsonConfig.GRPCTimeout
         }</span>
 }
@@ -4159,34 +4165,43 @@ func applyServerEnvVars(flags *Flags) error <span class="cov8" title="1">{
         // Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
         // переопределим адрес запуска сервера,
         // даже если он был передан через аргумент командной строки.
-        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov0" title="0">{
+        if envRunAddr := os.Getenv("ADDRESS"); envRunAddr != "" </span><span class="cov8" title="1">{
                 flags.Server.Addr = envRunAddr
         }</span>
-        <span class="cov8" title="1">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envStoreInterval := os.Getenv("STORE_INTERVAL"); envStoreInterval != "" </span><span class="cov8" title="1">{
                 storeInterval, err := strconv.Atoi(envStoreInterval)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.Server.StoreInterval = storeInterval</span>
+                <span class="cov8" title="1">flags.Server.StoreInterval = storeInterval</span>
         }
         // Если переменная окружения FILE_STORAGE_PATH присутствует (даже
         // пустая), переопределим путь к файлу хранения метрик.
-        <span class="cov8" title="1">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envFileStoragePath, ok := os.LookupEnv("FILE_STORAGE_PATH"); ok </span><span class="cov8" title="1">{
                 flags.Server.FileStoragePath = envFileStoragePath
         }</span>
         // Если переменная окружения RESTORE присутствует (даже пустая), переопределим флаг восстановления метрик из файла.
-        <span class="cov8" title="1">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envRestore, ok := os.LookupEnv("RESTORE"); ok </span><span class="cov8" title="1">{
                 restore, err := strconv.ParseBool(envRestore)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.Server.Restore = restore</span>
+                <span class="cov8" title="1">flags.Server.Restore = restore</span>
         }
 
         // Если передана доверенная подсеть в параметрах окружения, используем её
-        <span class="cov8" title="1">if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok </span><span class="cov8" title="1">{
                 flags.Server.TrustedSubnet = envTrustedSubnet
         }</span>
+
+        // Если передан флаг включения профилирования в переменных окружения
+        <span class="cov8" title="1">if envEnablePprof, ok := os.LookupEnv("ENABLE_PPROF"); ok </span><span class="cov8" title="1">{
+                enablePprof, err := strconv.ParseBool(envEnablePprof)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">flags.Server.EnablePprof = enablePprof</span>
+        }
 
         <span class="cov8" title="1">return nil</span>
 }
@@ -4194,20 +4209,24 @@ func applyServerEnvVars(flags *Flags) error <span class="cov8" title="1">{
 // applyDatabaseEnvVars применяет переменные окружения для настроек базы данных.
 func applyDatabaseEnvVars(flags *Flags) <span class="cov8" title="1">{
         // Если переданы параметры БД в параметрах окружения, используем их
-        if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov0" title="0">{
+        if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok </span><span class="cov8" title="1">{
                 flags.Database.DSN = envDatabaseDSN
+        }</span>
+        // Если передан путь к миграциям в параметрах окружения, используем его
+        <span class="cov8" title="1">if envDatabaseMigrations, ok := os.LookupEnv("DATABASE_MIGRATIONS"); ok </span><span class="cov8" title="1">{
+                flags.Database.MigrationsPath = envDatabaseMigrations
         }</span>
 }
 
 // applySecurityEnvVars применяет переменные окружения для настроек безопасности.
 func applySecurityEnvVars(flags *Flags) <span class="cov8" title="1">{
         // Если передан ключ в параметрах окружения, используем его
-        if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov0" title="0">{
+        if envPrivateKey, ok := os.LookupEnv("KEY"); ok </span><span class="cov8" title="1">{
                 flags.PrivateKey = envPrivateKey
         }</span>
 
         // Если передан путь к файлу с приватным ключом в параметрах окружения, используем его
-        <span class="cov8" title="1">if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok </span><span class="cov8" title="1">{
                 flags.CryptoKey = envCryptoKey
         }</span>
 }
@@ -4215,7 +4234,7 @@ func applySecurityEnvVars(flags *Flags) <span class="cov8" title="1">{
 // applyConfigEnvVars применяет переменные окружения для настроек конфигурации.
 func applyConfigEnvVars(flags *Flags) <span class="cov8" title="1">{
         // Если передан путь к файлу конфигурации в параметрах окружения, используем его
-        if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov0" title="0">{
+        if envConfigFile, ok := os.LookupEnv("CONFIG"); ok </span><span class="cov8" title="1">{
                 flags.ConfigFile = envConfigFile
         }</span>
 }
@@ -4223,29 +4242,29 @@ func applyConfigEnvVars(flags *Flags) <span class="cov8" title="1">{
 // applyGRPCEnvVars применяет переменные окружения для настроек gRPC.
 func applyGRPCEnvVars(flags *Flags) error <span class="cov8" title="1">{
         // Обработка переменных окружения для gRPC
-        if envGRPCAddr, ok := os.LookupEnv("GRPC_ADDRESS"); ok </span><span class="cov0" title="0">{
+        if envGRPCAddr, ok := os.LookupEnv("GRPC_ADDRESS"); ok </span><span class="cov8" title="1">{
                 flags.GRPC.Addr = envGRPCAddr
         }</span>
-        <span class="cov8" title="1">if envGRPCEnabled, ok := os.LookupEnv("GRPC_ENABLED"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envGRPCEnabled, ok := os.LookupEnv("GRPC_ENABLED"); ok </span><span class="cov8" title="1">{
                 enabled, err := strconv.ParseBool(envGRPCEnabled)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.GRPC.Enabled = enabled</span>
+                <span class="cov8" title="1">flags.GRPC.Enabled = enabled</span>
         }
-        <span class="cov8" title="1">if envGRPCMaxConn, ok := os.LookupEnv("GRPC_MAX_CONN"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envGRPCMaxConn, ok := os.LookupEnv("GRPC_MAX_CONN"); ok </span><span class="cov8" title="1">{
                 maxConn, err := strconv.Atoi(envGRPCMaxConn)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.GRPC.MaxConn = maxConn</span>
+                <span class="cov8" title="1">flags.GRPC.MaxConn = maxConn</span>
         }
-        <span class="cov8" title="1">if envGRPCTimeout, ok := os.LookupEnv("GRPC_TIMEOUT"); ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if envGRPCTimeout, ok := os.LookupEnv("GRPC_TIMEOUT"); ok </span><span class="cov8" title="1">{
                 timeout, err := strconv.Atoi(envGRPCTimeout)
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
-                <span class="cov0" title="0">flags.GRPC.Timeout = timeout</span>
+                <span class="cov8" title="1">flags.GRPC.Timeout = timeout</span>
         }
 
         <span class="cov8" title="1">return nil</span>
@@ -4254,17 +4273,21 @@ func applyGRPCEnvVars(flags *Flags) error <span class="cov8" title="1">{
 // loadAndApplyJSONConfig загружает и применяет JSON-конфигурацию.
 func loadAndApplyJSONConfig(flags *Flags) error <span class="cov8" title="1">{
         // Загружаем конфигурацию из JSON-файла, если он указан
-        jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
+        if flags.ConfigFile == "" </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
         if loadErr != nil </span><span class="cov8" title="1">{
                 // Если файл конфигурации не указан, это не ошибка
-                if errors.Is(loadErr, ErrConfigFileNotSpecified) </span><span class="cov8" title="1">{
+                if errors.Is(loadErr, ErrConfigFileNotSpecified) </span><span class="cov0" title="0">{
                         return nil
                 }</span>
-                <span class="cov0" title="0">return loadErr</span>
+                <span class="cov8" title="1">return loadErr</span>
         }
 
         // Применяем настройки из JSON-конфигурации (с более низким приоритетом)
-        <span class="cov0" title="0">return ApplyJSONConfig(flags, jsonConfig)</span>
+        <span class="cov8" title="1">return ApplyJSONConfig(flags, jsonConfig)</span>
 }
 </pre>
 		

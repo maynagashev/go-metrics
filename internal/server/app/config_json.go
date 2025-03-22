@@ -39,6 +39,7 @@ type JSONConfig struct {
 	StoreInterval string `json:"store_interval"` // Интервал сохранения метрик в виде строки (например, "1s")
 	StoreFile     string `json:"store_file"`     // Путь к файлу для хранения метрик
 	DatabaseDSN   string `json:"database_dsn"`   // Строка подключения к базе данных
+	Key           string `json:"key"`            // Приватный ключ для подписи метрик
 	CryptoKey     string `json:"crypto_key"`     // Путь к файлу с приватным ключом для расшифровки
 	EnablePprof   bool   `json:"enable_pprof"`   // Включить профилирование через pprof
 	TrustedSubnet string `json:"trusted_subnet"` // CIDR доверенной подсети для проверки IP-адресов агентов
@@ -136,6 +137,11 @@ func applyDatabaseConfig(flags *Flags, jsonConfig *JSONConfig) {
 
 // applySecurityConfig применяет настройки безопасности из JSON-конфигурации.
 func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) {
+	// Приватный ключ для подписи метрик
+	if flags.PrivateKey == "" && jsonConfig.Key != "" {
+		flags.PrivateKey = jsonConfig.Key
+	}
+
 	// Путь к файлу с приватным ключом для расшифровки
 	if flags.CryptoKey == "" && jsonConfig.CryptoKey != "" {
 		flags.CryptoKey = jsonConfig.CryptoKey

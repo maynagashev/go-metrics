@@ -221,6 +221,15 @@ func applyServerEnvVars(flags *Flags) error {
 		flags.Server.TrustedSubnet = envTrustedSubnet
 	}
 
+	// Если передан флаг включения профилирования в переменных окружения
+	if envEnablePprof, ok := os.LookupEnv("ENABLE_PPROF"); ok {
+		enablePprof, err := strconv.ParseBool(envEnablePprof)
+		if err != nil {
+			return err
+		}
+		flags.Server.EnablePprof = enablePprof
+	}
+
 	return nil
 }
 
@@ -229,6 +238,10 @@ func applyDatabaseEnvVars(flags *Flags) {
 	// Если переданы параметры БД в параметрах окружения, используем их
 	if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok {
 		flags.Database.DSN = envDatabaseDSN
+	}
+	// Если передан путь к миграциям в параметрах окружения, используем его
+	if envDatabaseMigrations, ok := os.LookupEnv("DATABASE_MIGRATIONS"); ok {
+		flags.Database.MigrationsPath = envDatabaseMigrations
 	}
 }
 
@@ -287,6 +300,10 @@ func applyGRPCEnvVars(flags *Flags) error {
 // loadAndApplyJSONConfig загружает и применяет JSON-конфигурацию.
 func loadAndApplyJSONConfig(flags *Flags) error {
 	// Загружаем конфигурацию из JSON-файла, если он указан
+	if flags.ConfigFile == "" {
+		return nil
+	}
+
 	jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
 	if loadErr != nil {
 		// Если файл конфигурации не указан, это не ошибка
