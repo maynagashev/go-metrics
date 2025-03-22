@@ -135,7 +135,7 @@
 				
 				<option value="file39">github.com/maynagashev/go-metrics/internal/server/storage/memory/memory.go (76.0%)</option>
 				
-				<option value="file40">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (36.2%)</option>
+				<option value="file40">github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go (45.7%)</option>
 				
 				<option value="file41">github.com/maynagashev/go-metrics/internal/server/storage/storage.go (100.0%)</option>
 				
@@ -2324,10 +2324,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -6287,6 +6287,14 @@ import (
 
 const maxRetries = 3
 
+// Переменные для возможности патчинга в тестах.
+
+//nolint:gochecknoglobals // переменные для тестов
+var pgxpoolNewFunc = pgxpool.New
+
+//nolint:gochecknoglobals // переменная для тестов
+var migrationUpFunc = migration.Up
+
 // PgxPoolInterface определяет интерфейс для pgxpool.Pool, чтобы можно было использовать мок в тестах.
 type PgxPoolInterface interface {
         Close()
@@ -6306,26 +6314,26 @@ type PgStorage struct {
 }
 
 // New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
-func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov0" title="0">{
-        conn, err := pgxpool.New(ctx, config.Database.DSN)
+func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) <span class="cov8" title="1">{
+        conn, err := pgxpoolNewFunc(ctx, config.Database.DSN)
         log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 log.Error(fmt.Sprintf("Unable to connect to database: %v\n", err))
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">p := &amp;PgStorage{
+        <span class="cov8" title="1">p := &amp;PgStorage{
                 conn: conn,
                 cfg:  config,
                 log:  log,
         }
 
         // Автоматически накатываем миграции при создании экземпляра хранилища.
-        if migrateErr := migration.Up(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil </span><span class="cov0" title="0">{
+        if migrateErr := migrationUpFunc(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("failed to apply migrations: %w", migrateErr)
         }</span>
-        <span class="cov0" title="0">return p, nil</span>
+        <span class="cov8" title="1">return p, nil</span>
 }
 
 // Close закрывает соединение с базой данных.

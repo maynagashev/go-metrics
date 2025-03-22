@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -617,34 +618,108 @@ func TestIsRetriableError(t *testing.T) {
 	}
 }
 
+// Переменные для патчинга функций в тестах.
+// var pgxpoolNew = pgxpool.New
+// var migrationUp = migration.Up
+
 // Test for New function.
 func TestNew(t *testing.T) {
-	// Пропускаем тест, так как он требует реального подключения к базе данных
-	t.Skip("Skipping test that requires real database connection")
+	// Временно сохраняем оригинальные функции
+	origPgxpoolNew := pgxpoolNewFunc
+	origMigrationUp := migrationUpFunc
 
-	// Создаем контекст
-	ctx := context.Background()
+	// Восстанавливаем оригинальные функции после выполнения тестов
+	defer func() {
+		pgxpoolNewFunc = origPgxpoolNew
+		migrationUpFunc = origMigrationUp
+	}()
 
-	// Создаем мок для конфигурации
-	mockConfig := &app.Config{
-		Database: app.DatabaseConfig{
-			DSN: "postgres://user:password@localhost:5432/testdb",
-		},
-	}
+	t.Run("Successful_Creation", func(t *testing.T) {
+		// Мокаем функцию создания пула подключений
+		pgxpoolNewFunc = func(_ context.Context, _ string) (*pgxpool.Pool, error) {
+			return &pgxpool.Pool{}, nil
+		}
 
-	// Создаем мок для логгера
-	mockLogger := zap.NewNop()
+		// Мокаем функцию миграции
+		migrationUpFunc = func(_ string, _ string) error {
+			return nil
+		}
 
-	// Создаем тестовый экземпляр PgStorage
-	storage, err := New(ctx, mockConfig, mockLogger)
+		// Создаем тестовый конфиг
+		cfg := &app.Config{
+			Database: app.DatabaseConfig{
+				DSN:            "postgres://user:password@localhost:5432/testdb",
+				MigrationsPath: "./migrations",
+			},
+		}
 
-	// Проверяем, что ошибка не возникла
-	require.NoError(t, err)
-	assert.NotNil(t, storage)
+		// Создаем логгер
+		logger := zap.NewNop()
 
-	// Проверяем, что поля инициализированы корректно
-	assert.Equal(t, mockLogger, storage.log)
+		// Вызываем функцию New
+		storage, err := New(context.Background(), cfg, logger)
 
-	// Закрываем соединение
-	storage.Close()
+		// Проверяем результат
+		require.NoError(t, err)
+		require.NotNil(t, storage)
+
+		// Проверяем, что конфигурация сохранена
+		assert.Equal(t, cfg, storage.cfg)
+	})
+
+	t.Run("Connection_Error", func(t *testing.T) {
+		// Мокаем функцию создания пула подключений, которая возвращает ошибку
+		pgxpoolNewFunc = func(_ context.Context, _ string) (*pgxpool.Pool, error) {
+			return nil, errors.New("connection error")
+		}
+
+		// Создаем тестовый конфиг
+		cfg := &app.Config{
+			Database: app.DatabaseConfig{
+				DSN: "postgres://user:password@localhost:5432/testdb",
+			},
+		}
+
+		// Создаем логгер
+		logger := zap.NewNop()
+
+		// Вызываем функцию New
+		storage, err := New(context.Background(), cfg, logger)
+
+		// Проверяем результат
+		require.Error(t, err)
+		assert.Equal(t, "connection error", err.Error())
+		assert.Nil(t, storage)
+	})
+
+	t.Run("Migration_Error", func(t *testing.T) {
+		// Мокаем функцию создания пула подключений
+		pgxpoolNewFunc = func(_ context.Context, _ string) (*pgxpool.Pool, error) {
+			return &pgxpool.Pool{}, nil
+		}
+
+		// Мокаем функцию миграции, которая возвращает ошибку
+		migrationUpFunc = func(_ string, _ string) error {
+			return errors.New("migration error")
+		}
+
+		// Создаем тестовый конфиг
+		cfg := &app.Config{
+			Database: app.DatabaseConfig{
+				DSN:            "postgres://user:password@localhost:5432/testdb",
+				MigrationsPath: "./migrations",
+			},
+		}
+
+		// Создаем логгер
+		logger := zap.NewNop()
+
+		// Вызываем функцию New
+		storage, err := New(context.Background(), cfg, logger)
+
+		// Проверяем результат
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "migration error")
+		assert.Nil(t, storage)
+	})
 }

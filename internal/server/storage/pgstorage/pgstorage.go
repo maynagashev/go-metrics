@@ -22,6 +22,14 @@ import (
 
 const maxRetries = 3
 
+// Переменные для возможности патчинга в тестах.
+
+//nolint:gochecknoglobals // переменные для тестов
+var pgxpoolNewFunc = pgxpool.New
+
+//nolint:gochecknoglobals // переменная для тестов
+var migrationUpFunc = migration.Up
+
 // PgxPoolInterface определяет интерфейс для pgxpool.Pool, чтобы можно было использовать мок в тестах.
 type PgxPoolInterface interface {
 	Close()
@@ -42,7 +50,7 @@ type PgStorage struct {
 
 // New создает новое подключение к базе данных, накатывает миграции и возвращает экземпляр хранилища.
 func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, error) {
-	conn, err := pgxpool.New(ctx, config.Database.DSN)
+	conn, err := pgxpoolNewFunc(ctx, config.Database.DSN)
 	log.Debug(fmt.Sprintf("Connecting to database: %s\n", config.Database.DSN))
 
 	if err != nil {
@@ -57,7 +65,7 @@ func New(ctx context.Context, config *app.Config, log *zap.Logger) (*PgStorage, 
 	}
 
 	// Автоматически накатываем миграции при создании экземпляра хранилища.
-	if migrateErr := migration.Up(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil {
+	if migrateErr := migrationUpFunc(config.Database.MigrationsPath, config.Database.DSN); migrateErr != nil {
 		return nil, fmt.Errorf("failed to apply migrations: %w", migrateErr)
 	}
 	return p, nil
