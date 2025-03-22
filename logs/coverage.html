@@ -73,7 +73,7 @@
 				
 				<option value="file8">github.com/maynagashev/go-metrics/cmd/staticlint/passes/noexit/analyzer.go (85.4%)</option>
 				
-				<option value="file9">github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go (59.6%)</option>
+				<option value="file9">github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go (71.2%)</option>
 				
 				<option value="file10">github.com/maynagashev/go-metrics/example/setup.go (80.0%)</option>
 				
@@ -1745,15 +1745,15 @@ func getAllStylecheckAnalyzers() []*analysis.Analyzer <span class="cov8" title="
 
 // printAnalyzersList выводит список анализаторов с их описаниями.
 // Для каждого анализатора выводится его имя и краткое описание (первая строка документации).
-func printAnalyzersList(analyzers []*analysis.Analyzer) <span class="cov0" title="0">{
+func printAnalyzersList(analyzers []*analysis.Analyzer) <span class="cov8" title="1">{
         log.Println("Итоговый список анализаторов:")
-        for i, analyzer := range analyzers </span><span class="cov0" title="0">{
+        for i, analyzer := range analyzers </span><span class="cov8" title="1">{
                 description := analyzer.Doc
                 // берем только первую строку описания
-                if newlineIndex := strings.Index(description, "\n"); newlineIndex != -1 </span><span class="cov0" title="0">{
+                if newlineIndex := strings.Index(description, "\n"); newlineIndex != -1 </span><span class="cov8" title="1">{
                         description = description[:newlineIndex]
                 }</span>
-                <span class="cov0" title="0">log.Printf("%d. %s: %s\n", i+1, analyzer.Name, description)</span>
+                <span class="cov8" title="1">log.Printf("%d. %s: %s\n", i+1, analyzer.Name, description)</span>
         }
 }
 
@@ -2324,10 +2324,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov0" title="0">
+                case &lt;-ctx.Done():<span class="cov8" title="1">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov8" title="1">
+                case &lt;-a.stopCh:<span class="cov0" title="0">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }

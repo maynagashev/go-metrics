@@ -52,7 +52,7 @@ github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:77:					loadConfi
 github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:106:					addAnalyzers				73.7%
 github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:154:					getAllStaticcheckAnalyzers		100.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:164:					getAllStylecheckAnalyzers		100.0%
-github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:174:					printAnalyzersList			0.0%
+github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:174:					printAnalyzersList			100.0%
 github.com/maynagashev/go-metrics/cmd/staticlint/staticlint.go:187:					main					0.0%
 github.com/maynagashev/go-metrics/example/setup.go:22:							SetupTestMetric				80.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:177:						IsRequestSigningEnabled			100.0%
@@ -232,4 +232,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				77.5%
+total:													(statements)				77.8%
