@@ -4,15 +4,27 @@ package http
 import (
 	"context"
 	"errors"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/maynagashev/go-metrics/internal/contracts/metrics"
 )
+
+// mockNetError представляет моковую реализацию net.Error для тестирования.
+type mockNetError struct {
+	timeout   bool
+	temporary bool
+}
+
+func (e *mockNetError) Error() string   { return "mock net error" }
+func (e *mockNetError) Timeout() bool   { return e.timeout }
+func (e *mockNetError) Temporary() bool { return e.temporary }
 
 func TestNew(t *testing.T) {
 	t.Run("No Crypto Key", func(t *testing.T) {
@@ -146,15 +158,98 @@ func TestClient_StreamMetrics(t *testing.T) {
 	assert.Contains(t, err.Error(), "not supported")
 }
 
-// mockNetError представляет моковую реализацию net.Error для тестирования.
-type mockNetError struct {
-	timeout   bool
-	temporary bool
+// mockDialer подменяет net.Dial для тестирования функции getOutboundIP.
+type mockDialer struct {
+	conn net.Conn
+	err  error
 }
 
-func (e *mockNetError) Error() string   { return "mock net error" }
-func (e *mockNetError) Timeout() bool   { return e.timeout }
-func (e *mockNetError) Temporary() bool { return e.temporary }
+func (m *mockDialer) Dial(_, _ string) (net.Conn, error) {
+	return m.conn, m.err
+}
+
+// mockConn реализует net.Conn для тестирования.
+type mockConn struct {
+	localAddr net.Addr
+}
+
+func (c *mockConn) Read(_ []byte) (int, error)         { return 0, nil }
+func (c *mockConn) Write(_ []byte) (int, error)        { return 0, nil }
+func (c *mockConn) Close() error                       { return nil }
+func (c *mockConn) LocalAddr() net.Addr                { return c.localAddr }
+func (c *mockConn) RemoteAddr() net.Addr               { return nil }
+func (c *mockConn) SetDeadline(_ time.Time) error      { return nil }
+func (c *mockConn) SetReadDeadline(_ time.Time) error  { return nil }
+func (c *mockConn) SetWriteDeadline(_ time.Time) error { return nil }
+
+func TestGetOutboundIP(t *testing.T) {
+	// Сохраняем оригинальную функцию, чтобы восстановить после теста
+	originalNetDial := netDial
+	defer func() { netDial = originalNetDial }()
+
+	t.Run("Success", func(t *testing.T) {
+		// Arrange
+		// Создаем ожидаемый IP-адрес
+		expectedIP := net.ParseIP("192.168.1.100")
+
+		// Используем именно *net.UDPAddr
+		udpAddr := &net.UDPAddr{
+			IP:   expectedIP,
+			Port: 12345,
+		}
+
+		// Устанавливаем нашу моковую функцию вместо net.Dial
+		netDial = (&mockDialer{
+			conn: &mockConn{
+				localAddr: udpAddr,
+			},
+		}).Dial
+
+		// Act
+		ip, err := getOutboundIP()
+
+		// Assert
+		require.NoError(t, err)
+		assert.Equal(t, expectedIP.String(), ip.String())
+	})
+
+	t.Run("Dial Error", func(t *testing.T) {
+		// Arrange
+		// Устанавливаем моковую функцию, которая возвращает ошибку
+		netDial = (&mockDialer{
+			err: errors.New("dial error"),
+		}).Dial
+
+		// Act
+		ip, err := getOutboundIP()
+
+		// Assert
+		require.Error(t, err)
+		assert.Nil(t, ip)
+		assert.Contains(t, err.Error(), "dial error")
+	})
+
+	t.Run("Wrong Address Type", func(t *testing.T) {
+		// Arrange
+		// Создаем мок адреса, который не является *net.UDPAddr
+		wrongAddr := &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 8080}
+
+		// Устанавливаем нашу моковую функцию
+		netDial = (&mockDialer{
+			conn: &mockConn{
+				localAddr: wrongAddr,
+			},
+		}).Dial
+
+		// Act
+		ip, err := getOutboundIP()
+
+		// Assert
+		require.Error(t, err)
+		assert.Nil(t, ip)
+		assert.Contains(t, err.Error(), "unexpected address type")
+	})
+}
 
 func TestIsRetriableSendError(t *testing.T) {
 	// Тестовые случаи

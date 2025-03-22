@@ -295,6 +295,12 @@ func isRetriableSendError(err error) bool {
 	return false
 }
 
+// переменная для возможности мокирования в тестах.
+// фиксим линтер: используем переменную уровня пакета вместо глобальной
+//
+//nolint:gochecknoglobals // переменная нужна для возможности мокирования в тестах
+var netDial = net.Dial
+
 // initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
 func initHTTPClient(realIP string) *resty.Client {
 	client := resty.New().SetHeader("Content-Type", "text/plain")
@@ -325,7 +331,7 @@ func initHTTPClient(realIP string) *resty.Client {
 
 // getOutboundIP получает исходящий IP-адрес для текущего хоста.
 func getOutboundIP() (net.IP, error) {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
+	conn, err := netDial("udp", "8.8.8.8:80")
 	if err != nil {
 		return nil, err
 	}

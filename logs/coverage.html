@@ -85,7 +85,7 @@
 				
 				<option value="file14">github.com/maynagashev/go-metrics/internal/agent/grpc/interceptors.go (89.7%)</option>
 				
-				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (65.5%)</option>
+				<option value="file15">github.com/maynagashev/go-metrics/internal/agent/http/client.go (72.4%)</option>
 				
 				<option value="file16">github.com/maynagashev/go-metrics/internal/agent/ip.go (57.1%)</option>
 				
@@ -2324,10 +2324,10 @@ func (a *agent) runPolls(ctx context.Context) <span class="cov8" title="1">{
                                 "metrics_count", metricsCount,
                                 "duration_ms", pollDuration.Milliseconds())
                         a.mu.Unlock()</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping polls due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping polls due to agent shutdown")
                         return</span>
                 }
@@ -2370,10 +2370,10 @@ func (a *agent) runReports(ctx context.Context) <span class="cov8" title="1">{
                         <span class="cov0" title="0">reportDuration := time.Since(reportStart)
                         slog.Info("Report cycle completed",
                                 "duration_ms", reportDuration.Milliseconds())</span>
-                case &lt;-ctx.Done():<span class="cov8" title="1">
+                case &lt;-ctx.Done():<span class="cov0" title="0">
                         slog.Info("Stopping reports due to context cancellation")
                         return</span>
-                case &lt;-a.stopCh:<span class="cov0" title="0">
+                case &lt;-a.stopCh:<span class="cov8" title="1">
                         slog.Info("Stopping reports due to agent shutdown")
                         return</span>
                 }
@@ -3375,6 +3375,12 @@ func isRetriableSendError(err error) bool <span class="cov8" title="1">{
         <span class="cov8" title="1">return false</span>
 }
 
+// переменная для возможности мокирования в тестах.
+// фиксим линтер: используем переменную уровня пакета вместо глобальной
+//
+//nolint:gochecknoglobals // переменная нужна для возможности мокирования в тестах
+var netDial = net.Dial
+
 // initHTTPClient создает и настраивает HTTP-клиент с перехватчиком для установки заголовка X-Real-IP.
 func initHTTPClient(realIP string) *resty.Client <span class="cov8" title="1">{
         client := resty.New().SetHeader("Content-Type", "text/plain")
@@ -3404,18 +3410,18 @@ func initHTTPClient(realIP string) *resty.Client <span class="cov8" title="1">{
 }
 
 // getOutboundIP получает исходящий IP-адрес для текущего хоста.
-func getOutboundIP() (net.IP, error) <span class="cov0" title="0">{
-        conn, err := net.Dial("udp", "8.8.8.8:80")
-        if err != nil </span><span class="cov0" title="0">{
+func getOutboundIP() (net.IP, error) <span class="cov8" title="1">{
+        conn, err := netDial("udp", "8.8.8.8:80")
+        if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
-        <span class="cov0" title="0">defer conn.Close()
+        <span class="cov8" title="1">defer conn.Close()
 
         localAddr, ok := conn.LocalAddr().(*net.UDPAddr)
-        if !ok </span><span class="cov0" title="0">{
+        if !ok </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("unexpected address type: %T", conn.LocalAddr())
         }</span>
-        <span class="cov0" title="0">return localAddr.IP, nil</span>
+        <span class="cov8" title="1">return localAddr.IP, nil</span>
 }
 </pre>
 		

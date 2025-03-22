@@ -97,8 +97,8 @@ github.com/maynagashev/go-metrics/internal/agent/http/client.go:152:					isReque
 github.com/maynagashev/go-metrics/internal/agent/http/client.go:157:					isEncryptionEnabled			100.0%
 github.com/maynagashev/go-metrics/internal/agent/http/client.go:162:					makeUpdatesRequest			64.7%
 github.com/maynagashev/go-metrics/internal/agent/http/client.go:231:					isRetriableSendError			90.5%
-github.com/maynagashev/go-metrics/internal/agent/http/client.go:299:					initHTTPClient				53.8%
-github.com/maynagashev/go-metrics/internal/agent/http/client.go:327:					getOutboundIP				0.0%
+github.com/maynagashev/go-metrics/internal/agent/http/client.go:305:					initHTTPClient				53.8%
+github.com/maynagashev/go-metrics/internal/agent/http/client.go:333:					getOutboundIP				100.0%
 github.com/maynagashev/go-metrics/internal/agent/ip.go:15:						GetOutboundIP				57.1%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:25:				NewMetric				100.0%
 github.com/maynagashev/go-metrics/internal/contracts/metrics/metrics.go:34:				NewCounter				100.0%
@@ -232,4 +232,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				77.8%
+total:													(statements)				78.2%
