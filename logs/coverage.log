@@ -59,10 +59,10 @@ github.com/maynagashev/go-metrics/internal/agent/agent.go:177:						IsRequestSig
 github.com/maynagashev/go-metrics/internal/agent/agent.go:182:						IsEncryptionEnabled			100.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:187:						runInWaitGroup				100.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:196:						Run					76.9%
-github.com/maynagashev/go-metrics/internal/agent/agent.go:237:						maskString				50.0%
-github.com/maynagashev/go-metrics/internal/agent/agent.go:247:						runWorker				0.0%
-github.com/maynagashev/go-metrics/internal/agent/agent.go:275:						sendMetrics				0.0%
-github.com/maynagashev/go-metrics/internal/agent/agent.go:294:						runCollector				50.0%
+github.com/maynagashev/go-metrics/internal/agent/agent.go:237:						maskString				100.0%
+github.com/maynagashev/go-metrics/internal/agent/agent.go:247:						runWorker				91.7%
+github.com/maynagashev/go-metrics/internal/agent/agent.go:275:						sendMetrics				100.0%
+github.com/maynagashev/go-metrics/internal/agent/agent.go:294:						runCollector				100.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:318:						GetMetrics				100.0%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:373:						Shutdown				86.7%
 github.com/maynagashev/go-metrics/internal/agent/agent.go:436:						runPolls				26.3%
@@ -232,4 +232,4 @@ github.com/maynagashev/go-metrics/pkg/response/response.go:30:						Error					10
 github.com/maynagashev/go-metrics/pkg/response/response.go:39:						writeResponse				80.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:16:							ComputeHMACSHA256			75.0%
 github.com/maynagashev/go-metrics/pkg/sign/sign.go:27:							VerifyHMACSHA256			100.0%
-total:													(statements)				78.2%
+total:													(statements)				79.5%
