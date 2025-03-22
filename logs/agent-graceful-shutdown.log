@@ -1,163 +1,31 @@
 Build version: N/A
 Build date: N/A
 Build commit: N/A
-time=2025-03-08T11:43:08.456+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060 ConfigFile:}"
-time=2025-03-08T11:43:08.458+07:00 level=INFO msg="======= AGENT STARTING =======" server_url=http://localhost:8080 poll_interval=2s report_interval=10s send_compressed_data=true private_key=private_key_example send_hash=true encryption_enabled=false rate_limit=3
-time=2025-03-08T11:43:08.458+07:00 level=INFO msg="======= AGENT STARTED ======="
-time=2025-03-08T11:43:08.458+07:00 level=INFO msg="Collector started"
-time=2025-03-08T11:43:08.458+07:00 level=DEBUG msg="worker 1 started"
-time=2025-03-08T11:43:08.458+07:00 level=INFO msg="Report routine started" report_interval=10s server_url=http://localhost:8080
-time=2025-03-08T11:43:08.458+07:00 level=DEBUG msg="worker 0 started"
-time=2025-03-08T11:43:08.458+07:00 level=INFO msg="Poll routine started" poll_interval=2s metrics_storage_size=0
-time=2025-03-08T11:43:08.458+07:00 level=DEBUG msg="worker 2 started"
-time=2025-03-08T11:43:10.458+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:10.458+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:10.459+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:10.459+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.389312744140625 sys_mb=8.208259582519531
-time=2025-03-08T11:43:10.460+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:10.460+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.599456787109375 used_percent=58.714047232231984
-time=2025-03-08T11:43:10.460+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:10.460+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=2
-time=2025-03-08T11:43:12.458+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:12.458+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:12.458+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:12.459+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.42694091796875 sys_mb=8.208259582519531
-time=2025-03-08T11:43:12.459+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:12.459+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.5700721740722656 used_percent=58.70984582836643
-time=2025-03-08T11:43:12.460+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:12.460+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-08T11:43:14.459+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:14.459+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:14.460+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:14.460+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.46428680419921875 sys_mb=8.208259582519531
-time=2025-03-08T11:43:14.460+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:14.460+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6060523986816406 used_percent=58.51267817122088
-time=2025-03-08T11:43:14.460+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:14.460+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
-time=2025-03-08T11:43:16.459+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:16.460+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:16.460+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:16.460+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.5023193359375 sys_mb=8.208259582519531
-time=2025-03-08T11:43:16.460+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:16.460+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6356773376464844 used_percent=58.427978863706706
-time=2025-03-08T11:43:16.461+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:16.461+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-08T11:43:18.459+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:18.460+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:18.460+07:00 level=DEBUG msg="Starting metrics report cycle"
-time=2025-03-08T11:43:18.460+07:00 level=DEBUG msg="Starting metrics preparation for sending"
-time=2025-03-08T11:43:18.460+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:18.460+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.5397567749023438 sys_mb=8.208259582519531
-time=2025-03-08T11:43:18.460+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:18.461+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6464576721191406 used_percent=58.36886088505432
-time=2025-03-08T11:43:18.461+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:18.461+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-08T11:43:18.461+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
-time=2025-03-08T11:43:18.461+07:00 level=DEBUG msg="Reset poll count to zero"
-time=2025-03-08T11:43:18.461+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=1
-time=2025-03-08T11:43:18.461+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
-time=2025-03-08T11:43:18.461+07:00 level=DEBUG msg="Report cycle completed" duration_ms=2
-time=2025-03-08T11:43:18.461+07:00 level=DEBUG msg="worker 1 received job, calling sendMetrics()..." workerID=1
-time=2025-03-08T11:43:18.461+07:00 level=INFO msg="sending metrics batch (try=0)" workerID=1 url=http://localhost:8080/updates metrics="[Metric{Name: Alloc, Type: gauge, Value: 565976.000000} Metric{Name: GCSys, Type: gauge, Value: 1801240.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: MSpanSys, Type: gauge, Value: 81600.000000} Metric{Name: FreeMemory, Type: gauge, Value: 694128640.000000} Metric{Name: CPUutilization6, Type: gauge, Value: 17.000000} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 65600.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization1, Type: gauge, Value: 20.312500} Metric{Name: CPUutilization18, Type: gauge, Value: 13.846154} Metric{Name: CPUutilization20, Type: gauge, Value: 12.626263} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: StackSys, Type: gauge, Value: 622592.000000} Metric{Name: CPUutilization10, Type: gauge, Value: 2.500000} Metric{Name: CPUutilization13, Type: gauge, Value: 17.616580} Metric{Name: CPUutilization17, Type: gauge, Value: 14.795918} Metric{Name: CPUutilization19, Type: gauge, Value: 15.228426} Metric{Name: StackInuse, Type: gauge, Value: 622592.000000} Metric{Name: CPUutilization3, Type: gauge, Value: 19.897959} Metric{Name: CPUutilization14, Type: gauge, Value: 12.820513} Metric{Name: CPUutilization16, Type: gauge, Value: 12.886598} Metric{Name: RandomValue, Type: gauge, Value: 0.022589} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization7, Type: gauge, Value: 29.081633} Metric{Name: CPUutilization9, Type: gauge, Value: 21.761658} Metric{Name: CPUutilization11, Type: gauge, Value: 19.689119} Metric{Name: CPUutilization12, Type: gauge, Value: 10.659898} Metric{Name: HeapInuse, Type: gauge, Value: 1548288.000000} Metric{Name: HeapObjects, Type: gauge, Value: 1910.000000} Metric{Name: HeapSys, Type: gauge, Value: 3571712.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: TotalMemory, Type: gauge, Value: 16476016640.000000} Metric{Name: CPUutilization4, Type: gauge, Value: 7.106599} Metric{Name: CPUutilization8, Type: gauge, Value: 10.606061} Metric{Name: CPUutilization15, Type: gauge, Value: 12.626263} Metric{Name: BuckHashSys, Type: gauge, Value: 1447772.000000} Metric{Name: Frees, Type: gauge, Value: 169.000000} Metric{Name: HeapIdle, Type: gauge, Value: 2023424.000000} Metric{Name: HeapReleased, Type: gauge, Value: 1957888.000000} Metric{Name: Mallocs, Type: gauge, Value: 2079.000000} Metric{Name: CPUutilization2, Type: gauge, Value: 8.585859} Metric{Name: HeapAlloc, Type: gauge, Value: 565976.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: OtherSys, Type: gauge, Value: 1050868.000000} Metric{Name: Sys, Type: gauge, Value: 8606984.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 565976.000000} Metric{Name: CPUutilization5, Type: gauge, Value: 34.536082} Metric{Name: PollCount, Type: counter, Delta: 1}]"
-2025/03/08 11:43:18.503497 DEBUG RESTY 
-==============================================================================
-~~~ REQUEST ~~~
-POST  /updates  HTTP/1.1
-HOST   : localhost:8080
-HEADERS:
-	Accept: application/json
-	Content-Encoding: gzip
-	Content-Type: application/json
-	Hashsha256: de1c4a1ee1d7f47b8db5bbe40716967f5b4c0b87b2e0438d084dc35177578377
-	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
-BODY   :
-"H4sIAAAAAAAC/5xWUW/cNgz+L34OBJESKTJv2wFpBzRp0Kx7Gfag3QlNFuccnO1h2dD/Pvi2q+0CVC89AQYOID+J3/eJ4q//NA+75rL5oW27bXPRDC/PpblsPuXxU2kumj9zO5bmkpg08eeL/4PfbO5eejMYxANG/yX6epO39+Wn/dgXMwej94uMu+e8r20hwIvwq0Mp1+WpO7yYCawRUHhxqs3tx3F4aB/+zsNDt2e7Gnb65SeR4oKFze3Hq0PeTgBm/rzju657HJ/7MyKP9dcJY1oycDM+vdmcAbwuGmw5vAuA5I8/AIlkQYhNXHASGShM3xQoiYGB3sZAx3haIux1WfJVd9iW3VmF3+axLz93Q25vzhHgbsjbx5oBGZEULVLsgtDF2U0pIQcLI9ikJMfAJD6AVxRiU5xkY0SXlBQkcIqoljSgNgI5RInIQUmDBoQ1e9+wb42/SunqRE8HR4JkShBrnhL0BDh9A+jiRn+FwVUMmXqiBgHC4Ofe+CHvd93TL8c402jOI5IIgRIoKCzu17vcD99xl22pUZ0X4IBMwccIyarX1hrBpZPlIHkGizGoKceiAArJK6BCsjDQxvCOSUUlpgSE6mfbvi35ue44oCgo64z3v/9RtkPlJVPwq4RaSwiUIMFsyJvyV03ICBqDn7U4NqdvvGLAMbEHtt8x2/bJgT+xx14tCaXKvj8tiWgKSGe1c1ASmMv/cdw+vs39fXWwiDGlxZWf3v1KNOvaHru2Mn94DBHjKuFDaUvuy65iD0qysNR1noaovrJJUusNtEcdR3JankJcn/FVY9t/g1jVw4CLqeL9cF8OVUE8eeGZgOrIxp5VvvL7q46/Zsx2WYiOAnvBmCJMPWeeArq23XTjfphzt9Pfcmguml1ph9xcwuff/g0AAP//zyIBPxQLAAA="
-
-------------------------------------------------------------------------------
-~~~ RESPONSE ~~~
-STATUS       : 200 OK
-PROTO        : HTTP/1.1
-RECEIVED AT  : 2025-03-08T11:43:18.503324789+07:00
-TIME DURATION: 38.763407ms
-HEADERS      :
-	Content-Type: application/json
-	Date: Sat, 08 Mar 2025 04:43:18 GMT
-	Vary: Accept-Encoding
-BODY         :
-{
-   "status": "OK",
-   "message": "Metrics updated successfully"
-}
-==============================================================================
-time=2025-03-08T11:43:18.503+07:00 level=INFO msg="Metrics sent successfully" count=51
-time=2025-03-08T11:43:20.458+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:20.458+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:20.458+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:20.459+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.8347625732421875 sys_mb=12.458259582519531
-time=2025-03-08T11:43:20.459+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:20.459+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6399917602539062 used_percent=58.42014784466739
-time=2025-03-08T11:43:20.459+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:20.459+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-08T11:43:22.458+07:00 level=DEBUG msg="Starting metrics collection cycle"
-time=2025-03-08T11:43:22.459+07:00 level=DEBUG msg="Resetting metrics before collection"
-time=2025-03-08T11:43:22.459+07:00 level=DEBUG msg="Starting runtime metrics collection"
-time=2025-03-08T11:43:22.459+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.8727035522460938 sys_mb=12.458259582519531
-time=2025-03-08T11:43:22.459+07:00 level=DEBUG msg="Starting additional system metrics collection"
-time=2025-03-08T11:43:22.459+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.6395301818847656 used_percent=58.34315525430303
-time=2025-03-08T11:43:22.460+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
-time=2025-03-08T11:43:22.460+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="received signal" signal=interrupt
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Context done, initiating graceful shutdown"
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="======= GRACEFUL SHUTDOWN STARTED ======="
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Tickers stopped"
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stop channel closed"
-time=2025-03-08T11:43:24.341+07:00 level=DEBUG msg="Starting metrics preparation for sending"
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stopping polls due to context cancellation"
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stop signal received, worker exiting" workerID=0
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stop signal received, worker exiting" workerID=2
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Worker shutting down" workerID=2
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Shutdown signal received while preparing metrics - ensuring final metrics are sent" gauges_count=50 counters_count=1 poll_count=1
-time=2025-03-08T11:43:24.342+07:00 level=DEBUG msg="Reset poll count to zero"
-time=2025-03-08T11:43:24.342+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
-time=2025-03-08T11:43:24.342+07:00 level=INFO msg="Sending final metrics batch before shutdown" count=51
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Worker shutting down" workerID=0
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stop signal received, collector exiting"
-time=2025-03-08T11:43:24.342+07:00 level=INFO msg="Collector shutting down"
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stopping reports due to context cancellation"
-time=2025-03-08T11:43:24.341+07:00 level=INFO msg="Stop signal received, worker exiting" workerID=1
-time=2025-03-08T11:43:24.342+07:00 level=INFO msg="Worker shutting down" workerID=1
-time=2025-03-08T11:43:24.342+07:00 level=INFO msg="sending metrics batch (try=0)" workerID=-1 url=http://localhost:8080/updates metrics="[Metric{Name: StackInuse, Type: gauge, Value: 655360.000000} Metric{Name: CPUutilization8, Type: gauge, Value: 1.005025} Metric{Name: CPUutilization12, Type: gauge, Value: 7.142857} Metric{Name: CPUutilization15, Type: gauge, Value: 7.653061} Metric{Name: Frees, Type: gauge, Value: 319.000000} Metric{Name: GCSys, Type: gauge, Value: 1959488.000000} Metric{Name: HeapAlloc, Type: gauge, Value: 1963672.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: CPUutilization3, Type: gauge, Value: 14.285714} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: MSpanSys, Type: gauge, Value: 81600.000000} Metric{Name: StackSys, Type: gauge, Value: 655360.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 1963672.000000} Metric{Name: CPUutilization14, Type: gauge, Value: 9.693878} Metric{Name: CPUutilization18, Type: gauge, Value: 9.045226} Metric{Name: BuckHashSys, Type: gauge, Value: 1448260.000000} Metric{Name: HeapObjects, Type: gauge, Value: 3465.000000} Metric{Name: Mallocs, Type: gauge, Value: 3784.000000} Metric{Name: CPUutilization9, Type: gauge, Value: 17.857143} Metric{Name: CPUutilization6, Type: gauge, Value: 0.505051} Metric{Name: CPUutilization17, Type: gauge, Value: 10.659898} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: CPUutilization2, Type: gauge, Value: 8.121827} Metric{Name: CPUutilization4, Type: gauge, Value: 12.060302} Metric{Name: Alloc, Type: gauge, Value: 1963672.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization5, Type: gauge, Value: 17.187500} Metric{Name: CPUutilization11, Type: gauge, Value: 14.871795} Metric{Name: HeapReleased, Type: gauge, Value: 4644864.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 65600.000000} Metric{Name: OtherSys, Type: gauge, Value: 1170660.000000} Metric{Name: TotalMemory, Type: gauge, Value: 16476016640.000000} Metric{Name: Sys, Type: gauge, Value: 13063432.000000} Metric{Name: FreeMemory, Type: gauge, Value: 686690304.000000} Metric{Name: CPUutilization1, Type: gauge, Value: 13.089005} Metric{Name: CPUutilization10, Type: gauge, Value: 3.517588} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: HeapIdle, Type: gauge, Value: 4644864.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization19, Type: gauge, Value: 9.547739} Metric{Name: RandomValue, Type: gauge, Value: 0.510202} Metric{Name: CPUutilization16, Type: gauge, Value: 7.253886} Metric{Name: CPUutilization20, Type: gauge, Value: 6.632653} Metric{Name: HeapInuse, Type: gauge, Value: 3072000.000000} Metric{Name: HeapSys, Type: gauge, Value: 7716864.000000} Metric{Name: CPUutilization7, Type: gauge, Value: 22.164948} Metric{Name: CPUutilization13, Type: gauge, Value: 11.794872} Metric{Name: PollCount, Type: counter, Delta: 1}]"
-2025/03/08 11:43:24.358160 DEBUG RESTY 
-==============================================================================
-~~~ REQUEST ~~~
-POST  /updates  HTTP/1.1
-HOST   : localhost:8080
-HEADERS:
-	Accept: application/json
-	Content-Encoding: gzip
-	Content-Type: application/json
-	Hashsha256: 6f53d8616ef147ed2addad602c878e2b30df09462f660a91119c998bde5e8a82
-	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
-BODY   :
-"H4sIAAAAAAAC/5RWTWscRxD9L3MWQ1XXZ+uWLMg2WLKw4lxCDp3dxlI02hG7MyFK8H8Ps7E1s4JurSRYGOh6XVXv1av+7d/mbtOcNzdDWt9/2I773Jw1w9Njbs6br2n8On3+lboxN+cqQgrfzr5HrK6/jMNdd/dPGu76rRfDsAUQCIJBlDAShAIEhiKGtcjBxaZfB2IpQUgFQoVAMQSWoEFkxrjY5bwvBhLG55PvVjdP5ZMYJbL78+n3OT3+1HX9uhKhpDY35HKV1re5TkNggBILVL6J2x8NFAMEekb42Pf342O5qvmuy5vHtK01wFEXqR0kVTv+QlC/9EPq3tavF+xzMTC2GsnNRBBcNcYShFcggCUERQJ1o0UWP4/r+/dpf1vVBrOHRbGTNj798WdeDxXlsc4ivUxTZyqHzblQVCxnZe0sClH1AoKW1dEK/PhHVeJSEmjlLKBViR6dzQLhouiPaT+8W50izcPg1AggDMWxKRuPtxjQgzEiilDQAkJZeRhaUCBAARNQivYM8TatX+W/a71gjEwwd/9qfLjod+u8Oal/x9VITTDoJnD4Q/SyE2PNitzQIruho4SFF01T8Tl3Oe3zplypMrvysS29trqWxvRpuM276rCigb50psv80O+eyjHKptMI8MIBa3cQKDGFoy30yh06WRcsWX7R9MptLXgEkEAi5ljSMUJ5gFpBE7dI0RBNhBZrcXX95WKX1hPECWqbaP6w6fLJFF+NDyfJ+DqN+3xg62r/ZtVjrHi/sBm5RmLmuFD957Td9A+/Ho5VPBIhALoZQiCz4vbRyvMlCLnrtLqDqVjJysoEaqsUvj+CwCniMR/VASKwsHx2TBE1dZuhLgk8TrK8CkJoUTmys5BEVS7ViZWnDrb/m4tFjuY0k3Xdd92qH7fDHLuePvOuOWs2uRtSc47ffv8vAAD//xmoyWMUCwAA"
-
-------------------------------------------------------------------------------
-~~~ RESPONSE ~~~
-STATUS       : 200 OK
-PROTO        : HTTP/1.1
-RECEIVED AT  : 2025-03-08T11:43:24.358068261+07:00
-TIME DURATION: 13.442043ms
-HEADERS      :
-	Content-Type: application/json
-	Date: Sat, 08 Mar 2025 04:43:24 GMT
-	Vary: Accept-Encoding
-BODY         :
-{
-   "status": "OK",
-   "message": "Metrics updated successfully"
-}
-==============================================================================
-time=2025-03-08T11:43:24.358+07:00 level=INFO msg="Final metrics sent successfully"
-time=2025-03-08T11:43:24.358+07:00 level=INFO msg="Closing send queue"
-time=2025-03-08T11:43:24.358+07:00 level=INFO msg="Waiting for all goroutines to finish"
-time=2025-03-08T11:43:24.358+07:00 level=INFO msg="======= GRACEFUL SHUTDOWN COMPLETED ======="
+time=2025-03-20T15:12:05.622+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060 ConfigFile: RealIP: GRPCAddress:localhost:9090 GRPCEnabled:false GRPCTimeout:5 GRPCRetry:3}"
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="using HTTP client" address=http://localhost:8080
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Starting agent" server_url=http://localhost:8080 poll_interval=2s report_interval=10s private_key=pr***************le rate_limit=3 grpc_enabled=false grpc_address=localhost:9090
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Collector started"
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Starting sender worker" workerID=0
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Starting sender worker" workerID=2
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Poll routine started" poll_interval=2s metrics_storage_size=0
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Report routine started" report_interval=10s server_url=http://localhost:8080 grpc_enabled=false grpc_address=localhost:9090
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Client initialized" client_type=*http.Client
+time=2025-03-20T15:12:05.623+07:00 level=INFO msg="Starting sender worker" workerID=1
+time=2025-03-20T15:12:06.806+07:00 level=INFO msg="received signal" signal=interrupt
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="======= GRACEFUL SHUTDOWN STARTED ======="
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Tickers stopped"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Stop channel closed"
+time=2025-03-20T15:12:06.807+07:00 level=DEBUG msg="Starting metrics preparation for sending"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Shutdown signal received while preparing metrics - ensuring final metrics are sent" gauges_count=0 counters_count=0 poll_count=0
+time=2025-03-20T15:12:06.807+07:00 level=DEBUG msg="Reset poll count to zero"
+time=2025-03-20T15:12:06.807+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=0 duration_ms=0
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Sender worker shutting down" workerID=1
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Sender worker shutting down" workerID=0
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="No metrics to send before shutdown"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Stopping polls due to context cancellation"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Closing send queue"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Waiting for all goroutines to finish"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Stop signal received, collector exiting"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Sender worker shutting down" workerID=2
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="Stopping reports due to context cancellation"
+time=2025-03-20T15:12:06.807+07:00 level=INFO msg="======= GRACEFUL SHUTDOWN COMPLETED ======="

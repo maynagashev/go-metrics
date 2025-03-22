@@ -1,0 +1,22 @@
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:44:			New					0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:69:			Close					66.7%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:76:			Count					100.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:85:			GetMetrics				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:108:			GetMetric				77.8%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:147:			GetCounter				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:156:			GetGauge				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:164:			UpdateMetric				100.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:185:			UpdateMetrics				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:235:			isRetriableError			100.0%
+
+
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:44:			New					0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:69:			Close					66.7%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:76:			Count					100.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:85:			GetMetrics				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:108:			GetMetric				44.4%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:147:			GetCounter				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:156:			GetGauge				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:164:			UpdateMetric				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:185:			UpdateMetrics				0.0%
+github.com/maynagashev/go-metrics/internal/server/storage/pgstorage/pgstorage.go:235:			isRetriableError			100.0%

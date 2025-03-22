@@ -39,8 +39,14 @@ type JSONConfig struct {
 	StoreInterval string `json:"store_interval"` // Интервал сохранения метрик в виде строки (например, "1s")
 	StoreFile     string `json:"store_file"`     // Путь к файлу для хранения метрик
 	DatabaseDSN   string `json:"database_dsn"`   // Строка подключения к базе данных
+	Key           string `json:"key"`            // Приватный ключ для подписи метрик
 	CryptoKey     string `json:"crypto_key"`     // Путь к файлу с приватным ключом для расшифровки
 	EnablePprof   bool   `json:"enable_pprof"`   // Включить профилирование через pprof
+	TrustedSubnet string `json:"trusted_subnet"` // CIDR доверенной подсети для проверки IP-адресов агентов
+	GRPCAddress   string `json:"grpc_address"`   // Адрес и порт для gRPC сервера
+	GRPCEnabled   bool   `json:"grpc_enabled"`   // Включить gRPC сервер
+	GRPCMaxConn   int    `json:"grpc_max_conn"`  // Максимальное количество одновременных соединений для gRPC сервера
+	GRPCTimeout   int    `json:"grpc_timeout"`   // Таймаут для gRPC запросов в секундах
 }
 
 // LoadJSONConfig загружает конфигурацию из JSON-файла.
@@ -71,9 +77,19 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 		return nil
 	}
 
-	// Применяем настройки только если соответствующие флаги не были установлены
-	// через командную строку или переменные окружения
+	// Применяем настройки по категориям
+	if err := applyServerConfig(flags, jsonConfig); err != nil {
+		return err
+	}
+	applyDatabaseConfig(flags, jsonConfig)
+	applySecurityConfig(flags, jsonConfig)
+	applyGRPCConfig(flags, jsonConfig)
 
+	return nil
+}
+
+// applyServerConfig применяет настройки сервера из JSON-конфигурации.
+func applyServerConfig(flags *Flags, jsonConfig *JSONConfig) error {
 	// Адрес сервера
 	if flags.Server.Addr == defaultServerAddr && jsonConfig.Address != "" {
 		flags.Server.Addr = jsonConfig.Address
@@ -98,20 +114,59 @@ func ApplyJSONConfig(flags *Flags, jsonConfig *JSONConfig) error {
 		flags.Server.Restore = jsonConfig.Restore
 	}
 
+	// Включить профилирование через pprof
+	if !flags.Server.EnablePprof && jsonConfig.EnablePprof {
+		flags.Server.EnablePprof = jsonConfig.EnablePprof
+	}
+
+	// Доверенная подсеть
+	if flags.Server.TrustedSubnet == "" && jsonConfig.TrustedSubnet != "" {
+		flags.Server.TrustedSubnet = jsonConfig.TrustedSubnet
+	}
+
+	return nil
+}
+
+// applyDatabaseConfig применяет настройки базы данных из JSON-конфигурации.
+func applyDatabaseConfig(flags *Flags, jsonConfig *JSONConfig) {
 	// Строка подключения к базе данных
 	if flags.Database.DSN == "" && jsonConfig.DatabaseDSN != "" {
 		flags.Database.DSN = jsonConfig.DatabaseDSN
+	}
+}
+
+// applySecurityConfig применяет настройки безопасности из JSON-конфигурации.
+func applySecurityConfig(flags *Flags, jsonConfig *JSONConfig) {
+	// Приватный ключ для подписи метрик
+	if flags.PrivateKey == "" && jsonConfig.Key != "" {
+		flags.PrivateKey = jsonConfig.Key
 	}
 
 	// Путь к файлу с приватным ключом для расшифровки
 	if flags.CryptoKey == "" && jsonConfig.CryptoKey != "" {
 		flags.CryptoKey = jsonConfig.CryptoKey
 	}
+}
 
-	// Включить профилирование через pprof
-	if !flags.Server.EnablePprof && jsonConfig.EnablePprof {
-		flags.Server.EnablePprof = jsonConfig.EnablePprof
+// applyGRPCConfig применяет настройки gRPC из JSON-конфигурации.
+func applyGRPCConfig(flags *Flags, jsonConfig *JSONConfig) {
+	// Адрес и порт для gRPC сервера
+	if flags.GRPC.Addr == defaultGRPCAddr && jsonConfig.GRPCAddress != "" {
+		flags.GRPC.Addr = jsonConfig.GRPCAddress
 	}
 
-	return nil
+	// Включить gRPC сервер
+	if !flags.GRPC.Enabled && jsonConfig.GRPCEnabled {
+		flags.GRPC.Enabled = jsonConfig.GRPCEnabled
+	}
+
+	// Максимальное количество одновременных соединений для gRPC сервера
+	if flags.GRPC.MaxConn == defaultGRPCMaxConn && jsonConfig.GRPCMaxConn > 0 {
+		flags.GRPC.MaxConn = jsonConfig.GRPCMaxConn
+	}
+
+	// Таймаут для gRPC запросов в секундах
+	if flags.GRPC.Timeout == defaultGRPCTimeout && jsonConfig.GRPCTimeout > 0 {
+		flags.GRPC.Timeout = jsonConfig.GRPCTimeout
+	}
 }

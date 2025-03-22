@@ -7,7 +7,12 @@ import (
 	"strconv"
 )
 
-const defaultStoreInterval = 300
+const (
+	defaultStoreInterval = 300
+	defaultGRPCAddr      = "localhost:9090"
+	defaultGRPCMaxConn   = 100
+	defaultGRPCTimeout   = 5
+)
 
 // Flags содержит все флаги сервера.
 type Flags struct {
@@ -21,6 +26,8 @@ type Flags struct {
 		Restore bool
 		// Включить профилирование через pprof
 		EnablePprof bool
+		// CIDR доверенной подсети для проверки IP-адресов агентов
+		TrustedSubnet string
 	}
 
 	Database struct {
@@ -30,8 +37,19 @@ type Flags struct {
 		MigrationsPath string
 	}
 
-	PrivateKey string
-	CryptoKey  string // Path to the private key file for decryption
+	GRPC struct {
+		// Адрес и порт для gRPC сервера
+		Addr string
+		// Включен ли gRPC сервер
+		Enabled bool
+		// Максимальное количество одновременных соединений
+		MaxConn int
+		// Таймаут для gRPC запросов в секундах
+		Timeout int
+	}
+
+	PrivateKey string // Путь к файлу с приватным ключом для подписи запросов к серверу
+	CryptoKey  string // Путь к файлу с публичным ключом для шифрования
 	ConfigFile string // Путь к файлу конфигурации в формате JSON
 }
 
@@ -117,10 +135,60 @@ func registerCommandLineFlags(flags *Flags) {
 	// Добавляем флаг для пути к файлу конфигурации
 	flag.StringVar(&flags.ConfigFile, "c", "", "Путь к файлу конфигурации в формате JSON")
 	flag.StringVar(&flags.ConfigFile, "config", "", "Путь к файлу конфигурации в формате JSON")
+
+	// Добавляем флаг для доверенной подсети
+	flag.StringVar(
+		&flags.Server.TrustedSubnet,
+		"t",
+		"",
+		"CIDR доверенной подсети для проверки IP-адресов агентов",
+	)
+
+	// Добавляем флаги для gRPC
+	flag.StringVar(
+		&flags.GRPC.Addr,
+		"grpc-address",
+		defaultGRPCAddr,
+		"Адрес и порт для gRPC сервера",
+	)
+	flag.BoolVar(
+		&flags.GRPC.Enabled,
+		"grpc-enabled",
+		false,
+		"Включить gRPC сервер",
+	)
+	flag.IntVar(
+		&flags.GRPC.MaxConn,
+		"grpc-max-conn",
+		defaultGRPCMaxConn,
+		"Максимальное количество одновременных соединений для gRPC сервера",
+	)
+	flag.IntVar(
+		&flags.GRPC.Timeout,
+		"grpc-timeout",
+		defaultGRPCTimeout,
+		"Таймаут для gRPC запросов в секундах",
+	)
 }
 
 // applyEnvironmentVariables применяет переменные окружения к флагам.
 func applyEnvironmentVariables(flags *Flags) error {
+	// Применяем переменные окружения по категориям
+	if err := applyServerEnvVars(flags); err != nil {
+		return err
+	}
+	applyDatabaseEnvVars(flags)
+	applySecurityEnvVars(flags)
+	applyConfigEnvVars(flags)
+	if err := applyGRPCEnvVars(flags); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// applyServerEnvVars применяет переменные окружения для настроек сервера.
+func applyServerEnvVars(flags *Flags) error {
 	// Для случаев, когда в переменной окружения ADDRESS присутствует непустое значение,
 	// переопределим адрес запуска сервера,
 	// даже если он был передан через аргумент командной строки.
@@ -148,11 +216,37 @@ func applyEnvironmentVariables(flags *Flags) error {
 		flags.Server.Restore = restore
 	}
 
+	// Если передана доверенная подсеть в параметрах окружения, используем её
+	if envTrustedSubnet, ok := os.LookupEnv("TRUSTED_SUBNET"); ok {
+		flags.Server.TrustedSubnet = envTrustedSubnet
+	}
+
+	// Если передан флаг включения профилирования в переменных окружения
+	if envEnablePprof, ok := os.LookupEnv("ENABLE_PPROF"); ok {
+		enablePprof, err := strconv.ParseBool(envEnablePprof)
+		if err != nil {
+			return err
+		}
+		flags.Server.EnablePprof = enablePprof
+	}
+
+	return nil
+}
+
+// applyDatabaseEnvVars применяет переменные окружения для настроек базы данных.
+func applyDatabaseEnvVars(flags *Flags) {
 	// Если переданы параметры БД в параметрах окружения, используем их
 	if envDatabaseDSN, ok := os.LookupEnv("DATABASE_DSN"); ok {
 		flags.Database.DSN = envDatabaseDSN
 	}
+	// Если передан путь к миграциям в параметрах окружения, используем его
+	if envDatabaseMigrations, ok := os.LookupEnv("DATABASE_MIGRATIONS"); ok {
+		flags.Database.MigrationsPath = envDatabaseMigrations
+	}
+}
 
+// applySecurityEnvVars применяет переменные окружения для настроек безопасности.
+func applySecurityEnvVars(flags *Flags) {
 	// Если передан ключ в параметрах окружения, используем его
 	if envPrivateKey, ok := os.LookupEnv("KEY"); ok {
 		flags.PrivateKey = envPrivateKey
@@ -162,10 +256,42 @@ func applyEnvironmentVariables(flags *Flags) error {
 	if envCryptoKey, ok := os.LookupEnv("CRYPTO_KEY"); ok {
 		flags.CryptoKey = envCryptoKey
 	}
+}
 
+// applyConfigEnvVars применяет переменные окружения для настроек конфигурации.
+func applyConfigEnvVars(flags *Flags) {
 	// Если передан путь к файлу конфигурации в параметрах окружения, используем его
 	if envConfigFile, ok := os.LookupEnv("CONFIG"); ok {
 		flags.ConfigFile = envConfigFile
+	}
+}
+
+// applyGRPCEnvVars применяет переменные окружения для настроек gRPC.
+func applyGRPCEnvVars(flags *Flags) error {
+	// Обработка переменных окружения для gRPC
+	if envGRPCAddr, ok := os.LookupEnv("GRPC_ADDRESS"); ok {
+		flags.GRPC.Addr = envGRPCAddr
+	}
+	if envGRPCEnabled, ok := os.LookupEnv("GRPC_ENABLED"); ok {
+		enabled, err := strconv.ParseBool(envGRPCEnabled)
+		if err != nil {
+			return err
+		}
+		flags.GRPC.Enabled = enabled
+	}
+	if envGRPCMaxConn, ok := os.LookupEnv("GRPC_MAX_CONN"); ok {
+		maxConn, err := strconv.Atoi(envGRPCMaxConn)
+		if err != nil {
+			return err
+		}
+		flags.GRPC.MaxConn = maxConn
+	}
+	if envGRPCTimeout, ok := os.LookupEnv("GRPC_TIMEOUT"); ok {
+		timeout, err := strconv.Atoi(envGRPCTimeout)
+		if err != nil {
+			return err
+		}
+		flags.GRPC.Timeout = timeout
 	}
 
 	return nil
@@ -174,6 +300,10 @@ func applyEnvironmentVariables(flags *Flags) error {
 // loadAndApplyJSONConfig загружает и применяет JSON-конфигурацию.
 func loadAndApplyJSONConfig(flags *Flags) error {
 	// Загружаем конфигурацию из JSON-файла, если он указан
+	if flags.ConfigFile == "" {
+		return nil
+	}
+
 	jsonConfig, loadErr := LoadJSONConfig(flags.ConfigFile)
 	if loadErr != nil {
 		// Если файл конфигурации не указан, это не ошибка

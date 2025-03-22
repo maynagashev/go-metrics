@@ -3,10 +3,15 @@ package app_test
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"net/http"
+	"os"
+	"syscall"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 
 	"github.com/maynagashev/go-metrics/internal/server/app"
 )
@@ -165,7 +170,163 @@ func TestServer_GetStoreInterval(t *testing.T) {
 	assert.Equal(t, 300, server.GetStoreInterval())
 }
 
+// TestServer_Start тестирует запуск и остановку сервера по сигналу.
 func TestServer_Start(t *testing.T) {
-	// Skip this test as it requires complex mocking of HTTP server and signal handling
-	t.Skip("Skipping test that requires complex mocking of HTTP server")
+	// Если запущен с флагом -short, пропускаем тест
+	if testing.Short() {
+		t.Skip("Пропускаем тест, который запускает реальный сервер")
+	}
+
+	// Выбираем порт для первого теста
+	serverPort := ":18081"
+
+	// Создаем конфигурацию для тестового сервера с адресом для тестирования
+	config := &app.Config{
+		Addr:          "localhost" + serverPort, // используем нестандартный порт для теста
+		StoreInterval: 1,
+		Restore:       false,
+	}
+
+	// Создаем сервер
+	server := app.New(config)
+
+	// Создаем logger для теста
+	cfg := zap.NewDevelopmentConfig()
+	cfg.OutputPaths = []string{"stdout"}
+	logger, err := cfg.Build()
+	require.NoError(t, err)
+
+	// Создаем простой HTTP-обработчик
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Канал для корректного завершения теста
+	done := make(chan struct{})
+
+	// Запускаем сервер в отдельной горутине
+	go func() {
+		// Используем recover для перехвата возможной паники
+		defer func() {
+			if r := recover(); r != nil {
+				t.Logf("Перехвачена паника в Start: %v", r)
+			}
+			close(done)
+		}()
+
+		// Отправляем сигнал SIGINT через небольшую задержку
+		go func() {
+			// Даем серверу время на запуск
+			time.Sleep(100 * time.Millisecond)
+
+			// Отправляем сигнал для завершения
+			process, procErr := os.FindProcess(os.Getpid())
+			if procErr != nil {
+				t.Logf("Ошибка при получении процесса: %v", procErr)
+				return
+			}
+
+			sigErr := process.Signal(syscall.SIGINT)
+			if sigErr != nil {
+				t.Logf("Ошибка при отправке сигнала: %v", sigErr)
+			}
+		}()
+
+		// Запускаем сервер (блокирующий вызов)
+		server.Start(logger, handler)
+	}()
+
+	// Ожидаем завершения работы сервера. Не используем тайм-аут здесь, так как
+	// при получении сигнала SIGINT сервер корректно завершится.
+	<-done
+}
+
+// Мы используем простой подход: заведомо недопустимый адрес.
+func TestServer_Start_Error(t *testing.T) {
+	t.Skip("Этот тест вызывает os.Exit через log.Fatal, поэтому пропускаем его")
+}
+
+// TestServer_ShutdownError проверяет вариант с ошибкой при shutdown.
+func TestServer_ShutdownError(t *testing.T) {
+	// Пропускаем тест при кратком запуске
+	if testing.Short() {
+		t.Skip("Пропускаем тест, требующий фактического запуска сервера")
+	}
+
+	// Создаем конфигурацию с валидным адресом
+	config := &app.Config{
+		Addr:          "localhost:18083",
+		StoreInterval: 1,
+		Restore:       false,
+	}
+
+	// Создаем сервер
+	server := app.New(config)
+
+	// Создаем логгер с перехватом вывода
+	cfg := zap.NewDevelopmentConfig()
+	cfg.OutputPaths = []string{"stdout"}
+	logger, err := cfg.Build()
+	require.NoError(t, err)
+
+	// Настраиваем мок-обработчик
+	handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		time.Sleep(300 * time.Millisecond) // Имитируем долгое выполнение запроса
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Канал для завершения теста
+	done := make(chan struct{})
+
+	// Запускаем сервер в отдельной горутине
+	go func() {
+		defer close(done)
+
+		// Перехватываем панику при завершении
+		defer func() {
+			if r := recover(); r != nil {
+				t.Logf("Перехвачена паника: %v", r)
+			}
+		}()
+
+		// Отправляем сигнал для завершения через небольшую задержку
+		go func() {
+			// Даем серверу время запуститься
+			time.Sleep(100 * time.Millisecond)
+
+			// Отправляем тестовый запрос, чтобы запустить обработчик
+			go func() {
+				resp, httpErr := http.Get("http://localhost:18083")
+				if httpErr != nil {
+					t.Logf("Ошибка при выполнении тестового запроса: %v", httpErr)
+					return
+				}
+				// Закрываем тело ответа, чтобы избежать утечек ресурсов
+				defer func() {
+					if closeErr := resp.Body.Close(); closeErr != nil {
+						t.Logf("Ошибка при закрытии тела ответа: %v", closeErr)
+					}
+				}()
+			}()
+
+			// Почти сразу отправляем сигнал для остановки
+			time.Sleep(10 * time.Millisecond)
+			process, procErr := os.FindProcess(os.Getpid())
+			if procErr != nil {
+				t.Logf("Ошибка при получении процесса: %v", procErr)
+				return
+			}
+
+			sigErr := process.Signal(syscall.SIGINT)
+			if sigErr != nil {
+				t.Logf("Ошибка при отправке сигнала: %v", sigErr)
+			}
+		}()
+
+		// Запускаем сервер
+		server.Start(logger, handler)
+	}()
+
+	// Ожидаем завершения теста
+	<-done
 }

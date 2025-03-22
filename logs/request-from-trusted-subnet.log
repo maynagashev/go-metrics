@@ -1,0 +1,1 @@
+{"status":"OK","message":"metric Metric{Name: test, Type: counter, Delta: 1} updated, result: Metric{Name: test, Type: counter, Delta: 2}"}

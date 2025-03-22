@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package metrics;
+
+option go_package = "github.com/maynagashev/go-metrics/internal/grpc/pb";
+
+// Тип метрики
+enum MetricType {
+  GAUGE = 0;
+  COUNTER = 1;
+}
+
+// Метрика
+message Metric {
+  string name = 1;
+  MetricType type = 2;
+  optional int64 delta = 3;
+  optional double value = 4;
+}
+
+// Запрос на обновление метрики
+message UpdateRequest {
+  Metric metric = 1;
+}
+
+// Запрос на пакетное обновление метрик
+message UpdateBatchRequest {
+  repeated Metric metrics = 1;
+}
+
+// Запрос на получение значения метрики
+message GetValueRequest {
+  string name = 1;
+  MetricType type = 2;
+}
+
+// Ответ с метрикой
+message MetricResponse {
+  Metric metric = 1;
+}
+
+// Ответ на пакетное обновление
+message UpdateBatchResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Запрос на проверку соединения с БД
+message PingRequest {}
+
+// Ответ на проверку соединения с БД
+message PingResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Сервис метрик
+service MetricsService {
+  // Обновление одиночной метрики
+  rpc Update(UpdateRequest) returns (MetricResponse);
+  
+  // Пакетное обновление метрик
+  rpc UpdateBatch(UpdateBatchRequest) returns (UpdateBatchResponse);
+  
+  // Получение значения метрики
+  rpc GetValue(GetValueRequest) returns (MetricResponse);
+  
+  // Проверка соединения с БД
+  rpc Ping(PingRequest) returns (PingResponse);
+  
+  // Потоковая отправка метрик (клиент -> сервер)
+  rpc StreamMetrics(stream Metric) returns (UpdateBatchResponse);
+} 

@@ -1,0 +1,110 @@
+Build version: N/A
+Build date: N/A
+Build commit: N/A
+time=2025-03-12T19:22:02.594+07:00 level=DEBUG msg="parsed flags and env variables" flags="{Server:{Addr:localhost:8080 ReportInterval:10 PollInterval:2} PrivateKey:private_key_example CryptoKey: RateLimit:3 EnablePprof:false PprofPort:6060 ConfigFile: RealIP:192.168.1.1}"
+time=2025-03-12T19:22:02.596+07:00 level=INFO msg="======= AGENT STARTING =======" server_url=http://localhost:8080 poll_interval=2s report_interval=10s send_compressed_data=true private_key=private_key_example send_hash=true encryption_enabled=false rate_limit=3
+time=2025-03-12T19:22:02.596+07:00 level=INFO msg="======= AGENT STARTED ======="
+time=2025-03-12T19:22:02.596+07:00 level=INFO msg="Collector started"
+time=2025-03-12T19:22:02.596+07:00 level=DEBUG msg="worker 1 started"
+time=2025-03-12T19:22:02.596+07:00 level=DEBUG msg="worker 2 started"
+time=2025-03-12T19:22:02.596+07:00 level=INFO msg="Poll routine started" poll_interval=2s metrics_storage_size=0
+time=2025-03-12T19:22:02.596+07:00 level=INFO msg="Report routine started" report_interval=10s server_url=http://localhost:8080
+time=2025-03-12T19:22:02.596+07:00 level=DEBUG msg="worker 0 started"
+time=2025-03-12T19:22:04.596+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:04.597+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:04.597+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:04.598+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.38397216796875 sys_mb=8.458259582519531
+time=2025-03-12T19:22:04.598+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:04.598+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.8471107482910156 used_percent=60.991755055668605
+time=2025-03-12T19:22:04.599+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:04.599+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=2
+time=2025-03-12T19:22:06.597+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:06.597+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:06.597+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:06.598+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.421875 sys_mb=8.458259582519531
+time=2025-03-12T19:22:06.598+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:06.598+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.8084678649902344 used_percent=61.36998084507883
+time=2025-03-12T19:22:06.598+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:06.598+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-12T19:22:08.596+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:08.596+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:08.596+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:08.597+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.45908355712890625 sys_mb=8.458259582519531
+time=2025-03-12T19:22:08.597+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:08.597+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.8376197814941406 used_percent=61.33177044424253
+time=2025-03-12T19:22:08.597+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:08.597+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
+time=2025-03-12T19:22:10.597+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:10.597+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:10.597+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:10.597+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.4962921142578125 sys_mb=8.458259582519531
+time=2025-03-12T19:22:10.597+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:10.598+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.8606071472167969 used_percent=61.18240929380367
+time=2025-03-12T19:22:10.598+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:10.598+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Starting metrics report cycle"
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Starting metrics preparation for sending"
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=0.5364913940429688 sys_mb=8.458259582519531
+time=2025-03-12T19:22:12.596+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:12.597+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.8685379028320312 used_percent=61.12910864358049
+time=2025-03-12T19:22:12.597+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:12.597+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=0
+time=2025-03-12T19:22:12.597+07:00 level=INFO msg="Preparing metrics for sending" gauges_count=50 counters_count=1 poll_count=1
+time=2025-03-12T19:22:12.597+07:00 level=DEBUG msg="Reset poll count to zero"
+time=2025-03-12T19:22:12.597+07:00 level=DEBUG msg="Metrics preparation completed" metrics_count=51 duration_ms=0
+time=2025-03-12T19:22:12.597+07:00 level=INFO msg="Sending metrics to queue" metrics_count=51 queue_size=0
+time=2025-03-12T19:22:12.597+07:00 level=DEBUG msg="Report cycle completed" duration_ms=0
+time=2025-03-12T19:22:12.597+07:00 level=DEBUG msg="worker 1 received job, calling sendMetrics()..." workerID=1
+time=2025-03-12T19:22:12.597+07:00 level=INFO msg="sending metrics batch (try=0)" workerID=1 url=http://localhost:8080/updates metrics="[Metric{Name: HeapAlloc, Type: gauge, Value: 562552.000000} Metric{Name: HeapObjects, Type: gauge, Value: 1898.000000} Metric{Name: Sys, Type: gauge, Value: 8869128.000000} Metric{Name: CPUutilization5, Type: gauge, Value: 7.653061} Metric{Name: CPUutilization19, Type: gauge, Value: 1.507538} Metric{Name: CPUutilization20, Type: gauge, Value: 2.000000} Metric{Name: RandomValue, Type: gauge, Value: 0.340226} Metric{Name: HeapReleased, Type: gauge, Value: 2244608.000000} Metric{Name: MCacheInuse, Type: gauge, Value: 24000.000000} Metric{Name: CPUutilization6, Type: gauge, Value: 2.985075} Metric{Name: CPUutilization10, Type: gauge, Value: 2.512563} Metric{Name: CPUutilization15, Type: gauge, Value: 1.015228} Metric{Name: CPUutilization17, Type: gauge, Value: 3.517588} Metric{Name: Frees, Type: gauge, Value: 167.000000} Metric{Name: Lookups, Type: gauge, Value: 0.000000} Metric{Name: Mallocs, Type: gauge, Value: 2065.000000} Metric{Name: NextGC, Type: gauge, Value: 4194304.000000} Metric{Name: StackSys, Type: gauge, Value: 524288.000000} Metric{Name: BuckHashSys, Type: gauge, Value: 1448517.000000} Metric{Name: CPUutilization4, Type: gauge, Value: 0.000000} Metric{Name: CPUutilization18, Type: gauge, Value: 2.020202} Metric{Name: NumForcedGC, Type: gauge, Value: 0.000000} Metric{Name: OtherSys, Type: gauge, Value: 1299931.000000} Metric{Name: CPUutilization3, Type: gauge, Value: 3.571429} Metric{Name: CPUutilization8, Type: gauge, Value: 4.591837} Metric{Name: GCSys, Type: gauge, Value: 1813576.000000} Metric{Name: HeapSys, Type: gauge, Value: 3670016.000000} Metric{Name: MSpanSys, Type: gauge, Value: 81600.000000} Metric{Name: CPUutilization7, Type: gauge, Value: 6.632653} Metric{Name: CPUutilization11, Type: gauge, Value: 3.608247} Metric{Name: CPUutilization16, Type: gauge, Value: 3.000000} Metric{Name: Alloc, Type: gauge, Value: 562552.000000} Metric{Name: HeapInuse, Type: gauge, Value: 1359872.000000} Metric{Name: LastGC, Type: gauge, Value: 0.000000} Metric{Name: MCacheSys, Type: gauge, Value: 31200.000000} Metric{Name: NumGC, Type: gauge, Value: 0.000000} Metric{Name: PauseTotalNs, Type: gauge, Value: 0.000000} Metric{Name: StackInuse, Type: gauge, Value: 524288.000000} Metric{Name: TotalMemory, Type: gauge, Value: 16476016640.000000} Metric{Name: FreeMemory, Type: gauge, Value: 932585472.000000} Metric{Name: CPUutilization1, Type: gauge, Value: 6.185567} Metric{Name: CPUutilization2, Type: gauge, Value: 1.005025} Metric{Name: CPUutilization13, Type: gauge, Value: 3.517588} Metric{Name: GCCPUFraction, Type: gauge, Value: 0.000000} Metric{Name: HeapIdle, Type: gauge, Value: 2310144.000000} Metric{Name: MSpanInuse, Type: gauge, Value: 65600.000000} Metric{Name: TotalAlloc, Type: gauge, Value: 562552.000000} Metric{Name: CPUutilization9, Type: gauge, Value: 6.666667} Metric{Name: CPUutilization12, Type: gauge, Value: 0.995025} Metric{Name: CPUutilization14, Type: gauge, Value: 4.500000} Metric{Name: PollCount, Type: counter, Delta: 1}]"
+time=2025-03-12T19:22:12.598+07:00 level=DEBUG msg="set X-Real-IP header (explicit)" ip=192.168.1.1
+2025/03/12 19:22:12.609099 DEBUG RESTY 
+==============================================================================
+~~~ REQUEST ~~~
+POST  /updates  HTTP/1.1
+HOST   : localhost:8080
+HEADERS:
+	Accept: application/json
+	Content-Encoding: gzip
+	Content-Type: application/json
+	Hashsha256: 2ccaf9c75b56efb6f54d21d7935a21496755eda01b83d356f7ab0ddd87bc4625
+	User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)
+	X-Real-Ip: 192.168.1.1
+BODY   :
+"H4sIAAAAAAAC/5RW0W4qOQz9l3lGKHZsx+FtF6ntSoWidrsvq33IDlHLdmAQzKxu71X//QqqNgNScmmQkJDsk/jY55i/f1SrZTWpbmLY/tY0bV2Nqu51G6tJ9RT6p1iNqv9D08dqwoLM+DYaJNz9+1+su302BdTrZ8LDaz5QVTxgip0uHvtu1ay+h27Vbjib58bC1gggkrWKzmUQwOffOGbj2DpRtd44EZvBQJPFwLH5PGSFOb3jPmyW7fqvY1wu3YwtGURBAlG0zHLC8n1sYtjHZf56JBKT2JtNQ/0c/9j0+/ydSMaYTKVSKNQrG0eC4kG81xxZUCKLAVlQwXrvlTgHwYWeGWBEJRSySD43OOCyEHbM4Fidt16NxTTXV7sYCxMtqbW3bfvSb/Oxid5ZOCgrH4lGEgvz+K27nmZjCTxZQ0lWXahfStpiJNTE0O99/XIT9s+lFCBShpyY6IKKz/qgJengx0cYEFJl83591e7quCywkW68657jrlgUeu8tZJ5oS5PigFAP3wpiciOfr5HG7EGtOEtOlQcudT0tvljBsjs1g1K8FWcMpPjZwzZsirYLkjWBvHRkLBbffRc8gWYFDAVOxSiSI0QRMM5nMaSAkUxXmNSmwr+8yMpeCZa9upRxG/bdRTP5bsTFlgEOOjDv1xfhLkK/j3+2XWjml9jP0SLKJZ6ZxBF7Ftft7rVgheTEgAiZE/P8RZq3yMo0oPOs44W5A2UWZ8AYAcXsoi7tDcMGD/uHxVrH2fVlL1kc7B3RQMvTxePVLtQHgAu6cpy7ZVNY0RYMDC44yrncRuGhoI9d/JIWTlnwJQv4OOSRyWT1i4V/Pd6zQVLHIk6HlZ5hUMlZkwk4HHjlom2aadtvupRbH37GXTWqlrHpQjWBt39+BgAA///Ll0EL/woAAA=="
+
+------------------------------------------------------------------------------
+~~~ RESPONSE ~~~
+STATUS       : 200 OK
+PROTO        : HTTP/1.1
+RECEIVED AT  : 2025-03-12T19:22:12.608955205+07:00
+TIME DURATION: 10.141694ms
+HEADERS      :
+	Content-Type: application/json
+	Date: Wed, 12 Mar 2025 12:22:12 GMT
+	Vary: Accept-Encoding
+BODY         :
+{
+   "status": "OK",
+   "message": "Metrics updated successfully"
+}
+==============================================================================
+time=2025-03-12T19:22:12.609+07:00 level=INFO msg="Metrics sent successfully" count=51
+time=2025-03-12T19:22:14.597+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:14.597+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:14.597+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:14.598+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.8298416137695312 sys_mb=12.458259582519531
+time=2025-03-12T19:22:14.598+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:14.598+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.85595703125 used_percent=61.107355812915706
+time=2025-03-12T19:22:14.599+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:14.599+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1
+time=2025-03-12T19:22:16.597+07:00 level=DEBUG msg="Starting metrics collection cycle"
+time=2025-03-12T19:22:16.597+07:00 level=DEBUG msg="Resetting metrics before collection"
+time=2025-03-12T19:22:16.597+07:00 level=DEBUG msg="Starting runtime metrics collection"
+time=2025-03-12T19:22:16.598+07:00 level=DEBUG msg="Runtime metrics collection completed" metrics_count=27 heap_alloc_mb=1.8680496215820312 sys_mb=12.458259582519531
+time=2025-03-12T19:22:16.598+07:00 level=DEBUG msg="Starting additional system metrics collection"
+time=2025-03-12T19:22:16.598+07:00 level=DEBUG msg="Memory metrics collected" total_memory_gb=15.344486236572266 free_memory_gb=0.7969932556152344 used_percent=61.569758841904154
+time=2025-03-12T19:22:16.599+07:00 level=DEBUG msg="CPU metrics collection completed" cpu_count=20
+time=2025-03-12T19:22:16.599+07:00 level=INFO msg="Metrics collection completed" poll_count=1 metrics_count=51 duration_ms=1

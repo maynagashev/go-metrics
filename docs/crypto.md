@@ -35,13 +35,13 @@ go build -o bin/keygen cmd/keygen/main.go
 ./bin/keygen
 
 # Генерация ключей с указанием путей и размера ключа
-./bin/keygen -private=private.pem -public=public.pem -bits=4096
+./bin/keygen -private=server.key -public=server.crt -bits=4096
 ```
 
 По умолчанию утилита создаст:
 
-- `private.pem` - приватный ключ для сервера (в формате PKCS#1)
-- `public.pem` - публичный ключ для агента (в формате X.509 сертификата)
+- `server.key` - приватный ключ для сервера (в формате PKCS#1)
+- `server.crt` - публичный ключ для агента (в формате X.509 сертификата)
 - Размер ключа по умолчанию: 2048 бит
 
 ## Формат ключей
@@ -64,10 +64,10 @@ go build -o bin/keygen cmd/keygen/main.go
 
 ```bash
 # Запуск с указанием пути к публичному ключу
-./bin/agent -crypto-key=public.pem
+./bin/agent -crypto-key=server.crt
 
 # Или через переменную окружения
-CRYPTO_KEY=public.pem ./bin/agent
+CRYPTO_KEY=server.crt ./bin/agent
 ```
 
 ## Настройка сервера
@@ -76,10 +76,10 @@ CRYPTO_KEY=public.pem ./bin/agent
 
 ```bash
 # Запуск с указанием пути к приватному ключу
-./bin/server -crypto-key=private.pem
+./bin/server -crypto-key=server.key
 
 # Или через переменную окружения
-CRYPTO_KEY=private.pem ./bin/server
+CRYPTO_KEY=server.key ./bin/server
 ```
 
 ## Как это работает

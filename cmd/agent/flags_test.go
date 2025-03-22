@@ -40,6 +40,10 @@ func TestMustParseFlags(t *testing.T) {
 				RateLimit:   3,
 				EnablePprof: false,
 				PprofPort:   "6060",
+				GRPCAddress: "localhost:9090",
+				GRPCEnabled: false,
+				GRPCTimeout: 5,
+				GRPCRetry:   3,
 			},
 		},
 		{
@@ -66,6 +70,10 @@ func TestMustParseFlags(t *testing.T) {
 				RateLimit:   5,
 				EnablePprof: true,
 				PprofPort:   "6061",
+				GRPCAddress: "localhost:9090",
+				GRPCEnabled: false,
+				GRPCTimeout: 5,
+				GRPCRetry:   3,
 			},
 		},
 		{
@@ -92,6 +100,10 @@ func TestMustParseFlags(t *testing.T) {
 				RateLimit:   10,
 				EnablePprof: false,
 				PprofPort:   "6060",
+				GRPCAddress: "localhost:9090",
+				GRPCEnabled: false,
+				GRPCTimeout: 5,
+				GRPCRetry:   3,
 			},
 		},
 		{
@@ -139,6 +151,10 @@ func TestMustParseFlags(t *testing.T) {
 				RateLimit:   3,
 				EnablePprof: false,
 				PprofPort:   "6060",
+				GRPCAddress: "localhost:9090",
+				GRPCEnabled: false,
+				GRPCTimeout: 5,
+				GRPCRetry:   3,
 			},
 		},
 	}

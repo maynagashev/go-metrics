@@ -42,6 +42,10 @@ func Example_update() {
 		return
 	}
 
+	// Устанавливаем заголовок X-Real-IP с IP-адресом из доверенной подсети
+	req.Header.Set("X-Real-IP", "192.168.1.1")
+	req.Header.Set("Content-Type", "application/json")
+
 	// Отправляем запрос
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -84,6 +88,10 @@ func Example_getValue() {
 		fmt.Printf("Ошибка создания запроса: %v\n", err)
 		return
 	}
+
+	// Устанавливаем заголовок X-Real-IP с IP-адресом из доверенной подсети
+	req.Header.Set("X-Real-IP", "192.168.1.1")
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -143,6 +151,10 @@ func Example_updateBatch() {
 		return
 	}
 
+	// Устанавливаем заголовок X-Real-IP с IP-адресом из доверенной подсети
+	req.Header.Set("X-Real-IP", "192.168.1.1")
+	req.Header.Set("Content-Type", "application/json")
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Printf("Ошибка отправки запроса: %v\n", err)
@@ -162,6 +174,9 @@ func Example_ping() {
 		fmt.Printf("Ошибка создания запроса: %v\n", err)
 		return
 	}
+
+	// Устанавливаем заголовок X-Real-IP с IP-адресом из доверенной подсети
+	req.Header.Set("X-Real-IP", "192.168.1.1")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

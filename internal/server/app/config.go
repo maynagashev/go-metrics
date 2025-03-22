@@ -20,14 +20,20 @@ type Config struct {
 	Restore bool
 	// Параметры базы данных
 	Database DatabaseConfig
+	// Параметры gRPC сервера
+	GRPC GRPCConfig
 	// Приватный ключ для подписи метрик.
 	PrivateKey string
 	// Включить профилирование через pprof
 	EnablePprof bool
-	// Приватный ключ для расшифровки данных.
+	// CryptoKey путь к файлу приватного ключа для шифрования для настройки TLS в gRPC сервере
+	CryptoKey string
+	// Приватный ключ для расшифровки данных загруженный из CryptoKey, используется в HTTP сервере
 	PrivateRSAKey *rsa.PrivateKey
 	// Конфигурационный файл
 	ConfigFile string
+	// TrustedSubnet CIDR доверенной подсети для проверки IP-адресов агентов
+	TrustedSubnet string
 }
 
 // DatabaseConfig содержит настройки подключения к базе данных.
@@ -36,6 +42,18 @@ type DatabaseConfig struct {
 	DSN string
 	// MigrationsPath путь к директории с миграциями.
 	MigrationsPath string
+}
+
+// GRPCConfig содержит настройки gRPC сервера.
+type GRPCConfig struct {
+	// Addr адрес и порт для gRPC сервера.
+	Addr string
+	// Enabled включен ли gRPC сервер.
+	Enabled bool
+	// MaxConn максимальное количество одновременных соединений.
+	MaxConn int
+	// Timeout таймаут для gRPC запросов в секундах.
+	Timeout int
 }
 
 func NewConfig(flags *Flags) *Config {
@@ -48,9 +66,17 @@ func NewConfig(flags *Flags) *Config {
 			DSN:            flags.Database.DSN,
 			MigrationsPath: flags.Database.MigrationsPath,
 		},
-		PrivateKey:  flags.PrivateKey,
-		EnablePprof: flags.Server.EnablePprof,
-		ConfigFile:  flags.ConfigFile,
+		GRPC: GRPCConfig{
+			Addr:    flags.GRPC.Addr,
+			Enabled: flags.GRPC.Enabled,
+			MaxConn: flags.GRPC.MaxConn,
+			Timeout: flags.GRPC.Timeout,
+		},
+		PrivateKey:    flags.PrivateKey,
+		EnablePprof:   flags.Server.EnablePprof,
+		ConfigFile:    flags.ConfigFile,
+		TrustedSubnet: flags.Server.TrustedSubnet,
+		CryptoKey:     flags.CryptoKey,
 	}
 
 	// Load private key for decryption if provided
@@ -105,4 +131,19 @@ func (cfg *Config) IsRequestSigningEnabled() bool {
 // IsEncryptionEnabled возвращает true, если включено шифрование.
 func (cfg *Config) IsEncryptionEnabled() bool {
 	return cfg.PrivateRSAKey != nil
+}
+
+// IsTrustedSubnetEnabled возвращает true, если указана доверенная подсеть.
+func (cfg *Config) IsTrustedSubnetEnabled() bool {
+	return cfg.TrustedSubnet != ""
+}
+
+// IsGRPCEnabled возвращает true, если включен gRPC сервер.
+func (cfg *Config) IsGRPCEnabled() bool {
+	return cfg.GRPC.Enabled
+}
+
+// GetCryptoKeyPath возвращает путь к файлу с ключом для шифрования.
+func (cfg *Config) GetCryptoKeyPath() string {
+	return cfg.CryptoKey
 }

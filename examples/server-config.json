@@ -4,6 +4,11 @@
     "store_interval": "1m",
     "store_file": "/tmp/metrics-db.json",
     "database_dsn": "postgres://metrics:password@localhost:5432/metrics",
-    "crypto_key": "./private.pem",
-    "enable_pprof": false
+    "crypto_key": "./server.key",
+    "enable_pprof": false,
+    "trusted_subnet": "192.168.0.0/24",
+    "grpc_address": "localhost:9090",
+    "grpc_enabled": true,
+    "grpc_max_conn": 100,
+    "grpc_timeout": 5
 } 

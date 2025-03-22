@@ -108,8 +108,11 @@ func (gz *gzipReadCloser) Close() error {
 		return err
 	}
 
+	// Сохраним ссылку на middleware перед сбросом
+	middleware := gz.middleware
+
 	// Возвращаем Reader в его пул
-	gz.middleware.readerPool.Put(gz.Reader)
+	middleware.readerPool.Put(gz.Reader)
 
 	// Очищаем поля перед возвратом в пул
 	gz.Reader = nil
@@ -118,7 +121,7 @@ func (gz *gzipReadCloser) Close() error {
 	gz.middleware = nil
 
 	// Возвращаем closer в его пул
-	gz.middleware.closerPool.Put(gz)
+	middleware.closerPool.Put(gz)
 
 	return nil
 }

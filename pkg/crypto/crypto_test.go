@@ -9,8 +9,8 @@ import (
 
 func TestGenerateAndLoadKeys(t *testing.T) {
 	// Создаем временные файлы для ключей
-	privateKeyPath := "test_private.pem"
-	publicKeyPath := "test_public.pem"
+	privateKeyPath := "test_server.key"
+	publicKeyPath := "test_server.crt"
 
 	// Очищаем после теста
 	defer os.Remove(privateKeyPath)
@@ -61,8 +61,8 @@ func TestGenerateAndLoadKeys(t *testing.T) {
 
 func TestEncryptLargeData(t *testing.T) {
 	// Создаем временные файлы для ключей
-	privateKeyPath := "test_private.pem"
-	publicKeyPath := "test_public.pem"
+	privateKeyPath := "test_server.key"
+	publicKeyPath := "test_server.crt"
 
 	// Очищаем после теста
 	defer os.Remove(privateKeyPath)

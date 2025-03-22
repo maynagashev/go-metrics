@@ -79,10 +79,10 @@ func parseFlags() (string, string, int, error) {
 	// Определяем флаги командной строки
 	privateKeyPathPtr := flag.String(
 		"private",
-		"private.pem",
+		"server.key",
 		"путь для сохранения закрытого ключа",
 	)
-	publicKeyPathPtr := flag.String("public", "public.pem", "путь для сохранения открытого ключа")
+	publicKeyPathPtr := flag.String("public", "server.crt", "путь для сохранения открытого ключа")
 	keySizePtr := flag.Int("bits", DefaultKeySize, "размер ключа RSA в битах (1024, 2048, 4096)")
 
 	// Разбираем флаги
